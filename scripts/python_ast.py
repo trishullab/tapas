@@ -471,4 +471,7 @@ def format() -> str:
     return rule_of_nonterm_str + "\n\n" + rule_of_sequence_str
 
 
+
+
+
 print(format())

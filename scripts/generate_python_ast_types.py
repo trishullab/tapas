@@ -4,20 +4,19 @@ from __future__ import annotations
 from type_def import header, to_shape_list, generate_type_union_def, generate_type_intersection_def
 from file import write
 
-import python_ast
+from . import python_ast
 
-(unions, intersections) = python_ast.get()
 
 code = (
 
     "\n\n".join([
         generate_type_union_def(k,v)
-        for k, v in unions.entries()
+        for k, v in python_ast.unions.items()
     ]) + 
     "\n\n" +
     "\n\n".join([
         generate_type_intersection_def(k,v)
-        for k, v in intersections.entries()
+        for k, v in python_ast.intersections.items()
     ])
 )
 
