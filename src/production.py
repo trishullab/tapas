@@ -6,6 +6,8 @@ from collections.abc import Callable
 
 from abc import ABC, abstractmethod
 
+import inflection
+
 T = TypeVar('T')
 
 # type and constructor Production 
@@ -28,6 +30,7 @@ def map_option(
         if item_op != None else [])
 
 def map_list(
+    name : str,
     serialize_item : Callable[[T, int], list[Production]],
     items : list[T], 
     depth : int = 0, 
@@ -35,8 +38,8 @@ def map_list(
 ) -> list[Production]:
     return [
         Production(
-            lhs = 'enumeration',
-            rhs = 'Enumeration',
+            lhs = f'list[{name}]',
+            rhs = f'[...]',
             depth = depth,
             alias = alias
         )

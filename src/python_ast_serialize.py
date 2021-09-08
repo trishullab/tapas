@@ -17,12 +17,12 @@ def serialize(module : Module, depth : int = 0) -> list[Production]:
     return (
         [
             Production(
-                lhs = 'mod',
+                lhs = 'Module',
                 rhs = 'Module',
                 depth = depth 
             )
         ] +
-        pro.map_list(serialize_stmt, module.body, depth + 1, alias = 'body')
+        pro.map_list("stmt", serialize_stmt, module.body, depth + 1, alias = 'body')
     )
 
 
@@ -176,32 +176,32 @@ def serialize_expr(
         ),
         case_Dict = lambda o : (
             [production("Dict")] +
-            pro.map_list(serialize_Entry, o.entries, depth + 1, 'entries')
+            pro.map_list("Entry", serialize_Entry, o.entries, depth + 1, 'entries')
         ),
         case_Set = lambda o : (
             [production("Set")] +
-            pro.map_list(serialize_expr, o.elts, depth + 1, 'elts')
+            pro.map_list("expr", serialize_expr, o.elts, depth + 1, 'elts')
         ),
         case_ListComp = lambda o : (
             [production("ListComp")] +
             serialize_expr(o.elt, depth + 1, 'elt') +
-            pro.map_list(serialize_constraint, o.constraints, depth + 1, 'generators')
+            pro.map_list("constraint", serialize_constraint, o.constraints, depth + 1, 'constraints')
         ),
         case_SetComp = lambda o : (
             [production("SetComp")] +
             serialize_expr(o.elt, depth + 1, 'elt') +
-            pro.map_list(serialize_constraint, o.constraints, depth + 1, 'generators')
+            pro.map_list("constraint", serialize_constraint, o.constraints, depth + 1, 'constraints')
         ),
         case_DictComp = lambda o : (
             [production("DictComp")] +
             serialize_expr(o.key, depth + 1, 'key') +
             serialize_expr(o.value, depth + 1, 'value') +
-            pro.map_list(serialize_constraint, o.constraints, depth + 1, 'generators')
+            pro.map_list("constraint", serialize_constraint, o.constraints, depth + 1, 'constraints')
         ),
         case_GeneratorExp = lambda o : (
             [production("GeneratorExp")] +
             serialize_expr(o.elt, depth + 1, 'elt') +
-            pro.map_list(serialize_constraint, o.constraints, depth + 1, 'generators')
+            pro.map_list("constraint", serialize_constraint, o.constraints, depth + 1, 'constraints')
         ),
         case_Await = lambda o : (
             [production("Await")] +
@@ -218,14 +218,14 @@ def serialize_expr(
         case_Compare = lambda o : (
             [production("Compare")] +
             serialize_expr(o.left, depth + 1, 'left') +
-            pro.map_list(serialize_cmpop, o.ops, depth + 1, 'ops') +
-            pro.map_list(serialize_expr, o.comparators, depth + 1, 'comparators')
+            pro.map_list("cmpop", serialize_cmpop, o.ops, depth + 1, 'ops') +
+            pro.map_list("expr", serialize_expr, o.comparators, depth + 1, 'comparators')
         ),
         case_Call = lambda o : (
             [production("Call")] +
             serialize_expr(o.func, depth + 1, 'func') +
-            pro.map_list(serialize_expr, o.args, depth + 1, 'args') +
-            pro.map_list(serialize_Keyword, o.keywords, depth + 1, 'keywords')
+            pro.map_list("expr", serialize_expr, o.args, depth + 1, 'args') +
+            pro.map_list("Keyword", serialize_Keyword, o.keywords, depth + 1, 'keywords')
         ),
 
         case_Integer = lambda o : (
@@ -288,12 +288,12 @@ def serialize_expr(
 
         case_List = lambda o : (
             [production("List")] +
-            pro.map_list(serialize_expr, o.elts, depth + 1, 'elts')
+            pro.map_list("expr", serialize_expr, o.elts, depth + 1, 'elts')
         ),
 
         case_Tuple = lambda o : (
             [production("Tuple")] +
-            pro.map_list(serialize_expr, o.elts, depth + 1, 'elts')
+            pro.map_list("expr", serialize_expr, o.elts, depth + 1, 'elts')
         ),
 
         case_Slice = lambda o : (
@@ -323,14 +323,14 @@ def serialize_constraint(
             [production("Constraint")] +
             serialize_expr(o.target, depth + 1, 'target') + 
             serialize_expr(o.iter, depth + 1, 'iter') + 
-            pro.map_list(serialize_expr, o.ifs, depth + 1, 'ifs')
+            pro.map_list("expr", serialize_expr, o.ifs, depth + 1, 'ifs')
         ),
 
         case_AsyncConstraint = lambda o : (
             [production("AsyncConstraint")] +
             serialize_expr(o.target, depth + 1, 'target') + 
             serialize_expr(o.iter, depth + 1, 'iter') + 
-            pro.map_list(serialize_expr, o.ifs, depth + 1, 'ifs')
+            pro.map_list("expr", serialize_expr, o.ifs, depth + 1, 'ifs')
         )
 
     ))
@@ -342,7 +342,7 @@ def serialize_Alias(
 ) -> list[Production]:
     return (
         [Production(
-            lhs = 'alias',
+            lhs = 'Alias',
             rhs = 'Alias',
             depth = depth,
             alias = alias
@@ -356,7 +356,7 @@ def serialize_Identifier(
     alias : Optional[str] = None
 ) -> list[Production]:
     return [Production(
-        lhs = 'id',
+        lhs = 'Identifier',
         rhs = 'Identifier',
         depth = depth,
         alias = alias,
@@ -370,7 +370,7 @@ def serialize_Param(
 
     return (
         [Production(
-            lhs = 'param',
+            lhs = 'Param',
             rhs = 'Param',
             depth = depth,
             alias = alias
@@ -386,15 +386,15 @@ def serialize_ParamGroup(
 ) -> list[Production]:
     return (
         [Production(
-            lhs = 'param_group',
+            lhs = 'ParamGroup',
             rhs = 'ParamGroup',
             depth = depth,
             alias = alias
         )]  +
-        pro.map_list(serialize_Param, param_group.pos_params, depth + 1, alias = 'pos_params') +
-        pro.map_list(serialize_Param, param_group.params, depth + 1, alias = 'params') +
+        pro.map_list("Param", serialize_Param, param_group.pos_params, depth + 1, alias = 'pos_params') +
+        pro.map_list("Param", serialize_Param, param_group.params, depth + 1, alias = 'params') +
         pro.map_option(serialize_Param, param_group.list_splat, depth + 1, alias = 'list_splat') +
-        pro.map_list(serialize_Param, param_group.kw_params, depth + 1, alias = 'kw_params') +
+        pro.map_list("Param", serialize_Param, param_group.kw_params, depth + 1, alias = 'kw_params') +
         pro.map_option(serialize_Param, param_group.dictionary_splat, depth + 1, alias = 'dictionary_splat')
 
     )
@@ -406,7 +406,7 @@ def serialize_Entry(
 ) -> list[Production]:
     return (
         [Production(
-            lhs = 'entry',
+            lhs = 'Entry',
             rhs = 'Entry',
             depth = depth,
             alias = alias
@@ -421,7 +421,7 @@ def serialize_Keyword(
 ) -> list[Production]:
     return (
         [Production(
-            lhs = 'keyword',
+            lhs = 'Keyword',
             rhs = 'Keyword',
             depth = depth,
             alias = alias
@@ -437,7 +437,7 @@ def serialize_Withitem(
 ) -> list[Production]:
     return (
         [Production(
-            lhs = 'withitem',
+            lhs = 'Withitem',
             rhs = 'Withitem',
             depth = depth,
             alias = alias
@@ -454,14 +454,14 @@ def serialize_ExceptHandler(
 ) -> list[Production]:
     return (
         [Production(
-            lhs = 'except_handler',
+            lhs = 'ExceptHandler',
             rhs = 'ExceptHandler',
             depth = depth,
             alias = alias
         )] +
         pro.map_option(serialize_expr, eh.type, depth + 1, 'type') +
         pro.map_option(serialize_Identifier, eh.name, depth + 1, 'name') +
-        pro.map_list(serialize_stmt, eh.body, depth + 1, alias = 'body')
+        pro.map_list("stmt", serialize_stmt, eh.body, depth + 1, alias = 'body')
     )
 
 def serialize_stmt(
@@ -484,8 +484,8 @@ def serialize_stmt(
             [production("FunctionDef")] + 
             serialize_Identifier(o.name, depth + 1, 'name')  + 
             serialize_ParamGroup(o.param_group, depth + 1, 'args') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_expr, o.decorator_list, depth + 1, 'decorator_list') +
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("expr", serialize_expr, o.decorator_list, depth + 1, 'decorator_list') +
             pro.map_option(serialize_expr, o.returns, depth + 1, 'returns')
         ),
 
@@ -493,18 +493,18 @@ def serialize_stmt(
             [production("AsyncFunctionDef")] +
             serialize_Identifier(o.name, depth + 1, 'name')  + 
             serialize_ParamGroup(o.param_group, depth + 1, 'args') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_expr, o.decorator_list, depth + 1, 'decorator_list') +
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("expr", serialize_expr, o.decorator_list, depth + 1, 'decorator_list') +
             pro.map_option(serialize_expr, o.returns, depth + 1, 'returns')
         ),
 
         case_ClassDef = lambda o : (
             [production("ClassDef")] +
             serialize_Identifier(o.name, depth + 1, 'name')  + 
-            pro.map_list(serialize_expr, o.bases, depth + 1, 'bases') +
-            pro.map_list(serialize_Keyword, o.keywords, depth + 1, 'keywords') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_expr, o.decorator_list, depth + 1, 'decorator_list')
+            pro.map_list("expr", serialize_expr, o.bases, depth + 1, 'bases') +
+            pro.map_list("Keyword", serialize_Keyword, o.keywords, depth + 1, 'keywords') +
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("expr", serialize_expr, o.decorator_list, depth + 1, 'decorator_list')
         ),
 
         case_Return = lambda o : (
@@ -514,13 +514,13 @@ def serialize_stmt(
 
         case_Delete = lambda o : (
             [production("Delete")] +
-            pro.map_list(serialize_expr, o.targets, depth + 1, 'targets')
+            pro.map_list("expr", serialize_expr, o.targets, depth + 1, 'targets')
         ),
 
 
         case_Assign = lambda o : (
             [production("Assign")] +
-            pro.map_list(serialize_expr, o.targets, depth + 1, 'targets') +
+            pro.map_list("expr", serialize_expr, o.targets, depth + 1, 'targets') +
             serialize_expr(o.value, depth + 1, 'value')
         ),
 
@@ -549,42 +549,42 @@ def serialize_stmt(
             [production("For")] +
             serialize_expr(o.target, depth + 1, 'target') +
             serialize_expr(o.iter, depth + 1, 'iter') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_stmt, o.orelse, depth + 1, 'orelse')
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("stmt", serialize_stmt, o.orelse, depth + 1, 'orelse')
         ),
 
         case_AsyncFor = lambda o : (
             [production("AsyncFor")] +
             serialize_expr(o.target, depth + 1, 'target') +
             serialize_expr(o.iter, depth + 1, 'iter') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_stmt, o.orelse, depth + 1, 'orelse')
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("stmt", serialize_stmt, o.orelse, depth + 1, 'orelse')
         ),
 
         case_While = lambda o : (
             [production("While")] +
             serialize_expr(o.test, depth + 1, 'test') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_stmt, o.orelse, depth + 1, 'orelse')
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("stmt", serialize_stmt, o.orelse, depth + 1, 'orelse')
         ),
 
         case_If = lambda o : (
             [production("If")] +
             serialize_expr(o.test, depth + 1, 'test') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_stmt, o.orelse, depth + 1, 'orelse')
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("stmt", serialize_stmt, o.orelse, depth + 1, 'orelse')
         ),
 
         case_With = lambda o : (
             [production("With")] +
-            pro.map_list(serialize_Withitem, o.items, depth + 1, 'items') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body')
+            pro.map_list("Withitem", serialize_Withitem, o.items, depth + 1, 'items') +
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body')
         ),
 
         case_AsyncWith = lambda o : (
             [production("AsyncWith")] +
-            pro.map_list(serialize_Withitem, o.items, depth + 1, 'items') +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body')
+            pro.map_list("Withitem", serialize_Withitem, o.items, depth + 1, 'items') +
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body')
         ),
 
         case_Raise = lambda o : (
@@ -595,10 +595,10 @@ def serialize_stmt(
 
         case_Try = lambda o : (
             [production("Try")] +
-            pro.map_list(serialize_stmt, o.body, depth + 1, 'body') +
-            pro.map_list(serialize_ExceptHandler, o.handlers, depth + 1, 'handlers') +
-            pro.map_list(serialize_stmt, o.orelse, depth + 1, 'orelse') +
-            pro.map_list(serialize_stmt, o.finalbody, depth + 1, 'finalbody')
+            pro.map_list("stmt", serialize_stmt, o.body, depth + 1, 'body') +
+            pro.map_list("ExceptHandler", serialize_ExceptHandler, o.handlers, depth + 1, 'handlers') +
+            pro.map_list("stmt", serialize_stmt, o.orelse, depth + 1, 'orelse') +
+            pro.map_list("stmt", serialize_stmt, o.finalbody, depth + 1, 'finalbody')
         ),
 
         case_Assert = lambda o : (
@@ -609,23 +609,23 @@ def serialize_stmt(
 
         case_Import = lambda o : (
             [production("Import")] +
-            pro.map_list(serialize_Alias, o.names, depth + 1, 'names')
+            pro.map_list("Alias", serialize_Alias, o.names, depth + 1, 'names')
         ),
 
         case_ImportFrom = lambda o : (
             [production("ImportFrom")] +
             pro.map_option(serialize_Identifier, o.module, depth + 1, 'module') +
-            pro.map_list(serialize_Alias, o.names, depth + 1, 'names')
+            pro.map_list("Alias", serialize_Alias, o.names, depth + 1, 'names')
         ),
 
         case_Global = lambda o : (
             [production("Global")] +
-            pro.map_list(serialize_Identifier, o.names, depth + 1, 'names')
+            pro.map_list("Identifier", serialize_Identifier, o.names, depth + 1, 'names')
         ),
 
         case_Nonlocal = lambda o : (
             [production("Nonlocal")] +
-            pro.map_list(serialize_Identifier, o.names, depth + 1, 'names')
+            pro.map_list("Identifier", serialize_Identifier, o.names, depth + 1, 'names')
         ),
 
         case_Expr = lambda o : (
