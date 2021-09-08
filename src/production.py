@@ -55,8 +55,8 @@ def dump(prods : list[Production], indent : int = 4):
     strs = list(map(
         lambda prod : (
             (indent_str := (' ' * prod.depth * indent)),
-            (prefix := (prod.alias if (isinstance(prod.alias, str)) else '_')),
-            indent_str + prefix + ' : ' + prod.lhs + ' = ' + prod.rhs +
+            (prefix := (prod.alias + ' = ' if (isinstance(prod.alias, str)) else '')),
+            indent_str + prefix + prod.rhs + (' <' + prod.lhs  + '>' if prod.lhs != prod.rhs else '') +
             (f" {prod.symbol}" if prod.symbol else '')
         )[-1], 
         prods 

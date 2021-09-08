@@ -405,8 +405,7 @@ intersections = {
 
 def format() -> str:
 
-
-    ### rule of sequence ###
+    ### rule of non-terminal ###
 
     rule_of_nonterm_unions = [
         k + " : " + choices_str 
