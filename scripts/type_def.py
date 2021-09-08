@@ -77,25 +77,34 @@ class Shape:
 
 
 
-def to_field(thing : tuple[str, str]) -> Field:
-    (attr, type_) = thing
+def to_field(attr : str, type_ : str) -> Field:
     return Field(attr, type_)
 
-def to_shape(thing : tuple[str, list[tuple[str, str]]]) -> Shape:
-    (shape_name, field_things) = thing
+def to_shape(shape_name, field_things : dict[str, str]) -> Shape:
     case_name = f"case_{shape_name}"
-    return Shape(shape_name, case_name, list(map(to_field, field_things)))
 
-def to_shape_list(things : list[tuple[str, list[tuple[str, str]]]]) -> list[Shape]:
-    return list(map(to_shape, things))
+    fields = [
+        Field(k, v) 
+        for k, v in field_things.items()
+    ]
+    return Shape(shape_name, case_name, fields)
+
+def to_shape_list(things : dict[str, dict[str, str]]) -> list[Shape]:
+    return [
+        to_shape(name, field_things)
+        for name, field_things in things.items()
+    ]
 
 
 def generate_type_intersection_def(
     name : str,
-    intersection :  list[tuple[str, str]] 
+    intersection :  dict[str, str] 
 ) -> str:
-    fields = list(map(to_field, intersection))
-
+    fields = [
+        Field(k, v) 
+        for k, v in intersection.items()
+    ]
+    
     tmpl = jinja_env.from_string(intersection_template_str)
     code : str = tmpl.render(
         name=name, 
@@ -105,7 +114,7 @@ def generate_type_intersection_def(
 
 def generate_type_union_def(
     type_name : str,
-    union : list[tuple[str, list[tuple[str, str]]]] 
+    union : dict[str, dict[str, str]] 
 ) -> str:
     shapes = to_shape_list(union)
     handlers_name = f"{inflection.camelize(type_name)}Handlers"

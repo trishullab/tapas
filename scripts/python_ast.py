@@ -2,405 +2,403 @@ from __future__ import annotations
 
 unions = {
 
-    "stmt" : [
-        ("FunctionDef", [
-            ("name", "Identifier"),
-            ("param_group", "ParamGroup"),
-            ("body", "list[stmt]"),
-            ("decorator_list", "list[expr]"),
-            ("returns", "Optional[expr]")
-        ]),
+    "stmt" : {
+        "FunctionDef" : {
+            "name" : "Identifier",
+            "param_group" : "ParamGroup",
+            "body" : "list[stmt]",
+            "decorator_list" : "list[expr]",
+            "returns" : "Optional[expr]"
+        },
 
-        ("AsyncFunctionDef", [
-            ("name", "Identifier"),
-            ("param_group", "ParamGroup"),
-            ("body", "list[stmt]"),
-            ("decorator_list", "list[expr]"),
-            ("returns", "Optional[expr]")
-        ]),
+        "AsyncFunctionDef" : {
+            "name" : "Identifier",
+            "param_group" : "ParamGroup",
+            "body" : "list[stmt]",
+            "decorator_list" : "list[expr]",
+            "returns" : "Optional[expr]"
+        },
 
-        ("ClassDef", [
-            ("name", "Identifier"),
-            ("bases", "list[expr]"),
-            ("keywords", "list[Keyword]"),
-            ("body", "list[stmt]"),
-            ("decorator_list", "list[expr]")
-        ]),
+        "ClassDef" : {
+            "name" : "Identifier",
+            "bases" : "list[expr]",
+            "keywords" : "list[Keyword]",
+            "body" : "list[stmt]",
+            "decorator_list" : "list[expr]"
+        },
 
-        ("Return", [
-            ("value", "Optional[expr]")
-        ]),
+        "Return" : {
+            "value" : "Optional[expr]"
+        },
 
-        ("Delete", [
-            ("targets", "list[expr]")
-        ]),
+        "Delete" : {
+            "targets" : "list[expr]"
+        },
 
-        ("Assign", [
-            ("targets", "list[expr]"),
-            ("value", "expr")
-        ]),
+        "Assign" : {
+            "targets" : "list[expr]",
+            "value" : "expr"
+        },
 
-        ("AugAssign", [
-            ("target", "expr"),
-            ("op", "operator"),
-            ("value", "expr")
-        ]),
+        "AugAssign" : {
+            "target" : "expr",
+            "op" : "operator",
+            "value" : "expr"
+        },
 
         #'simple' indicates that we annotate simple name without parens
-        ("AnnAssign", [
-            ("target", "expr"),
-            ("annotation", "expr"),
-            ("value", "Optional[expr]")
-        ]),
+        "AnnAssign" : {
+            "target" : "expr",
+            "annotation" : "expr",
+            "value" : "Optional[expr]"
+        },
 
-        ("AnnAssignSimple", [
-            ("target", "expr"),
-            ("annotation", "expr"),
-            ("value", "Optional[expr]")
-        ]),
+        "AnnAssignSimple" : {
+            "target" : "expr",
+            "annotation" : "expr",
+            "value" : "Optional[expr]"
+        },
 
         # use 'orelse' because else is a Keyword in target languages
-        ("For", [
-            ("target", "expr"),
-            ("iter", "expr"),
-            ("body", "list[stmt]"),
-            ("orelse", "list[stmt]")
-        ]),
+        "For" : {
+            "target" : "expr",
+            "iter" : "expr",
+            "body" : "list[stmt]",
+            "orelse" : "list[stmt]"
+        },
 
-        ("AsyncFor", [
-            ("target", "expr"),
-            ("iter", "expr"),
-            ("body", "list[stmt]"),
-            ("orelse", "list[stmt]")
-        ]),
+        "AsyncFor" : {
+            "target" : "expr",
+            "iter" : "expr",
+            "body" : "list[stmt]",
+            "orelse" : "list[stmt]"
+        },
 
-        ("While", [
-            ("test", "expr"),
-            ("body", "list[stmt]"),
-            ("orelse", "list[stmt]")
-        ]),
+        "While" : {
+            "test" : "expr",
+            "body" : "list[stmt]",
+            "orelse" : "list[stmt]"
+        },
 
-        ("If", [
-            ("test", "expr"),
-            ("body", "list[stmt]"),
-            ("orelse", "list[stmt]")
-        ]),
+        "If" : {
+            "test" : "expr",
+            "body" : "list[stmt]",
+            "orelse" : "list[stmt]"
+        },
 
-        ("With", [
-            ("items", "list[Withitem]"),
-            ("body", "list[stmt]")
-        ]),
+        "With" : {
+            "items" : "list[Withitem]",
+            "body" : "list[stmt]"
+        },
 
-        ("AsyncWith", [
-            ("items", "list[Withitem]"),
-            ("body", "list[stmt]")
-        ]),
+        "AsyncWith" : {
+            "items" : "list[Withitem]",
+            "body" : "list[stmt]"
+        },
 
-        ("Raise", [
-            ("exc", "Optional[expr]"),
-            ("cause", "Optional[expr]")
-        ]),
+        "Raise" : {
+            "exc" : "Optional[expr]",
+            "cause" : "Optional[expr]"
+        },
 
-        ("Try", [
-            ("body", "list[stmt]"),
-            ("handlers", "list[ExceptHandler]"),
-            ("orelse", "list[stmt]"),
-            ("finalbody", "list[stmt]")
-        ]),
+        "Try" : {
+            "body" : "list[stmt]",
+            "handlers" : "list[ExceptHandler]",
+            "orelse" : "list[stmt]",
+            "finalbody" : "list[stmt]"
+        },
 
-        ("Assert", [
-            ("test", "expr"),
-            ("msg", "Optional[expr]")
-        ]),
+        "Assert" : {
+            "test" : "expr",
+            "msg" : "Optional[expr]"
+        },
 
-        ("Import", [
-            ("names", "list[Alias]")
-        ]),
+        "Import" : {
+            "names" : "list[Alias]"
+        },
 
-        ("ImportFrom", [
-            ("module", "Optional[Identifier]"),
-            ("names", "list[Alias]"),
-            ("level", "Optional[int]")
-        ]),
-
-
-        ("Global", [
-            ("names", "list[Identifier]")
-        ]),
-
-        ("Nonlocal", [
-            ("names", "list[Identifier]"),
-        ]),
-
-        ("Expr", [
-            ("value", "expr")
-        ]),
-
-        ("Pass", []), 
-        ("Break", []),
-        ("Continue", [])
+        "ImportFrom" : {
+            "module" : "Optional[Identifier]",
+            "names" : "list[Alias]",
+            "level" : "Optional[int]"
+        },
 
 
-    ],
+        "Global" : {
+            "names" : "list[Identifier]"
+        },
 
-    "expr" : [
-        ("BoolOp", [
-            ("left", "expr"),
-            ("op", "boolop"),
-            ("right", "expr")
-        ]),
+        "Nonlocal" : {
+            "names" : "list[Identifier]",
+        },
 
-        ("NamedExpr", [
-            ("target", "expr"),
-            ("value", "expr")
-        ]),
+        "Expr" : {
+            "value" : "expr"
+        },
 
-        ("BinOp", [
-            ("left", "expr"),
-            ("op", "operator"),
-            ("right", "expr")
-        ]),
+        "Pass" : {}, 
+        "Break" : {},
+        "Continue" : {}
 
-        ("UnaryOp", [
-            ("op", "unaryop"),
-            ("operand", "expr")
-        ]),
+    },
 
-        ("Lambda", [
-            ("param_group", "ParamGroup"),
-            ("body", "expr")
-        ]),
+    "expr" : {
+        "BoolOp" : {
+            "left" : "expr",
+            "op" : "boolop",
+            "right" : "expr"
+        },
 
-        ("IfExp", [
-            ("test", "expr"),
-            ("body", "expr"),
-            ("orelse", "expr")
-        ]),
+        "NamedExpr" : {
+            "target" : "expr",
+            "value" : "expr"
+        },
 
-        ("Dict", [
-            ("entries", "list[Entry]"),
-        ]),
+        "BinOp" : {
+            "left" : "expr",
+            "op" : "operator",
+            "right" : "expr"
+        },
 
-        ("Set", [
-            ("elts", "list[expr]")
-        ]),
+        "UnaryOp" : {
+            "op" : "unaryop",
+            "operand" : "expr"
+        },
 
-        ("ListComp", [
-            ("elt", "expr"),
-            ("constraints", "list[constraint]")
-        ]),
+        "Lambda" : {
+            "param_group" : "ParamGroup",
+            "body" : "expr"
+        },
 
-        ("SetComp", [
-            ("elt", "expr"),
-            ("constraints", "list[constraint]")
-        ]),
+        "IfExp" : {
+            "test" : "expr",
+            "body" : "expr",
+            "orelse" : "expr"
+        },
 
-        ("DictComp", [
-            ("key", "expr"),
-            ("value", "expr"),
-            ("constraints", "list[constraint]")
-        ]),
+        "Dict" : {
+            "entries" : "list[Entry]",
+        },
 
-        ("GeneratorExp", [
-            ("elt", "expr"),
-            ("constraints", "list[constraint]")
-        ]),
+        "Set" : {
+            "elts" : "list[expr]"
+        },
+
+        "ListComp" : {
+            "elt" : "expr",
+            "constraints" : "list[constraint]"
+        },
+
+        "SetComp" : {
+            "elt" : "expr",
+            "constraints" : "list[constraint]"
+        },
+
+        "DictComp" : {
+            "key" : "expr",
+            "value" : "expr",
+            "constraints" : "list[constraint]"
+        },
+
+        "GeneratorExp" : {
+            "elt" : "expr",
+            "constraints" : "list[constraint]"
+        },
 
         # the grammar constrains where yield expressions can occur
-        ("Await", [
-            ("value", "expr")
-        ]),
+        "Await" : {
+            "value" : "expr"
+        },
 
-        ("Yield", [
-            ("value", "Optional[expr]")
-        ]),
+        "Yield" : {
+            "value" : "Optional[expr]"
+        },
 
-        ("YieldFrom", [
-            ("value", "expr")
-        ]),
+        "YieldFrom" : {
+            "value" : "expr"
+        },
 
         # need sequences for compare to distinguish between
         # x < 4 < 3 and (x < 4) < 3
-        ("Compare", [
-            ("left", "expr"),
-            ("ops", "list[cmpop]"),
-            ("comparators", "list[expr]")
-        ]),
+        "Compare" : {
+            "left" : "expr",
+            "ops" : "list[cmpop]",
+            "comparators" : "list[expr]"
+        },
 
-        ("Call", [
-            ("func", "expr"),
-            ("args", "list[expr]"),
-            ("keywords", "list[Keyword]")
-        ]),
+        "Call" : {
+            "func" : "expr",
+            "args" : "list[expr]",
+            "keywords" : "list[Keyword]"
+        },
 
-        ("Integer", [
-            ("value", "str"),
-        ]),
+        "Integer" : {
+            "value" : "str",
+        },
 
-        ("Float", [
-            ("value", "str"),
-        ]),
+        "Float" : {
+            "value" : "str",
+        },
 
-        ("String", [
-            ("value", "str"),
-        ]),
+        "String" : {
+            "value" : "str",
+        },
 
-        ("True_", []),
+        "True_" : {},
 
-        ("False_", []),
+        "False_" : {},
 
-        ("None_", []),
+        "None_" : {},
 
-        ("Ellip", []),
+        "Ellip" : {},
 
-        ("ConcatString", [
-            ("values", "list[str]"),
-        ]),
+        "ConcatString" : {
+            "values" : "list[str]",
+        },
 
 
         # the following expression can appear in assignment context
-        ("Attribute", [
-            ("value", "expr"),
-            ("attr", "Identifier")
-        ]),
+        "Attribute" : {
+            "value" : "expr",
+            "attr" : "Identifier"
+        },
 
-        ("Subscript", [
-            ("value", "expr"),
-            ("slice", "expr")
-        ]),
+        "Subscript" : {
+            "value" : "expr",
+            "slice" : "expr"
+        },
 
-        ("Starred", [
-            ("value", "expr")
-        ]),
+        "Starred" : {
+            "value" : "expr"
+        },
 
-        ("Name", [
-            ("id", "Identifier")
-        ]),
+        "Name" : {
+            "id" : "Identifier"
+        },
 
-        ("List", [
-            ("elts", "list[expr]")
-        ]),
+        "List" : {
+            "elts" : "list[expr]"
+        },
 
-        ("Tuple", [
-            ("elts", "list[expr]")
-        ]),
+        "Tuple" : {
+            "elts" : "list[expr]"
+        },
 
         # can appear only in Subscript
-        ("Slice", [
-            ("lower", "Optional[expr]"),
-            ("upper", "Optional[expr]"),
-            ("step", "Optional[expr]")
-        ])
+        "Slice" : {
+            "lower" : "Optional[expr]",
+            "upper" : "Optional[expr]",
+            "step" : "Optional[expr]"
+        }
 
-    ],
+    },
 
-    "boolop" :
-    [
-        ("And", []),
-        ("Or", [])
-    ],
+    "boolop" : {
+        "And" : {},
+        "Or" : {}
+    },
 
-    "operator" : [
-        ("Add", []), 
-        ("Sub", []), 
-        ("Mult", []), 
-        ("MatMult", []), 
-        ("Div", []), 
-        ("Mod", []), 
-        ("Pow", []), 
-        ("LShift", []),
-        ("RShift", []), 
-        ("BitOr", []), 
-        ("BitXor", []), 
-        ("BitAnd", []), 
-        ("FloorDiv", [])
-    ],
+    "operator" : {
+        "Add" : {}, 
+        "Sub" : {}, 
+        "Mult" : {}, 
+        "MatMult" : {}, 
+        "Div" : {}, 
+        "Mod" : {}, 
+        "Pow" : {}, 
+        "LShift" : {},
+        "RShift" : {}, 
+        "BitOr" : {}, 
+        "BitXor" : {}, 
+        "BitAnd" : {}, 
+        "FloorDiv" : {}
+    },
 
-    "unaryop" : [
-        ("Invert", []), 
-        ("Not", []), 
-        ("UAdd", []), 
-        ("USub", [])
-    ],
+    "unaryop" : {
+        "Invert" : {}, 
+        "Not" : {}, 
+        "UAdd" : {}, 
+        "USub" : {}
+    },
 
-    "cmpop" : [
-        ("Eq", []), 
-        ("NotEq", []), 
-        ("Lt", []), 
-        ("LtE", []), 
-        ("Gt", []), 
-        ("GtE", []), 
-        ("Is", []), 
-        ("IsNot", []), 
-        ("In", []), 
-        ("NotIn", [])
-    ],
+    "cmpop" : {
+        "Eq" : {}, 
+        "NotEq" : {}, 
+        "Lt" : {}, 
+        "LtE" : {}, 
+        "Gt" : {}, 
+        "GtE" : {}, 
+        "Is" : {}, 
+        "IsNot" : {}, 
+        "In" : {}, 
+        "NotIn" : {}
+    },
 
-    "constraint" : [
-        ("AsyncConstraint", [
-            ("target", "expr"),
-            ("iter", "expr"),
-            ("ifs", "list[expr]")
-        ]),
-        ("Constraint", [
-            ("target", "expr"),
-            ("iter", "expr"),
-            ("ifs", "list[expr]")
-        ])
-    ]
+    "constraint" : {
+        "AsyncConstraint" : {
+            "target" : "expr",
+            "iter" : "expr",
+            "ifs" : "list[expr]"
+        },
+        "Constraint" : {
+            "target" : "expr",
+            "iter" : "expr",
+            "ifs" : "list[expr]"
+        }
+    }
 
 }
 
 
 intersections = {
 
-    "Module" : [
-        ("body", "list[stmt]")
-    ],
+    "Module" : {
+        "body" : "list[stmt]"
+    },
 
-    "ExceptHandler" : [
-        ("type", "Optional[expr]"),
-        ("name", "Optional[Identifier]"),
-        ("body", "list[stmt]")
-    ],
+    "ExceptHandler" : {
+        "type" : "Optional[expr]",
+        "name" : "Optional[Identifier]",
+        "body" : "list[stmt]"
+    },
 
-    "ParamGroup": [
-        ("pos_params", "list[Param]"),
-        ("params", "list[Param]"),
-        ("list_splat", "Optional[Param]"),
-        ("kw_params", "list[Param]"),
-        ("dictionary_splat", "Optional[Param]")
-    ],
+    "ParamGroup": {
+        "pos_params" : "list[Param]",
+        "params" : "list[Param]",
+        "list_splat" : "Optional[Param]",
+        "kw_params" : "list[Param]",
+        "dictionary_splat" : "Optional[Param]"
+    },
 
-    "Param" : [
-        ("id", "Identifier"),
-        ("annotation", "Optional[expr]"),
-        ("default", "Optional[expr]")
-    ],
+    "Param" : {
+        "id" : "Identifier",
+        "annotation" : "Optional[expr]",
+        "default" : "Optional[expr]"
+    },
 
-    "Keyword" : [
-        ("name", "Optional[Identifier]"),
-        ("value", "expr")
-    ],
+    "Keyword" : {
+        "name" : "Optional[Identifier]",
+        "value" : "expr"
+    },
 
-    "Entry" : [
-        ("key", "expr"),
-        ("value", "expr")
-    ],
+    "Entry" : {
+        "key" : "expr",
+        "value" : "expr"
+    },
 
-    "Alias" : [
-        ("name", "Identifier"),
-        ("asname", "Optional[Identifier]")
-    ],
+    "Alias" : {
+        "name" : "Identifier",
+        "asname" : "Optional[Identifier]"
+    },
 
-    "Withitem" : [
-        ("context_expr", "expr"),
-        ("optional_vars", "Optional[expr]")
-    ],
+    "Withitem" : {
+        "context_expr" : "expr",
+        "optional_vars" : "Optional[expr]"
+    },
 
-    "Identifier" : [ 
-        ("symbol", "str")
-    ]
+    "Identifier" : { 
+        "symbol" : "str"
+    }
 
 }
 
@@ -425,7 +423,7 @@ def format() -> str:
         for k in intersections.keys()
     ]
 
-    rule_of_nonterm_list = "list[T] : [T]"
+    rule_of_nonterm_list = "list[T] : {T]"
 
     rule_of_nonterm_str = "---- RULE OF NON-TERMINAL ----\n\n" + (
         "\n".join(rule_of_nonterm_unions) + 
@@ -469,9 +467,3 @@ def format() -> str:
 
 
     return rule_of_nonterm_str + "\n\n" + rule_of_sequence_str
-
-
-
-
-
-print(format())

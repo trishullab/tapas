@@ -5,11 +5,11 @@ from file import write
 
 abstract_node_code = generate_type_intersection_def(
     "GenericNode", 
-    [
-        ("syntax_part", "str"),
-        ("text", "str"),
-        ("children", "list[GenericNode]")
-    ]
+    {
+        "syntax_part" : "str",
+        "text" : "str",
+        "children" : "list[GenericNode]"
+    }
 )
 
 code = f"""
