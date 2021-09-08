@@ -412,8 +412,8 @@ def format() -> str:
         k + " : " + choices_str 
         for k, choices in unions.items()
         for choices_str in [ ' | '.join([
-            c[0]
-            for c in choices
+            ck
+            for ck in choices.keys()
         ])]
     ]
 
@@ -439,10 +439,10 @@ def format() -> str:
     rule_of_sequence_unions = [
         k + " : { " + fields_str + " } "
         for choices in unions.values()
-        for k, fields in choices
+        for k, fields in choices.items()
         for fields_str in [', '.join([
             name + ' : ' + typ
-            for (name, typ) in fields
+            for name, typ in fields.items()
         ])]
     ]
 
@@ -451,7 +451,7 @@ def format() -> str:
         for k, fields in intersections.items()
         for fields_str in [', '.join([
             name + ' : ' + typ
-            for (name, typ) in fields
+            for name, typ in fields.items()
         ])]
     ]
 

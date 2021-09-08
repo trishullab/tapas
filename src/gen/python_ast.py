@@ -12,13 +12,6 @@ T = TypeVar('T')
 
 
 
-# type and constructor Module
-@dataclass
-class Module:
-    body : list[stmt]
-
-
-
 # type stmt
 @dataclass
 class stmt(ABC):
@@ -890,6 +883,13 @@ class ConstraintHandlers(Generic[T]):
 # matching for type constraint
 def match_constraint(o : constraint, handlers : ConstraintHandlers[T]) -> T :
     return o._match(handlers)
+
+
+# type and constructor Module
+@dataclass
+class Module:
+    body : list[stmt]
+
 
 
 # type and constructor ExceptHandler

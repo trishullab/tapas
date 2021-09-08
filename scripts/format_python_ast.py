@@ -1,5 +1,5 @@
 from __future__ import annotations
 
-from . import python_ast
+import python_ast_data
 
-print(python_ast.format())
+print(python_ast_data.format())
