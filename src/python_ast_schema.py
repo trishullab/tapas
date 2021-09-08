@@ -256,8 +256,6 @@ unions = {
             "values" : "list[str]",
         },
 
-
-        # the following expression can appear in assignment context
         "Attribute" : {
             "value" : "expr",
             "attr" : "Identifier"
