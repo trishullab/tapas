@@ -10,9 +10,19 @@ from tree_sitter import Language
 
 import tree_sitter
 
-from gen.generic_tree import * 
-
 from utils import fail
+
+
+T = TypeVar('T')
+
+
+# type and constructor GenericNode
+@dataclass
+class GenericNode:
+    syntax_part : str
+    text : str
+    children : list[GenericNode]
+
 
 
 def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encoding : str) -> GenericNode :
