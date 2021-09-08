@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
-dirpath = os.path.join(base_path, "../src/gen")
+dirpath = os.path.join(base_path, "./gen")
 
 if not os.path.exists(dirpath):
     os.makedirs(dirpath)
