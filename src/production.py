@@ -39,7 +39,7 @@ def map_list(
     return [
         Production(
             lhs = f'list[{name}]',
-            rhs = f'[...]',
+            rhs = f'list[{name}]',
             depth = depth,
             alias = alias
         )
@@ -56,7 +56,7 @@ def dump(prods : list[Production], indent : int = 4):
         lambda prod : (
             (indent_str := (' ' * prod.depth * indent)),
             (prefix := (prod.alias + ' = ' if (isinstance(prod.alias, str)) else '')),
-            indent_str + prefix + prod.rhs + (' <' + prod.lhs  + '>' if prod.lhs != prod.rhs else '') +
+            indent_str + prefix + prod.rhs + (' (' + prod.lhs  + ')' if prod.lhs != prod.rhs else '') +
             (f" {prod.symbol}" if prod.symbol else '')
         )[-1], 
         prods 

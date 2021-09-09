@@ -420,7 +420,7 @@ def format() -> str:
         for k in intersections.keys()
     ]
 
-    rule_of_nonterm_list = "list[T] : {T]"
+    rule_of_nonterm_list = "list[T] : list[T]"
 
     rule_of_nonterm_str = "---- RULE OF NON-TERMINAL ----\n\n" + (
         "\n".join(rule_of_nonterm_unions) + 
@@ -452,7 +452,7 @@ def format() -> str:
         ])]
     ]
 
-    rule_of_sequence_list = "[T] : { _.. : T.. }"
+    rule_of_sequence_list = "list[T] : { t1 : T, t2 : T, t3 : T, ... }"
 
     rule_of_sequence_str = "---- RULE OF SEQUENCE ----\n\n" + (
         "\n".join(rule_of_sequence_unions) + 
