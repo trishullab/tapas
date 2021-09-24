@@ -1,64 +1,79 @@
 from __future__ import annotations
+from typing import Iterator
+from gen.line_format import line_format, LineFormatHandlers, match_line_format
 
-from dataclasses import dataclass
-from typing import Dict, TypeVar, Any, Generic, Union, Optional
-from collections.abc import Callable
+from gen.production import *
 
-from abc import ABC, abstractmethod
+import schema
 
-import inflection
-
-T = TypeVar('T')
-
-# type and constructor Production 
-@dataclass
-class Production:
-    lhs : str
-    rhs : str
-    depth : int
-    alias : Optional[str] = None
-    symbol : Optional[str] = None
-
-
-def map_option(
-    serialize_item : Callable[[T, int, Optional[str]], list[Production]],
-    item_op : Optional[T], 
-    depth : int = 0, 
-    alias : Optional[str] = None
-) -> list[Production] : 
-    return (serialize_item(item_op, depth + 1, alias)
-        if item_op != None else [])
-
-def map_list(
-    name : str,
-    serialize_item : Callable[[T, int], list[Production]],
-    items : list[T], 
-    depth : int = 0, 
-    alias : Optional[str] = None
-) -> list[Production]:
-    return [
-        Production(
-            lhs = f'list[{name}]',
-            rhs = f'list[{name}]',
-            depth = depth,
-            alias = alias
-        )
-    ] + [
-        production 
-        for item in items 
-        for production in serialize_item(item, depth + 1)
-    ]
-
-
-
-def dump(prods : list[Production], indent : int = 4):
-    strs = list(map(
-        lambda prod : (
-            (indent_str := (' ' * prod.depth * indent)),
-            (prefix := (prod.alias + ' = ' if (isinstance(prod.alias, str)) else '')),
-            indent_str + prefix + prod.rhs + (' (' + prod.lhs  + ')' if prod.lhs != prod.rhs else '') +
-            (f" {prod.symbol}" if prod.symbol else '')
-        )[-1], 
-        prods 
+def next_indent_width(prev_iw : int, line_form : line_format) -> int:
+    return match_line_format(line_form, LineFormatHandlers[int](
+        case_InLine = lambda _ : prev_iw,
+        case_NewLine = lambda _ : prev_iw, 
+        case_IndentLine = lambda _ : prev_iw + 1 
     ))
+
+def dump(schema_node_map : dict[str, schema.Node], prods : list[production], indent : int = 4):
+    strs = [
+        match_production(prod, ProductionHandlers[str](
+            case_Node = lambda o : (
+                node := schema_node_map[o.rhs],
+                indent_str := (' ' * o.depth * indent),
+                alias_str := (' = .' + o.alias if (isinstance(o.alias, str)) else ''),
+                (
+                    indent_str + o.rhs + (' (' + o.lhs  + ')' if o.lhs != o.rhs else '') +
+                    alias_str
+                )
+            )[-1],
+            case_Symbol= lambda o : (
+                indent_str := (' ' * o.depth * indent),
+                alias_str := (' = .' + o.alias if (isinstance(o.alias, str)) else ''),
+                (
+                    indent_str + "Symbol " + o.content + alias_str
+                )
+            )[-1]
+        ))
+        for prod in prods
+    ]
     return '\n'.join(strs)
+
+
+def concretize(schema_node_map : dict[str, schema.Node], prods : list[production]) -> str:
+
+    prod_iter = iter(prods)
+
+    def concretize_children(parent : Node, children : list[schema.Child]) -> str:
+        if children:
+            child = children[-1]
+            s = concretize_prods()
+            follower = match_line_format(child.line_form, LineFormatHandlers[str](
+                case_InLine = lambda _ : "",
+                case_NewLine = lambda _ : "\n" + "    " * parent.indent_width,
+                case_IndentLine = lambda _ : "\n" + "    " * parent.indent_width
+            )) + child.follower
+            suffix = concretize_children(parent, children[:-1])
+            return s + follower + suffix
+        else:
+            return ""
+
+    def concretize_prods() -> str:
+        prod = next(prod_iter)
+        if (prod):
+            return match_production(prod, ProductionHandlers[str](
+                case_Node = lambda o : (
+                    schema_node := schema_node_map[o.rhs],
+                    prefix := "" if o.inline else "\n" + "    " * o.indent_width,
+                    prefix + schema_node.leader + concretize_children(o, schema_node.children[::-1])
+                )[-1],
+                case_Symbol= lambda o : (
+                    o.content
+                )
+            ))
+        else:
+            return ""
+
+    return concretize_prods()
+
+
+
+

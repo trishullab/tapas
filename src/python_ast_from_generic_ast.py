@@ -10,7 +10,6 @@ from abc import ABC, abstractmethod
 from generic_tree import GenericNode
 
 from gen.python_ast import *
-from python_ast_serialize import serialize_constraint
 
 from utils import fail
 import utils
@@ -18,7 +17,274 @@ import utils
 
 
 def unsupported(node : GenericNode):
-        fail(f"unsupported syntax for {node.syntax_part}")
+    fail(f"unsupported syntax for {node.syntax_part}")
+
+
+def to_bases(bases : list[expr], keywords : list[keyword]) -> bases:
+    if not bases and not keywords:
+        return NoBases()
+    else:
+        return SomeBases(to_sequence_base(bases, keywords))
+
+
+def to_sequence_base(bases : list[expr], keywords : list[keyword]):
+
+    assert bases or keywords
+
+    (result, bases) = (
+
+        (KeywordsBase(to_keywords(keywords)), bases)
+        if keywords else
+
+        (SingleBase(bases[-1]), bases[:-1])
+
+    )
+
+    for b in bases[::-1]:
+        result = ConsBase(b, result)
+
+    return result
+
+
+
+def to_parameters(
+    pos_params : list[Param], 
+    params : list[Param], 
+    list_splat_param : Optional[Param], 
+    kw_params : list[Param], 
+    dictionary_splat_param : Optional[Param]
+) -> parameters:
+
+    if not (
+        pos_params or params or list_splat_param or kw_params or dictionary_splat_param
+    ):
+        return NoParam()
+    elif pos_params:
+        return ParamsA(to_parameters_a(
+            pos_params, params, list_splat_param, kw_params, dictionary_splat_param
+        ))
+    else:
+        return ParamsB(to_parameters_b(
+            params, list_splat_param, kw_params, dictionary_splat_param
+        ))
+
+
+def to_parameters_d(
+    kw_params : list[Param], 
+    dictionary_splat_param : Optional[Param]
+) -> parameters_d:
+    assert kw_params or dictionary_splat_param
+    (result, kw_params) = (
+        (DictionarySplatParam(dictionary_splat_param), kw_params)
+        if dictionary_splat_param else
+
+        (SingleKwParam(kw_params[-1]), kw_params[:-1])
+    )
+
+    for p in kw_params[::-1]:
+        result = ConsKwParam(p, result)
+
+    return result
+
+
+def to_parameters_c(
+    list_splat_param : Optional[Param], 
+    kw_params : list[Param], 
+    dictionary_splat_param : Optional[Param]
+) -> parameters_c:
+    if (list_splat_param and (kw_params or dictionary_splat_param)):
+        return TransListSplatParam(list_splat_param, 
+            to_parameters_d(kw_params, dictionary_splat_param)
+        )
+    elif (list_splat_param and not (kw_params or dictionary_splat_param)):
+        return SingleListSplatParam(list_splat_param)
+    else:
+        return ParamsD(to_parameters_d(kw_params, dictionary_splat_param))
+
+
+def to_parameters_b(
+    params : list[Param], 
+    list_splat_param : Optional[Param], 
+    kw_params : list[Param], 
+    dictionary_splat_param : Optional[Param]
+) -> parameters_b:
+
+    (result, params) = (
+        (
+            ParamsC( 
+                to_parameters_c(list_splat_param, kw_params, dictionary_splat_param)
+            ), 
+            params
+        )
+        if (list_splat_param or kw_params or dictionary_splat_param) else
+
+        (SingleParam(params[-1]), params[:-1])
+    )
+
+    for p in params[:-1]:
+        result = ConsParam(p, result)
+
+    return result
+
+
+def to_parameters_a(
+    pos_params : list[Param], 
+    params : list[Param], 
+    list_splat_param : Optional[Param], 
+    kw_params : list[Param], 
+    dictionary_splat_param : Optional[Param]
+) -> parameters_a:
+    assert pos_params
+
+    result = (
+
+        TransPosParam(pos_params[-1], 
+            to_parameters_b(params, list_splat_param, kw_params, dictionary_splat_param)
+        )
+        if (params or list_splat_param or kw_params or dictionary_splat_param) else
+
+        SinglePosParam(pos_params[-1])
+    )
+
+    for pp in reversed(pos_params[:-1]):
+        result = ConsPosParam(pp, result)
+
+    return result
+
+
+
+def to_comparisons(crs : list[CompareRight]) -> comparisons:
+    assert crs 
+
+    result = SingleCompareRight(crs[-1])
+    for cr in reversed(crs[:-1]):
+        result = ConsCompareRight(cr, result)
+
+    return result
+
+def to_dictionary_contents(fs : list[Field]) -> dictionary_contents:
+    assert fs 
+
+    result = SingleField(fs[-1])
+    for f in reversed(fs[:-1]):
+        result = ConsField(f, result)
+
+    return result
+
+def to_comprehension_constraints(cs : list[constraint]) -> comprehension_constraints:
+    assert cs 
+
+    result = SingleConstraint(cs[-1])
+    for c in reversed(cs[:-1]):
+        result = ConsConstraint(c, result)
+
+    return result
+
+def to_statements(stmts : list[stmt]) -> statements:
+    assert stmts
+
+    result = SingleStmt(stmts[-1])
+    for stmt in reversed(stmts[:-1]):
+        result = ConsStmt(stmt, result)
+
+    return result
+
+def to_sequence_ImportName(ns : list[ImportName]) -> sequence_ImportName:
+    assert ns 
+
+    result = SingleImportName(ns[-1])
+    for n in reversed(ns[:-1]):
+        result = ConsImportName(n, result)
+
+    return result
+
+def to_sequence_Identifier(ids : list[Identifier]) -> sequence_Identifier:
+    assert ids 
+
+    result = SingleId(ids[-1])
+    for id in reversed(ids[:-1]):
+        result = ConsId(id, result)
+
+    return result
+
+def to_sequence_ExceptHandler(es : list[ExceptHandler]) -> sequence_ExceptHandler:
+    assert es 
+
+    result = SingleExceptHandler(es[-1])
+    for e in reversed(es[:-1]):
+        result = ConsExceptHandler(e, result)
+
+    return result
+
+
+def to_sequence_Withitem(ws : list[Withitem]) -> sequence_Withitem:
+    assert ws 
+
+    result = SingleWithitem(ws[-1])
+    for w in reversed(ws[:-1]):
+        result = ConsWithitem(w, result)
+
+    return result
+
+
+def to_decorators(ds : list[expr]) -> decorators:
+
+    result = NoDec()
+    for d in reversed(ds):
+        result = ConsDec(d, result)
+
+    return result 
+
+
+def to_comma_exprs(es : list[expr]) -> comma_exprs:
+    assert es 
+
+    result = SingleExpr(es[-1])
+    for e in reversed(es[:-1]):
+        result = ConsExpr(e, result)
+
+    return result
+
+def to_constraint_filters(es : list[expr]) -> constraint_filters:
+    assert es 
+
+    result = SingleFilter(es[-1])
+    for e in reversed(es[:-1]):
+        result = ConsFilter(e, result)
+
+    return result
+
+def to_sequence_str(ss : list[str]) -> sequence_str:
+    assert ss  
+
+    result = SingleStr(ss[-1])
+    for s in reversed(ss[:-1]):
+        result = ConsStr(s, result)
+
+    return result
+
+def to_keywords(ks : list[keyword]) -> keywords:
+    assert ks  
+
+    result = SingleKeyword(ks[-1])
+    for k in reversed(ks[:-1]):
+        result = ConsKeyword(k, result)
+
+    return result
+
+def to_arguments(ps : list[expr], ks : list[keyword]) -> arguments:
+
+    (result, ps) = (
+        (KeywordsArg(to_keywords(ks)), ps)
+        if ks else
+
+        (SingleArg(ps[-1]), ps[:-1])
+    )
+
+    for p in ps[::-1]:
+        result = ConsArg(p, result)
+
+    return result
 
 def from_generic_ast(node : GenericNode) -> Module: 
     children = node.children
@@ -28,7 +294,7 @@ def from_generic_ast(node : GenericNode) -> Module:
             for stmt_node in children  
             for stmt in from_generic_ast_to_stmts(stmt_node)
         ]
-        return Module(statements)
+        return Module(to_statements(statements))
     else:
        unsupported(node) 
 
@@ -49,7 +315,7 @@ def from_generic_ast_to_Identifier(node : GenericNode) -> Identifier:
        unsupported(node) 
 
 
-def from_generic_ast_to_Alias(node : GenericNode, alias : Optional[str] = None) -> Alias:
+def from_generic_ast_to_ImportName(node : GenericNode, alias : Optional[str] = None) -> ImportName:
     
     if (node.syntax_part == "dotted_name"):
         dotted_name = ".".join([
@@ -57,15 +323,23 @@ def from_generic_ast_to_Alias(node : GenericNode, alias : Optional[str] = None) 
             for child in node.children
             if child.syntax_part == "identifier"
         ])
-        return Alias(
+        return ImportName(
             Identifier(dotted_name),
-            utils.map_option(Identifier, alias) 
+            (
+                SomeAlias(Identifier(alias)) 
+                if alias else 
+                NoAlias()
+            )
         )
     elif (node.syntax_part == "identifier"):
         text = node.text
-        return Alias(
+        return ImportName(
             Identifier(text),
-            utils.map_option(Identifier, alias) 
+            (
+                SomeAlias(Identifier(alias)) 
+                if alias else 
+                NoAlias()
+            )
         )
     elif (node.syntax_part == "aliased_import"):
         children = node.children
@@ -73,7 +347,7 @@ def from_generic_ast_to_Alias(node : GenericNode, alias : Optional[str] = None) 
         assert children[1].syntax_part == "as"
         asname_node = children[2]
         asname_text = asname_node.text
-        return from_generic_ast_to_Alias(name_node, asname_text)
+        return from_generic_ast_to_ImportName(name_node, asname_text)
     else:
         unsupported(node)
 
@@ -216,7 +490,17 @@ def from_generic_ast_to_ExceptHandler(node) -> ExceptHandler:
         for stmt in from_generic_ast_to_stmts(stmt_node)
     ]
 
-    return  ExceptHandler(expr, name, stmts)
+    arg  = (
+        SomeExceptArgName(expr, name)
+        if expr and name else
+
+        SomeExceptArg(expr)
+        if expr else
+
+        NoExceptArg()
+    )
+
+    return  ExceptHandler(arg, to_statements(stmts))
 
 
 def from_generic_ast_to_Withitem(node) -> Withitem:
@@ -232,7 +516,14 @@ def from_generic_ast_to_Withitem(node) -> Withitem:
 
     context_expr = from_generic_ast_to_expr(context_node)
     pattern_expr = utils.map_option(from_generic_ast_to_expr, pattern_node)
-    return Withitem(context_expr, pattern_expr)
+
+    target = (
+        SomeAliasExpr(pattern_expr)
+        if pattern_expr else
+
+        NoAliasExpr()
+    )
+    return Withitem(context_expr, target)
 
 
 def from_nodes_to_constraint(nodes : list[GenericNode]) -> constraint:
@@ -268,9 +559,9 @@ def from_nodes_to_constraint(nodes : list[GenericNode]) -> constraint:
         for _ in [assert_if_node(n)]
     ]
     if is_async:
-        return AsyncConstraint(target_expr, iter_expr, if_exprs)
+        return AsyncConstraint(target_expr, iter_expr, to_constraint_filters(if_exprs))
     else:
-        return Constraint(target_expr, iter_expr, if_exprs)
+        return Constraint(target_expr, iter_expr, to_constraint_filters(if_exprs))
 
 
 def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint]:
@@ -330,7 +621,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
         return Name(from_generic_ast_to_Identifier(node))
 
     elif (node.syntax_part == "string"):
-        return String(node.text)
+        return ConcatString(SingleStr(node.text))
 
     elif node.syntax_part == "concatenated_string":
         children = node.children
@@ -339,7 +630,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in children
         ]
 
-        return ConcatString(str_values)
+        return ConcatString(to_sequence_str(str_values))
 
     elif (node.syntax_part == "integer"):
         return Integer(node.text)
@@ -406,11 +697,15 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
         ]
 
         keywords = [
-            from_generic_ast_to_Keyword(n)
+            from_generic_ast_to_keyword(n)
             for n in kw_nodes
         ]
 
-        return Call(func, pos_args, keywords)
+        if pos_args or keywords: 
+            seq_arg = to_arguments(pos_args, keywords)
+            return CallArgs(func, seq_arg)
+        else:
+            return Call(func)
 
     elif (node.syntax_part == "list"):
         items = [
@@ -418,7 +713,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for child in node.children[1:-1]
             if child.syntax_part != ","
         ]
-        return List(items)
+        return List(to_comma_exprs(items))
 
     elif (node.syntax_part == "list_comprehension"):
         children = node.children[1:-1]
@@ -426,13 +721,9 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
 
         constraint_nodes = children[1:]
 
-        print(f"nodes length: {len(constraint_nodes)}")
-
-
         constraints = collapse_constraint_nodes(constraint_nodes)
-        print(f"constraints length: {len(constraints)}")
 
-        return ListComp(expr, constraints)
+        return ListComp(expr, to_comprehension_constraints(constraints))
 
     elif (node.syntax_part == "dictionary"):
         children = [
@@ -444,8 +735,8 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
         def assert_colon(pair): 
             assert pair[1].syntax_part == ":"
 
-        entries = [
-            Entry(k, v)
+        fields = [
+            Field(k, v)
             for pair_node in children
             for pair in [pair_node.children]
             for k in [from_generic_ast_to_expr(pair[0])]
@@ -453,7 +744,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for v in [from_generic_ast_to_expr(pair[2])]
         ]
 
-        return Dict(entries)
+        return Dictionary(to_dictionary_contents(fields))
 
     elif node.syntax_part == "dictionary_comprehension":
         children = node.children[1:-1]
@@ -465,7 +756,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
 
-        return DictComp(key, value, constraints)
+        return DictionaryComp(key, value, to_comprehension_constraints(constraints))
 
     elif (node.syntax_part == "set"):
         
@@ -474,7 +765,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in node.children[1:-1]
             if n.syntax_part != ","
         ]
-        return Set(items)
+        return Set(to_comma_exprs(items))
 
     elif (node.syntax_part == "set_comprehension"):
         children = node.children[1:-1]
@@ -482,7 +773,8 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
 
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
-        return SetComp(expr, constraints)
+        return SetComp(expr, to_comprehension_constraints(constraints))
+
 
     elif (node.syntax_part == "generator_expression"):
         children = node.children[1:-1]
@@ -490,7 +782,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
 
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
-        return GeneratorExp(expr, constraints)
+        return GeneratorExp(expr, to_comprehension_constraints(constraints))
 
     elif (node.syntax_part == "tuple"):
         items = [
@@ -498,7 +790,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in node.children[1:-1]
             if n.syntax_part != ","
         ]
-        return Tuple(items)
+        return Tuple(to_comma_exprs(items))
 
     elif (node.syntax_part == "expression_list"):
         items = [
@@ -506,7 +798,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in node.children
             if n.syntax_part != ","
         ]
-        return Tuple(items)
+        return Tuple(to_comma_exprs(items))
 
     
     elif (node.syntax_part == "parenthesized_expression"):
@@ -529,7 +821,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in node.children[1:-1]
             if n.syntax_part != ","
         ]
-        return Tuple(items)
+        return Tuple(to_comma_exprs(items))
 
     elif (node.syntax_part == "list_pattern"):
         items = [
@@ -537,7 +829,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in node.children[1:-1]
             if n.syntax_part != ","
         ]
-        return List(items)
+        return List(to_comma_exprs(items))
 
     elif (node.syntax_part == "pattern_list"):
         items = [
@@ -545,7 +837,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in node.children
             if n.syntax_part != ","
         ]
-        return Tuple(items)
+        return Tuple(to_comma_exprs(items))
 
     elif (node.syntax_part == "yield"):
 
@@ -567,7 +859,12 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
     elif node.syntax_part == "comparison_operator":
         left = from_generic_ast_to_expr(node.children[0])
         (ops, rands) = split_ops_and_rands([n for n in reversed(node.children[1:])])
-        return Compare(left, ops, rands)
+        assert len(ops) == len(rands)
+        comp_rights = [
+            CompareRight(ops[i], rands[i])
+            for i, _ in enumerate(ops)
+        ]
+        return Compare(left, to_comparisons(comp_rights))
 
     elif (node.syntax_part == "not_operator"):
         children = node.children
@@ -591,10 +888,10 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
 
     elif node.syntax_part == "lambda":
         assert node.children[0].syntax_part == "lambda"
-        param_group = from_generic_ast_to_ParamGroup(node.children[1])
+        params = from_generic_ast_to_parameters(node.children[1])
         assert node.children[2].syntax_part == ":"
         body = from_generic_ast_to_expr(node.children[3])
-        return Lambda(param_group, body)
+        return Lambda(params, body)
 
     elif node.syntax_part == "conditional_expression":
         children = node.children
@@ -656,9 +953,24 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             (None, None, None)
 
         )
-        left = utils.map_option(from_generic_ast_to_expr, left_node)
-        right = utils.map_option(from_generic_ast_to_expr, right_node)
-        step = utils.map_option(from_generic_ast_to_expr, step_node)
+        left = (
+            SomeExpr(from_generic_ast_to_expr(left_node))
+            if left_node else
+
+            NoExpr()
+        )
+        right = (
+            SomeExpr(from_generic_ast_to_expr(right_node))
+            if right_node else
+
+            NoExpr()
+        )
+        step = (
+            SomeExpr(from_generic_ast_to_expr(step_node))
+            if step_node else
+
+            NoExpr()
+        )
 
         return Slice(left, right, step)
 
@@ -668,17 +980,23 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
 
 
 
-def from_generic_ast_to_Keyword(node) -> Keyword:
+def from_generic_ast_to_keyword(node) -> keyword:
     assert node.syntax_part == "keyword_argument"
     children = node.children
-    key_node = children[0]
-    assert children[1].syntax_part == "="
-    value_node = children[2]
 
-    key_id = utils.map_option(from_generic_ast_to_Identifier, key_node)
-    value_expr = from_generic_ast_to_expr(value_node)
+    if (len(children) == 3):
+        key_node = children[0]
+        assert children[1].syntax_part == "="
+        value_node = children[2]
 
-    return Keyword(key_id, value_expr)
+        key_id = from_generic_ast_to_Identifier(key_node)
+        value_expr = from_generic_ast_to_expr(value_node)
+        return NamedKeyword(key_id, value_expr)
+
+    else:
+        assert len(children) == 1
+        value_expr = from_generic_ast_to_expr(children[0])
+        return SplatKeyword(value_expr)
 
 
 
@@ -686,7 +1004,7 @@ def from_generic_ast_to_Param(node : GenericNode) -> Param:
 
     if node.syntax_part == "identifier":
         id = from_generic_ast_to_Identifier(node)
-        return Param(id, None, None)
+        return Param(id, NoParamType(), NoParamDefault())
 
     elif node.syntax_part == "typed_parameter":
 
@@ -708,13 +1026,13 @@ def from_generic_ast_to_Param(node : GenericNode) -> Param:
         id = from_generic_ast_to_Identifier(id_node)
         assert node.children[1].syntax_part == ":"
         type_anno = from_generic_ast_to_expr(node.children[2])
-        return Param(id, type_anno, None)
+        return Param(id, SomeParamType(type_anno), NoParamDefault())
 
     elif node.syntax_part == "default_parameter":
         id = from_generic_ast_to_Identifier(node.children[0])
         assert node.children[1].syntax_part == "="
         default_expr = from_generic_ast_to_expr(node.children[2])
-        return Param(id, None, default_expr)
+        return Param(id, NoParamType(), SomeParamDefault(default_expr))
 
     elif node.syntax_part == "typed_default_parameter":
         id = from_generic_ast_to_Identifier(node.children[0])
@@ -722,23 +1040,23 @@ def from_generic_ast_to_Param(node : GenericNode) -> Param:
         type_anno = from_generic_ast_to_expr(node.children[2])
         assert node.children[3].syntax_part == "="
         default_expr = from_generic_ast_to_expr(node.children[4])
-        return Param(id, type_anno, default_expr)
+        return Param(id, SomeParamType(type_anno), SomeParamDefault(default_expr))
 
     elif node.syntax_part == "list_splat_pattern":
         assert node.children[0].syntax_part == "*"
         id = from_generic_ast_to_Identifier(node.children[1])
-        return Param(id, None, None)
+        return Param(id, NoParamType(), NoParamDefault())
 
     elif node.syntax_part == "dictionary_splat_pattern":
         assert node.children[0].syntax_part == "**"
         id = from_generic_ast_to_Identifier(node.children[1])
-        return Param(id, None, None)
+        return Param(id, NoParamType(), NoParamDefault())
 
     else:
         unsupported(node)
 
 
-def from_generic_ast_to_ParamGroup(node : GenericNode) -> ParamGroup:
+def from_generic_ast_to_parameters(node : GenericNode) -> parameters:
     if node.syntax_part == "parameters" or node.syntax_part == "lambda_parameters":
 
         children = [
@@ -851,67 +1169,72 @@ def from_generic_ast_to_ParamGroup(node : GenericNode) -> ParamGroup:
         dictionary_splat_param = utils.map_option(from_generic_ast_to_Param, dictionary_splat_node)
 
 
-        return ParamGroup(pos_params, params, list_splat_param, kw_params, dictionary_splat_param)
+        return to_parameters(pos_params, params, list_splat_param, kw_params, dictionary_splat_param)
+
 
     else:
         unsupported(node)
 
 
 
-def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) -> list[stmt]: 
+def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDec()) -> list[stmt]: 
 
     if (node.syntax_part == "import_statement"):
         children = node.children
         assert children[0].syntax_part == "import"
         return [Import(
-            names = [
-                from_generic_ast_to_Alias(child)
+            names = to_sequence_ImportName([
+                from_generic_ast_to_ImportName(child)
                 for child in children[1:]
                 if child.syntax_part != ","
-            ]
+            ])
         )]
 
     elif (node.syntax_part == "import_from_statement"):
         children = node.children
         assert children[0].syntax_part == "from"
-        module = from_generic_ast_to_Identifier(children[1])
-        assert children[2].syntax_part == "import"
-        aliases = (
-            []
-            if len(children) == 4 and
-            children[3].syntax_part == "wildcard_import"
+        module = (
+            NoModuleId()
+            if children[1].syntax_part == "." else
 
-            else
-            [
-                from_generic_ast_to_Alias(n) 
+            SomeModuleId(from_generic_ast_to_Identifier(children[1]))
+        )
+
+        assert children[2].syntax_part == "import"
+        if len(children) == 4 and children[3].syntax_part == "wildcard_import":
+            return [ImportWildCard(module)]
+
+        else:
+            aliases = to_sequence_ImportName([
+                from_generic_ast_to_ImportName(n) 
                 for n in children[3:]
                 if n.syntax_part != ","
-            ]
-        )
-        return [ImportFrom(module, aliases, None)]
+            ])
+            return [ImportFrom(module, aliases)]
 
     elif (node.syntax_part == "future_import_statement"):
         children = node.children
         assert children[0].syntax_part == "from"
-        id = Identifier("__future__") 
+        id = SomeModuleId(Identifier("__future__"))
         assert children[2].syntax_part == "import"
-        aliases = [
-            from_generic_ast_to_Alias(n) 
+        names = to_sequence_ImportName([
+            from_generic_ast_to_ImportName(n) 
             for n in children[3:]
             if n.syntax_part != ","
-        ]
-        return [ImportFrom(id, aliases, None)]
+        ])
+        return [ImportFrom(id, names)]
 
     elif (node.syntax_part == "assert_statement"):
         children = node.children
         assert children[0].syntax_part == "assert"
         test_expr = from_generic_ast_to_expr(children[1])
-        msg_expr = (from_generic_ast_to_expr(children[2])
-            if len(children) == 2 else None)
 
-        return [
-            Assert(test_expr, msg_expr)
-        ]
+        if len(children) == 2:
+            msg = from_generic_ast_to_expr(children[2])
+            return [ AssertMsg(test_expr, msg) ]
+        else:
+            return [ Assert(test_expr) ]
+
 
     elif (node.syntax_part == "expression_statement"):
         children = node.children
@@ -951,24 +1274,29 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
                     left_expr = from_generic_ast_to_expr(left)
                     typ_expr = from_generic_ast_to_expr(typ)
                     right_expr = utils.map_option(from_generic_ast_to_expr, right)
-                    return [
-                        AnnAssign(left_expr, typ_expr, right_expr)
-                    ]
+                    if right_expr:
+                        return [
+                            TypedAssign(left_expr, typ_expr, right_expr)
+                        ]
+                    else:
+                        return [
+                            TypedDeclare(left_expr, typ_expr)
+                        ]
                 elif right:
                     right_expr = from_generic_ast_to_expr(right)
 
                     if (left.syntax_part == "pattern_list"):
-                        left_exprs = [
+                        left_exprs = to_comma_exprs([
                             from_generic_ast_to_expr(left_child) 
                             for left_child in left.children
                             if left_child.syntax_part != ","
-                        ]
+                        ])
                         return [
                             Assign(left_exprs, right_expr)
                         ] 
 
                     else:
-                        left_exprs = [from_generic_ast_to_expr(left)]
+                        left_exprs = SingleExpr(from_generic_ast_to_expr(left))
                         return [
                             Assign(left_exprs, right_expr)
                         ] 
@@ -996,29 +1324,30 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
     elif (node.syntax_part == "return_statement"):
         children = node.children
         assert children[0].syntax_part == "return"
-        expr = (from_generic_ast_to_expr(children[1]) if len(children) == 2 else None)
+        if len(children) == 2:
+            expr = from_generic_ast_to_expr(children[1])
+            return [
+                ReturnSomething(expr)
+            ]
+        else:
+            return [Return()]
 
-        return [
-            Return(expr)
-        ]
+
+
 
     elif (node.syntax_part == "delete_statement"):
         assert node.children[0] == "del"
         child = node.children[1]
         if (child.syntax_part == "expression_list"):
-            exprs = [
+            exprs = to_comma_exprs([
                 from_generic_ast_to_expr(expr_node)
                 for expr_node in child.children
                 if expr_node.syntax_part != ","
-            ]
-            return [
-                Delete(exprs)
-            ]
+            ])
+            return [ Delete(exprs) ]
         else:
-            expr = from_generic_ast_to_expr(child)
-            return [
-                Delete([expr])
-            ]
+            exprs = SingleExpr(from_generic_ast_to_expr(child))
+            return [ Delete(exprs) ]
 
     elif (node.syntax_part == "raise_statement"):
         children = node.children
@@ -1037,9 +1366,13 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
 
         exc_expr = utils.map_option(from_generic_ast_to_expr, exc)
         cause_expr = utils.map_option(from_generic_ast_to_expr, cause)
-        return [
-            Raise(exc_expr, cause_expr)
-        ]
+        if (exc_expr and cause_expr):
+            return [ RaiseFrom(exc_expr, cause_expr) ]
+        elif (exc_expr):
+            return [ RaiseExc(exc_expr) ]
+        else:
+            return [ Raise() ]
+
 
     elif (node.syntax_part == "pass_statement"):
         return [
@@ -1059,11 +1392,11 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
     elif (node.syntax_part == "global_statement"):
         children = node.children
         assert children[0] == "global"
-        ids = [
+        ids = to_sequence_Identifier([
             from_generic_ast_to_Identifier(id_node)
             for id_node in children
             if id_node.syntax_part != ","
-        ]
+        ])
 
         return [
             Global(ids)
@@ -1072,11 +1405,11 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
     elif (node.syntax_part == "nonlocal_statement"):
         children = node.children
         assert children[0] == "nonlocal"
-        ids = [
+        ids = to_sequence_Identifier([
             from_generic_ast_to_Identifier(id_node)
             for id_node in children
             if id_node.syntax_part != ","
-        ]
+        ])
 
         return [
             Nonlocal(ids)
@@ -1089,48 +1422,57 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
         assert children[2] == ":"
         block_node = children[3]
 
-        def nest_elifs(cond_node, block_node, remainder):
-            def nest_elifs_(cond_node, block_node, remainder):
-                assert block_node.syntax_part == "block"
-                block_children = block_node.children
-                cond_expr = from_generic_ast_to_expr(cond_node)
-                block_stmts = [
+
+        def to_else_content(else_node : GenericNode) -> statements:
+            assert else_node.syntax_part == "else_clause"
+
+            else_children = else_node.children
+            assert else_children[0].syntax_part == "else"
+            assert else_children[1].syntax_part == ":"
+            block_node_ = else_children[2]
+            block_children = block_node_.children
+            return to_statements([
+                stmt 
+                for stmt_node in block_children
+                for stmt in from_generic_ast_to_stmts(stmt_node)
+            ])
+
+        import gen.python_ast
+        def to_elif_content(elif_node : GenericNode) -> tuple[gen.python_ast.expr, statements]:
+            assert (elif_node == "elif_clause")
+            else_children = elif_node.children
+            assert else_children[0].syntax_part == "elif"
+            cond_node = else_children[1]
+            assert else_children[2].syntax_part == ":"
+
+            block_node_ = else_children[3]
+            block_children = block_node_.children
+            return (
+                from_generic_ast_to_expr(cond_node),
+                to_statements([
                     stmt 
                     for stmt_node in block_children
                     for stmt in from_generic_ast_to_stmts(stmt_node)
-                ]
+                ])
+            )
 
-                if len(remainder) > 0:
-                    else_node = remainder[-1]
-                    if (else_node == "elif_clause"):
-                        else_children = else_node.children
-                        assert else_children[0].syntax_part == "elif"
-                        cond_node_ = else_children[1]
-                        assert else_children[2].syntax_part == ":"
-                        block_node_ = else_children[3]
-                        else_stmts = nest_elifs_(cond_node_, block_node_, remainder[:-1])
-                        return If(cond_expr, block_stmts, else_stmts)
+        (else_block, else_nodes) = (
 
-                    elif (else_node == "else_clause"):
-                        else_children = else_node.children
-                        assert else_children[0].syntax_part == "else"
-                        assert else_children[1].syntax_part == ":"
-                        block_node_ = else_children[2]
-                        block_children = block_node_.children
-                        else_stmts = [
-                            stmt 
-                            for stmt_node in block_children
-                            for stmt in from_generic_ast_to_stmts(stmt_node)
-                        ]
-                        return If(cond_expr, block_stmts, else_stmts)
-                    else:
-                        unsupported(else_node)
-                else:
-                    return If(cond_expr, block_stmts, [])
+            (ElseCond(SomeElseBlock(to_else_content(children[-1]))), children[3:-1])
+            if children[-1].syntax_part == "else_clause" else
 
-            return nest_elifs_(cond_node, block_node, [r for r in reversed(remainder)])
+            (ElseCond(NoElseBlock()), children[3:-1])
+        )
 
-        return [nest_elifs(cond_node, block_node, children[2:])]
+        for n in else_nodes[:-1]:
+            (e, sts) = to_elif_content(n)
+            else_block = ElifCond(e, sts, else_block)
+
+
+        cond = from_generic_ast_to_expr(cond_node)
+        block = to_statements(from_generic_ast_to_stmts(block_node))
+        return [If(cond, block, else_block)]
+
 
     elif(node.syntax_part == "for_statement"):
         children = node.children
@@ -1148,11 +1490,11 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
         iter_expr = from_generic_ast_to_expr(children[3])
         assert children[4].syntax_part == ":"
         block_node = children[5]
-        body_stmts = [
+        body_stmts = to_statements([
             stmt
             for stmt_node in block_node.children
             for stmt in from_generic_ast_to_stmts(stmt_node) 
-        ]
+        ])
 
         else_node = (
             children[6]
@@ -1173,11 +1515,11 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
 
         block_children = else_block.children if else_block else []
 
-        else_stmts = [
+        else_stmts = SomeElseBlock(to_statements([
             stmt
             for stmt_node in block_children
             for stmt in from_generic_ast_to_stmts(stmt_node) 
-        ]
+        ]))
 
         if is_async:
             return [
@@ -1197,11 +1539,11 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
         assert children[2].syntax_part == ":"
         block_node = children[3]
         assert block_node.syntax_part == "block"
-        body_stmts = [
+        body_stmts = to_statements([
             stmt
             for stmt_node in block_node.children 
             for stmt in from_generic_ast_to_stmts(stmt_node) 
-        ]
+        ])
 
         else_node = (
             children[4]
@@ -1223,11 +1565,16 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
 
         block_children = else_block.children if else_block else []
 
-        else_stmts = [
-            stmt
-            for stmt_node in block_children 
-            for stmt in from_generic_ast_to_stmts(stmt_node) 
-        ]
+        else_stmts = (
+            SomeElseBlock(to_statements([
+                stmt
+                for stmt_node in block_children 
+                for stmt in from_generic_ast_to_stmts(stmt_node) 
+            ]))
+            if else_block else
+
+            NoElseBlock()
+        )
 
         return [
             While(test_expr, body_stmts, else_stmts)
@@ -1238,11 +1585,11 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
         assert children[1] == ":"
         try_block = children[2]
         assert try_block.syntax_part == "block"
-        try_stmts = [
+        try_stmts = to_statements([
             stmt
             for stmt_node in try_block.children
             for stmt in from_generic_ast_to_stmts(stmt_node) 
-        ]
+        ])
 
         except_clause_nodes = [
             n
@@ -1250,10 +1597,10 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
             if n.syntax_part == "except_clause"
         ]
 
-        except_handlers = [
+        except_handlers = to_sequence_ExceptHandler([
             from_generic_ast_to_ExceptHandler(ec_node)
             for ec_node in except_clause_nodes
-        ]
+        ])
 
         else_clause_nodes = [
             n
@@ -1267,18 +1614,17 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
             assert else_clause_node.children[2].syntax_part == "block"
 
         else_stmts = (
-            []
-            if len(else_clause_nodes) == 0 
+            NoElseBlock() 
+            if len(else_clause_nodes) == 0 else
             
-            else
-            [
+            SomeElseBlock(to_statements([
                 stmt
                 for else_clause_node in [else_clause_nodes[0]]
                 for _ in [assert_else_clause(else_clause_node)]
                 for else_block_node in [else_clause_node.children[2]]
                 for stmt_node in else_block_node.children
                 for stmt in from_generic_ast_to_stmts(stmt_node)
-            ]
+            ]))
         )
 
         finally_clause_nodes = [
@@ -1293,18 +1639,17 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
             assert n.children[2].syntax_part == "block"
         
         finally_stmts = (
-            []
-            if len(finally_clause_nodes) == 0 
-            
-            else
-            [
+            NoFinal() 
+            if len(finally_clause_nodes) == 0 else
+
+            SomeFinal(to_statements([
                 stmt
                 for finally_clause_node in [finally_clause_nodes[0]] 
                 for _ in [assert_finally_clause(finally_clause_node)]
                 for block_node in [finally_clause_node.children[2]] 
                 for stmt_node in block_node.children
                 for stmt in from_generic_ast_to_stmts(stmt_node)
-            ]
+            ]))
         )
 
         return [
@@ -1323,17 +1668,17 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
 
         assert children[0].syntax_part == "with"
         with_clause_node = children[1]
-        with_items = [
+        with_items = to_sequence_Withitem([
             from_generic_ast_to_Withitem(item_node)
             for item_node in with_clause_node.children
-        ]
+        ])
 
         block_node = children[1]
-        stmts = [
+        stmts = to_statements([
             stmt
             for stmt_node in block_node.children
             for stmt in from_generic_ast_to_stmts(stmt_node)
-        ]
+        ])
 
         if is_async:
             return [
@@ -1358,7 +1703,7 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
         name = from_generic_ast_to_Identifier(name_node)
 
         params_node = children[2]
-        param_group = from_generic_ast_to_ParamGroup(params_node)
+        param_group = from_generic_ast_to_parameters(params_node)
 
         (return_type_node, block_node) = (
             (children[4], children[6])
@@ -1372,27 +1717,35 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
 
         assert block_node
 
-        return_type = utils.map_option(
-            lambda n : from_generic_ast_to_expr(n), 
-            return_type_node 
+        return_type = (
+            SomeReturnType(from_generic_ast_to_expr(return_type_node))
+            if return_type_node else
+
+            NoReturnType()
         )
 
-        body = [
+        body = to_statements([
             stmt
             for stmt_node in block_node.children
             for stmt in from_generic_ast_to_stmts(stmt_node)
-        ]
+        ])
 
 
 
         if is_async: 
             return [
-                AsyncFunctionDef(name, param_group, body, decorators, return_type)
+                DecAsyncFunctionDef(
+                    decorators,
+                    AsyncFunctionDef( name, param_group, return_type, body)
+                )
             ]
 
         else:
             return [
-                FunctionDef(name, param_group, body, decorators, return_type)
+                DecFunctionDef(
+                    decorators, 
+                    FunctionDef(name, param_group, return_type, body)
+                )
             ]
 
 
@@ -1431,18 +1784,23 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
         ]
 
         keywords = [
-            from_generic_ast_to_Keyword(n)
+            from_generic_ast_to_keyword(n)
             for n in kw_nodes
         ]
 
-        body_stmts = [
+        bases = to_bases(base_exprs, keywords)
+
+        body_stmts = to_statements([
             stmt
             for n in block_node.children
             for stmt in from_generic_ast_to_stmts(n)
-        ]
+        ])
 
         return [
-            ClassDef(name, base_exprs, keywords, body_stmts, decorators)
+            DecClassDef(
+                decorators,
+                ClassDef(name, bases, body_stmts)
+            )
         ]
 
     elif (node.syntax_part == "decorated_definition"):
@@ -1452,17 +1810,21 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : list[expr] = []) 
             assert dec_node.syntax_part == "decorator"
             assert dec_node.children[0].syntax_part == "@"
 
-        dec_exprs = [
+        dec_exprs = to_decorators([
             from_generic_ast_to_expr(dec_expr_node)
             for dec_node in dec_nodes
             for _ in [assert_decorator(dec_node)]
             for dec_expr_node in [dec_node.children[1]]
-        ] 
+        ])
 
         def_node = children[-1]
         return from_generic_ast_to_stmts(def_node, decorators = dec_exprs)
 
+    elif (node.syntax_part == "comment"):
+        return []
+
     else:
         # exec_statement for Python 2
         # print_statement for Python 2
+        print("syntax unsupported: " + node.syntax_part)
         unsupported(node)
