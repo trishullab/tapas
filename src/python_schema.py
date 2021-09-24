@@ -1061,6 +1061,12 @@ unions : dict[str, list[Node]] = {
         ),
 
         Node(
+            "EmptyDictionary",
+            "{}",
+            []
+        ),
+
+        Node(
             "Set",
             "{",
             [
@@ -1252,6 +1258,12 @@ unions : dict[str, list[Node]] = {
             [
                 Child("contents", "comma_exprs", InLine(), "]"),
             ]
+        ),
+
+        Node(
+            "EmptyList",
+            "[]",
+            []
         ),
 
         Node(

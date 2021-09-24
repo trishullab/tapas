@@ -49,7 +49,6 @@ def test_filename(fname):
     import os
     import pathlib
 
-
     logging.basicConfig(level=logging.INFO)
     base_path = pathlib.Path(__file__).parent.absolute()
     dirpath = os.path.join(base_path, "../res/python")

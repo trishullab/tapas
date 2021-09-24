@@ -2410,6 +2410,17 @@ def serialize_expr(
             ) + 
             []
         ),
+        case_EmptyDictionary = lambda o : (
+            [pro.make_Node(
+                lhs = 'expr',
+                rhs = 'EmptyDictionary',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            []
+        ),
         case_Set = lambda o : (
             [pro.make_Node(
                 lhs = 'expr',
@@ -2778,6 +2789,17 @@ def serialize_expr(
                 pro.next_indent_width(indent_width, InLine()),
                 True,
             ) + 
+            []
+        ),
+        case_EmptyList = lambda o : (
+            [pro.make_Node(
+                lhs = 'expr',
+                rhs = 'EmptyList',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
             []
         ),
         case_Tuple = lambda o : (

@@ -713,7 +713,10 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for child in node.children[1:-1]
             if child.syntax_part != ","
         ]
-        return List(to_comma_exprs(items))
+        if items:
+            return List(to_comma_exprs(items))
+        else:
+            return EmptyList()
 
     elif (node.syntax_part == "list_comprehension"):
         children = node.children[1:-1]
@@ -744,7 +747,10 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for v in [from_generic_ast_to_expr(pair[2])]
         ]
 
-        return Dictionary(to_dictionary_contents(fields))
+        if fields:
+            return Dictionary(to_dictionary_contents(fields))
+        else:
+            return EmptyDictionary()
 
     elif node.syntax_part == "dictionary_comprehension":
         children = node.children[1:-1]

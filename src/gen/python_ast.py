@@ -2833,6 +2833,19 @@ def make_Dictionary(
 
 
 @dataclass
+class EmptyDictionary(expr):
+
+    def _match(self, handlers : ExprHandlers[T]) -> T:
+        return handlers.case_EmptyDictionary(self)
+
+
+def make_EmptyDictionary(
+) -> expr:
+    return EmptyDictionary(
+    )
+
+
+@dataclass
 class Set(expr):
     contents : comma_exprs
 
@@ -3229,6 +3242,19 @@ def make_List(
 
 
 @dataclass
+class EmptyList(expr):
+
+    def _match(self, handlers : ExprHandlers[T]) -> T:
+        return handlers.case_EmptyList(self)
+
+
+def make_EmptyList(
+) -> expr:
+    return EmptyList(
+    )
+
+
+@dataclass
 class Tuple(expr):
     contents : comma_exprs
 
@@ -3276,6 +3302,7 @@ class ExprHandlers(Generic[T]):
     case_Lambda : Callable[[Lambda], T]
     case_IfExp : Callable[[IfExp], T]
     case_Dictionary : Callable[[Dictionary], T]
+    case_EmptyDictionary : Callable[[EmptyDictionary], T]
     case_Set : Callable[[Set], T]
     case_ListComp : Callable[[ListComp], T]
     case_SetComp : Callable[[SetComp], T]
@@ -3300,6 +3327,7 @@ class ExprHandlers(Generic[T]):
     case_Starred : Callable[[Starred], T]
     case_Name : Callable[[Name], T]
     case_List : Callable[[List], T]
+    case_EmptyList : Callable[[EmptyList], T]
     case_Tuple : Callable[[Tuple], T]
     case_Slice : Callable[[Slice], T]
 
