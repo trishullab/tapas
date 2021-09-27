@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Iterator
 
 from gen.line_format import * 
-from gen.production import *
+from gen.generic_instance import *
 
 def to_string(line_form : line_format) -> str:
     return match_line_format(line_form, LineFormatHandlers[str](

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Iterator
 
 from gen.line_format import line_format, LineFormatHandlers, match_line_format
-from gen.production import *
+from gen.generic_instance import *
 from lib import schema
 
 def next_indent_width(prev_iw : int, line_form : line_format) -> int:
@@ -12,9 +12,9 @@ def next_indent_width(prev_iw : int, line_form : line_format) -> int:
         case_IndentLine = lambda _ : prev_iw + 1 
     ))
 
-def dump(schema_node_map : dict[str, schema.Node], prods : list[production], indent : int = 4):
+def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], indent : int = 4):
     strs = [
-        match_production(prod, ProductionHandlers[str](
+        match_instance(instance, InstanceHandlers[str](
             case_Node = lambda o : (
                 node := schema_node_map[o.rhs],
                 indent_str := (' ' * o.depth * indent),
@@ -32,20 +32,19 @@ def dump(schema_node_map : dict[str, schema.Node], prods : list[production], ind
                 )
             )[-1]
         ))
-        for prod in prods
+        for instance in instances 
     ]
     return '\n'.join(strs)
 
 
-# TODO: rename production to production_instance
-def concretize(schema_node_map : dict[str, schema.Node], prods : list[production]) -> str:
+def concretize(schema_node_map : dict[str, schema.Node], instances : list[instance]) -> str:
 
-    prod_iter = iter(prods)
+    instance_iter = iter(instances)
 
     def concretize_children(parent : Node, children : list[schema.Child]) -> str:
         if children:
             child = children[-1]
-            s = concretize_prods()
+            s = concretize_instances()
             follower = match_line_format(child.line_form, LineFormatHandlers[str](
                 case_InLine = lambda _ : "",
                 case_NewLine = lambda _ : "\n" + "    " * parent.indent_width,
@@ -56,10 +55,10 @@ def concretize(schema_node_map : dict[str, schema.Node], prods : list[production
         else:
             return ""
 
-    def concretize_prods() -> str:
-        prod = next(prod_iter)
-        if (prod):
-            return match_production(prod, ProductionHandlers[str](
+    def concretize_instances() -> str:
+        instance = next(instance_iter)
+        if (instance):
+            return match_instance(instance, InstanceHandlers[str](
                 case_Node = lambda o : (
                     schema_node := schema_node_map[o.rhs],
                     prefix := "" if o.inline else "\n" + "    " * o.indent_width,
@@ -72,7 +71,7 @@ def concretize(schema_node_map : dict[str, schema.Node], prods : list[production
         else:
             return ""
 
-    return concretize_prods()
+    return concretize_instances()
 
 
 

@@ -6,7 +6,7 @@ from lib.def_type import Constructor, Field
 from lib import def_type
 
 
-type_name = "production"
+type_name = "instance"
 constructors = [
     Constructor(
         "Node",
@@ -39,7 +39,7 @@ type_code = (
 )
 
 
-write("production", type_code)
+write("generic_instance", type_code)
 
 
 

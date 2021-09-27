@@ -11,17 +11,17 @@ T = TypeVar('T')
 
 
 
-# type production
+# type instance
 @dataclass
-class production(ABC):
+class instance(ABC):
     @abstractmethod
-    def _match(self, handlers : ProductionHandlers[T]) -> T: pass
+    def _match(self, handlers : InstanceHandlers[T]) -> T: pass
 
 
-# constructors for type production
+# constructors for type instance
 
 @dataclass
-class Node(production):
+class Node(instance):
     lhs : str
     rhs : str
     depth : int
@@ -29,7 +29,7 @@ class Node(production):
     indent_width : int
     inline : bool
 
-    def _match(self, handlers : ProductionHandlers[T]) -> T:
+    def _match(self, handlers : InstanceHandlers[T]) -> T:
         return handlers.case_Node(self)
 
 
@@ -40,7 +40,7 @@ def make_Node(
     alias : str,
     indent_width : int,
     inline : bool
-) -> production:
+) -> instance:
     return Node(
         lhs,
         rhs,
@@ -52,12 +52,12 @@ def make_Node(
 
 
 @dataclass
-class Symbol(production):
+class Symbol(instance):
     content : str
     depth : int
     alias : str
 
-    def _match(self, handlers : ProductionHandlers[T]) -> T:
+    def _match(self, handlers : InstanceHandlers[T]) -> T:
         return handlers.case_Symbol(self)
 
 
@@ -65,7 +65,7 @@ def make_Symbol(
     content : str,
     depth : int,
     alias : str
-) -> production:
+) -> instance:
     return Symbol(
         content,
         depth,
@@ -73,13 +73,13 @@ def make_Symbol(
     )
 
 
-# case handlers for type production
+# case handlers for type instance
 @dataclass
-class ProductionHandlers(Generic[T]):
+class InstanceHandlers(Generic[T]):
     case_Node : Callable[[Node], T]
     case_Symbol : Callable[[Symbol], T]
 
 
-# matching for type production
-def match_production(o : production, handlers : ProductionHandlers[T]) -> T :
+# matching for type instance
+def match_instance(o : instance, handlers : InstanceHandlers[T]) -> T :
     return o._match(handlers)

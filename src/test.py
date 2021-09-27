@@ -8,8 +8,8 @@ from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
 from gen.python_ast_serialize import serialize_Module
-from lib import python_production
-from lib import production as pro
+from lib import python_instance
+from lib import generic_instance as inst 
 
     
 
@@ -34,15 +34,15 @@ def test_string(sourceCode):
 
     mod = from_generic_ast(generic_syntax_tree)
 
-    prod_list = serialize_Module(mod)
+    instance_list = serialize_Module(mod)
 
-    print(f"--Production List--\n")
-    for p in prod_list: print(p)
+    print(f"--Instance Sequence--\n")
+    for p in instance_list: print(p)
     print(f"\n")
 
-    print(f"--Production Tree--\n{python_production.dump(prod_list)}\n")
+    print(f"--Formatted Instance Sequence --\n{python_instance.dump(instance_list)}\n")
 
-    print(f"--Concretized--\n{python_production.concretize(prod_list)}\n")
+    print(f"--Concretized--\n{python_instance.concretize(instance_list)}\n")
 
 def test_filename(fname):
     import logging
