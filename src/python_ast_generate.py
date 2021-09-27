@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import def_type
-import def_serialize
+from lib import def_type
+from lib import def_serialize
 
-from file import write
+from lib.file import write
 
-import python_schema
-import schema
+from lib import python_schema
+from lib import schema
 
 
 type_code = (

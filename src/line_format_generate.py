@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from file import write
+from lib.file import write
 
-from def_type import Constructor, Field
-import def_type
+from lib.def_type import Constructor, Field
+from lib import def_type
 
 
 type_name = "line_format"

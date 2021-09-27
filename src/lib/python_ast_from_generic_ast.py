@@ -7,12 +7,11 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 
-from generic_tree import GenericNode
-
+from lib.generic_tree import GenericNode
 from gen.python_ast import *
 
-from utils import fail
-import utils
+from lib.utils import fail
+from lib import utils
 
 
 

@@ -5,10 +5,10 @@ from typing import TypeVar, Optional
 from collections.abc import Callable
 
 from abc import ABC, abstractmethod
-import def_type
 
 import inflection
 
+from lib import def_type
 from gen.line_format import line_format
 
 T = TypeVar('T')

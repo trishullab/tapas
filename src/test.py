@@ -4,12 +4,12 @@ import tree_sitter
 import ast
 import json
 
-import generic_tree
+from lib import generic_tree
 
-from python_ast_from_generic_ast import from_generic_ast
+from lib.python_ast_from_generic_ast import from_generic_ast
 from gen.python_ast_serialize import serialize_Module
-import python_production
-import production as pro
+from lib import python_production
+from lib import production as pro
 
     
 

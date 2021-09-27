@@ -1,10 +1,9 @@
 from __future__ import annotations
 from typing import Iterator
+
 from gen.line_format import line_format, LineFormatHandlers, match_line_format
-
 from gen.production import *
-
-import schema
+from lib import schema
 
 def next_indent_width(prev_iw : int, line_form : line_format) -> int:
     return match_line_format(line_form, LineFormatHandlers[int](
@@ -38,6 +37,7 @@ def dump(schema_node_map : dict[str, schema.Node], prods : list[production], ind
     return '\n'.join(strs)
 
 
+# TODO: rename production to production_instance
 def concretize(schema_node_map : dict[str, schema.Node], prods : list[production]) -> str:
 
     prod_iter = iter(prods)

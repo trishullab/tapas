@@ -1,5 +1,6 @@
 from __future__ import annotations
-from schema import Node, Child
+
+from lib.schema import Node, Child
 from gen.line_format import NewLine, InLine, IndentLine
 
 unions : dict[str, list[Node]] = {

@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import Iterator
 
 from gen.production import *
-import production as pro
+import lib.production as pro
 
-import python_schema
+from lib import python_schema
 
 def dump(prods : list[production]):
     return pro.dump(python_schema.node_map, prods)

@@ -1,7 +1,7 @@
 
 from __future__ import annotations
-from production import production, ProductionHandlers
-import production as pro
+from lib.production import production, ProductionHandlers
+from lib import production as pro
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 

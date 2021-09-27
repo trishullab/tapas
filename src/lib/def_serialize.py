@@ -5,18 +5,18 @@ from dataclasses import dataclass
 import inflection
 import jinja2
 
-import schema
+from lib import schema
+from lib import line_format
 
 jinja_env = jinja2.Environment(trim_blocks=True)
 # jinja_env.globals.update(isinstance=isinstance)
 
 
-import line_format
 
 header = """
 from __future__ import annotations
-from production import production, ProductionHandlers
-import production as pro
+from lib.production import production, ProductionHandlers
+from lib import production as pro
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 """
