@@ -83,6 +83,28 @@ class ClassDef:
     
 
 
+# type and constructor ElifBlock
+@dataclass
+class ElifBlock:
+    test : expr
+    body : statements
+    
+
+
+# type and constructor ElseBlock
+@dataclass
+class ElseBlock:
+    body : statements
+    
+
+
+# type and constructor FinallyBlock
+@dataclass
+class FinallyBlock:
+    body : statements
+    
+
+
 # type return_type
 @dataclass
 class return_type(ABC):
@@ -1212,6 +1234,62 @@ def match_comma_exprs(o : comma_exprs, handlers : CommaExprsHandlers[T]) -> T :
     return o._match(handlers)
 
 
+# type target_exprs
+@dataclass
+class target_exprs(ABC):
+    @abstractmethod
+    def _match(self, handlers : TargetExprsHandlers[T]) -> T: pass
+
+
+# constructors for type target_exprs
+
+@dataclass
+class ConsTargetExpr(target_exprs):
+    head : expr
+    tail : target_exprs
+
+    def _match(self, handlers : TargetExprsHandlers[T]) -> T:
+        return handlers.case_ConsTargetExpr(self)
+
+
+def make_ConsTargetExpr(
+    head : expr,
+    tail : target_exprs
+) -> target_exprs:
+    return ConsTargetExpr(
+        head,
+        tail
+    )
+
+
+@dataclass
+class SingleTargetExpr(target_exprs):
+    content : expr
+
+    def _match(self, handlers : TargetExprsHandlers[T]) -> T:
+        return handlers.case_SingleTargetExpr(self)
+
+
+def make_SingleTargetExpr(
+    content : expr
+) -> target_exprs:
+    return SingleTargetExpr(
+        content
+    )
+
+
+# case handlers for type target_exprs
+@dataclass
+class TargetExprsHandlers(Generic[T]):
+    case_ConsTargetExpr : Callable[[ConsTargetExpr], T]
+    case_SingleTargetExpr : Callable[[SingleTargetExpr], T]
+
+
+# matching for type target_exprs
+def match_target_exprs(o : target_exprs, handlers : TargetExprsHandlers[T]) -> T :
+    return o._match(handlers)
+
+
 # type decorators
 @dataclass
 class decorators(ABC):
@@ -1309,11 +1387,25 @@ def make_SingleFilter(
     )
 
 
+@dataclass
+class NoFilter(constraint_filters):
+
+    def _match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
+        return handlers.case_NoFilter(self)
+
+
+def make_NoFilter(
+) -> constraint_filters:
+    return NoFilter(
+    )
+
+
 # case handlers for type constraint_filters
 @dataclass
 class ConstraintFiltersHandlers(Generic[T]):
     case_ConsFilter : Callable[[ConsFilter], T]
     case_SingleFilter : Callable[[SingleFilter], T]
+    case_NoFilter : Callable[[NoFilter], T]
 
 
 # matching for type constraint_filters
@@ -1853,8 +1945,7 @@ class conditions(ABC):
 
 @dataclass
 class ElifCond(conditions):
-    test : expr
-    body : statements
+    content : ElifBlock
     tail : conditions
 
     def _match(self, handlers : ConditionsHandlers[T]) -> T:
@@ -1862,30 +1953,41 @@ class ElifCond(conditions):
 
 
 def make_ElifCond(
-    test : expr,
-    body : statements,
+    content : ElifBlock,
     tail : conditions
 ) -> conditions:
     return ElifCond(
-        test,
-        body,
+        content,
         tail
     )
 
 
 @dataclass
 class ElseCond(conditions):
-    content : else_block
+    content : ElseBlock
 
     def _match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElseCond(self)
 
 
 def make_ElseCond(
-    content : else_block
+    content : ElseBlock
 ) -> conditions:
     return ElseCond(
         content
+    )
+
+
+@dataclass
+class NoCond(conditions):
+
+    def _match(self, handlers : ConditionsHandlers[T]) -> T:
+        return handlers.case_NoCond(self)
+
+
+def make_NoCond(
+) -> conditions:
+    return NoCond(
     )
 
 
@@ -1894,110 +1996,11 @@ def make_ElseCond(
 class ConditionsHandlers(Generic[T]):
     case_ElifCond : Callable[[ElifCond], T]
     case_ElseCond : Callable[[ElseCond], T]
+    case_NoCond : Callable[[NoCond], T]
 
 
 # matching for type conditions
 def match_conditions(o : conditions, handlers : ConditionsHandlers[T]) -> T :
-    return o._match(handlers)
-
-
-# type else_block
-@dataclass
-class else_block(ABC):
-    @abstractmethod
-    def _match(self, handlers : ElseBlockHandlers[T]) -> T: pass
-
-
-# constructors for type else_block
-
-@dataclass
-class SomeElseBlock(else_block):
-    body : statements
-
-    def _match(self, handlers : ElseBlockHandlers[T]) -> T:
-        return handlers.case_SomeElseBlock(self)
-
-
-def make_SomeElseBlock(
-    body : statements
-) -> else_block:
-    return SomeElseBlock(
-        body
-    )
-
-
-@dataclass
-class NoElseBlock(else_block):
-
-    def _match(self, handlers : ElseBlockHandlers[T]) -> T:
-        return handlers.case_NoElseBlock(self)
-
-
-def make_NoElseBlock(
-) -> else_block:
-    return NoElseBlock(
-    )
-
-
-# case handlers for type else_block
-@dataclass
-class ElseBlockHandlers(Generic[T]):
-    case_SomeElseBlock : Callable[[SomeElseBlock], T]
-    case_NoElseBlock : Callable[[NoElseBlock], T]
-
-
-# matching for type else_block
-def match_else_block(o : else_block, handlers : ElseBlockHandlers[T]) -> T :
-    return o._match(handlers)
-
-
-# type final
-@dataclass
-class final(ABC):
-    @abstractmethod
-    def _match(self, handlers : FinalHandlers[T]) -> T: pass
-
-
-# constructors for type final
-
-@dataclass
-class SomeFinal(final):
-    body : statements
-
-    def _match(self, handlers : FinalHandlers[T]) -> T:
-        return handlers.case_SomeFinal(self)
-
-
-def make_SomeFinal(
-    body : statements
-) -> final:
-    return SomeFinal(
-        body
-    )
-
-
-@dataclass
-class NoFinal(final):
-
-    def _match(self, handlers : FinalHandlers[T]) -> T:
-        return handlers.case_NoFinal(self)
-
-
-def make_NoFinal(
-) -> final:
-    return NoFinal(
-    )
-
-
-# case handlers for type final
-@dataclass
-class FinalHandlers(Generic[T]):
-    case_SomeFinal : Callable[[SomeFinal], T]
-    case_NoFinal : Callable[[NoFinal], T]
-
-
-# matching for type final
-def match_final(o : final, handlers : FinalHandlers[T]) -> T :
     return o._match(handlers)
 
 
@@ -2185,7 +2188,7 @@ def make_Delete(
 
 @dataclass
 class Assign(stmt):
-    targets : comma_exprs
+    targets : target_exprs
     content : expr
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
@@ -2193,7 +2196,7 @@ class Assign(stmt):
 
 
 def make_Assign(
-    targets : comma_exprs,
+    targets : target_exprs,
     content : expr
 ) -> stmt:
     return Assign(
@@ -2270,7 +2273,6 @@ class For(stmt):
     target : expr
     iter : expr
     body : statements
-    orelse : else_block
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_For(self)
@@ -2279,10 +2281,33 @@ class For(stmt):
 def make_For(
     target : expr,
     iter : expr,
-    body : statements,
-    orelse : else_block
+    body : statements
 ) -> stmt:
     return For(
+        target,
+        iter,
+        body
+    )
+
+
+@dataclass
+class ForElse(stmt):
+    target : expr
+    iter : expr
+    body : statements
+    orelse : ElseBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_ForElse(self)
+
+
+def make_ForElse(
+    target : expr,
+    iter : expr,
+    body : statements,
+    orelse : ElseBlock
+) -> stmt:
+    return ForElse(
         target,
         iter,
         body,
@@ -2295,7 +2320,6 @@ class AsyncFor(stmt):
     target : expr
     iter : expr
     body : statements
-    orelse : else_block
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncFor(self)
@@ -2304,10 +2328,33 @@ class AsyncFor(stmt):
 def make_AsyncFor(
     target : expr,
     iter : expr,
-    body : statements,
-    orelse : else_block
+    body : statements
 ) -> stmt:
     return AsyncFor(
+        target,
+        iter,
+        body
+    )
+
+
+@dataclass
+class AsyncForElse(stmt):
+    target : expr
+    iter : expr
+    body : statements
+    orelse : ElseBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_AsyncForElse(self)
+
+
+def make_AsyncForElse(
+    target : expr,
+    iter : expr,
+    body : statements,
+    orelse : ElseBlock
+) -> stmt:
+    return AsyncForElse(
         target,
         iter,
         body,
@@ -2319,7 +2366,6 @@ def make_AsyncFor(
 class While(stmt):
     test : expr
     body : statements
-    orelse : else_block
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_While(self)
@@ -2327,10 +2373,30 @@ class While(stmt):
 
 def make_While(
     test : expr,
-    body : statements,
-    orelse : else_block
+    body : statements
 ) -> stmt:
     return While(
+        test,
+        body
+    )
+
+
+@dataclass
+class WhileElse(stmt):
+    test : expr
+    body : statements
+    orelse : ElseBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_WhileElse(self)
+
+
+def make_WhileElse(
+    test : expr,
+    body : statements,
+    orelse : ElseBlock
+) -> stmt:
+    return WhileElse(
         test,
         body,
         orelse
@@ -2449,8 +2515,6 @@ def make_RaiseFrom(
 class Try(stmt):
     body : statements
     handlers : sequence_ExceptHandler
-    orelse : else_block
-    fin : final
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Try(self)
@@ -2458,11 +2522,76 @@ class Try(stmt):
 
 def make_Try(
     body : statements,
-    handlers : sequence_ExceptHandler,
-    orelse : else_block,
-    fin : final
+    handlers : sequence_ExceptHandler
 ) -> stmt:
     return Try(
+        body,
+        handlers
+    )
+
+
+@dataclass
+class TryElse(stmt):
+    body : statements
+    handlers : sequence_ExceptHandler
+    orelse : ElseBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_TryElse(self)
+
+
+def make_TryElse(
+    body : statements,
+    handlers : sequence_ExceptHandler,
+    orelse : ElseBlock
+) -> stmt:
+    return TryElse(
+        body,
+        handlers,
+        orelse
+    )
+
+
+@dataclass
+class TryFin(stmt):
+    body : statements
+    handlers : sequence_ExceptHandler
+    fin : FinallyBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_TryFin(self)
+
+
+def make_TryFin(
+    body : statements,
+    handlers : sequence_ExceptHandler,
+    fin : FinallyBlock
+) -> stmt:
+    return TryFin(
+        body,
+        handlers,
+        fin
+    )
+
+
+@dataclass
+class TryElseFin(stmt):
+    body : statements
+    handlers : sequence_ExceptHandler
+    orelse : ElseBlock
+    fin : FinallyBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_TryElseFin(self)
+
+
+def make_TryElseFin(
+    body : statements,
+    handlers : sequence_ExceptHandler,
+    orelse : ElseBlock,
+    fin : FinallyBlock
+) -> stmt:
+    return TryElseFin(
         body,
         handlers,
         orelse,
@@ -2657,8 +2786,11 @@ class StmtHandlers(Generic[T]):
     case_TypedAssign : Callable[[TypedAssign], T]
     case_TypedDeclare : Callable[[TypedDeclare], T]
     case_For : Callable[[For], T]
+    case_ForElse : Callable[[ForElse], T]
     case_AsyncFor : Callable[[AsyncFor], T]
+    case_AsyncForElse : Callable[[AsyncForElse], T]
     case_While : Callable[[While], T]
+    case_WhileElse : Callable[[WhileElse], T]
     case_If : Callable[[If], T]
     case_With : Callable[[With], T]
     case_AsyncWith : Callable[[AsyncWith], T]
@@ -2666,6 +2798,9 @@ class StmtHandlers(Generic[T]):
     case_RaiseExc : Callable[[RaiseExc], T]
     case_RaiseFrom : Callable[[RaiseFrom], T]
     case_Try : Callable[[Try], T]
+    case_TryElse : Callable[[TryElse], T]
+    case_TryFin : Callable[[TryFin], T]
+    case_TryElseFin : Callable[[TryElseFin], T]
     case_Assert : Callable[[Assert], T]
     case_AssertMsg : Callable[[AssertMsg], T]
     case_Import : Callable[[Import], T]
@@ -3271,6 +3406,19 @@ def make_Tuple(
 
 
 @dataclass
+class EmptyTuple(expr):
+
+    def _match(self, handlers : ExprHandlers[T]) -> T:
+        return handlers.case_EmptyTuple(self)
+
+
+def make_EmptyTuple(
+) -> expr:
+    return EmptyTuple(
+    )
+
+
+@dataclass
 class Slice(expr):
     lower : option_expr
     upper : option_expr
@@ -3329,6 +3477,7 @@ class ExprHandlers(Generic[T]):
     case_List : Callable[[List], T]
     case_EmptyList : Callable[[EmptyList], T]
     case_Tuple : Callable[[Tuple], T]
+    case_EmptyTuple : Callable[[EmptyTuple], T]
     case_Slice : Callable[[Slice], T]
 
 

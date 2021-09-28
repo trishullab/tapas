@@ -1,6 +1,5 @@
 
 from __future__ import annotations
-from lib.generic_instance import instance, InstanceHandlers
 from lib import generic_instance as inst 
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
@@ -10,9 +9,9 @@ from gen.line_format import InLine, NewLine, IndentLine
 def serialize_Module(
     o : Module, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'Module',
             rhs = 'Module',
             depth = depth,
@@ -31,9 +30,9 @@ def serialize_Module(
 def serialize_CompareRight(
     o : CompareRight, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'CompareRight',
             rhs = 'CompareRight',
             depth = depth,
@@ -56,9 +55,9 @@ def serialize_CompareRight(
 def serialize_ExceptHandler(
     o : ExceptHandler, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'ExceptHandler',
             rhs = 'ExceptHandler',
             depth = depth,
@@ -81,9 +80,9 @@ def serialize_ExceptHandler(
 def serialize_Param(
     o : Param, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'Param',
             rhs = 'Param',
             depth = depth,
@@ -110,9 +109,9 @@ def serialize_Param(
 def serialize_Field(
     o : Field, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'Field',
             rhs = 'Field',
             depth = depth,
@@ -135,9 +134,9 @@ def serialize_Field(
 def serialize_ImportName(
     o : ImportName, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'ImportName',
             rhs = 'ImportName',
             depth = depth,
@@ -160,9 +159,9 @@ def serialize_ImportName(
 def serialize_Identifier(
     o : Identifier, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'Identifier',
             rhs = 'Identifier',
             depth = depth,
@@ -170,7 +169,14 @@ def serialize_Identifier(
             indent_width = indent_width,
             inline = inline
         )] +
-        [inst.make_Symbol(o.symbol, depth + 1, "symbol")] +
+        [inst.Node(
+            lhs = 'symbol',
+            rhs = o.symbol,
+            depth = depth + 1,
+            alias = "symbol",
+            indent_width = indent_width,
+            inline = inline
+        )] +
         []
     )
 
@@ -178,9 +184,9 @@ def serialize_Identifier(
 def serialize_Withitem(
     o : Withitem, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'Withitem',
             rhs = 'Withitem',
             depth = depth,
@@ -203,9 +209,9 @@ def serialize_Withitem(
 def serialize_ClassDef(
     o : ClassDef, depth : int = 0, alias : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
+) -> list[inst.Node]:
     return (
-        [inst.make_Node(
+        [inst.Node(
             lhs = 'ClassDef',
             rhs = 'ClassDef',
             depth = depth,
@@ -229,13 +235,80 @@ def serialize_ClassDef(
     )
 
 
+def serialize_ElifBlock(
+    o : ElifBlock, depth : int = 0, alias : str = "", 
+    indent_width : int = 0, inline : bool = True
+) -> list[inst.Node]:
+    return (
+        [inst.Node(
+            lhs = 'ElifBlock',
+            rhs = 'ElifBlock',
+            depth = depth,
+            alias = alias,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_expr(o.test, depth + 1, "test", 
+            inst.next_indent_width(indent_width,  InLine()),
+            True,
+        ) +
+        serialize_statements(o.body, depth + 1, "body", 
+            inst.next_indent_width(indent_width,  IndentLine()),
+            False,
+        ) +
+        []
+    )
+
+
+def serialize_ElseBlock(
+    o : ElseBlock, depth : int = 0, alias : str = "", 
+    indent_width : int = 0, inline : bool = True
+) -> list[inst.Node]:
+    return (
+        [inst.Node(
+            lhs = 'ElseBlock',
+            rhs = 'ElseBlock',
+            depth = depth,
+            alias = alias,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_statements(o.body, depth + 1, "body", 
+            inst.next_indent_width(indent_width,  IndentLine()),
+            False,
+        ) +
+        []
+    )
+
+
+def serialize_FinallyBlock(
+    o : FinallyBlock, depth : int = 0, alias : str = "", 
+    indent_width : int = 0, inline : bool = True
+) -> list[inst.Node]:
+    return (
+        [inst.Node(
+            lhs = 'FinallyBlock',
+            rhs = 'FinallyBlock',
+            depth = depth,
+            alias = alias,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_statements(o.body, depth + 1, "body", 
+            inst.next_indent_width(indent_width,  IndentLine()),
+            False,
+        ) +
+        []
+    )
+
+
 def serialize_return_type(
     o : return_type, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_return_type(o, ReturnTypeHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_return_type(o, ReturnTypeHandlers[list[inst.Node]](
         case_SomeReturnType = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'return_type',
                 rhs = 'SomeReturnType',
                 depth = depth,
@@ -250,7 +323,7 @@ def serialize_return_type(
             []
         ),
         case_NoReturnType = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'return_type',
                 rhs = 'NoReturnType',
                 depth = depth,
@@ -266,10 +339,10 @@ def serialize_return_type(
 def serialize_module_id(
     o : module_id, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_module_id(o, ModuleIdHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_module_id(o, ModuleIdHandlers[list[inst.Node]](
         case_SomeModuleId = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'module_id',
                 rhs = 'SomeModuleId',
                 depth = depth,
@@ -284,7 +357,7 @@ def serialize_module_id(
             []
         ),
         case_NoModuleId = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'module_id',
                 rhs = 'NoModuleId',
                 depth = depth,
@@ -300,10 +373,10 @@ def serialize_module_id(
 def serialize_except_arg(
     o : except_arg, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_except_arg(o, ExceptArgHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_except_arg(o, ExceptArgHandlers[list[inst.Node]](
         case_SomeExceptArg = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'except_arg',
                 rhs = 'SomeExceptArg',
                 depth = depth,
@@ -318,7 +391,7 @@ def serialize_except_arg(
             []
         ),
         case_SomeExceptArgName = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'except_arg',
                 rhs = 'SomeExceptArgName',
                 depth = depth,
@@ -337,7 +410,7 @@ def serialize_except_arg(
             []
         ),
         case_NoExceptArg = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'except_arg',
                 rhs = 'NoExceptArg',
                 depth = depth,
@@ -353,10 +426,10 @@ def serialize_except_arg(
 def serialize_param_type(
     o : param_type, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_param_type(o, ParamTypeHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_param_type(o, ParamTypeHandlers[list[inst.Node]](
         case_SomeParamType = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'param_type',
                 rhs = 'SomeParamType',
                 depth = depth,
@@ -371,7 +444,7 @@ def serialize_param_type(
             []
         ),
         case_NoParamType = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'param_type',
                 rhs = 'NoParamType',
                 depth = depth,
@@ -387,10 +460,10 @@ def serialize_param_type(
 def serialize_param_default(
     o : param_default, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_param_default(o, ParamDefaultHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_param_default(o, ParamDefaultHandlers[list[inst.Node]](
         case_SomeParamDefault = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'param_default',
                 rhs = 'SomeParamDefault',
                 depth = depth,
@@ -405,7 +478,7 @@ def serialize_param_default(
             []
         ),
         case_NoParamDefault = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'param_default',
                 rhs = 'NoParamDefault',
                 depth = depth,
@@ -421,10 +494,10 @@ def serialize_param_default(
 def serialize_parameters_d(
     o : parameters_d, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_parameters_d(o, ParametersDHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_parameters_d(o, ParametersDHandlers[list[inst.Node]](
         case_ConsKwParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_d',
                 rhs = 'ConsKwParam',
                 depth = depth,
@@ -443,7 +516,7 @@ def serialize_parameters_d(
             []
         ),
         case_SingleKwParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_d',
                 rhs = 'SingleKwParam',
                 depth = depth,
@@ -458,7 +531,7 @@ def serialize_parameters_d(
             []
         ),
         case_DictionarySplatParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_d',
                 rhs = 'DictionarySplatParam',
                 depth = depth,
@@ -478,10 +551,10 @@ def serialize_parameters_d(
 def serialize_parameters_c(
     o : parameters_c, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_parameters_c(o, ParametersCHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_parameters_c(o, ParametersCHandlers[list[inst.Node]](
         case_SingleListSplatParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_c',
                 rhs = 'SingleListSplatParam',
                 depth = depth,
@@ -496,7 +569,7 @@ def serialize_parameters_c(
             []
         ),
         case_TransListSplatParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_c',
                 rhs = 'TransListSplatParam',
                 depth = depth,
@@ -515,7 +588,7 @@ def serialize_parameters_c(
             []
         ),
         case_ParamsD = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_c',
                 rhs = 'ParamsD',
                 depth = depth,
@@ -535,10 +608,10 @@ def serialize_parameters_c(
 def serialize_parameters_b(
     o : parameters_b, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_parameters_b(o, ParametersBHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_parameters_b(o, ParametersBHandlers[list[inst.Node]](
         case_ConsParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_b',
                 rhs = 'ConsParam',
                 depth = depth,
@@ -557,7 +630,7 @@ def serialize_parameters_b(
             []
         ),
         case_SingleParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_b',
                 rhs = 'SingleParam',
                 depth = depth,
@@ -572,7 +645,7 @@ def serialize_parameters_b(
             []
         ),
         case_ParamsC = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_b',
                 rhs = 'ParamsC',
                 depth = depth,
@@ -592,10 +665,10 @@ def serialize_parameters_b(
 def serialize_parameters(
     o : parameters, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_parameters(o, ParametersHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_parameters(o, ParametersHandlers[list[inst.Node]](
         case_ParamsA = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters',
                 rhs = 'ParamsA',
                 depth = depth,
@@ -610,7 +683,7 @@ def serialize_parameters(
             []
         ),
         case_ParamsB = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters',
                 rhs = 'ParamsB',
                 depth = depth,
@@ -625,7 +698,7 @@ def serialize_parameters(
             []
         ),
         case_NoParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters',
                 rhs = 'NoParam',
                 depth = depth,
@@ -641,10 +714,10 @@ def serialize_parameters(
 def serialize_parameters_a(
     o : parameters_a, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_parameters_a(o, ParametersAHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_parameters_a(o, ParametersAHandlers[list[inst.Node]](
         case_ConsPosParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_a',
                 rhs = 'ConsPosParam',
                 depth = depth,
@@ -663,7 +736,7 @@ def serialize_parameters_a(
             []
         ),
         case_SinglePosParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_a',
                 rhs = 'SinglePosParam',
                 depth = depth,
@@ -678,7 +751,7 @@ def serialize_parameters_a(
             []
         ),
         case_TransPosParam = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'parameters_a',
                 rhs = 'TransPosParam',
                 depth = depth,
@@ -702,10 +775,10 @@ def serialize_parameters_a(
 def serialize_keyword(
     o : keyword, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_keyword(o, KeywordHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_keyword(o, KeywordHandlers[list[inst.Node]](
         case_NamedKeyword = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'keyword',
                 rhs = 'NamedKeyword',
                 depth = depth,
@@ -724,7 +797,7 @@ def serialize_keyword(
             []
         ),
         case_SplatKeyword = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'keyword',
                 rhs = 'SplatKeyword',
                 depth = depth,
@@ -744,10 +817,10 @@ def serialize_keyword(
 def serialize_alias(
     o : alias, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_alias(o, AliasHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_alias(o, AliasHandlers[list[inst.Node]](
         case_SomeAlias = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'alias',
                 rhs = 'SomeAlias',
                 depth = depth,
@@ -762,7 +835,7 @@ def serialize_alias(
             []
         ),
         case_NoAlias = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'alias',
                 rhs = 'NoAlias',
                 depth = depth,
@@ -778,10 +851,10 @@ def serialize_alias(
 def serialize_alias_expr(
     o : alias_expr, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_alias_expr(o, AliasExprHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_alias_expr(o, AliasExprHandlers[list[inst.Node]](
         case_SomeAliasExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'alias_expr',
                 rhs = 'SomeAliasExpr',
                 depth = depth,
@@ -796,7 +869,7 @@ def serialize_alias_expr(
             []
         ),
         case_NoAliasExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'alias_expr',
                 rhs = 'NoAliasExpr',
                 depth = depth,
@@ -812,10 +885,10 @@ def serialize_alias_expr(
 def serialize_bases(
     o : bases, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_bases(o, BasesHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_bases(o, BasesHandlers[list[inst.Node]](
         case_SomeBases = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'bases',
                 rhs = 'SomeBases',
                 depth = depth,
@@ -830,7 +903,7 @@ def serialize_bases(
             []
         ),
         case_NoBases = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'bases',
                 rhs = 'NoBases',
                 depth = depth,
@@ -846,10 +919,10 @@ def serialize_bases(
 def serialize_bases_a(
     o : bases_a, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_bases_a(o, BasesAHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_bases_a(o, BasesAHandlers[list[inst.Node]](
         case_ConsBase = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'bases_a',
                 rhs = 'ConsBase',
                 depth = depth,
@@ -868,7 +941,7 @@ def serialize_bases_a(
             []
         ),
         case_SingleBase = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'bases_a',
                 rhs = 'SingleBase',
                 depth = depth,
@@ -883,7 +956,7 @@ def serialize_bases_a(
             []
         ),
         case_KeywordsBase = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'bases_a',
                 rhs = 'KeywordsBase',
                 depth = depth,
@@ -903,10 +976,10 @@ def serialize_bases_a(
 def serialize_keywords(
     o : keywords, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_keywords(o, KeywordsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_keywords(o, KeywordsHandlers[list[inst.Node]](
         case_ConsKeyword = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'keywords',
                 rhs = 'ConsKeyword',
                 depth = depth,
@@ -925,7 +998,7 @@ def serialize_keywords(
             []
         ),
         case_SingleKeyword = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'keywords',
                 rhs = 'SingleKeyword',
                 depth = depth,
@@ -945,10 +1018,10 @@ def serialize_keywords(
 def serialize_comparisons(
     o : comparisons, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_comparisons(o, ComparisonsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_comparisons(o, ComparisonsHandlers[list[inst.Node]](
         case_ConsCompareRight = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'comparisons',
                 rhs = 'ConsCompareRight',
                 depth = depth,
@@ -967,7 +1040,7 @@ def serialize_comparisons(
             []
         ),
         case_SingleCompareRight = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'comparisons',
                 rhs = 'SingleCompareRight',
                 depth = depth,
@@ -987,10 +1060,10 @@ def serialize_comparisons(
 def serialize_option_expr(
     o : option_expr, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_option_expr(o, OptionExprHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_option_expr(o, OptionExprHandlers[list[inst.Node]](
         case_SomeExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'option_expr',
                 rhs = 'SomeExpr',
                 depth = depth,
@@ -1005,7 +1078,7 @@ def serialize_option_expr(
             []
         ),
         case_NoExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'option_expr',
                 rhs = 'NoExpr',
                 depth = depth,
@@ -1021,10 +1094,10 @@ def serialize_option_expr(
 def serialize_comma_exprs(
     o : comma_exprs, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_comma_exprs(o, CommaExprsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_comma_exprs(o, CommaExprsHandlers[list[inst.Node]](
         case_ConsExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'comma_exprs',
                 rhs = 'ConsExpr',
                 depth = depth,
@@ -1043,9 +1116,51 @@ def serialize_comma_exprs(
             []
         ),
         case_SingleExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'comma_exprs',
                 rhs = 'SingleExpr',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_expr(o.content, depth + 1, "content", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            []
+        )
+    ))
+
+
+def serialize_target_exprs(
+    o : target_exprs, depth : int = 0, alias : str = "",
+    indent_width : int = 0, inline : bool = True
+) -> list[inst.Node]:
+    return match_target_exprs(o, TargetExprsHandlers[list[inst.Node]](
+        case_ConsTargetExpr = lambda o : (
+            [inst.Node(
+                lhs = 'target_exprs',
+                rhs = 'ConsTargetExpr',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_expr(o.head, depth + 1, "head", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            serialize_target_exprs(o.tail, depth + 1, "tail", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            []
+        ),
+        case_SingleTargetExpr = lambda o : (
+            [inst.Node(
+                lhs = 'target_exprs',
+                rhs = 'SingleTargetExpr',
                 depth = depth,
                 alias = alias,
                 indent_width = indent_width,
@@ -1063,10 +1178,10 @@ def serialize_comma_exprs(
 def serialize_decorators(
     o : decorators, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_decorators(o, DecoratorsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_decorators(o, DecoratorsHandlers[list[inst.Node]](
         case_ConsDec = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'decorators',
                 rhs = 'ConsDec',
                 depth = depth,
@@ -1085,7 +1200,7 @@ def serialize_decorators(
             []
         ),
         case_NoDec = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'decorators',
                 rhs = 'NoDec',
                 depth = depth,
@@ -1101,10 +1216,10 @@ def serialize_decorators(
 def serialize_constraint_filters(
     o : constraint_filters, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_constraint_filters(o, ConstraintFiltersHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_constraint_filters(o, ConstraintFiltersHandlers[list[inst.Node]](
         case_ConsFilter = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'constraint_filters',
                 rhs = 'ConsFilter',
                 depth = depth,
@@ -1113,17 +1228,17 @@ def serialize_constraint_filters(
                 inline = inline
             )] +
             serialize_expr(o.head, depth + 1, "head", 
-                inst.next_indent_width(indent_width, InLine()),
-                True,
-            ) + 
-            serialize_constraint_filters(o.tail, depth + 1, "tail", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
+            ) + 
+            serialize_constraint_filters(o.tail, depth + 1, "tail", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
             ) + 
             []
         ),
         case_SingleFilter = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'constraint_filters',
                 rhs = 'SingleFilter',
                 depth = depth,
@@ -1132,9 +1247,20 @@ def serialize_constraint_filters(
                 inline = inline
             )] +
             serialize_expr(o.content, depth + 1, "content", 
-                inst.next_indent_width(indent_width, InLine()),
-                True,
+                inst.next_indent_width(indent_width, NewLine()),
+                False,
             ) + 
+            []
+        ),
+        case_NoFilter = lambda o : (
+            [inst.Node(
+                lhs = 'constraint_filters',
+                rhs = 'NoFilter',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
             []
         )
     ))
@@ -1143,10 +1269,10 @@ def serialize_constraint_filters(
 def serialize_sequence_str(
     o : sequence_str, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_sequence_str(o, SequenceStrHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_sequence_str(o, SequenceStrHandlers[list[inst.Node]](
         case_ConsStr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_str',
                 rhs = 'ConsStr',
                 depth = depth,
@@ -1154,7 +1280,14 @@ def serialize_sequence_str(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            [inst.make_Symbol(o.head, depth + 1, "head")] +
+            [inst.Node(
+                lhs = 'symbol',
+                rhs = o.head,
+                depth = depth + 1,
+                alias = "head",
+                indent_width = indent_width,
+                inline = inline
+            )] +
             serialize_sequence_str(o.tail, depth + 1, "tail", 
                 inst.next_indent_width(indent_width, InLine()),
                 True,
@@ -1162,7 +1295,7 @@ def serialize_sequence_str(
             []
         ),
         case_SingleStr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_str',
                 rhs = 'SingleStr',
                 depth = depth,
@@ -1170,7 +1303,14 @@ def serialize_sequence_str(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            [inst.make_Symbol(o.content, depth + 1, "content")] +
+            [inst.Node(
+                lhs = 'symbol',
+                rhs = o.content,
+                depth = depth + 1,
+                alias = "content",
+                indent_width = indent_width,
+                inline = inline
+            )] +
             []
         )
     ))
@@ -1179,10 +1319,10 @@ def serialize_sequence_str(
 def serialize_arguments(
     o : arguments, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_arguments(o, ArgumentsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_arguments(o, ArgumentsHandlers[list[inst.Node]](
         case_ConsArg = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'arguments',
                 rhs = 'ConsArg',
                 depth = depth,
@@ -1201,7 +1341,7 @@ def serialize_arguments(
             []
         ),
         case_SingleArg = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'arguments',
                 rhs = 'SingleArg',
                 depth = depth,
@@ -1216,7 +1356,7 @@ def serialize_arguments(
             []
         ),
         case_KeywordsArg = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'arguments',
                 rhs = 'KeywordsArg',
                 depth = depth,
@@ -1236,10 +1376,10 @@ def serialize_arguments(
 def serialize_dictionary_contents(
     o : dictionary_contents, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_dictionary_contents(o, DictionaryContentsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_dictionary_contents(o, DictionaryContentsHandlers[list[inst.Node]](
         case_ConsField = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'dictionary_contents',
                 rhs = 'ConsField',
                 depth = depth,
@@ -1258,7 +1398,7 @@ def serialize_dictionary_contents(
             []
         ),
         case_SingleField = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'dictionary_contents',
                 rhs = 'SingleField',
                 depth = depth,
@@ -1278,10 +1418,10 @@ def serialize_dictionary_contents(
 def serialize_sequence_Identifier(
     o : sequence_Identifier, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_sequence_Identifier(o, SequenceIdentifierHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_sequence_Identifier(o, SequenceIdentifierHandlers[list[inst.Node]](
         case_ConsId = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_Identifier',
                 rhs = 'ConsId',
                 depth = depth,
@@ -1300,7 +1440,7 @@ def serialize_sequence_Identifier(
             []
         ),
         case_SingleId = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_Identifier',
                 rhs = 'SingleId',
                 depth = depth,
@@ -1320,10 +1460,10 @@ def serialize_sequence_Identifier(
 def serialize_sequence_ImportName(
     o : sequence_ImportName, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_sequence_ImportName(o, SequenceImportNameHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_sequence_ImportName(o, SequenceImportNameHandlers[list[inst.Node]](
         case_ConsImportName = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_ImportName',
                 rhs = 'ConsImportName',
                 depth = depth,
@@ -1342,7 +1482,7 @@ def serialize_sequence_ImportName(
             []
         ),
         case_SingleImportName = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_ImportName',
                 rhs = 'SingleImportName',
                 depth = depth,
@@ -1362,10 +1502,10 @@ def serialize_sequence_ImportName(
 def serialize_sequence_Withitem(
     o : sequence_Withitem, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_sequence_Withitem(o, SequenceWithitemHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_sequence_Withitem(o, SequenceWithitemHandlers[list[inst.Node]](
         case_ConsWithitem = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_Withitem',
                 rhs = 'ConsWithitem',
                 depth = depth,
@@ -1384,7 +1524,7 @@ def serialize_sequence_Withitem(
             []
         ),
         case_SingleWithitem = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_Withitem',
                 rhs = 'SingleWithitem',
                 depth = depth,
@@ -1404,10 +1544,10 @@ def serialize_sequence_Withitem(
 def serialize_statements(
     o : statements, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_statements(o, StatementsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_statements(o, StatementsHandlers[list[inst.Node]](
         case_ConsStmt = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'statements',
                 rhs = 'ConsStmt',
                 depth = depth,
@@ -1426,7 +1566,7 @@ def serialize_statements(
             []
         ),
         case_SingleStmt = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'statements',
                 rhs = 'SingleStmt',
                 depth = depth,
@@ -1446,10 +1586,10 @@ def serialize_statements(
 def serialize_comprehension_constraints(
     o : comprehension_constraints, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_comprehension_constraints(o, ComprehensionConstraintsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_comprehension_constraints(o, ComprehensionConstraintsHandlers[list[inst.Node]](
         case_ConsConstraint = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'comprehension_constraints',
                 rhs = 'ConsConstraint',
                 depth = depth,
@@ -1468,7 +1608,7 @@ def serialize_comprehension_constraints(
             []
         ),
         case_SingleConstraint = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'comprehension_constraints',
                 rhs = 'SingleConstraint',
                 depth = depth,
@@ -1488,10 +1628,10 @@ def serialize_comprehension_constraints(
 def serialize_sequence_ExceptHandler(
     o : sequence_ExceptHandler, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_sequence_ExceptHandler(o, SequenceExceptHandlerHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_sequence_ExceptHandler(o, SequenceExceptHandlerHandlers[list[inst.Node]](
         case_ConsExceptHandler = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_ExceptHandler',
                 rhs = 'ConsExceptHandler',
                 depth = depth,
@@ -1510,7 +1650,7 @@ def serialize_sequence_ExceptHandler(
             []
         ),
         case_SingleExceptHandler = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'sequence_ExceptHandler',
                 rhs = 'SingleExceptHandler',
                 depth = depth,
@@ -1530,10 +1670,10 @@ def serialize_sequence_ExceptHandler(
 def serialize_conditions(
     o : conditions, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_conditions(o, ConditionsHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_conditions(o, ConditionsHandlers[list[inst.Node]](
         case_ElifCond = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'conditions',
                 rhs = 'ElifCond',
                 depth = depth,
@@ -1541,22 +1681,18 @@ def serialize_conditions(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            serialize_expr(o.test, depth + 1, "test", 
-                inst.next_indent_width(indent_width, InLine()),
-                True,
-            ) + 
-            serialize_statements(o.body, depth + 1, "body", 
-                inst.next_indent_width(indent_width, IndentLine()),
+            serialize_ElifBlock(o.content, depth + 1, "content", 
+                inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
             serialize_conditions(o.tail, depth + 1, "tail", 
-                inst.next_indent_width(indent_width, NewLine()),
-                False,
+                inst.next_indent_width(indent_width, InLine()),
+                True,
             ) + 
             []
         ),
         case_ElseCond = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'conditions',
                 rhs = 'ElseCond',
                 depth = depth,
@@ -1564,73 +1700,16 @@ def serialize_conditions(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            serialize_else_block(o.content, depth + 1, "content", 
+            serialize_ElseBlock(o.content, depth + 1, "content", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
             []
-        )
-    ))
-
-
-def serialize_else_block(
-    o : else_block, depth : int = 0, alias : str = "",
-    indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_else_block(o, ElseBlockHandlers[list[instance]](
-        case_SomeElseBlock = lambda o : (
-            [inst.make_Node(
-                lhs = 'else_block',
-                rhs = 'SomeElseBlock',
-                depth = depth,
-                alias = alias,
-                indent_width = indent_width,
-                inline = inline
-            )] +
-            serialize_statements(o.body, depth + 1, "body", 
-                inst.next_indent_width(indent_width, IndentLine()),
-                False,
-            ) + 
-            []
         ),
-        case_NoElseBlock = lambda o : (
-            [inst.make_Node(
-                lhs = 'else_block',
-                rhs = 'NoElseBlock',
-                depth = depth,
-                alias = alias,
-                indent_width = indent_width,
-                inline = inline
-            )] +
-            []
-        )
-    ))
-
-
-def serialize_final(
-    o : final, depth : int = 0, alias : str = "",
-    indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_final(o, FinalHandlers[list[instance]](
-        case_SomeFinal = lambda o : (
-            [inst.make_Node(
-                lhs = 'final',
-                rhs = 'SomeFinal',
-                depth = depth,
-                alias = alias,
-                indent_width = indent_width,
-                inline = inline
-            )] +
-            serialize_statements(o.body, depth + 1, "body", 
-                inst.next_indent_width(indent_width, IndentLine()),
-                False,
-            ) + 
-            []
-        ),
-        case_NoFinal = lambda o : (
-            [inst.make_Node(
-                lhs = 'final',
-                rhs = 'NoFinal',
+        case_NoCond = lambda o : (
+            [inst.Node(
+                lhs = 'conditions',
+                rhs = 'NoCond',
                 depth = depth,
                 alias = alias,
                 indent_width = indent_width,
@@ -1644,10 +1723,10 @@ def serialize_final(
 def serialize_function_def(
     o : function_def, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_function_def(o, FunctionDefHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_function_def(o, FunctionDefHandlers[list[inst.Node]](
         case_FunctionDef = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'function_def',
                 rhs = 'FunctionDef',
                 depth = depth,
@@ -1674,7 +1753,7 @@ def serialize_function_def(
             []
         ),
         case_AsyncFunctionDef = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'function_def',
                 rhs = 'AsyncFunctionDef',
                 depth = depth,
@@ -1706,10 +1785,10 @@ def serialize_function_def(
 def serialize_stmt(
     o : stmt, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_stmt(o, StmtHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_stmt(o, StmtHandlers[list[inst.Node]](
         case_DecFunctionDef = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'DecFunctionDef',
                 depth = depth,
@@ -1728,7 +1807,7 @@ def serialize_stmt(
             []
         ),
         case_DecAsyncFunctionDef = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'DecAsyncFunctionDef',
                 depth = depth,
@@ -1747,7 +1826,7 @@ def serialize_stmt(
             []
         ),
         case_DecClassDef = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'DecClassDef',
                 depth = depth,
@@ -1766,7 +1845,7 @@ def serialize_stmt(
             []
         ),
         case_ReturnSomething = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'ReturnSomething',
                 depth = depth,
@@ -1781,7 +1860,7 @@ def serialize_stmt(
             []
         ),
         case_Return = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Return',
                 depth = depth,
@@ -1792,7 +1871,7 @@ def serialize_stmt(
             []
         ),
         case_Delete = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Delete',
                 depth = depth,
@@ -1807,7 +1886,7 @@ def serialize_stmt(
             []
         ),
         case_Assign = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Assign',
                 depth = depth,
@@ -1815,7 +1894,7 @@ def serialize_stmt(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            serialize_comma_exprs(o.targets, depth + 1, "targets", 
+            serialize_target_exprs(o.targets, depth + 1, "targets", 
                 inst.next_indent_width(indent_width, InLine()),
                 True,
             ) + 
@@ -1826,7 +1905,7 @@ def serialize_stmt(
             []
         ),
         case_AugAssign = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'AugAssign',
                 depth = depth,
@@ -1849,7 +1928,7 @@ def serialize_stmt(
             []
         ),
         case_TypedAssign = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'TypedAssign',
                 depth = depth,
@@ -1872,7 +1951,7 @@ def serialize_stmt(
             []
         ),
         case_TypedDeclare = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'TypedDeclare',
                 depth = depth,
@@ -1891,7 +1970,7 @@ def serialize_stmt(
             []
         ),
         case_For = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'For',
                 depth = depth,
@@ -1911,14 +1990,37 @@ def serialize_stmt(
                 inst.next_indent_width(indent_width, IndentLine()),
                 False,
             ) + 
-            serialize_else_block(o.orelse, depth + 1, "orelse", 
+            []
+        ),
+        case_ForElse = lambda o : (
+            [inst.Node(
+                lhs = 'stmt',
+                rhs = 'ForElse',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_expr(o.target, depth + 1, "target", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            serialize_expr(o.iter, depth + 1, "iter", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            serialize_statements(o.body, depth + 1, "body", 
+                inst.next_indent_width(indent_width, IndentLine()),
+                False,
+            ) + 
+            serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
             []
         ),
         case_AsyncFor = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'AsyncFor',
                 depth = depth,
@@ -1938,14 +2040,37 @@ def serialize_stmt(
                 inst.next_indent_width(indent_width, IndentLine()),
                 False,
             ) + 
-            serialize_else_block(o.orelse, depth + 1, "orelse", 
+            []
+        ),
+        case_AsyncForElse = lambda o : (
+            [inst.Node(
+                lhs = 'stmt',
+                rhs = 'AsyncForElse',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_expr(o.target, depth + 1, "target", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            serialize_expr(o.iter, depth + 1, "iter", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            serialize_statements(o.body, depth + 1, "body", 
+                inst.next_indent_width(indent_width, IndentLine()),
+                False,
+            ) + 
+            serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
             []
         ),
         case_While = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'While',
                 depth = depth,
@@ -1961,14 +2086,33 @@ def serialize_stmt(
                 inst.next_indent_width(indent_width, IndentLine()),
                 False,
             ) + 
-            serialize_else_block(o.orelse, depth + 1, "orelse", 
+            []
+        ),
+        case_WhileElse = lambda o : (
+            [inst.Node(
+                lhs = 'stmt',
+                rhs = 'WhileElse',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_expr(o.test, depth + 1, "test", 
+                inst.next_indent_width(indent_width, InLine()),
+                True,
+            ) + 
+            serialize_statements(o.body, depth + 1, "body", 
+                inst.next_indent_width(indent_width, IndentLine()),
+                False,
+            ) + 
+            serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
             []
         ),
         case_If = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'If',
                 depth = depth,
@@ -1985,13 +2129,13 @@ def serialize_stmt(
                 False,
             ) + 
             serialize_conditions(o.orelse, depth + 1, "orelse", 
-                inst.next_indent_width(indent_width, NewLine()),
-                False,
+                inst.next_indent_width(indent_width, InLine()),
+                True,
             ) + 
             []
         ),
         case_With = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'With',
                 depth = depth,
@@ -2010,7 +2154,7 @@ def serialize_stmt(
             []
         ),
         case_AsyncWith = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'AsyncWith',
                 depth = depth,
@@ -2029,7 +2173,7 @@ def serialize_stmt(
             []
         ),
         case_Raise = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Raise',
                 depth = depth,
@@ -2040,7 +2184,7 @@ def serialize_stmt(
             []
         ),
         case_RaiseExc = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'RaiseExc',
                 depth = depth,
@@ -2055,7 +2199,7 @@ def serialize_stmt(
             []
         ),
         case_RaiseFrom = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'RaiseFrom',
                 depth = depth,
@@ -2074,7 +2218,7 @@ def serialize_stmt(
             []
         ),
         case_Try = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Try',
                 depth = depth,
@@ -2090,18 +2234,83 @@ def serialize_stmt(
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
-            serialize_else_block(o.orelse, depth + 1, "orelse", 
+            []
+        ),
+        case_TryElse = lambda o : (
+            [inst.Node(
+                lhs = 'stmt',
+                rhs = 'TryElse',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_statements(o.body, depth + 1, "body", 
+                inst.next_indent_width(indent_width, IndentLine()),
+                False,
+            ) + 
+            serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
-            serialize_final(o.fin, depth + 1, "fin", 
+            serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
+                inst.next_indent_width(indent_width, NewLine()),
+                False,
+            ) + 
+            []
+        ),
+        case_TryFin = lambda o : (
+            [inst.Node(
+                lhs = 'stmt',
+                rhs = 'TryFin',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_statements(o.body, depth + 1, "body", 
+                inst.next_indent_width(indent_width, IndentLine()),
+                False,
+            ) + 
+            serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
+                inst.next_indent_width(indent_width, NewLine()),
+                False,
+            ) + 
+            serialize_FinallyBlock(o.fin, depth + 1, "fin", 
+                inst.next_indent_width(indent_width, NewLine()),
+                False,
+            ) + 
+            []
+        ),
+        case_TryElseFin = lambda o : (
+            [inst.Node(
+                lhs = 'stmt',
+                rhs = 'TryElseFin',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            serialize_statements(o.body, depth + 1, "body", 
+                inst.next_indent_width(indent_width, IndentLine()),
+                False,
+            ) + 
+            serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
+                inst.next_indent_width(indent_width, NewLine()),
+                False,
+            ) + 
+            serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
+                inst.next_indent_width(indent_width, NewLine()),
+                False,
+            ) + 
+            serialize_FinallyBlock(o.fin, depth + 1, "fin", 
                 inst.next_indent_width(indent_width, NewLine()),
                 False,
             ) + 
             []
         ),
         case_Assert = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Assert',
                 depth = depth,
@@ -2116,7 +2325,7 @@ def serialize_stmt(
             []
         ),
         case_AssertMsg = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'AssertMsg',
                 depth = depth,
@@ -2135,7 +2344,7 @@ def serialize_stmt(
             []
         ),
         case_Import = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Import',
                 depth = depth,
@@ -2150,7 +2359,7 @@ def serialize_stmt(
             []
         ),
         case_ImportFrom = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'ImportFrom',
                 depth = depth,
@@ -2169,7 +2378,7 @@ def serialize_stmt(
             []
         ),
         case_ImportWildCard = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'ImportWildCard',
                 depth = depth,
@@ -2184,7 +2393,7 @@ def serialize_stmt(
             []
         ),
         case_Global = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Global',
                 depth = depth,
@@ -2199,7 +2408,7 @@ def serialize_stmt(
             []
         ),
         case_Nonlocal = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Nonlocal',
                 depth = depth,
@@ -2214,7 +2423,7 @@ def serialize_stmt(
             []
         ),
         case_Expr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Expr',
                 depth = depth,
@@ -2229,7 +2438,7 @@ def serialize_stmt(
             []
         ),
         case_Pass = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Pass',
                 depth = depth,
@@ -2240,7 +2449,7 @@ def serialize_stmt(
             []
         ),
         case_Break = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Break',
                 depth = depth,
@@ -2251,7 +2460,7 @@ def serialize_stmt(
             []
         ),
         case_Continue = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'stmt',
                 rhs = 'Continue',
                 depth = depth,
@@ -2267,10 +2476,10 @@ def serialize_stmt(
 def serialize_expr(
     o : expr, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_expr(o, ExprHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_expr(o, ExprHandlers[list[inst.Node]](
         case_BoolOp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'BoolOp',
                 depth = depth,
@@ -2293,7 +2502,7 @@ def serialize_expr(
             []
         ),
         case_NamedExpr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'NamedExpr',
                 depth = depth,
@@ -2312,7 +2521,7 @@ def serialize_expr(
             []
         ),
         case_BinOp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'BinOp',
                 depth = depth,
@@ -2335,7 +2544,7 @@ def serialize_expr(
             []
         ),
         case_UnaryOp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'UnaryOp',
                 depth = depth,
@@ -2354,7 +2563,7 @@ def serialize_expr(
             []
         ),
         case_Lambda = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Lambda',
                 depth = depth,
@@ -2373,7 +2582,7 @@ def serialize_expr(
             []
         ),
         case_IfExp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'IfExp',
                 depth = depth,
@@ -2396,7 +2605,7 @@ def serialize_expr(
             []
         ),
         case_Dictionary = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Dictionary',
                 depth = depth,
@@ -2411,7 +2620,7 @@ def serialize_expr(
             []
         ),
         case_EmptyDictionary = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'EmptyDictionary',
                 depth = depth,
@@ -2422,7 +2631,7 @@ def serialize_expr(
             []
         ),
         case_Set = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Set',
                 depth = depth,
@@ -2437,7 +2646,7 @@ def serialize_expr(
             []
         ),
         case_ListComp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'ListComp',
                 depth = depth,
@@ -2456,7 +2665,7 @@ def serialize_expr(
             []
         ),
         case_SetComp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'SetComp',
                 depth = depth,
@@ -2475,7 +2684,7 @@ def serialize_expr(
             []
         ),
         case_DictionaryComp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'DictionaryComp',
                 depth = depth,
@@ -2498,7 +2707,7 @@ def serialize_expr(
             []
         ),
         case_GeneratorExp = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'GeneratorExp',
                 depth = depth,
@@ -2517,7 +2726,7 @@ def serialize_expr(
             []
         ),
         case_Await = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Await',
                 depth = depth,
@@ -2532,7 +2741,7 @@ def serialize_expr(
             []
         ),
         case_YieldNothing = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'YieldNothing',
                 depth = depth,
@@ -2543,7 +2752,7 @@ def serialize_expr(
             []
         ),
         case_Yield = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Yield',
                 depth = depth,
@@ -2558,7 +2767,7 @@ def serialize_expr(
             []
         ),
         case_YieldFrom = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'YieldFrom',
                 depth = depth,
@@ -2573,7 +2782,7 @@ def serialize_expr(
             []
         ),
         case_Compare = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Compare',
                 depth = depth,
@@ -2592,7 +2801,7 @@ def serialize_expr(
             []
         ),
         case_Call = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Call',
                 depth = depth,
@@ -2607,7 +2816,7 @@ def serialize_expr(
             []
         ),
         case_CallArgs = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'CallArgs',
                 depth = depth,
@@ -2626,7 +2835,7 @@ def serialize_expr(
             []
         ),
         case_Integer = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Integer',
                 depth = depth,
@@ -2634,11 +2843,18 @@ def serialize_expr(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            [inst.make_Symbol(o.content, depth + 1, "content")] +
+            [inst.Node(
+                lhs = 'symbol',
+                rhs = o.content,
+                depth = depth + 1,
+                alias = "content",
+                indent_width = indent_width,
+                inline = inline
+            )] +
             []
         ),
         case_Float = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Float',
                 depth = depth,
@@ -2646,11 +2862,18 @@ def serialize_expr(
                 indent_width = indent_width,
                 inline = inline
             )] +
-            [inst.make_Symbol(o.content, depth + 1, "content")] +
+            [inst.Node(
+                lhs = 'symbol',
+                rhs = o.content,
+                depth = depth + 1,
+                alias = "content",
+                indent_width = indent_width,
+                inline = inline
+            )] +
             []
         ),
         case_ConcatString = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'ConcatString',
                 depth = depth,
@@ -2665,7 +2888,7 @@ def serialize_expr(
             []
         ),
         case_True_ = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'True_',
                 depth = depth,
@@ -2676,7 +2899,7 @@ def serialize_expr(
             []
         ),
         case_False_ = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'False_',
                 depth = depth,
@@ -2687,7 +2910,7 @@ def serialize_expr(
             []
         ),
         case_None_ = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'None_',
                 depth = depth,
@@ -2698,7 +2921,7 @@ def serialize_expr(
             []
         ),
         case_Ellip = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Ellip',
                 depth = depth,
@@ -2709,7 +2932,7 @@ def serialize_expr(
             []
         ),
         case_Attribute = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Attribute',
                 depth = depth,
@@ -2728,7 +2951,7 @@ def serialize_expr(
             []
         ),
         case_Subscript = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Subscript',
                 depth = depth,
@@ -2747,7 +2970,7 @@ def serialize_expr(
             []
         ),
         case_Starred = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Starred',
                 depth = depth,
@@ -2762,7 +2985,7 @@ def serialize_expr(
             []
         ),
         case_Name = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Name',
                 depth = depth,
@@ -2777,7 +3000,7 @@ def serialize_expr(
             []
         ),
         case_List = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'List',
                 depth = depth,
@@ -2792,7 +3015,7 @@ def serialize_expr(
             []
         ),
         case_EmptyList = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'EmptyList',
                 depth = depth,
@@ -2803,7 +3026,7 @@ def serialize_expr(
             []
         ),
         case_Tuple = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Tuple',
                 depth = depth,
@@ -2817,8 +3040,19 @@ def serialize_expr(
             ) + 
             []
         ),
+        case_EmptyTuple = lambda o : (
+            [inst.Node(
+                lhs = 'expr',
+                rhs = 'EmptyTuple',
+                depth = depth,
+                alias = alias,
+                indent_width = indent_width,
+                inline = inline
+            )] +
+            []
+        ),
         case_Slice = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'expr',
                 rhs = 'Slice',
                 depth = depth,
@@ -2846,10 +3080,10 @@ def serialize_expr(
 def serialize_boolop(
     o : boolop, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_boolop(o, BoolopHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_boolop(o, BoolopHandlers[list[inst.Node]](
         case_And = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'boolop',
                 rhs = 'And',
                 depth = depth,
@@ -2860,7 +3094,7 @@ def serialize_boolop(
             []
         ),
         case_Or = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'boolop',
                 rhs = 'Or',
                 depth = depth,
@@ -2876,10 +3110,10 @@ def serialize_boolop(
 def serialize_operator(
     o : operator, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_operator(o, OperatorHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_operator(o, OperatorHandlers[list[inst.Node]](
         case_Add = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'Add',
                 depth = depth,
@@ -2890,7 +3124,7 @@ def serialize_operator(
             []
         ),
         case_Sub = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'Sub',
                 depth = depth,
@@ -2901,7 +3135,7 @@ def serialize_operator(
             []
         ),
         case_Mult = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'Mult',
                 depth = depth,
@@ -2912,7 +3146,7 @@ def serialize_operator(
             []
         ),
         case_MatMult = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'MatMult',
                 depth = depth,
@@ -2923,7 +3157,7 @@ def serialize_operator(
             []
         ),
         case_Div = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'Div',
                 depth = depth,
@@ -2934,7 +3168,7 @@ def serialize_operator(
             []
         ),
         case_Mod = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'Mod',
                 depth = depth,
@@ -2945,7 +3179,7 @@ def serialize_operator(
             []
         ),
         case_Pow = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'Pow',
                 depth = depth,
@@ -2956,7 +3190,7 @@ def serialize_operator(
             []
         ),
         case_LShift = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'LShift',
                 depth = depth,
@@ -2967,7 +3201,7 @@ def serialize_operator(
             []
         ),
         case_RShift = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'RShift',
                 depth = depth,
@@ -2978,7 +3212,7 @@ def serialize_operator(
             []
         ),
         case_BitOr = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'BitOr',
                 depth = depth,
@@ -2989,7 +3223,7 @@ def serialize_operator(
             []
         ),
         case_BitXor = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'BitXor',
                 depth = depth,
@@ -3000,7 +3234,7 @@ def serialize_operator(
             []
         ),
         case_BitAnd = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'BitAnd',
                 depth = depth,
@@ -3011,7 +3245,7 @@ def serialize_operator(
             []
         ),
         case_FloorDiv = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'operator',
                 rhs = 'FloorDiv',
                 depth = depth,
@@ -3027,10 +3261,10 @@ def serialize_operator(
 def serialize_unaryop(
     o : unaryop, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_unaryop(o, UnaryopHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_unaryop(o, UnaryopHandlers[list[inst.Node]](
         case_Invert = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'unaryop',
                 rhs = 'Invert',
                 depth = depth,
@@ -3041,7 +3275,7 @@ def serialize_unaryop(
             []
         ),
         case_Not = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'unaryop',
                 rhs = 'Not',
                 depth = depth,
@@ -3052,7 +3286,7 @@ def serialize_unaryop(
             []
         ),
         case_UAdd = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'unaryop',
                 rhs = 'UAdd',
                 depth = depth,
@@ -3063,7 +3297,7 @@ def serialize_unaryop(
             []
         ),
         case_USub = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'unaryop',
                 rhs = 'USub',
                 depth = depth,
@@ -3079,10 +3313,10 @@ def serialize_unaryop(
 def serialize_cmpop(
     o : cmpop, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_cmpop(o, CmpopHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_cmpop(o, CmpopHandlers[list[inst.Node]](
         case_Eq = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'Eq',
                 depth = depth,
@@ -3093,7 +3327,7 @@ def serialize_cmpop(
             []
         ),
         case_NotEq = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'NotEq',
                 depth = depth,
@@ -3104,7 +3338,7 @@ def serialize_cmpop(
             []
         ),
         case_Lt = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'Lt',
                 depth = depth,
@@ -3115,7 +3349,7 @@ def serialize_cmpop(
             []
         ),
         case_LtE = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'LtE',
                 depth = depth,
@@ -3126,7 +3360,7 @@ def serialize_cmpop(
             []
         ),
         case_Gt = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'Gt',
                 depth = depth,
@@ -3137,7 +3371,7 @@ def serialize_cmpop(
             []
         ),
         case_GtE = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'GtE',
                 depth = depth,
@@ -3148,7 +3382,7 @@ def serialize_cmpop(
             []
         ),
         case_Is = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'Is',
                 depth = depth,
@@ -3159,7 +3393,7 @@ def serialize_cmpop(
             []
         ),
         case_IsNot = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'IsNot',
                 depth = depth,
@@ -3170,7 +3404,7 @@ def serialize_cmpop(
             []
         ),
         case_In = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'In',
                 depth = depth,
@@ -3181,7 +3415,7 @@ def serialize_cmpop(
             []
         ),
         case_NotIn = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'cmpop',
                 rhs = 'NotIn',
                 depth = depth,
@@ -3197,10 +3431,10 @@ def serialize_cmpop(
 def serialize_constraint(
     o : constraint, depth : int = 0, alias : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[instance]:
-    return match_constraint(o, ConstraintHandlers[list[instance]](
+) -> list[inst.Node]:
+    return match_constraint(o, ConstraintHandlers[list[inst.Node]](
         case_AsyncConstraint = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'constraint',
                 rhs = 'AsyncConstraint',
                 depth = depth,
@@ -3217,13 +3451,13 @@ def serialize_constraint(
                 True,
             ) + 
             serialize_constraint_filters(o.filts, depth + 1, "filts", 
-                inst.next_indent_width(indent_width, NewLine()),
-                False,
+                inst.next_indent_width(indent_width, InLine()),
+                True,
             ) + 
             []
         ),
         case_Constraint = lambda o : (
-            [inst.make_Node(
+            [inst.Node(
                 lhs = 'constraint',
                 rhs = 'Constraint',
                 depth = depth,
@@ -3240,8 +3474,8 @@ def serialize_constraint(
                 True,
             ) + 
             serialize_constraint_filters(o.filts, depth + 1, "filts", 
-                inst.next_indent_width(indent_width, NewLine()),
-                False,
+                inst.next_indent_width(indent_width, InLine()),
+                True,
             ) + 
             []
         )

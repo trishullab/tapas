@@ -32,7 +32,9 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
     children = [
         from_tree_sitter_node(n, source_bytes, encoding) 
         for n in node.children 
+        if n.type != "comment"
     ]
+
     return GenericNode(
         syntax_part = node.type, 
         text = text,

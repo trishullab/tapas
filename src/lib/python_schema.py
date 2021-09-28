@@ -412,6 +412,26 @@ unions : dict[str, list[Node]] = {
 
     ],
 
+    "target_exprs" : [
+        Node(
+            "ConsTargetExpr",
+            "",
+            [
+                Child("head", "expr", InLine(), " = "),
+                Child("tail", "target_exprs", InLine(), ""),
+            ]
+        ),
+
+        Node(
+            "SingleTargetExpr",
+            "",
+            [
+                Child("content", "expr", InLine(), ""),
+            ]
+        ),
+
+    ],
+
     "decorators" : [
         Node(
             "ConsDec",
@@ -435,8 +455,8 @@ unions : dict[str, list[Node]] = {
             "ConsFilter",
             "if ",
             [
-                Child("head", "expr", InLine(), ""),
-                Child("tail", "constraint_filters", NewLine(), ""),
+                Child("head", "expr", NewLine(), ""),
+                Child("tail", "constraint_filters", InLine(), ""),
             ]
         ),
 
@@ -444,7 +464,14 @@ unions : dict[str, list[Node]] = {
             "SingleFilter",
             "if ",
             [
-                Child("content", "expr", InLine(), ""),
+                Child("content", "expr", NewLine(), ""),
+            ]
+        ),
+
+        Node(
+            "NoFilter",
+            "",
+            [
             ]
         ),
 
@@ -503,7 +530,7 @@ unions : dict[str, list[Node]] = {
             "ConsField",
             "",
             [
-                Child("head", "Field", InLine(), ","),
+                Child("head", "Field", InLine(), ", "),
                 Child("tail", "dictionary_contents", NewLine(), ""),
             ]
         ),
@@ -644,11 +671,10 @@ unions : dict[str, list[Node]] = {
 
         Node(
             "ElifCond",
-            "elif ",
+            "",
             [
-                Child("test", "expr", InLine(), ":"),
-                Child("body", "statements", IndentLine(), ""),
-                Child("tail", "conditions", NewLine(), ""),
+                Child("content", "ElifBlock", NewLine(), ""),
+                Child("tail", "conditions", InLine(), ""),
             ]
         ),
 
@@ -656,45 +682,17 @@ unions : dict[str, list[Node]] = {
             "ElseCond",
             "",
             [
-                Child("content", "else_block", NewLine(), ""),
-            ]
-        )
-
-    ],
-
-    "else_block" : [
-        Node(
-            "SomeElseBlock",
-            "else:",
-            [
-                Child("body", "statements", IndentLine(), ""),
+                Child("content", "ElseBlock", NewLine(), ""),
             ]
         ),
 
         Node(
-            "NoElseBlock",
+            "NoCond",
             "",
             []
         )
-    ],
-
-    "final" : [
-        Node(
-            "SomeFinal",
-            "finally:",
-            [
-                Child("body", "statements", IndentLine(), ""),
-            ]
-        ),
-
-        Node(
-            "NoFinal",
-            "",
-            []
-        ),
 
     ],
-
 
     "function_def" : [
         Node(
@@ -776,7 +774,7 @@ unions : dict[str, list[Node]] = {
             "Assign",
             "",
             [
-                Child("targets", "comma_exprs", InLine(), " = "),
+                Child("targets", "target_exprs", InLine(), " = "),
                 Child("content", "expr", InLine(), "")
             ]
         ),
@@ -817,7 +815,17 @@ unions : dict[str, list[Node]] = {
                 Child("target", "expr", InLine(), " in "),
                 Child("iter", "expr", InLine(), " : "),
                 Child("body", "statements", IndentLine(), ""),
-                Child("orelse", "else_block", NewLine(), "")
+            ]
+        ),
+
+        Node(
+            "ForElse",
+            "for ",
+            [
+                Child("target", "expr", InLine(), " in "),
+                Child("iter", "expr", InLine(), " : "),
+                Child("body", "statements", IndentLine(), ""),
+                Child("orelse", "ElseBlock", NewLine(), "")
             ]
         ),
 
@@ -828,7 +836,17 @@ unions : dict[str, list[Node]] = {
                 Child("target", "expr", InLine(), " in "),
                 Child("iter", "expr", InLine(), " : "),
                 Child("body", "statements", IndentLine(), ""),
-                Child("orelse", "else_block", NewLine(), "")
+            ]
+        ),
+
+        Node(
+            "AsyncForElse",
+            "async for ",
+            [
+                Child("target", "expr", InLine(), " in "),
+                Child("iter", "expr", InLine(), " : "),
+                Child("body", "statements", IndentLine(), ""),
+                Child("orelse", "ElseBlock", NewLine(), "")
             ]
         ),
 
@@ -838,7 +856,16 @@ unions : dict[str, list[Node]] = {
             [
                 Child("test", "expr", InLine(), ": "),
                 Child("body", "statements", IndentLine(), ""),
-                Child("orelse", "else_block", NewLine(), "")
+            ]
+        ),
+
+        Node(
+            "WhileElse",
+            "while ",
+            [
+                Child("test", "expr", InLine(), ": "),
+                Child("body", "statements", IndentLine(), ""),
+                Child("orelse", "ElseBlock", NewLine(), "")
             ]
         ),
 
@@ -848,7 +875,7 @@ unions : dict[str, list[Node]] = {
             [
                 Child("test", "expr", InLine(), ": "),
                 Child("body", "statements", IndentLine(), ""),
-                Child("orelse", "conditions", NewLine(), "")
+                Child("orelse", "conditions", InLine(), "")
             ]
         ),
 
@@ -900,8 +927,37 @@ unions : dict[str, list[Node]] = {
             [
                 Child("body", "statements", IndentLine(), ""),
                 Child("handlers", "sequence_ExceptHandler", NewLine(), ""),
-                Child("orelse", "else_block", NewLine(), ""),
-                Child("fin", "final", NewLine(), "")
+            ]
+        ),
+
+        Node(
+            "TryElse",
+            "try:",
+            [
+                Child("body", "statements", IndentLine(), ""),
+                Child("handlers", "sequence_ExceptHandler", NewLine(), ""),
+                Child("orelse", "ElseBlock", NewLine(), ""),
+            ]
+        ),
+
+        Node(
+            "TryFin",
+            "try:",
+            [
+                Child("body", "statements", IndentLine(), ""),
+                Child("handlers", "sequence_ExceptHandler", NewLine(), ""),
+                Child("fin", "FinallyBlock", NewLine(), "")
+            ]
+        ),
+
+        Node(
+            "TryElseFin",
+            "try:",
+            [
+                Child("body", "statements", IndentLine(), ""),
+                Child("handlers", "sequence_ExceptHandler", NewLine(), ""),
+                Child("orelse", "ElseBlock", NewLine(), ""),
+                Child("fin", "FinallyBlock", NewLine(), "")
             ]
         ),
 
@@ -1017,11 +1073,11 @@ unions : dict[str, list[Node]] = {
 
         Node(
             "BinOp",
-            "",
+            "(",
             [
-                Child("left", "expr", InLine(), ""),
-                Child("op", "operator", InLine(), ""),
-                Child("right", "expr", InLine(), "")
+                Child("left", "expr", InLine(), " "),
+                Child("op", "operator", InLine(), " "),
+                Child("right", "expr", InLine(), ")")
             ]
         ),
 
@@ -1196,26 +1252,26 @@ unions : dict[str, list[Node]] = {
 
         Node(
             "True_",
-            "",
+            "True",
             []
         ),
 
         Node(
             "False_",
-            "",
+            "False",
             []
         ),
 
 
         Node(
             "None_",
-            "",
+            "None",
             []
         ),
 
         Node(
             "Ellip",
-            "",
+            "...",
             []
         ),
 
@@ -1273,6 +1329,12 @@ unions : dict[str, list[Node]] = {
             [
                 Child("contents", "comma_exprs", InLine(), ")"),
             ]
+        ),
+
+        Node(
+            "EmptyTuple",
+            "()",
+            []
         ),
 
         Node(
@@ -1477,7 +1539,7 @@ unions : dict[str, list[Node]] = {
             [
                 Child("target", "expr", InLine(), " in "),
                 Child("search_space", "expr", InLine(), ""),
-                Child("filts", "constraint_filters", NewLine(), "")
+                Child("filts", "constraint_filters", InLine(), "")
             ] 
         ),
 
@@ -1487,7 +1549,7 @@ unions : dict[str, list[Node]] = {
             [
                 Child("target", "expr", InLine(), " in "),
                 Child("search_space", "expr", InLine(), ""),
-                Child("filts", "constraint_filters", NewLine(), "")
+                Child("filts", "constraint_filters", InLine(), "")
             ] 
         ),
 
@@ -1579,6 +1641,31 @@ intersections : list[Node] = [
         ]
     ),
 
+    Node(
+        "ElifBlock",
+        "elif ",
+        [
+            Child("test", "expr", InLine(), ":"),
+            Child("body", "statements", IndentLine(), ""),
+        ]
+    ),
+
+    Node(
+        "ElseBlock",
+        "else:",
+        [
+            Child("body", "statements", IndentLine(), ""),
+        ]
+    ),
+
+    Node(
+        "FinallyBlock",
+        "finally:",
+        [
+            Child("body", "statements", IndentLine(), ""),
+        ]
+    )
+
 
 ]
 
@@ -1618,29 +1705,33 @@ def format() -> str:
         "\n" 
     )
 
-
+    from lib import line_format
 
     ### rule of sequence ###
     rule_of_sequence_unions = [
-        k + " : { " + fields_str + " } "
+        k + " :: " + f"`{choice.leader}`" + " " + fields_str 
         for choices in unions.values()
         for choice in choices
         for k in [choice.name]
-        for fields_str in [', '.join([
-            name + ' : ' + typ
+        for fields_str in [' '.join([
+            "(" + lf + ' : ' + name + ' : ' + ('symbol' if typ == 'str' else typ) + ") " + f"`{fol}`"
             for child in choice.children
             for name, typ in [(child.attr, child.typ)]
+            for lf in [line_format.to_string(child.line_form)]
+            for fol in [child.follower]
         ])]
     ]
 
     rule_of_sequence_intersections = [
-        k + " : { " + fields_str + " } "
+        k + " :: " + f"`{constructor.leader}`" + " " + fields_str 
         for constructor in intersections
         for k in [constructor.name]
-        for fields_str in [', '.join([
-            name + ' : ' + typ
+        for fields_str in [' '.join([
+            "(" + lf + ' : ' + name + ' : ' + ('symbol' if typ == 'str' else typ) + ") " + f"`{fol}`"
             for child in constructor.children
             for name, typ in [(child.attr, child.typ)]
+            for lf in [line_format.to_string(child.line_form)]
+            for fol in [child.follower]
         ])]
     ]
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from lib import def_type
 from lib import def_serialize
 
-from lib.file import write
+from lib.file import write_gen
 
 from lib import python_schema
 from lib import schema
@@ -28,7 +28,7 @@ type_code = (
 )
 
 
-write("python_ast", type_code)
+write_gen("python_ast.py", type_code)
 
 
 serialize_code = (
@@ -44,7 +44,7 @@ serialize_code = (
         for type_name, con in python_schema.unions.items()
     ])
 )
-write("python_ast_serialize", serialize_code)
+write_gen("python_ast_serialize.py", serialize_code)
 
 
 

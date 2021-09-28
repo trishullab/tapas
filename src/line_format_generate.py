@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lib.file import write
+from lib.file import write_gen
 
 from lib.def_type import Constructor, Field
 from lib import def_type
@@ -35,7 +35,7 @@ type_code = (
 )
 
 
-write("line_format", type_code)
+write_gen("line_format.py", type_code)
 
 
 

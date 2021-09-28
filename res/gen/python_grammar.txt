@@ -1,0 +1,250 @@
+---- RULE OF NON-TERMINAL ----
+
+return_type : SomeReturnType | NoReturnType
+module_id : SomeModuleId | NoModuleId
+except_arg : SomeExceptArg | SomeExceptArgName | NoExceptArg
+param_type : SomeParamType | NoParamType
+param_default : SomeParamDefault | NoParamDefault
+parameters_d : ConsKwParam | SingleKwParam | DictionarySplatParam
+parameters_c : SingleListSplatParam | TransListSplatParam | ParamsD
+parameters_b : ConsParam | SingleParam | ParamsC
+parameters : ParamsA | ParamsB | NoParam
+parameters_a : ConsPosParam | SinglePosParam | TransPosParam
+keyword : NamedKeyword | SplatKeyword
+alias : SomeAlias | NoAlias
+alias_expr : SomeAliasExpr | NoAliasExpr
+bases : SomeBases | NoBases
+bases_a : ConsBase | SingleBase | KeywordsBase
+keywords : ConsKeyword | SingleKeyword
+comparisons : ConsCompareRight | SingleCompareRight
+option_expr : SomeExpr | NoExpr
+comma_exprs : ConsExpr | SingleExpr
+target_exprs : ConsTargetExpr | SingleTargetExpr
+decorators : ConsDec | NoDec
+constraint_filters : ConsFilter | SingleFilter | NoFilter
+sequence_str : ConsStr | SingleStr
+arguments : ConsArg | SingleArg | KeywordsArg
+dictionary_contents : ConsField | SingleField
+sequence_Identifier : ConsId | SingleId
+sequence_ImportName : ConsImportName | SingleImportName
+sequence_Withitem : ConsWithitem | SingleWithitem
+statements : ConsStmt | SingleStmt
+comprehension_constraints : ConsConstraint | SingleConstraint
+sequence_ExceptHandler : ConsExceptHandler | SingleExceptHandler
+conditions : ElifCond | ElseCond | NoCond
+function_def : FunctionDef | AsyncFunctionDef
+stmt : DecFunctionDef | DecAsyncFunctionDef | DecClassDef | ReturnSomething | Return | Delete | Assign | AugAssign | TypedAssign | TypedDeclare | For | ForElse | AsyncFor | AsyncForElse | While | WhileElse | If | With | AsyncWith | Raise | RaiseExc | RaiseFrom | Try | TryElse | TryFin | TryElseFin | Assert | AssertMsg | Import | ImportFrom | ImportWildCard | Global | Nonlocal | Expr | Pass | Break | Continue
+expr : BoolOp | NamedExpr | BinOp | UnaryOp | Lambda | IfExp | Dictionary | EmptyDictionary | Set | ListComp | SetComp | DictionaryComp | GeneratorExp | Await | YieldNothing | Yield | YieldFrom | Compare | Call | CallArgs | Integer | Float | ConcatString | True_ | False_ | None_ | Ellip | Attribute | Subscript | Starred | Name | List | EmptyList | Tuple | EmptyTuple | Slice
+boolop : And | Or
+operator : Add | Sub | Mult | MatMult | Div | Mod | Pow | LShift | RShift | BitOr | BitXor | BitAnd | FloorDiv
+unaryop : Invert | Not | UAdd | USub
+cmpop : Eq | NotEq | Lt | LtE | Gt | GtE | Is | IsNot | In | NotIn
+constraint : AsyncConstraint | Constraint
+Module : Module
+CompareRight : CompareRight
+ExceptHandler : ExceptHandler
+Param : Param
+Field : Field
+ImportName : ImportName
+Identifier : Identifier
+Withitem : Withitem
+ClassDef : ClassDef
+ElifBlock : ElifBlock
+ElseBlock : ElseBlock
+FinallyBlock : FinallyBlock
+
+
+---- RULE OF SEQUENCE ----
+
+SomeReturnType :: ` -> ` (InLine : content : expr) ``
+NoReturnType :: `` 
+SomeModuleId :: `` (InLine : content : Identifier) ``
+NoModuleId :: `. ` 
+SomeExceptArg :: ` ` (InLine : content : expr) ``
+SomeExceptArgName :: ` ` (InLine : content : expr) ` as ` (InLine : name : Identifier) ``
+NoExceptArg :: `` 
+SomeParamType :: ` : ` (InLine : content : expr) ``
+NoParamType :: `` 
+SomeParamDefault :: ` = ` (InLine : content : expr) ``
+NoParamDefault :: `` 
+ConsKwParam :: `` (InLine : head : Param) `, ` (InLine : tail : parameters_d) ``
+SingleKwParam :: `` (InLine : content : Param) ``
+DictionarySplatParam :: `**` (InLine : content : Param) ``
+SingleListSplatParam :: `*` (InLine : content : Param) ``
+TransListSplatParam :: `*` (InLine : head : Param) `, ` (InLine : tail : parameters_d) ``
+ParamsD :: `*, ` (InLine : content : parameters_d) ``
+ConsParam :: `` (InLine : head : Param) `, ` (InLine : tail : parameters_b) ``
+SingleParam :: `` (InLine : content : Param) ``
+ParamsC :: `` (InLine : content : parameters_c) ``
+ParamsA :: `` (InLine : content : parameters_a) ``
+ParamsB :: `` (InLine : content : parameters_b) ``
+NoParam :: `` 
+ConsPosParam :: `` (InLine : head : Param) `, ` (InLine : tail : parameters_a) ``
+SinglePosParam :: `` (InLine : content : Param) `, /`
+TransPosParam :: `` (InLine : head : Param) `, /, ` (InLine : tail : parameters_b) ``
+NamedKeyword :: `` (InLine : name : Identifier) ` = ` (InLine : content : expr) ``
+SplatKeyword :: `**` (InLine : content : expr) ``
+SomeAlias :: ` as ` (InLine : content : Identifier) ``
+NoAlias :: `` 
+SomeAliasExpr :: ` as ` (InLine : content : expr) ``
+NoAliasExpr :: `` 
+SomeBases :: `(` (InLine : bases : bases_a) `)`
+NoBases :: `` 
+ConsBase :: `` (InLine : head : expr) `, ` (InLine : tail : bases_a) ``
+SingleBase :: `` (InLine : content : expr) ``
+KeywordsBase :: `` (InLine : kws : keywords) ``
+ConsKeyword :: `` (InLine : head : keyword) `, ` (InLine : tail : keywords) ``
+SingleKeyword :: `` (InLine : content : keyword) ``
+ConsCompareRight :: `` (InLine : head : CompareRight) ` ` (InLine : tail : comparisons) ``
+SingleCompareRight :: `` (InLine : content : CompareRight) ``
+SomeExpr :: `` (InLine : content : expr) ``
+NoExpr :: `` 
+ConsExpr :: `` (InLine : head : expr) `, ` (InLine : tail : comma_exprs) ``
+SingleExpr :: `` (InLine : content : expr) ``
+ConsTargetExpr :: `` (InLine : head : expr) ` = ` (InLine : tail : target_exprs) ``
+SingleTargetExpr :: `` (InLine : content : expr) ``
+ConsDec :: `@` (InLine : head : expr) `` (InLine : tail : decorators) ``
+NoDec :: `` 
+ConsFilter :: `if ` (NewLine : head : expr) `` (InLine : tail : constraint_filters) ``
+SingleFilter :: `if ` (NewLine : content : expr) ``
+NoFilter :: `` 
+ConsStr :: `` (InLine : head : symbol) ` ` (InLine : tail : sequence_str) ``
+SingleStr :: `` (InLine : content : symbol) ``
+ConsArg :: `` (InLine : head : expr) `, ` (InLine : tail : arguments) ``
+SingleArg :: `` (InLine : content : expr) ``
+KeywordsArg :: `` (InLine : kws : keywords) ``
+ConsField :: `` (InLine : head : Field) `, ` (NewLine : tail : dictionary_contents) ``
+SingleField :: `` (InLine : content : Field) ``
+ConsId :: `` (InLine : head : Identifier) `, ` (InLine : tail : sequence_Identifier) ``
+SingleId :: `` (InLine : content : Identifier) ``
+ConsImportName :: `` (InLine : head : ImportName) `, ` (InLine : tail : sequence_ImportName) ``
+SingleImportName :: `` (InLine : content : ImportName) ``
+ConsWithitem :: `` (InLine : head : Withitem) `, ` (InLine : tail : sequence_Withitem) ``
+SingleWithitem :: `` (InLine : content : Withitem) ``
+ConsStmt :: `` (InLine : head : stmt) `` (NewLine : tail : statements) ``
+SingleStmt :: `` (InLine : content : stmt) ``
+ConsConstraint :: `` (InLine : head : constraint) `` (NewLine : tail : comprehension_constraints) ``
+SingleConstraint :: `` (InLine : content : constraint) ``
+ConsExceptHandler :: `` (InLine : head : ExceptHandler) `` (NewLine : tail : sequence_ExceptHandler) ``
+SingleExceptHandler :: `` (InLine : content : ExceptHandler) ``
+ElifCond :: `` (NewLine : content : ElifBlock) `` (InLine : tail : conditions) ``
+ElseCond :: `` (NewLine : content : ElseBlock) ``
+NoCond :: `` 
+FunctionDef :: `def ` (InLine : name : Identifier) `(` (InLine : params : parameters) `)` (InLine : ret_typ : return_type) `:` (IndentLine : body : statements) ``
+AsyncFunctionDef :: `def ` (InLine : name : Identifier) `(` (InLine : params : parameters) `)` (InLine : ret_typ : return_type) `:` (IndentLine : body : statements) ``
+DecFunctionDef :: `` (InLine : decs : decorators) `` (NewLine : fun_def : function_def) ``
+DecAsyncFunctionDef :: `` (InLine : decs : decorators) `` (NewLine : fun_def : function_def) ``
+DecClassDef :: `` (InLine : decs : decorators) `` (NewLine : class_def : ClassDef) ``
+ReturnSomething :: `return ` (InLine : content : expr) ``
+Return :: `return` 
+Delete :: `del` (InLine : targets : comma_exprs) ``
+Assign :: `` (InLine : targets : target_exprs) ` = ` (InLine : content : expr) ``
+AugAssign :: `` (InLine : target : expr) ` ` (InLine : op : operator) `= ` (InLine : content : expr) ``
+TypedAssign :: `` (InLine : target : expr) ` : ` (InLine : type : expr) ` = ` (InLine : content : expr) ``
+TypedDeclare :: `` (InLine : target : expr) ` : ` (InLine : type : expr) ``
+For :: `for ` (InLine : target : expr) ` in ` (InLine : iter : expr) ` : ` (IndentLine : body : statements) ``
+ForElse :: `for ` (InLine : target : expr) ` in ` (InLine : iter : expr) ` : ` (IndentLine : body : statements) `` (NewLine : orelse : ElseBlock) ``
+AsyncFor :: `async for ` (InLine : target : expr) ` in ` (InLine : iter : expr) ` : ` (IndentLine : body : statements) ``
+AsyncForElse :: `async for ` (InLine : target : expr) ` in ` (InLine : iter : expr) ` : ` (IndentLine : body : statements) `` (NewLine : orelse : ElseBlock) ``
+While :: `while ` (InLine : test : expr) `: ` (IndentLine : body : statements) ``
+WhileElse :: `while ` (InLine : test : expr) `: ` (IndentLine : body : statements) `` (NewLine : orelse : ElseBlock) ``
+If :: `if ` (InLine : test : expr) `: ` (IndentLine : body : statements) `` (InLine : orelse : conditions) ``
+With :: `with ` (InLine : items : sequence_Withitem) `:` (IndentLine : body : statements) ``
+AsyncWith :: `async with ` (InLine : items : sequence_Withitem) `:` (IndentLine : body : statements) ``
+Raise :: `raise` 
+RaiseExc :: `raise ` (IndentLine : exc : expr) ``
+RaiseFrom :: `raise ` (InLine : exc : expr) ` from ` (InLine : caus : expr) ``
+Try :: `try:` (IndentLine : body : statements) `` (NewLine : handlers : sequence_ExceptHandler) ``
+TryElse :: `try:` (IndentLine : body : statements) `` (NewLine : handlers : sequence_ExceptHandler) `` (NewLine : orelse : ElseBlock) ``
+TryFin :: `try:` (IndentLine : body : statements) `` (NewLine : handlers : sequence_ExceptHandler) `` (NewLine : fin : FinallyBlock) ``
+TryElseFin :: `try:` (IndentLine : body : statements) `` (NewLine : handlers : sequence_ExceptHandler) `` (NewLine : orelse : ElseBlock) `` (NewLine : fin : FinallyBlock) ``
+Assert :: `assert ` (InLine : test : expr) ``
+AssertMsg :: `assert ` (InLine : test : expr) `, ` (InLine : msg : expr) ``
+Import :: `import ` (InLine : names : sequence_ImportName) ``
+ImportFrom :: `from ` (InLine : module : module_id) ` import ` (InLine : names : sequence_ImportName) ``
+ImportWildCard :: `from ` (InLine : module : module_id) ` import *`
+Global :: `global ` (InLine : names : sequence_Identifier) ``
+Nonlocal :: `nonlocal ` (InLine : names : sequence_Identifier) ``
+Expr :: `` (InLine : content : expr) ``
+Pass :: `pass` 
+Break :: `break` 
+Continue :: `continue` 
+BoolOp :: `` (InLine : left : expr) `` (InLine : op : boolop) `` (InLine : right : expr) ``
+NamedExpr :: `` (InLine : target : expr) ` := ` (InLine : content : expr) ``
+BinOp :: `(` (InLine : left : expr) ` ` (InLine : op : operator) ` ` (InLine : right : expr) `)`
+UnaryOp :: `` (InLine : op : unaryop) ` ` (InLine : right : expr) ``
+Lambda :: `lambda ` (InLine : params : parameters) ` :` (InLine : body : expr) ``
+IfExp :: `` (InLine : body : expr) `if ` (InLine : test : expr) ` else` (NewLine : orelse : expr) ``
+Dictionary :: `{` (IndentLine : contents : dictionary_contents) `}`
+EmptyDictionary :: `{}` 
+Set :: `{` (IndentLine : contents : comma_exprs) `}`
+ListComp :: `[` (IndentLine : content : expr) `` (IndentLine : constraints : comprehension_constraints) `]`
+SetComp :: `{` (IndentLine : content : expr) `` (IndentLine : constraints : comprehension_constraints) `}`
+DictionaryComp :: `{` (IndentLine : key : expr) ` : ` (InLine : content : expr) `` (IndentLine : constraints : comprehension_constraints) `}`
+GeneratorExp :: `(` (IndentLine : content : expr) `` (IndentLine : constraints : comprehension_constraints) `)`
+Await :: `await ` (InLine : content : expr) ``
+YieldNothing :: `yield` 
+Yield :: `yield ` (InLine : content : expr) ``
+YieldFrom :: `yield from ` (InLine : content : expr) ``
+Compare :: `` (InLine : left : expr) ` ` (InLine : comps : comparisons) ``
+Call :: `` (InLine : func : expr) `()`
+CallArgs :: `` (InLine : func : expr) `(` (InLine : args : arguments) `)`
+Integer :: `` (InLine : content : symbol) ``
+Float :: `` (InLine : content : symbol) ``
+ConcatString :: `` (InLine : content : sequence_str) ``
+True_ :: `True` 
+False_ :: `False` 
+None_ :: `None` 
+Ellip :: `...` 
+Attribute :: `` (InLine : content : expr) `.` (InLine : attr : Identifier) ``
+Subscript :: `` (InLine : content : expr) `[` (InLine : slice : expr) `]`
+Starred :: `*` (InLine : content : expr) ``
+Name :: `` (InLine : id : Identifier) ``
+List :: `[` (InLine : contents : comma_exprs) `]`
+EmptyList :: `[]` 
+Tuple :: `(` (InLine : contents : comma_exprs) `)`
+EmptyTuple :: `()` 
+Slice :: `` (InLine : lower : option_expr) `:` (InLine : upper : option_expr) `:` (InLine : step : option_expr) ``
+And :: `and` 
+Or :: `or` 
+Add :: `+` 
+Sub :: `-` 
+Mult :: `*` 
+MatMult :: `@` 
+Div :: `/` 
+Mod :: `%` 
+Pow :: `**` 
+LShift :: `<<` 
+RShift :: `>>` 
+BitOr :: `|` 
+BitXor :: `^` 
+BitAnd :: `&` 
+FloorDiv :: `//` 
+Invert :: `~` 
+Not :: `not` 
+UAdd :: `+` 
+USub :: `-` 
+Eq :: `==` 
+NotEq :: `!=` 
+Lt :: `<` 
+LtE :: `<=` 
+Gt :: `>` 
+GtE :: `>=` 
+Is :: `is` 
+IsNot :: `is not` 
+In :: `in` 
+NotIn :: `not in` 
+AsyncConstraint :: `async for ` (InLine : target : expr) ` in ` (InLine : search_space : expr) `` (InLine : filts : constraint_filters) ``
+Constraint :: `for ` (InLine : target : expr) ` in ` (InLine : search_space : expr) `` (InLine : filts : constraint_filters) ``
+Module :: `` (InLine : body : statements) ``
+CompareRight :: `` (InLine : op : cmpop) ` ` (InLine : rand : expr) ``
+ExceptHandler :: `except ` (InLine : arg : except_arg) `:` (IndentLine : body : statements) ``
+Param :: `` (InLine : id : Identifier) `` (InLine : type : param_type) `` (InLine : default : param_default) ``
+Field :: `` (InLine : key : expr) ` : ` (InLine : content : expr) ``
+ImportName :: `` (InLine : name : Identifier) `` (InLine : as_name : alias) ``
+Identifier :: `` (InLine : symbol : symbol) ``
+Withitem :: `` (InLine : contet : expr) ` as ` (InLine : target : alias_expr) ``
+ClassDef :: `class ` (InLine : name : Identifier) `` (InLine : bs : bases) `:` (IndentLine : body : statements) ``
+ElifBlock :: `elif ` (InLine : test : expr) `:` (IndentLine : body : statements) ``
+ElseBlock :: `else:` (IndentLine : body : statements) ``
+FinallyBlock :: `finally:` (IndentLine : body : statements) ``

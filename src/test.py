@@ -36,11 +36,11 @@ def test_string(sourceCode):
 
     instance_list = serialize_Module(mod)
 
-    print(f"--Instance Sequence--\n")
-    for p in instance_list: print(p)
-    print(f"\n")
+    # print(f"--Instance Sequence--\n")
+    # for p in instance_list: print(p)
+    # print(f"\n")
 
-    print(f"--Formatted Instance Sequence --\n{python_instance.dump(instance_list)}\n")
+    # print(f"--Formatted Instance Sequence --\n{python_instance.dump(instance_list)}\n")
 
     print(f"--Concretized--\n{python_instance.concretize(instance_list)}\n")
 
@@ -86,21 +86,28 @@ def test_mbpp():
     fpath = os.path.join(dirpath, "mbpp.jsonl")
 
     with open(fpath, 'r') as f:
-        count = 0
-        while f and count < 1:
-            line = f.readline()
+        #note: example 101 originally had a typo of using equality '==' instead of assignment '='
+        count = 1
+
+        line = f.readline()
+        while line: 
+            print(f"---------------------------")
+            print(f"mbpp.jsonl line #: {count}")
+
             line_obj = json.loads(line)
             print("-----Prompt------")
             print(line_obj['text'])
-            # print("\n\n")
+            print("\n")
 
-            print("-----Source Code------")
             source_code = line_obj['code']
+            print("-----Source Code------")
             print(source_code)
 
             test_string(source_code)
             print("\n\n")
 
+            # update
+            line = f.readline()
             count += 1
 
 
