@@ -1097,6 +1097,7 @@ def serialize_comma_exprs(
 ) -> list[inst.Node]:
     return match_comma_exprs(o, CommaExprsHandlers[list[inst.Node]](
         case_ConsExpr = lambda o : (
+            print(f"head: {o.head}"),
             [inst.Node(
                 lhs = 'comma_exprs',
                 rhs = 'ConsExpr',
@@ -1114,7 +1115,7 @@ def serialize_comma_exprs(
                 True,
             ) + 
             []
-        ),
+        )[-1],
         case_SingleExpr = lambda o : (
             [inst.Node(
                 lhs = 'comma_exprs',

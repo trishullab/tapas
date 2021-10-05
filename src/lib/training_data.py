@@ -38,18 +38,37 @@ def generate(name : str):
             try:
                 mod = from_generic_ast(tree)
 
-                instance_nodes = serialize_Module(mod)
+                instance_nodes = []
+                try:
+                    instance_nodes = serialize_Module(mod)
+                except RecursionError:
+                    print(f"\n\n")
 
-                concrete_code = python_instance.concretize(instance_nodes)
+                    print(f"""--Generic Tree--\n{
+                        generic_tree.dump(tree, 
+                            text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                        )
+                    }\n""")
+
+                    print(f"\n\n")
+                    print(f"---Source Code---")
+                    print(source_code)
+                    print(f"-------------------------")
+                    print(f"recursion error line number: {count}")
+                    print("RECURSION ERROR")
+                    return
+
+                else:
+                    concrete_code = python_instance.concretize(instance_nodes)
 
 
-                training_data = [
-                    {'lhs' : n.lhs, 'rhs' : n.rhs}
-                    for n in instance_nodes
-                ]
+                    training_data = [
+                        {'lhs' : n.lhs, 'rhs' : n.rhs}
+                        for n in instance_nodes
+                    ]
 
-                output_line = {'training_data' : training_data, 'concretized' : concrete_code}
-                write_append_res_gen(f'{name}_training.jsonl', json.dumps(output_line))
+                    output_line = {'training_data' : training_data, 'concretized' : concrete_code}
+                    write_append_res_gen(f'{name}_training.jsonl', json.dumps(output_line))
 
             except Exception as x:
 
