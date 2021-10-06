@@ -1,0 +1,2631 @@
+{
+    "Module": [
+        {
+            "name": "Module",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "CompareRight": [
+        {
+            "name": "CompareRight",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "op",
+                    "nonterminal": "cmpop",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "rand",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "ExceptHandler": [
+        {
+            "name": "ExceptHandler",
+            "leader": "except ",
+            "children": [
+                {
+                    "alias": "arg",
+                    "nonterminal": "except_arg",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "Param": [
+        {
+            "name": "Param",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "id",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "type",
+                    "nonterminal": "param_type",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "default",
+                    "nonterminal": "param_default",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "Field": [
+        {
+            "name": "Field",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "key",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "ImportName": [
+        {
+            "name": "ImportName",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "name",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "as_name",
+                    "nonterminal": "alias",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "Identifier": [
+        {
+            "name": "Identifier",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "symbol",
+                    "nonterminal": "str",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "Withitem": [
+        {
+            "name": "Withitem",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "contet",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " as "
+                },
+                {
+                    "alias": "target",
+                    "nonterminal": "alias_expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "ClassDef": [
+        {
+            "name": "ClassDef",
+            "leader": "class ",
+            "children": [
+                {
+                    "alias": "name",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "bs",
+                    "nonterminal": "bases",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "ElifBlock": [
+        {
+            "name": "ElifBlock",
+            "leader": "elif ",
+            "children": [
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "ElseBlock": [
+        {
+            "name": "ElseBlock",
+            "leader": "else:",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "FinallyBlock": [
+        {
+            "name": "FinallyBlock",
+            "leader": "finally:",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "return_type": [
+        {
+            "name": "SomeReturnType",
+            "leader": " -> ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoReturnType",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "module_id": [
+        {
+            "name": "SomeModuleId",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoModuleId",
+            "leader": ". ",
+            "children": []
+        }
+    ],
+    "except_arg": [
+        {
+            "name": "SomeExceptArg",
+            "leader": " ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SomeExceptArgName",
+            "leader": " ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " as "
+                },
+                {
+                    "alias": "name",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoExceptArg",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "param_type": [
+        {
+            "name": "SomeParamType",
+            "leader": " : ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoParamType",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "param_default": [
+        {
+            "name": "SomeParamDefault",
+            "leader": " = ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoParamDefault",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "parameters_d": [
+        {
+            "name": "ConsKwParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "parameters_d",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleKwParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "DictionarySplatParam",
+            "leader": "**",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "parameters_c": [
+        {
+            "name": "SingleListSplatParam",
+            "leader": "*",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "TransListSplatParam",
+            "leader": "*",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "parameters_d",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ParamsD",
+            "leader": "*, ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "parameters_d",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "parameters_b": [
+        {
+            "name": "ConsParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "parameters_b",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ParamsC",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "parameters_c",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "parameters": [
+        {
+            "name": "ParamsA",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "parameters_a",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ParamsB",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "parameters_b",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoParam",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "parameters_a": [
+        {
+            "name": "ConsPosParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "parameters_a",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SinglePosParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ", /"
+                }
+            ]
+        },
+        {
+            "name": "TransPosParam",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine",
+                    "follower": ", /, "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "parameters_b",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "keyword": [
+        {
+            "name": "NamedKeyword",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "name",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": " = "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SplatKeyword",
+            "leader": "**",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "alias": [
+        {
+            "name": "SomeAlias",
+            "leader": " as ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoAlias",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "alias_expr": [
+        {
+            "name": "SomeAliasExpr",
+            "leader": " as ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoAliasExpr",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "bases": [
+        {
+            "name": "SomeBases",
+            "leader": "(",
+            "children": [
+                {
+                    "alias": "bases",
+                    "nonterminal": "bases_a",
+                    "format": "InLine",
+                    "follower": ")"
+                }
+            ]
+        },
+        {
+            "name": "NoBases",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "bases_a": [
+        {
+            "name": "ConsBase",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "bases_a",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleBase",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "KeywordsBase",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "kws",
+                    "nonterminal": "keywords",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "keywords": [
+        {
+            "name": "ConsKeyword",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "keyword",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "keywords",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleKeyword",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "keyword",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "comparisons": [
+        {
+            "name": "ConsCompareRight",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "CompareRight",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "comparisons",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleCompareRight",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "CompareRight",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "option_expr": [
+        {
+            "name": "SomeExpr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoExpr",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "comma_exprs": [
+        {
+            "name": "ConsExpr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "comma_exprs",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleExpr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "target_exprs": [
+        {
+            "name": "ConsTargetExpr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " = "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "target_exprs",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleTargetExpr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "decorators": [
+        {
+            "name": "ConsDec",
+            "leader": "@",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "decorators",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoDec",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "constraint_filters": [
+        {
+            "name": "ConsFilter",
+            "leader": "if ",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "expr",
+                    "format": "NewLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "constraint_filters",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleFilter",
+            "leader": "if ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoFilter",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "sequence_str": [
+        {
+            "name": "ConsStr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "str",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "sequence_str",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleStr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "str",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "arguments": [
+        {
+            "name": "ConsArg",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "arguments",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleArg",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "KeywordsArg",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "kws",
+                    "nonterminal": "keywords",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "dictionary_contents": [
+        {
+            "name": "ConsField",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Field",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "dictionary_contents",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleField",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Field",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "sequence_Identifier": [
+        {
+            "name": "ConsId",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "sequence_Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleId",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "sequence_ImportName": [
+        {
+            "name": "ConsImportName",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "ImportName",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "sequence_ImportName",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleImportName",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "ImportName",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "sequence_Withitem": [
+        {
+            "name": "ConsWithitem",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "Withitem",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "sequence_Withitem",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleWithitem",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "Withitem",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "statements": [
+        {
+            "name": "ConsStmt",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "stmt",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "statements",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleStmt",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "stmt",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "comprehension_constraints": [
+        {
+            "name": "ConsConstraint",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "constraint",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "comprehension_constraints",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleConstraint",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "constraint",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "sequence_ExceptHandler": [
+        {
+            "name": "ConsExceptHandler",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "head",
+                    "nonterminal": "ExceptHandler",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "sequence_ExceptHandler",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "SingleExceptHandler",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "ExceptHandler",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "conditions": [
+        {
+            "name": "ElifCond",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "ElifBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "tail",
+                    "nonterminal": "conditions",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ElseCond",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "ElseBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NoCond",
+            "leader": "",
+            "children": []
+        }
+    ],
+    "function_def": [
+        {
+            "name": "FunctionDef",
+            "leader": "def ",
+            "children": [
+                {
+                    "alias": "name",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": "("
+                },
+                {
+                    "alias": "params",
+                    "nonterminal": "parameters",
+                    "format": "InLine",
+                    "follower": ")"
+                },
+                {
+                    "alias": "ret_typ",
+                    "nonterminal": "return_type",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "AsyncFunctionDef",
+            "leader": "def ",
+            "children": [
+                {
+                    "alias": "name",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": "("
+                },
+                {
+                    "alias": "params",
+                    "nonterminal": "parameters",
+                    "format": "InLine",
+                    "follower": ")"
+                },
+                {
+                    "alias": "ret_typ",
+                    "nonterminal": "return_type",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "stmt": [
+        {
+            "name": "DecFunctionDef",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "decs",
+                    "nonterminal": "decorators",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "fun_def",
+                    "nonterminal": "function_def",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "DecAsyncFunctionDef",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "decs",
+                    "nonterminal": "decorators",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "fun_def",
+                    "nonterminal": "function_def",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "DecClassDef",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "decs",
+                    "nonterminal": "decorators",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "class_def",
+                    "nonterminal": "ClassDef",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ReturnSomething",
+            "leader": "return ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Return",
+            "leader": "return",
+            "children": []
+        },
+        {
+            "name": "Delete",
+            "leader": "del",
+            "children": [
+                {
+                    "alias": "targets",
+                    "nonterminal": "comma_exprs",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Assign",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "targets",
+                    "nonterminal": "target_exprs",
+                    "format": "InLine",
+                    "follower": " = "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "AugAssign",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "op",
+                    "nonterminal": "operator",
+                    "format": "InLine",
+                    "follower": "= "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "TypedAssign",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "type",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " = "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "TypedDeclare",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "type",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "For",
+            "leader": "for ",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " in "
+                },
+                {
+                    "alias": "iter",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ForElse",
+            "leader": "for ",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " in "
+                },
+                {
+                    "alias": "iter",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "ElseBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "AsyncFor",
+            "leader": "async for ",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " in "
+                },
+                {
+                    "alias": "iter",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "AsyncForElse",
+            "leader": "async for ",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " in "
+                },
+                {
+                    "alias": "iter",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "ElseBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "While",
+            "leader": "while ",
+            "children": [
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ": "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "WhileElse",
+            "leader": "while ",
+            "children": [
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ": "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "ElseBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "If",
+            "leader": "if ",
+            "children": [
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ": "
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "conditions",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "With",
+            "leader": "with ",
+            "children": [
+                {
+                    "alias": "items",
+                    "nonterminal": "sequence_Withitem",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "AsyncWith",
+            "leader": "async with ",
+            "children": [
+                {
+                    "alias": "items",
+                    "nonterminal": "sequence_Withitem",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Raise",
+            "leader": "raise",
+            "children": []
+        },
+        {
+            "name": "RaiseExc",
+            "leader": "raise ",
+            "children": [
+                {
+                    "alias": "exc",
+                    "nonterminal": "expr",
+                    "format": "IndentLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "RaiseFrom",
+            "leader": "raise ",
+            "children": [
+                {
+                    "alias": "exc",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " from "
+                },
+                {
+                    "alias": "caus",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Try",
+            "leader": "try:",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "handlers",
+                    "nonterminal": "sequence_ExceptHandler",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "TryElse",
+            "leader": "try:",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "handlers",
+                    "nonterminal": "sequence_ExceptHandler",
+                    "format": "NewLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "ElseBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "TryFin",
+            "leader": "try:",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "handlers",
+                    "nonterminal": "sequence_ExceptHandler",
+                    "format": "NewLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "fin",
+                    "nonterminal": "FinallyBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "TryElseFin",
+            "leader": "try:",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "handlers",
+                    "nonterminal": "sequence_ExceptHandler",
+                    "format": "NewLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "ElseBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "fin",
+                    "nonterminal": "FinallyBlock",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Assert",
+            "leader": "assert ",
+            "children": [
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "AssertMsg",
+            "leader": "assert ",
+            "children": [
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ", "
+                },
+                {
+                    "alias": "msg",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Import",
+            "leader": "import ",
+            "children": [
+                {
+                    "alias": "names",
+                    "nonterminal": "sequence_ImportName",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ImportFrom",
+            "leader": "from ",
+            "children": [
+                {
+                    "alias": "module",
+                    "nonterminal": "module_id",
+                    "format": "InLine",
+                    "follower": " import "
+                },
+                {
+                    "alias": "names",
+                    "nonterminal": "sequence_ImportName",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ImportWildCard",
+            "leader": "from ",
+            "children": [
+                {
+                    "alias": "module",
+                    "nonterminal": "module_id",
+                    "format": "InLine",
+                    "follower": " import *"
+                }
+            ]
+        },
+        {
+            "name": "Global",
+            "leader": "global ",
+            "children": [
+                {
+                    "alias": "names",
+                    "nonterminal": "sequence_Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Nonlocal",
+            "leader": "nonlocal ",
+            "children": [
+                {
+                    "alias": "names",
+                    "nonterminal": "sequence_Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Expr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Pass",
+            "leader": "pass",
+            "children": []
+        },
+        {
+            "name": "Break",
+            "leader": "break",
+            "children": []
+        },
+        {
+            "name": "Continue",
+            "leader": "continue",
+            "children": []
+        }
+    ],
+    "expr": [
+        {
+            "name": "BoolOp",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "left",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "op",
+                    "nonterminal": "boolop",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "right",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "NamedExpr",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " := "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "BinOp",
+            "leader": "(",
+            "children": [
+                {
+                    "alias": "left",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "op",
+                    "nonterminal": "operator",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "right",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ")"
+                }
+            ]
+        },
+        {
+            "name": "UnaryOp",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "op",
+                    "nonterminal": "unaryop",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "right",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Lambda",
+            "leader": "lambda ",
+            "children": [
+                {
+                    "alias": "params",
+                    "nonterminal": "parameters",
+                    "format": "InLine",
+                    "follower": " :"
+                },
+                {
+                    "alias": "body",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "IfExp",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "body",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": "if "
+                },
+                {
+                    "alias": "test",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " else"
+                },
+                {
+                    "alias": "orelse",
+                    "nonterminal": "expr",
+                    "format": "NewLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Dictionary",
+            "leader": "{",
+            "children": [
+                {
+                    "alias": "contents",
+                    "nonterminal": "dictionary_contents",
+                    "format": "IndentLine",
+                    "follower": "}"
+                }
+            ]
+        },
+        {
+            "name": "EmptyDictionary",
+            "leader": "{}",
+            "children": []
+        },
+        {
+            "name": "Set",
+            "leader": "{",
+            "children": [
+                {
+                    "alias": "contents",
+                    "nonterminal": "comma_exprs",
+                    "format": "IndentLine",
+                    "follower": "}"
+                }
+            ]
+        },
+        {
+            "name": "ListComp",
+            "leader": "[",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "constraints",
+                    "nonterminal": "comprehension_constraints",
+                    "format": "IndentLine",
+                    "follower": "]"
+                }
+            ]
+        },
+        {
+            "name": "SetComp",
+            "leader": "{",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "constraints",
+                    "nonterminal": "comprehension_constraints",
+                    "format": "IndentLine",
+                    "follower": "}"
+                }
+            ]
+        },
+        {
+            "name": "DictionaryComp",
+            "leader": "{",
+            "children": [
+                {
+                    "alias": "key",
+                    "nonterminal": "expr",
+                    "format": "IndentLine",
+                    "follower": " : "
+                },
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "constraints",
+                    "nonterminal": "comprehension_constraints",
+                    "format": "IndentLine",
+                    "follower": "}"
+                }
+            ]
+        },
+        {
+            "name": "GeneratorExp",
+            "leader": "(",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "IndentLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "constraints",
+                    "nonterminal": "comprehension_constraints",
+                    "format": "IndentLine",
+                    "follower": ")"
+                }
+            ]
+        },
+        {
+            "name": "Await",
+            "leader": "await ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "YieldNothing",
+            "leader": "yield",
+            "children": []
+        },
+        {
+            "name": "Yield",
+            "leader": "yield ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "YieldFrom",
+            "leader": "yield from ",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Compare",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "left",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " "
+                },
+                {
+                    "alias": "comps",
+                    "nonterminal": "comparisons",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Call",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "func",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": "()"
+                }
+            ]
+        },
+        {
+            "name": "CallArgs",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "func",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": "("
+                },
+                {
+                    "alias": "args",
+                    "nonterminal": "arguments",
+                    "format": "InLine",
+                    "follower": ")"
+                }
+            ]
+        },
+        {
+            "name": "Integer",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "str",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Float",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "str",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "ConcatString",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "sequence_str",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "True_",
+            "leader": "True",
+            "children": []
+        },
+        {
+            "name": "False_",
+            "leader": "False",
+            "children": []
+        },
+        {
+            "name": "None_",
+            "leader": "None",
+            "children": []
+        },
+        {
+            "name": "Ellip",
+            "leader": "...",
+            "children": []
+        },
+        {
+            "name": "Attribute",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": "."
+                },
+                {
+                    "alias": "attr",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Subscript",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": "["
+                },
+                {
+                    "alias": "slice",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": "]"
+                }
+            ]
+        },
+        {
+            "name": "Starred",
+            "leader": "*",
+            "children": [
+                {
+                    "alias": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Name",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "id",
+                    "nonterminal": "Identifier",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "List",
+            "leader": "[",
+            "children": [
+                {
+                    "alias": "contents",
+                    "nonterminal": "comma_exprs",
+                    "format": "InLine",
+                    "follower": "]"
+                }
+            ]
+        },
+        {
+            "name": "EmptyList",
+            "leader": "[]",
+            "children": []
+        },
+        {
+            "name": "Tuple",
+            "leader": "(",
+            "children": [
+                {
+                    "alias": "contents",
+                    "nonterminal": "comma_exprs",
+                    "format": "InLine",
+                    "follower": ")"
+                }
+            ]
+        },
+        {
+            "name": "EmptyTuple",
+            "leader": "()",
+            "children": []
+        },
+        {
+            "name": "Slice",
+            "leader": "",
+            "children": [
+                {
+                    "alias": "lower",
+                    "nonterminal": "option_expr",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "upper",
+                    "nonterminal": "option_expr",
+                    "format": "InLine",
+                    "follower": ":"
+                },
+                {
+                    "alias": "step",
+                    "nonterminal": "option_expr",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ],
+    "boolop": [
+        {
+            "name": "And",
+            "leader": "and",
+            "children": []
+        },
+        {
+            "name": "Or",
+            "leader": "or",
+            "children": []
+        }
+    ],
+    "operator": [
+        {
+            "name": "Add",
+            "leader": "+",
+            "children": []
+        },
+        {
+            "name": "Sub",
+            "leader": "-",
+            "children": []
+        },
+        {
+            "name": "Mult",
+            "leader": "*",
+            "children": []
+        },
+        {
+            "name": "MatMult",
+            "leader": "@",
+            "children": []
+        },
+        {
+            "name": "Div",
+            "leader": "/",
+            "children": []
+        },
+        {
+            "name": "Mod",
+            "leader": "%",
+            "children": []
+        },
+        {
+            "name": "Pow",
+            "leader": "**",
+            "children": []
+        },
+        {
+            "name": "LShift",
+            "leader": "<<",
+            "children": []
+        },
+        {
+            "name": "RShift",
+            "leader": ">>",
+            "children": []
+        },
+        {
+            "name": "BitOr",
+            "leader": "|",
+            "children": []
+        },
+        {
+            "name": "BitXor",
+            "leader": "^",
+            "children": []
+        },
+        {
+            "name": "BitAnd",
+            "leader": "&",
+            "children": []
+        },
+        {
+            "name": "FloorDiv",
+            "leader": "//",
+            "children": []
+        }
+    ],
+    "unaryop": [
+        {
+            "name": "Invert",
+            "leader": "~",
+            "children": []
+        },
+        {
+            "name": "Not",
+            "leader": "not",
+            "children": []
+        },
+        {
+            "name": "UAdd",
+            "leader": "+",
+            "children": []
+        },
+        {
+            "name": "USub",
+            "leader": "-",
+            "children": []
+        }
+    ],
+    "cmpop": [
+        {
+            "name": "Eq",
+            "leader": "==",
+            "children": []
+        },
+        {
+            "name": "NotEq",
+            "leader": "!=",
+            "children": []
+        },
+        {
+            "name": "Lt",
+            "leader": "<",
+            "children": []
+        },
+        {
+            "name": "LtE",
+            "leader": "<=",
+            "children": []
+        },
+        {
+            "name": "Gt",
+            "leader": ">",
+            "children": []
+        },
+        {
+            "name": "GtE",
+            "leader": ">=",
+            "children": []
+        },
+        {
+            "name": "Is",
+            "leader": "is",
+            "children": []
+        },
+        {
+            "name": "IsNot",
+            "leader": "is not",
+            "children": []
+        },
+        {
+            "name": "In",
+            "leader": "in",
+            "children": []
+        },
+        {
+            "name": "NotIn",
+            "leader": "not in",
+            "children": []
+        }
+    ],
+    "constraint": [
+        {
+            "name": "AsyncConstraint",
+            "leader": "async for ",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " in "
+                },
+                {
+                    "alias": "search_space",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "filts",
+                    "nonterminal": "constraint_filters",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        },
+        {
+            "name": "Constraint",
+            "leader": "for ",
+            "children": [
+                {
+                    "alias": "target",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": " in "
+                },
+                {
+                    "alias": "search_space",
+                    "nonterminal": "expr",
+                    "format": "InLine",
+                    "follower": ""
+                },
+                {
+                    "alias": "filts",
+                    "nonterminal": "constraint_filters",
+                    "format": "InLine",
+                    "follower": ""
+                }
+            ]
+        }
+    ]
+}

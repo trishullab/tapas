@@ -9,7 +9,9 @@ from abc import ABC, abstractmethod
 import inflection
 
 from lib import def_type
-from gen.line_format import line_format
+from lib.line_format import line_format
+from lib import line_format as lf
+
 
 T = TypeVar('T')
 
@@ -27,6 +29,22 @@ class Child:
     line_form: line_format 
     follower: str
 
+def to_dictionary(node: Node):
+    return {
+        'name' : node.name,
+        'leader' : node.leader,
+        'children' : [
+            {
+                'alias' : c.attr,
+                'nonterminal' : c.typ,
+                'format' : lf.to_string(c.line_form),
+                'follower' : c.follower
+
+            }
+            for c in node.children
+        ]
+
+    }
 
 def to_constructor(n : Node) -> def_type.Constructor:
     return def_type.Constructor(

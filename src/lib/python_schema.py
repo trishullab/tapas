@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from lib.schema import Node, Child
+from lib import schema
 from gen.line_format import NewLine, InLine, IndentLine
 
 unions : dict[str, list[Node]] = {
@@ -1677,6 +1678,15 @@ node_map = {
     for nodes in unions.values()
     for node in nodes 
 }
+
+grammar_dictionary = {
+    node.name : [schema.to_dictionary(node)]
+    for node in intersections
+} | {
+    name : [schema.to_dictionary(node) for node in nodes]
+    for name, nodes in unions.items()
+}
+
 
 def format() -> str:
 
