@@ -22,37 +22,63 @@ from gen.line_format import InLine, NewLine, IndentLine
 
 intersection_str = """
 def serialize_{{ node.name }}(
-    o : {{ node.name }}, depth : int = 0, alias : str = "", 
+    o : {{ node.name }}, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[inst.Node]:
-    return (
-        [inst.Node(
-            lhs = '{{ node.name }}',
-            rhs = '{{ node.name }}',
-            depth = depth,
-            alias = alias,
-            indent_width = indent_width,
-            inline = inline
-        )] +
+
+
+    result = []
+
+    @dataclass
+    class SP:
+        o : {{ node.name }} 
+        depth : int
+        relation : str
+        indent_width : int 
+        inline : bool
+
+    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, SP):
+            o = item.o
+
+            stack += [
 {% for child in node.children %}
 {% if child.typ == "str" %}
-        [inst.Node(
-            lhs = 'symbol',
-            rhs = o.{{ child.attr }},
-            depth = depth + 1,
-            alias = "{{ child.attr }}",
-            indent_width = indent_width,
-            inline = inline
-        )] +
+                [inst.Node(
+                    lhs = 'symbol',
+                    rhs = o.{{ child.attr }},
+                    depth = depth + 1,
+                    relation = "{{ child.attr }}",
+                    indent_width = indent_width,
+                    inline = inline
+                )],
+{% elif child.typ == node.name %}
+                serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
+                    inst.next_indent_width(indent_width,  {{ line_format_string(child.line_form) + "()" }}),
+                    {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+                ),
 {% else %}
-        serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
-            inst.next_indent_width(indent_width,  {{ line_format_string(child.line_form) + "()" }}),
-            {{ "True" if line_format_string(child.line_form) == "InLine()" else "False"  }},
-        ) +
+                serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
+                    inst.next_indent_width(indent_width,  {{ line_format_string(child.line_form) + "()" }}),
+                    {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+                ),
 {% endif %}
 {% endfor %}
-        []
-    )
+                [inst.Node(
+                    lhs = '{{ node.name }}',
+                    rhs = '{{ node.name }}',
+                    depth = depth,
+                    relation = relation,
+                    indent_width = indent_width,
+                    inline = inline
+                )]
+            ]
+        else:
+            result += item
+
+    return result
 """
 
 def generate_intersection_def(
@@ -69,42 +95,75 @@ def generate_intersection_def(
 
 union_str = """
 def serialize_{{ type_name }}(
-    o : {{ type_name }}, depth : int = 0, alias : str = "",
+    o : {{ type_name }}, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
 ) -> list[inst.Node]:
-    return match_{{ type_name }}(o, {{ handlers_name }}[list[inst.Node]](
+
+    result = []
+
+    @dataclass
+    class SP:
+        o : {{ type_name }} 
+        depth : int
+        relation : str
+        indent_width : int 
+        inline : bool
+
+    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    while stack:
+        item = stack.pop()
+        if isinstance(item, SP):
+            o = item.o
+
 {% for node in nodes %}
-        case_{{ node.name }} = lambda o : (
-            [inst.Node(
-                lhs = '{{ type_name }}',
-                rhs = '{{ node.name }}',
-                depth = depth,
-                alias = alias,
-                indent_width = indent_width,
-                inline = inline
-            )] +
-{% for child in node.children %}
+            def handle_{{ node.name }}(o : {{ node.name }}): 
+                nonlocal stack
+
+                stack += [
+{% for child in node.children|reverse %}
 {% if child.typ == "str" %}
-            [inst.Node(
-                lhs = 'symbol',
-                rhs = o.{{ child.attr }},
-                depth = depth + 1,
-                alias = "{{ child.attr }}",
-                indent_width = indent_width,
-                inline = inline
-            )] +
+                    [inst.Node(
+                        lhs = 'symbol',
+                        rhs = o.{{ child.attr }},
+                        depth = depth + 1,
+                        relation = "{{ child.attr }}",
+                        indent_width = indent_width,
+                        inline = inline
+                    )],
+{% elif child.typ == type_name %}
+                    SP(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
+                        inst.next_indent_width(indent_width, {{ line_format_string(child.line_form) + "()" }}),
+                        {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+                    ), 
 {% else %}
-            serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
-                inst.next_indent_width(indent_width, {{ line_format_string(child.line_form) + "()" }}),
-                {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
-            ) + 
+                    serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
+                        inst.next_indent_width(indent_width, {{ line_format_string(child.line_form) + "()" }}),
+                        {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+                    ), 
 {% endif %}
 {% endfor %}
-            []
-        ){% if not loop.last %},{% endif %}
+                    [inst.Node(
+                        lhs = '{{ type_name }}',
+                        rhs = '{{ node.name }}',
+                        depth = depth,
+                        relation = relation,
+                        indent_width = indent_width,
+                        inline = inline
+                    )]
+                ]
 
 {% endfor %}
-    ))
+
+            match_{{ type_name }}(o, {{ handlers_name }}(
+{% for node in nodes %}
+                case_{{ node.name }} = handle_{{ node.name }}{% if not loop.last %}, {% endif %} 
+{% endfor %}
+            ))
+
+        else:
+            result += item
+
+    return result
 """
 
 def generate_union_def(

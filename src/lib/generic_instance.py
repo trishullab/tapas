@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterator
+from typing import Iterator, Optional
 
 from gen.line_format import line_format, LineFormatHandlers, match_line_format
 from lib import schema
@@ -14,7 +14,7 @@ class Node:
     lhs : str
     rhs : str
     depth : int
-    alias : str
+    relation : str
     indent_width : int
     inline : bool
 
@@ -29,21 +29,13 @@ def next_indent_width(prev_iw : int, line_form : line_format) -> int:
 def dump(instance_nodes : list[Node], indent : int = 4):
     strs = [
         (
-            # node := schema_node_map[inst_node.rhs],
             indent_str := (' ' * inst_node.depth * indent),
-            alias_str := (' = .' + inst_node.alias if (isinstance(inst_node.alias, str)) else ''),
+            relation_str := (' = .' + inst_node.relation if (isinstance(inst_node.relation, str)) else ''),
             (
                 indent_str + inst_node.rhs + (' (' + inst_node.lhs  + ')' if inst_node.lhs != inst_node.rhs else '') +
-                alias_str
+                relation_str
             )
         )[-1]
-            # case_Symbol= lambda o : (
-            #     indent_str := (' ' * o.depth * indent),
-            #     alias_str := (' = .' + o.alias if (isinstance(o.alias, str)) else ''),
-            #     (
-            #         indent_str + "Symbol " + o.content + alias_str
-            #     )
-            # )[-1]
         for inst_node in instance_nodes 
     ]
     return '\n'.join(strs)
@@ -51,41 +43,42 @@ def dump(instance_nodes : list[Node], indent : int = 4):
 
 def concretize(schema_node_map : dict[str, schema.Node], instance_nodes : list[Node]) -> str:
 
+    result = ""
+
     inst_node_iter = iter(instance_nodes)
 
-    def concretize_children(parent : Node, children : list[schema.Child]) -> str:
-        if children:
-            child = children[-1]
-            s = concretize_instances()
-            follower = (
-                match_line_format(child.line_form, LineFormatHandlers[str](
-                    case_InLine = lambda _ : "",
-                    case_NewLine = lambda _ : "\n" + "    " * parent.indent_width,
-                    case_IndentLine = lambda _ : "\n" + "    " * parent.indent_width
-                )) + child.follower
-                if child.follower else
+    stack : list[Optional[str]] = [None] # None indicates to take a new node from the iterator
 
-                ""
-            )
-            suffix = concretize_children(parent, children[:-1])
-            return s + follower + suffix
-        else:
-            return ""
+    while stack:
 
-    def concretize_instances() -> str:
-        inst_node = next(inst_node_iter)
-        if (inst_node):
-            if inst_node.lhs == "symbol":
-                return inst_node.rhs
+        syntax_part : Optional[str] = stack.pop()
+        if isinstance(syntax_part, str):
+            result += syntax_part 
+        else: 
+            # take an element from the iterator
+            inst_node = next(inst_node_iter)
+            if inst_node:
+                if inst_node.lhs == "symbol":
+                    stack += [inst_node.rhs]
+                else:
+                    # add follower syntax of children to the stack
+                    schema_node = schema_node_map[inst_node.rhs]
+                    for child in reversed(schema_node.children):
+                        follower = (
+                            (match_line_format(child.line_form, LineFormatHandlers[str](
+                                case_InLine = lambda _ : "",
+                                case_NewLine = lambda _ : "\n" + "    " * inst_node.indent_width,
+                                case_IndentLine = lambda _ : "\n" + "    " * inst_node.indent_width
+                            )) + child.follower)
+                            if child.follower else
+
+                            ""
+                        )
+                        stack += [follower, None]
+
+                    prefix = "" if inst_node.inline else "\n" + "    " * inst_node.indent_width
+                    stack += [prefix + schema_node.leader]
             else:
-                schema_node = schema_node_map[inst_node.rhs]
-                prefix = "" if inst_node.inline else "\n" + "    " * inst_node.indent_width
-                return prefix + schema_node.leader + concretize_children(inst_node, schema_node.children[::-1])
-        else:
-            return ""
+                assert False
 
-    return concretize_instances()
-
-
-
-
+    return result
