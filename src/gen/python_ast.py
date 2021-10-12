@@ -37,7 +37,7 @@ class ExceptHandler:
 # type and constructor Param
 @dataclass
 class Param:
-    id : Identifier
+    id : str
     type : param_type
     default : param_default
     
@@ -54,15 +54,8 @@ class Field:
 # type and constructor ImportName
 @dataclass
 class ImportName:
-    name : Identifier
+    name : str
     as_name : alias
-    
-
-
-# type and constructor Identifier
-@dataclass
-class Identifier:
-    symbol : str
     
 
 
@@ -77,7 +70,7 @@ class Withitem:
 # type and constructor ClassDef
 @dataclass
 class ClassDef:
-    name : Identifier
+    name : str
     bs : bases
     body : statements
     
@@ -166,14 +159,14 @@ class module_id(ABC):
 
 @dataclass
 class SomeModuleId(module_id):
-    content : Identifier
+    content : str
 
     def _match(self, handlers : ModuleIdHandlers[T]) -> T:
         return handlers.case_SomeModuleId(self)
 
 
 def make_SomeModuleId(
-    content : Identifier
+    content : str
 ) -> module_id:
     return SomeModuleId(
         content
@@ -233,7 +226,7 @@ def make_SomeExceptArg(
 @dataclass
 class SomeExceptArgName(except_arg):
     content : expr
-    name : Identifier
+    name : str
 
     def _match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArgName(self)
@@ -241,7 +234,7 @@ class SomeExceptArgName(except_arg):
 
 def make_SomeExceptArgName(
     content : expr,
-    name : Identifier
+    name : str
 ) -> except_arg:
     return SomeExceptArgName(
         content,
@@ -748,7 +741,7 @@ class keyword(ABC):
 
 @dataclass
 class NamedKeyword(keyword):
-    name : Identifier
+    name : str
     content : expr
 
     def _match(self, handlers : KeywordHandlers[T]) -> T:
@@ -756,7 +749,7 @@ class NamedKeyword(keyword):
 
 
 def make_NamedKeyword(
-    name : Identifier,
+    name : str,
     content : expr
 ) -> keyword:
     return NamedKeyword(
@@ -804,14 +797,14 @@ class alias(ABC):
 
 @dataclass
 class SomeAlias(alias):
-    content : Identifier
+    content : str
 
     def _match(self, handlers : AliasHandlers[T]) -> T:
         return handlers.case_SomeAlias(self)
 
 
 def make_SomeAlias(
-    content : Identifier
+    content : str
 ) -> alias:
     return SomeAlias(
         content
@@ -1413,28 +1406,28 @@ def match_constraint_filters(o : constraint_filters, handlers : ConstraintFilter
     return o._match(handlers)
 
 
-# type sequence_str
+# type sequence_string
 @dataclass
-class sequence_str(ABC):
+class sequence_string(ABC):
     @abstractmethod
-    def _match(self, handlers : SequenceStrHandlers[T]) -> T: pass
+    def _match(self, handlers : SequenceStringHandlers[T]) -> T: pass
 
 
-# constructors for type sequence_str
+# constructors for type sequence_string
 
 @dataclass
-class ConsStr(sequence_str):
+class ConsStr(sequence_string):
     head : str
-    tail : sequence_str
+    tail : sequence_string
 
-    def _match(self, handlers : SequenceStrHandlers[T]) -> T:
+    def _match(self, handlers : SequenceStringHandlers[T]) -> T:
         return handlers.case_ConsStr(self)
 
 
 def make_ConsStr(
     head : str,
-    tail : sequence_str
-) -> sequence_str:
+    tail : sequence_string
+) -> sequence_string:
     return ConsStr(
         head,
         tail
@@ -1442,30 +1435,30 @@ def make_ConsStr(
 
 
 @dataclass
-class SingleStr(sequence_str):
+class SingleStr(sequence_string):
     content : str
 
-    def _match(self, handlers : SequenceStrHandlers[T]) -> T:
+    def _match(self, handlers : SequenceStringHandlers[T]) -> T:
         return handlers.case_SingleStr(self)
 
 
 def make_SingleStr(
     content : str
-) -> sequence_str:
+) -> sequence_string:
     return SingleStr(
         content
     )
 
 
-# case handlers for type sequence_str
+# case handlers for type sequence_string
 @dataclass
-class SequenceStrHandlers(Generic[T]):
+class SequenceStringHandlers(Generic[T]):
     case_ConsStr : Callable[[ConsStr], T]
     case_SingleStr : Callable[[SingleStr], T]
 
 
-# matching for type sequence_str
-def match_sequence_str(o : sequence_str, handlers : SequenceStrHandlers[T]) -> T :
+# matching for type sequence_string
+def match_sequence_string(o : sequence_string, handlers : SequenceStringHandlers[T]) -> T :
     return o._match(handlers)
 
 
@@ -1598,28 +1591,28 @@ def match_dictionary_contents(o : dictionary_contents, handlers : DictionaryCont
     return o._match(handlers)
 
 
-# type sequence_Identifier
+# type sequence_var
 @dataclass
-class sequence_Identifier(ABC):
+class sequence_var(ABC):
     @abstractmethod
-    def _match(self, handlers : SequenceIdentifierHandlers[T]) -> T: pass
+    def _match(self, handlers : SequenceVarHandlers[T]) -> T: pass
 
 
-# constructors for type sequence_Identifier
+# constructors for type sequence_var
 
 @dataclass
-class ConsId(sequence_Identifier):
-    head : Identifier
-    tail : sequence_Identifier
+class ConsId(sequence_var):
+    head : str
+    tail : sequence_var
 
-    def _match(self, handlers : SequenceIdentifierHandlers[T]) -> T:
+    def _match(self, handlers : SequenceVarHandlers[T]) -> T:
         return handlers.case_ConsId(self)
 
 
 def make_ConsId(
-    head : Identifier,
-    tail : sequence_Identifier
-) -> sequence_Identifier:
+    head : str,
+    tail : sequence_var
+) -> sequence_var:
     return ConsId(
         head,
         tail
@@ -1627,30 +1620,30 @@ def make_ConsId(
 
 
 @dataclass
-class SingleId(sequence_Identifier):
-    content : Identifier
+class SingleId(sequence_var):
+    content : str
 
-    def _match(self, handlers : SequenceIdentifierHandlers[T]) -> T:
+    def _match(self, handlers : SequenceVarHandlers[T]) -> T:
         return handlers.case_SingleId(self)
 
 
 def make_SingleId(
-    content : Identifier
-) -> sequence_Identifier:
+    content : str
+) -> sequence_var:
     return SingleId(
         content
     )
 
 
-# case handlers for type sequence_Identifier
+# case handlers for type sequence_var
 @dataclass
-class SequenceIdentifierHandlers(Generic[T]):
+class SequenceVarHandlers(Generic[T]):
     case_ConsId : Callable[[ConsId], T]
     case_SingleId : Callable[[SingleId], T]
 
 
-# matching for type sequence_Identifier
-def match_sequence_Identifier(o : sequence_Identifier, handlers : SequenceIdentifierHandlers[T]) -> T :
+# matching for type sequence_var
+def match_sequence_var(o : sequence_var, handlers : SequenceVarHandlers[T]) -> T :
     return o._match(handlers)
 
 
@@ -2015,7 +2008,7 @@ class function_def(ABC):
 
 @dataclass
 class FunctionDef(function_def):
-    name : Identifier
+    name : str
     params : parameters
     ret_typ : return_type
     body : statements
@@ -2025,7 +2018,7 @@ class FunctionDef(function_def):
 
 
 def make_FunctionDef(
-    name : Identifier,
+    name : str,
     params : parameters,
     ret_typ : return_type,
     body : statements
@@ -2040,7 +2033,7 @@ def make_FunctionDef(
 
 @dataclass
 class AsyncFunctionDef(function_def):
-    name : Identifier
+    name : str
     params : parameters
     ret_typ : return_type
     body : statements
@@ -2050,7 +2043,7 @@ class AsyncFunctionDef(function_def):
 
 
 def make_AsyncFunctionDef(
-    name : Identifier,
+    name : str,
     params : parameters,
     ret_typ : return_type,
     body : statements
@@ -2687,14 +2680,14 @@ def make_ImportWildCard(
 
 @dataclass
 class Global(stmt):
-    names : sequence_Identifier
+    names : sequence_var
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Global(self)
 
 
 def make_Global(
-    names : sequence_Identifier
+    names : sequence_var
 ) -> stmt:
     return Global(
         names
@@ -2703,14 +2696,14 @@ def make_Global(
 
 @dataclass
 class Nonlocal(stmt):
-    names : sequence_Identifier
+    names : sequence_var
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Nonlocal(self)
 
 
 def make_Nonlocal(
-    names : sequence_Identifier
+    names : sequence_var
 ) -> stmt:
     return Nonlocal(
         names
@@ -3224,14 +3217,14 @@ def make_Float(
 
 @dataclass
 class ConcatString(expr):
-    content : sequence_str
+    content : sequence_string
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ConcatString(self)
 
 
 def make_ConcatString(
-    content : sequence_str
+    content : sequence_string
 ) -> expr:
     return ConcatString(
         content
@@ -3293,7 +3286,7 @@ def make_Ellip(
 @dataclass
 class Attribute(expr):
     content : expr
-    attr : Identifier
+    attr : str
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Attribute(self)
@@ -3301,7 +3294,7 @@ class Attribute(expr):
 
 def make_Attribute(
     content : expr,
-    attr : Identifier
+    attr : str
 ) -> expr:
     return Attribute(
         content,
@@ -3346,14 +3339,14 @@ def make_Starred(
 
 @dataclass
 class Name(expr):
-    id : Identifier
+    id : str
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Name(self)
 
 
 def make_Name(
-    id : Identifier
+    id : str
 ) -> expr:
     return Name(
         id

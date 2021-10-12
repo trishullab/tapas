@@ -6,14 +6,16 @@ import os
 import pathlib
 import tree_sitter
 import json
+from gen.production_instance import InstanceHandlers, match_instance
 
 from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
 from lib.python_ast_serialize import serialize_Module
 from lib import python_instance
-from lib import generic_instance as inst 
 from lib.file import write_res, write_append_res, write_append_res_gen
+
+from lib.production_instance import instance
 
 
 
@@ -40,9 +42,9 @@ def generate(name : str):
             try:
                 mod = from_generic_ast(tree)
 
-                instance_nodes = []
+                instances = []
                 try:
-                    instance_nodes = serialize_Module(mod)
+                    instances = serialize_Module(mod)
                 except RecursionError:
                     print(f"\n\n")
 
@@ -61,16 +63,26 @@ def generate(name : str):
                     return
 
                 else:
-                    concrete_code = python_instance.concretize(instance_nodes)
+                    concrete_code = python_instance.concretize(instances)
+
+
+                    def triple_from_instance(inst : instance) -> tuple[str, str, str]:
+                        return match_instance(inst, InstanceHandlers[tuple[str, str, str]](
+                            case_Grammar=lambda o : (
+                                ("grammar", o.nonterminal, o.sequence_id)
+                            ),
+                            case_Vocab=lambda o : (
+                                ("vocab", o.choices_id, o.word)
+                            )
+                        )) 
 
 
                     training_data = [
-                        {'lhs' : n.lhs, 'rhs' : n.rhs}
-                        for n in instance_nodes
+                        triple_from_instance(i) 
+                        for i in instances
                     ]
 
-                    output_line = {'training_data' : training_data, 'concretized' : concrete_code}
-                    write_append_res_gen(f'{name}_training.jsonl', json.dumps(output_line))
+                    write_append_res_gen(f'{name}_training.txt', json.dumps(training_data) + '\n\n<|endoftext|>\n\n')
 
             except Exception as x:
 

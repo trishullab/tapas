@@ -197,7 +197,7 @@ def to_sequence_ImportName(ns : list[ImportName]) -> sequence_ImportName:
 
     return result
 
-def to_sequence_Identifier(ids : list[Identifier]) -> sequence_Identifier:
+def to_sequence_var(ids : list[str]) -> sequence_var:
     assert ids 
 
     result = SingleId(ids[-1])
@@ -267,7 +267,7 @@ def to_constraint_filters(es : list[expr]) -> constraint_filters:
 
     return result
 
-def to_sequence_str(ss : list[str]) -> sequence_str:
+def to_sequence_string(ss : list[str]) -> sequence_string:
     assert ss  
 
     result = SingleStr(ss[-1])
@@ -313,7 +313,7 @@ def from_generic_ast(node : GenericNode) -> Module:
 
 
 
-def from_generic_ast_to_Identifier(node : GenericNode) -> Identifier:
+def from_generic_ast_to_identifier(node : GenericNode) -> str:
     node.syntax_part
     if (node.syntax_part == "dotted_name"):
         children = node.children
@@ -321,9 +321,9 @@ def from_generic_ast_to_Identifier(node : GenericNode) -> Identifier:
             id.text
             for id in children
         ])
-        return Identifier(dotted_name)
+        return dotted_name
     elif (node.syntax_part == "identifier"):
-        return Identifier(node.text)
+        return node.text
     else:
        unsupported(node) 
 
@@ -337,9 +337,9 @@ def from_generic_ast_to_ImportName(node : GenericNode, alias : Optional[str] = N
             if child.syntax_part == "identifier"
         ])
         return ImportName(
-            Identifier(dotted_name),
+            (dotted_name),
             (
-                SomeAlias(Identifier(alias)) 
+                SomeAlias((alias)) 
                 if alias else 
                 NoAlias()
             )
@@ -347,9 +347,9 @@ def from_generic_ast_to_ImportName(node : GenericNode, alias : Optional[str] = N
     elif (node.syntax_part == "identifier"):
         text = node.text
         return ImportName(
-            Identifier(text),
+            (text),
             (
-                SomeAlias(Identifier(alias)) 
+                SomeAlias((alias)) 
                 if alias else 
                 NoAlias()
             )
@@ -496,7 +496,7 @@ def from_generic_ast_to_ExceptHandler(node) -> ExceptHandler:
     assert block_node
 
     expr = utils.map_option(from_generic_ast_to_expr, expr_node)
-    name = utils.map_option(from_generic_ast_to_Identifier, name_node)
+    name = utils.map_option(from_generic_ast_to_identifier, name_node)
     stmts = [
         stmt
         for stmt_node in block_node.children
@@ -634,7 +634,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
         return BinOp(left_expr, op, right_expr)
 
     elif node.syntax_part == "identifier":
-        return Name(from_generic_ast_to_Identifier(node))
+        return Name(from_generic_ast_to_identifier(node))
 
     elif (node.syntax_part == "string"):
         return ConcatString(SingleStr(node.text))
@@ -646,7 +646,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             for n in children
         ]
 
-        return ConcatString(to_sequence_str(str_values))
+        return ConcatString(to_sequence_string(str_values))
 
     elif (node.syntax_part == "integer"):
         return Integer(node.text)
@@ -677,7 +677,7 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
         expr = from_generic_ast_to_expr(expr_node)
         assert children[1].syntax_part == "."
         id_node = children[2]
-        id = from_generic_ast_to_Identifier(id_node)
+        id = from_generic_ast_to_identifier(id_node)
         return Attribute(expr, id)
 
     elif (node.syntax_part == "subscript"):
@@ -1041,7 +1041,7 @@ def from_generic_ast_to_keyword(node) -> keyword:
         assert children[1].syntax_part == "="
         value_node = children[2]
 
-        key_id = from_generic_ast_to_Identifier(key_node)
+        key_id = from_generic_ast_to_identifier(key_node)
         value_expr = from_generic_ast_to_expr(value_node)
         return NamedKeyword(key_id, value_expr)
 
@@ -1058,7 +1058,7 @@ def from_generic_ast_to_keyword(node) -> keyword:
 def from_generic_ast_to_Param(node : GenericNode) -> Param:
 
     if node.syntax_part == "identifier":
-        id = from_generic_ast_to_Identifier(node)
+        id = from_generic_ast_to_identifier(node)
         return Param(id, NoParamType(), NoParamDefault())
 
     elif node.syntax_part == "typed_parameter":
@@ -1078,19 +1078,19 @@ def from_generic_ast_to_Param(node : GenericNode) -> Param:
 
         ) 
 
-        id = from_generic_ast_to_Identifier(id_node)
+        id = from_generic_ast_to_identifier(id_node)
         assert node.children[1].syntax_part == ":"
         type_anno = from_generic_ast_to_expr(node.children[2])
         return Param(id, SomeParamType(type_anno), NoParamDefault())
 
     elif node.syntax_part == "default_parameter":
-        id = from_generic_ast_to_Identifier(node.children[0])
+        id = from_generic_ast_to_identifier(node.children[0])
         assert node.children[1].syntax_part == "="
         default_expr = from_generic_ast_to_expr(node.children[2])
         return Param(id, NoParamType(), SomeParamDefault(default_expr))
 
     elif node.syntax_part == "typed_default_parameter":
-        id = from_generic_ast_to_Identifier(node.children[0])
+        id = from_generic_ast_to_identifier(node.children[0])
         assert node.children[1].syntax_part == ":"
         type_anno = from_generic_ast_to_expr(node.children[2])
         assert node.children[3].syntax_part == "="
@@ -1099,12 +1099,12 @@ def from_generic_ast_to_Param(node : GenericNode) -> Param:
 
     elif node.syntax_part == "list_splat_pattern":
         assert node.children[0].syntax_part == "*"
-        id = from_generic_ast_to_Identifier(node.children[1])
+        id = from_generic_ast_to_identifier(node.children[1])
         return Param(id, NoParamType(), NoParamDefault())
 
     elif node.syntax_part == "dictionary_splat_pattern":
         assert node.children[0].syntax_part == "**"
-        id = from_generic_ast_to_Identifier(node.children[1])
+        id = from_generic_ast_to_identifier(node.children[1])
         return Param(id, NoParamType(), NoParamDefault())
 
     else:
@@ -1252,7 +1252,7 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
             NoModuleId()
             if children[1].syntax_part == "." else
 
-            SomeModuleId(from_generic_ast_to_Identifier(children[1]))
+            SomeModuleId(from_generic_ast_to_identifier(children[1]))
         )
 
         assert children[2].syntax_part == "import"
@@ -1270,7 +1270,7 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
     elif (node.syntax_part == "future_import_statement"):
         children = node.children
         assert children[0].syntax_part == "from"
-        id = SomeModuleId(Identifier("__future__"))
+        id = SomeModuleId(("__future__"))
         assert children[2].syntax_part == "import"
         names = to_sequence_ImportName([
             from_generic_ast_to_ImportName(n) 
@@ -1451,8 +1451,8 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
     elif (node.syntax_part == "global_statement"):
         children = node.children
         assert children[0].syntax_part == "global"
-        ids = to_sequence_Identifier([
-            from_generic_ast_to_Identifier(id_node)
+        ids = to_sequence_var([
+            from_generic_ast_to_identifier(id_node)
             for id_node in children[1:]
             if id_node.syntax_part != ","
         ])
@@ -1464,8 +1464,8 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
     elif (node.syntax_part == "nonlocal_statement"):
         children = node.children
         assert children[0].syntax_part == "nonlocal"
-        ids = to_sequence_Identifier([
-            from_generic_ast_to_Identifier(id_node)
+        ids = to_sequence_var([
+            from_generic_ast_to_identifier(id_node)
             for id_node in children[1:]
             if id_node.syntax_part != ","
         ])
@@ -1796,7 +1796,7 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
 
         assert children[0].syntax_part == "def"
         name_node = children[1]
-        name = from_generic_ast_to_Identifier(name_node)
+        name = from_generic_ast_to_identifier(name_node)
 
         params_node = children[2]
         param_group = from_generic_ast_to_parameters(params_node)
@@ -1849,7 +1849,7 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
         assert children[0].syntax_part == "class"
 
         name_node = children[1]
-        name = from_generic_ast_to_Identifier(name_node)
+        name = from_generic_ast_to_identifier(name_node)
 
         (arguments_node, block_node) = (
             (None, children[3])

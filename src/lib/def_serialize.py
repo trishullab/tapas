@@ -15,7 +15,7 @@ jinja_env = jinja2.Environment(trim_blocks=True)
 
 header = """
 from __future__ import annotations
-from lib import generic_instance as inst 
+from lib import production_instance as prod_inst 
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 """
@@ -24,7 +24,7 @@ intersection_str = """
 def serialize_{{ node.name }}(
     o : {{ node.name }}, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -37,7 +37,7 @@ def serialize_{{ node.name }}(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -45,30 +45,28 @@ def serialize_{{ node.name }}(
 
             stack += [
 {% for child in node.children %}
-{% if child.typ == "str" %}
-                [inst.Node(
-                    lhs = 'symbol',
-                    rhs = o.{{ child.attr }},
+{% if is_vocab(child) %}
+                [prod_inst.make_Vocab(
+                    choices_id = '{{ child.choices_id }}',
+                    word = o.{{ child.relation }},
                     depth = depth + 1,
-                    relation = "{{ child.attr }}",
-                    indent_width = indent_width,
-                    inline = inline
+                    relation = "{{ child.relation }}"
                 )],
-{% elif child.typ == node.name %}
-                serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
-                    inst.next_indent_width(indent_width,  {{ line_format_string(child.line_form) + "()" }}),
-                    {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+{% elif child.nonterminal == node.name %}
+                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
+                    prod_inst.next_indent_width(indent_width,  {{ line_format_string(child.format) + "()" }}),
+                    {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                 ),
 {% else %}
-                serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
-                    inst.next_indent_width(indent_width,  {{ line_format_string(child.line_form) + "()" }}),
-                    {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
+                    prod_inst.next_indent_width(indent_width,  {{ line_format_string(child.format) + "()" }}),
+                    {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                 ),
 {% endif %}
 {% endfor %}
-                [inst.Node(
-                    lhs = '{{ node.name }}',
-                    rhs = '{{ node.name }}',
+                [prod_inst.make_Grammar(
+                    nonterminal = '{{ node.name }}',
+                    sequence_id = '{{ node.name }}',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -81,6 +79,10 @@ def serialize_{{ node.name }}(
     return result
 """
 
+
+def is_vocab(o : schema.child):
+    return isinstance(o, schema.Vocab)
+
 def generate_intersection_def(
     node : schema.Node 
 ) -> str:
@@ -88,7 +90,8 @@ def generate_intersection_def(
     tmpl = jinja_env.from_string(intersection_str)
     code : str = tmpl.render(
         node = node,
-        line_format_string = line_format.to_string
+        line_format_string = line_format.to_string,
+        is_vocab = is_vocab
     )
     return code 
 
@@ -97,7 +100,7 @@ union_str = """
 def serialize_{{ type_name }}(
     o : {{ type_name }}, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -109,7 +112,7 @@ def serialize_{{ type_name }}(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -121,30 +124,28 @@ def serialize_{{ type_name }}(
 
                 stack += [
 {% for child in node.children|reverse %}
-{% if child.typ == "str" %}
-                    [inst.Node(
-                        lhs = 'symbol',
-                        rhs = o.{{ child.attr }},
+{% if is_vocab(child) %}
+                    [prod_inst.make_Vocab(
+                        choices_id = '{{ child.choices_id }}',
+                        word = o.{{ child.relation }},
                         depth = depth + 1,
-                        relation = "{{ child.attr }}",
-                        indent_width = indent_width,
-                        inline = inline
+                        relation = "{{ child.relation }}"
                     )],
-{% elif child.typ == type_name %}
-                    SP(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
-                        inst.next_indent_width(indent_width, {{ line_format_string(child.line_form) + "()" }}),
-                        {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+{% elif child.nonterminal == type_name %}
+                    SP(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
+                        prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
+                        {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                     ), 
 {% else %}
-                    serialize_{{ child.typ }}(o.{{ child.attr }}, depth + 1, "{{ child.attr }}", 
-                        inst.next_indent_width(indent_width, {{ line_format_string(child.line_form) + "()" }}),
-                        {{ "True" if line_format_string(child.line_form) == "InLine" else "False"  }},
+                    serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
+                        prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
+                        {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                     ), 
 {% endif %}
 {% endfor %}
-                    [inst.Node(
-                        lhs = '{{ type_name }}',
-                        rhs = '{{ node.name }}',
+                    [prod_inst.make_Grammar(
+                        nonterminal = '{{ type_name }}',
+                        sequence_id = '{{ node.name }}',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -177,6 +178,7 @@ def generate_union_def(
         type_name = type_name, 
         nodes = nodes,
         handlers_name = handlers_name,
-        line_format_string = line_format.to_string
+        line_format_string = line_format.to_string,
+        is_vocab = is_vocab
     )
     return code 

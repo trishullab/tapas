@@ -9,7 +9,7 @@ from lib import generic_tree
 from lib.python_ast_from_generic_ast import from_generic_ast
 from lib.python_ast_serialize import serialize_Module
 from lib import python_instance
-from lib import generic_instance as inst 
+from lib import production_instance as prod_inst 
 
     
 

@@ -9,7 +9,7 @@ from lib import training_data
 # write_res_gen('python_grammar.txt', python_schema.format())
 # write_res_gen('python_grammar.json', json.dumps(python_schema.grammar_dictionary, indent=4))
 
-# training_data.generate('mbpp')
+training_data.generate('mbpp')
 
 # apps_training_data.compile()
 
@@ -18,7 +18,7 @@ from lib import training_data
 # apps_0: update line 1362 to remove extra backslashes for newline continuation 
 # training_data.generate('apps_0')
 # training_data.generate('apps_1')
-training_data.generate('apps_2')
+# training_data.generate('apps_2')
 # training_data.generate('apps_3')
 # training_data.generate('apps_4')
 # training_data.generate('apps_5')

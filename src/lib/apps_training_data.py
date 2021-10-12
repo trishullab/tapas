@@ -11,7 +11,6 @@ from lib import generic_tree
 from lib.python_ast_from_generic_ast import from_generic_ast
 from gen.python_ast_serialize import serialize_Module
 from lib import python_instance
-from lib import generic_instance as inst 
 from lib.file import write_res, write_append_res, write_append_res_gen
 from lib import training_data
 

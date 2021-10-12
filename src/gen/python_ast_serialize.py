@@ -1,6 +1,6 @@
 
 from __future__ import annotations
-from lib import generic_instance as inst 
+from lib import production_instance as prod_inst 
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 
@@ -9,7 +9,7 @@ from gen.line_format import InLine, NewLine, IndentLine
 def serialize_Module(
     o : Module, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -22,7 +22,7 @@ def serialize_Module(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -30,12 +30,12 @@ def serialize_Module(
 
             stack += [
                 serialize_statements(o.body, depth + 1, "body", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
-                [inst.Node(
-                    lhs = 'Module',
-                    rhs = 'Module',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'Module',
+                    sequence_id = 'Module',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -51,7 +51,7 @@ def serialize_Module(
 def serialize_CompareRight(
     o : CompareRight, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -64,7 +64,7 @@ def serialize_CompareRight(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -72,16 +72,16 @@ def serialize_CompareRight(
 
             stack += [
                 serialize_cmpop(o.op, depth + 1, "op", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_expr(o.rand, depth + 1, "rand", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
-                [inst.Node(
-                    lhs = 'CompareRight',
-                    rhs = 'CompareRight',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'CompareRight',
+                    sequence_id = 'CompareRight',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -97,7 +97,7 @@ def serialize_CompareRight(
 def serialize_ExceptHandler(
     o : ExceptHandler, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -110,7 +110,7 @@ def serialize_ExceptHandler(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -118,16 +118,16 @@ def serialize_ExceptHandler(
 
             stack += [
                 serialize_except_arg(o.arg, depth + 1, "arg", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_statements(o.body, depth + 1, "body", 
-                    inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width,  IndentLine()),
                     False,
                 ),
-                [inst.Node(
-                    lhs = 'ExceptHandler',
-                    rhs = 'ExceptHandler',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'ExceptHandler',
+                    sequence_id = 'ExceptHandler',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -143,7 +143,7 @@ def serialize_ExceptHandler(
 def serialize_Param(
     o : Param, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -156,28 +156,30 @@ def serialize_Param(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
             o = item.o
 
             stack += [
-                serialize_Identifier(o.id, depth + 1, "id", 
-                    inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
+                [prod_inst.make_Vocab(
+                    choices_id = 'var',
+                    word = o.id,
+                    depth = depth + 1,
+                    relation = "id"
+                )],
                 serialize_param_type(o.type, depth + 1, "type", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_param_default(o.default, depth + 1, "default", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
-                [inst.Node(
-                    lhs = 'Param',
-                    rhs = 'Param',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'Param',
+                    sequence_id = 'Param',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -193,7 +195,7 @@ def serialize_Param(
 def serialize_Field(
     o : Field, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -206,7 +208,7 @@ def serialize_Field(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -214,16 +216,16 @@ def serialize_Field(
 
             stack += [
                 serialize_expr(o.key, depth + 1, "key", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_expr(o.content, depth + 1, "content", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
-                [inst.Node(
-                    lhs = 'Field',
-                    rhs = 'Field',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'Field',
+                    sequence_id = 'Field',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -239,7 +241,7 @@ def serialize_Field(
 def serialize_ImportName(
     o : ImportName, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -252,70 +254,26 @@ def serialize_ImportName(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
             o = item.o
 
             stack += [
-                serialize_Identifier(o.name, depth + 1, "name", 
-                    inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
-                serialize_alias(o.as_name, depth + 1, "as_name", 
-                    inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
-                [inst.Node(
-                    lhs = 'ImportName',
-                    rhs = 'ImportName',
-                    depth = depth,
-                    relation = relation,
-                    indent_width = indent_width,
-                    inline = inline
-                )]
-            ]
-        else:
-            result += item
-
-    return result
-
-
-def serialize_Identifier(
-    o : Identifier, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
-
-
-    result = []
-
-    @dataclass
-    class SP:
-        o : Identifier 
-        depth : int
-        relation : str
-        indent_width : int 
-        inline : bool
-
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP):
-            o = item.o
-
-            stack += [
-                [inst.Node(
-                    lhs = 'symbol',
-                    rhs = o.symbol,
+                [prod_inst.make_Vocab(
+                    choices_id = 'module_identifier',
+                    word = o.name,
                     depth = depth + 1,
-                    relation = "symbol",
-                    indent_width = indent_width,
-                    inline = inline
+                    relation = "name"
                 )],
-                [inst.Node(
-                    lhs = 'Identifier',
-                    rhs = 'Identifier',
+                serialize_alias(o.as_name, depth + 1, "as_name", 
+                    prod_inst.next_indent_width(indent_width,  InLine()),
+                    True,
+                ),
+                [prod_inst.make_Grammar(
+                    nonterminal = 'ImportName',
+                    sequence_id = 'ImportName',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -331,7 +289,7 @@ def serialize_Identifier(
 def serialize_Withitem(
     o : Withitem, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -344,7 +302,7 @@ def serialize_Withitem(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -352,16 +310,16 @@ def serialize_Withitem(
 
             stack += [
                 serialize_expr(o.contet, depth + 1, "contet", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_alias_expr(o.target, depth + 1, "target", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
-                [inst.Node(
-                    lhs = 'Withitem',
-                    rhs = 'Withitem',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'Withitem',
+                    sequence_id = 'Withitem',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -377,7 +335,7 @@ def serialize_Withitem(
 def serialize_ClassDef(
     o : ClassDef, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -390,28 +348,30 @@ def serialize_ClassDef(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
             o = item.o
 
             stack += [
-                serialize_Identifier(o.name, depth + 1, "name", 
-                    inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
+                [prod_inst.make_Vocab(
+                    choices_id = 'class_name',
+                    word = o.name,
+                    depth = depth + 1,
+                    relation = "name"
+                )],
                 serialize_bases(o.bs, depth + 1, "bs", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_statements(o.body, depth + 1, "body", 
-                    inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width,  IndentLine()),
                     False,
                 ),
-                [inst.Node(
-                    lhs = 'ClassDef',
-                    rhs = 'ClassDef',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'ClassDef',
+                    sequence_id = 'ClassDef',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -427,7 +387,7 @@ def serialize_ClassDef(
 def serialize_ElifBlock(
     o : ElifBlock, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -440,7 +400,7 @@ def serialize_ElifBlock(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -448,16 +408,16 @@ def serialize_ElifBlock(
 
             stack += [
                 serialize_expr(o.test, depth + 1, "test", 
-                    inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width,  InLine()),
                     True,
                 ),
                 serialize_statements(o.body, depth + 1, "body", 
-                    inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width,  IndentLine()),
                     False,
                 ),
-                [inst.Node(
-                    lhs = 'ElifBlock',
-                    rhs = 'ElifBlock',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'ElifBlock',
+                    sequence_id = 'ElifBlock',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -473,7 +433,7 @@ def serialize_ElifBlock(
 def serialize_ElseBlock(
     o : ElseBlock, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -486,7 +446,7 @@ def serialize_ElseBlock(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -494,12 +454,12 @@ def serialize_ElseBlock(
 
             stack += [
                 serialize_statements(o.body, depth + 1, "body", 
-                    inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width,  IndentLine()),
                     False,
                 ),
-                [inst.Node(
-                    lhs = 'ElseBlock',
-                    rhs = 'ElseBlock',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'ElseBlock',
+                    sequence_id = 'ElseBlock',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -515,7 +475,7 @@ def serialize_ElseBlock(
 def serialize_FinallyBlock(
     o : FinallyBlock, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
 
     result = []
@@ -528,7 +488,7 @@ def serialize_FinallyBlock(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -536,12 +496,12 @@ def serialize_FinallyBlock(
 
             stack += [
                 serialize_statements(o.body, depth + 1, "body", 
-                    inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width,  IndentLine()),
                     False,
                 ),
-                [inst.Node(
-                    lhs = 'FinallyBlock',
-                    rhs = 'FinallyBlock',
+                [prod_inst.make_Grammar(
+                    nonterminal = 'FinallyBlock',
+                    sequence_id = 'FinallyBlock',
                     depth = depth,
                     relation = relation,
                     indent_width = indent_width,
@@ -557,7 +517,7 @@ def serialize_FinallyBlock(
 def serialize_return_type(
     o : return_type, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -569,7 +529,7 @@ def serialize_return_type(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -580,12 +540,12 @@ def serialize_return_type(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'return_type',
-                        rhs = 'SomeReturnType',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'return_type',
+                        sequence_id = 'SomeReturnType',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -597,9 +557,9 @@ def serialize_return_type(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'return_type',
-                        rhs = 'NoReturnType',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'return_type',
+                        sequence_id = 'NoReturnType',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -622,7 +582,7 @@ def serialize_return_type(
 def serialize_module_id(
     o : module_id, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -634,7 +594,7 @@ def serialize_module_id(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -644,13 +604,15 @@ def serialize_module_id(
                 nonlocal stack
 
                 stack += [
-                    serialize_Identifier(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'module_id',
-                        rhs = 'SomeModuleId',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'module_name',
+                        word = o.content,
+                        depth = depth + 1,
+                        relation = "content"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'module_id',
+                        sequence_id = 'SomeModuleId',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -662,9 +624,9 @@ def serialize_module_id(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'module_id',
-                        rhs = 'NoModuleId',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'module_id',
+                        sequence_id = 'NoModuleId',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -687,7 +649,7 @@ def serialize_module_id(
 def serialize_except_arg(
     o : except_arg, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -699,7 +661,7 @@ def serialize_except_arg(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -710,12 +672,12 @@ def serialize_except_arg(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'except_arg',
-                        rhs = 'SomeExceptArg',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'except_arg',
+                        sequence_id = 'SomeExceptArg',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -727,17 +689,19 @@ def serialize_except_arg(
                 nonlocal stack
 
                 stack += [
-                    serialize_Identifier(o.name, depth + 1, "name", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
+                    [prod_inst.make_Vocab(
+                        choices_id = 'var',
+                        word = o.name,
+                        depth = depth + 1,
+                        relation = "name"
+                    )],
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'except_arg',
-                        rhs = 'SomeExceptArgName',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'except_arg',
+                        sequence_id = 'SomeExceptArgName',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -749,9 +713,9 @@ def serialize_except_arg(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'except_arg',
-                        rhs = 'NoExceptArg',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'except_arg',
+                        sequence_id = 'NoExceptArg',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -775,7 +739,7 @@ def serialize_except_arg(
 def serialize_param_type(
     o : param_type, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -787,7 +751,7 @@ def serialize_param_type(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -798,12 +762,12 @@ def serialize_param_type(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'param_type',
-                        rhs = 'SomeParamType',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'param_type',
+                        sequence_id = 'SomeParamType',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -815,9 +779,9 @@ def serialize_param_type(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'param_type',
-                        rhs = 'NoParamType',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'param_type',
+                        sequence_id = 'NoParamType',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -840,7 +804,7 @@ def serialize_param_type(
 def serialize_param_default(
     o : param_default, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -852,7 +816,7 @@ def serialize_param_default(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -863,12 +827,12 @@ def serialize_param_default(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'param_default',
-                        rhs = 'SomeParamDefault',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'param_default',
+                        sequence_id = 'SomeParamDefault',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -880,9 +844,9 @@ def serialize_param_default(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'param_default',
-                        rhs = 'NoParamDefault',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'param_default',
+                        sequence_id = 'NoParamDefault',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -905,7 +869,7 @@ def serialize_param_default(
 def serialize_parameters_d(
     o : parameters_d, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -917,7 +881,7 @@ def serialize_parameters_d(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -928,16 +892,16 @@ def serialize_parameters_d(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_Param(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_d',
-                        rhs = 'ConsKwParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_d',
+                        sequence_id = 'ConsKwParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -950,12 +914,12 @@ def serialize_parameters_d(
 
                 stack += [
                     serialize_Param(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_d',
-                        rhs = 'SingleKwParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_d',
+                        sequence_id = 'SingleKwParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -968,12 +932,12 @@ def serialize_parameters_d(
 
                 stack += [
                     serialize_Param(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_d',
-                        rhs = 'DictionarySplatParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_d',
+                        sequence_id = 'DictionarySplatParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -997,7 +961,7 @@ def serialize_parameters_d(
 def serialize_parameters_c(
     o : parameters_c, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1009,7 +973,7 @@ def serialize_parameters_c(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1020,12 +984,12 @@ def serialize_parameters_c(
 
                 stack += [
                     serialize_Param(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_c',
-                        rhs = 'SingleListSplatParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_c',
+                        sequence_id = 'SingleListSplatParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1038,16 +1002,16 @@ def serialize_parameters_c(
 
                 stack += [
                     serialize_parameters_d(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_Param(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_c',
-                        rhs = 'TransListSplatParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_c',
+                        sequence_id = 'TransListSplatParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1060,12 +1024,12 @@ def serialize_parameters_c(
 
                 stack += [
                     serialize_parameters_d(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_c',
-                        rhs = 'ParamsD',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_c',
+                        sequence_id = 'ParamsD',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1089,7 +1053,7 @@ def serialize_parameters_c(
 def serialize_parameters_b(
     o : parameters_b, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1101,7 +1065,7 @@ def serialize_parameters_b(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1112,16 +1076,16 @@ def serialize_parameters_b(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_Param(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_b',
-                        rhs = 'ConsParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_b',
+                        sequence_id = 'ConsParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1134,12 +1098,12 @@ def serialize_parameters_b(
 
                 stack += [
                     serialize_Param(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_b',
-                        rhs = 'SingleParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_b',
+                        sequence_id = 'SingleParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1152,12 +1116,12 @@ def serialize_parameters_b(
 
                 stack += [
                     serialize_parameters_c(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_b',
-                        rhs = 'ParamsC',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_b',
+                        sequence_id = 'ParamsC',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1181,7 +1145,7 @@ def serialize_parameters_b(
 def serialize_parameters(
     o : parameters, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1193,7 +1157,7 @@ def serialize_parameters(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1204,12 +1168,12 @@ def serialize_parameters(
 
                 stack += [
                     serialize_parameters_a(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters',
-                        rhs = 'ParamsA',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters',
+                        sequence_id = 'ParamsA',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1222,12 +1186,12 @@ def serialize_parameters(
 
                 stack += [
                     serialize_parameters_b(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters',
-                        rhs = 'ParamsB',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters',
+                        sequence_id = 'ParamsB',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1239,9 +1203,9 @@ def serialize_parameters(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'parameters',
-                        rhs = 'NoParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters',
+                        sequence_id = 'NoParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1265,7 +1229,7 @@ def serialize_parameters(
 def serialize_parameters_a(
     o : parameters_a, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1277,7 +1241,7 @@ def serialize_parameters_a(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1288,16 +1252,16 @@ def serialize_parameters_a(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_Param(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_a',
-                        rhs = 'ConsPosParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_a',
+                        sequence_id = 'ConsPosParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1310,12 +1274,12 @@ def serialize_parameters_a(
 
                 stack += [
                     serialize_Param(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_a',
-                        rhs = 'SinglePosParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_a',
+                        sequence_id = 'SinglePosParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1328,16 +1292,16 @@ def serialize_parameters_a(
 
                 stack += [
                     serialize_parameters_b(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_Param(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'parameters_a',
-                        rhs = 'TransPosParam',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'parameters_a',
+                        sequence_id = 'TransPosParam',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1361,7 +1325,7 @@ def serialize_parameters_a(
 def serialize_keyword(
     o : keyword, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1373,7 +1337,7 @@ def serialize_keyword(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1384,16 +1348,18 @@ def serialize_keyword(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    serialize_Identifier(o.name, depth + 1, "name", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'keyword',
-                        rhs = 'NamedKeyword',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'var',
+                        word = o.name,
+                        depth = depth + 1,
+                        relation = "name"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'keyword',
+                        sequence_id = 'NamedKeyword',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1406,12 +1372,12 @@ def serialize_keyword(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'keyword',
-                        rhs = 'SplatKeyword',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'keyword',
+                        sequence_id = 'SplatKeyword',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1434,7 +1400,7 @@ def serialize_keyword(
 def serialize_alias(
     o : alias, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1446,7 +1412,7 @@ def serialize_alias(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1456,13 +1422,15 @@ def serialize_alias(
                 nonlocal stack
 
                 stack += [
-                    serialize_Identifier(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'alias',
-                        rhs = 'SomeAlias',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'var',
+                        word = o.content,
+                        depth = depth + 1,
+                        relation = "content"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'alias',
+                        sequence_id = 'SomeAlias',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1474,9 +1442,9 @@ def serialize_alias(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'alias',
-                        rhs = 'NoAlias',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'alias',
+                        sequence_id = 'NoAlias',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1499,7 +1467,7 @@ def serialize_alias(
 def serialize_alias_expr(
     o : alias_expr, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1511,7 +1479,7 @@ def serialize_alias_expr(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1522,12 +1490,12 @@ def serialize_alias_expr(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'alias_expr',
-                        rhs = 'SomeAliasExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'alias_expr',
+                        sequence_id = 'SomeAliasExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1539,9 +1507,9 @@ def serialize_alias_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'alias_expr',
-                        rhs = 'NoAliasExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'alias_expr',
+                        sequence_id = 'NoAliasExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1564,7 +1532,7 @@ def serialize_alias_expr(
 def serialize_bases(
     o : bases, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1576,7 +1544,7 @@ def serialize_bases(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1587,12 +1555,12 @@ def serialize_bases(
 
                 stack += [
                     serialize_bases_a(o.bases, depth + 1, "bases", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'bases',
-                        rhs = 'SomeBases',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'bases',
+                        sequence_id = 'SomeBases',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1604,9 +1572,9 @@ def serialize_bases(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'bases',
-                        rhs = 'NoBases',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'bases',
+                        sequence_id = 'NoBases',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1629,7 +1597,7 @@ def serialize_bases(
 def serialize_bases_a(
     o : bases_a, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1641,7 +1609,7 @@ def serialize_bases_a(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1652,16 +1620,16 @@ def serialize_bases_a(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'bases_a',
-                        rhs = 'ConsBase',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'bases_a',
+                        sequence_id = 'ConsBase',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1674,12 +1642,12 @@ def serialize_bases_a(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'bases_a',
-                        rhs = 'SingleBase',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'bases_a',
+                        sequence_id = 'SingleBase',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1692,12 +1660,12 @@ def serialize_bases_a(
 
                 stack += [
                     serialize_keywords(o.kws, depth + 1, "kws", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'bases_a',
-                        rhs = 'KeywordsBase',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'bases_a',
+                        sequence_id = 'KeywordsBase',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1721,7 +1689,7 @@ def serialize_bases_a(
 def serialize_keywords(
     o : keywords, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1733,7 +1701,7 @@ def serialize_keywords(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1744,16 +1712,16 @@ def serialize_keywords(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_keyword(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'keywords',
-                        rhs = 'ConsKeyword',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'keywords',
+                        sequence_id = 'ConsKeyword',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1766,12 +1734,12 @@ def serialize_keywords(
 
                 stack += [
                     serialize_keyword(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'keywords',
-                        rhs = 'SingleKeyword',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'keywords',
+                        sequence_id = 'SingleKeyword',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1794,7 +1762,7 @@ def serialize_keywords(
 def serialize_comparisons(
     o : comparisons, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1806,7 +1774,7 @@ def serialize_comparisons(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1817,16 +1785,16 @@ def serialize_comparisons(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_CompareRight(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'comparisons',
-                        rhs = 'ConsCompareRight',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'comparisons',
+                        sequence_id = 'ConsCompareRight',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1839,12 +1807,12 @@ def serialize_comparisons(
 
                 stack += [
                     serialize_CompareRight(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'comparisons',
-                        rhs = 'SingleCompareRight',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'comparisons',
+                        sequence_id = 'SingleCompareRight',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1867,7 +1835,7 @@ def serialize_comparisons(
 def serialize_option_expr(
     o : option_expr, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1879,7 +1847,7 @@ def serialize_option_expr(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1890,12 +1858,12 @@ def serialize_option_expr(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'option_expr',
-                        rhs = 'SomeExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'option_expr',
+                        sequence_id = 'SomeExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1907,9 +1875,9 @@ def serialize_option_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'option_expr',
-                        rhs = 'NoExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'option_expr',
+                        sequence_id = 'NoExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1932,7 +1900,7 @@ def serialize_option_expr(
 def serialize_comma_exprs(
     o : comma_exprs, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -1944,7 +1912,7 @@ def serialize_comma_exprs(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -1955,16 +1923,16 @@ def serialize_comma_exprs(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'comma_exprs',
-                        rhs = 'ConsExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'comma_exprs',
+                        sequence_id = 'ConsExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -1977,12 +1945,12 @@ def serialize_comma_exprs(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'comma_exprs',
-                        rhs = 'SingleExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'comma_exprs',
+                        sequence_id = 'SingleExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2005,7 +1973,7 @@ def serialize_comma_exprs(
 def serialize_target_exprs(
     o : target_exprs, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2017,7 +1985,7 @@ def serialize_target_exprs(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2028,16 +1996,16 @@ def serialize_target_exprs(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'target_exprs',
-                        rhs = 'ConsTargetExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'target_exprs',
+                        sequence_id = 'ConsTargetExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2050,12 +2018,12 @@ def serialize_target_exprs(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'target_exprs',
-                        rhs = 'SingleTargetExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'target_exprs',
+                        sequence_id = 'SingleTargetExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2078,7 +2046,7 @@ def serialize_target_exprs(
 def serialize_decorators(
     o : decorators, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2090,7 +2058,7 @@ def serialize_decorators(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2101,16 +2069,16 @@ def serialize_decorators(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'decorators',
-                        rhs = 'ConsDec',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'decorators',
+                        sequence_id = 'ConsDec',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2122,9 +2090,9 @@ def serialize_decorators(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'decorators',
-                        rhs = 'NoDec',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'decorators',
+                        sequence_id = 'NoDec',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2147,7 +2115,7 @@ def serialize_decorators(
 def serialize_constraint_filters(
     o : constraint_filters, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2159,7 +2127,7 @@ def serialize_constraint_filters(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2170,16 +2138,16 @@ def serialize_constraint_filters(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'constraint_filters',
-                        rhs = 'ConsFilter',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'constraint_filters',
+                        sequence_id = 'ConsFilter',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2192,12 +2160,12 @@ def serialize_constraint_filters(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'constraint_filters',
-                        rhs = 'SingleFilter',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'constraint_filters',
+                        sequence_id = 'SingleFilter',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2209,9 +2177,9 @@ def serialize_constraint_filters(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'constraint_filters',
-                        rhs = 'NoFilter',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'constraint_filters',
+                        sequence_id = 'NoFilter',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2232,22 +2200,22 @@ def serialize_constraint_filters(
     return result
 
 
-def serialize_sequence_str(
-    o : sequence_str, depth : int = 0, relation : str = "",
+def serialize_sequence_string(
+    o : sequence_string, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
     @dataclass
     class SP:
-        o : sequence_str 
+        o : sequence_string 
         depth : int
         relation : str
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2258,20 +2226,18 @@ def serialize_sequence_str(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'symbol',
-                        rhs = o.head,
+                    [prod_inst.make_Vocab(
+                        choices_id = 'string',
+                        word = o.head,
                         depth = depth + 1,
-                        relation = "head",
-                        indent_width = indent_width,
-                        inline = inline
+                        relation = "head"
                     )],
-                    [inst.Node(
-                        lhs = 'sequence_str',
-                        rhs = 'ConsStr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_string',
+                        sequence_id = 'ConsStr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2283,17 +2249,15 @@ def serialize_sequence_str(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'symbol',
-                        rhs = o.content,
+                    [prod_inst.make_Vocab(
+                        choices_id = 'string',
+                        word = o.content,
                         depth = depth + 1,
-                        relation = "content",
-                        indent_width = indent_width,
-                        inline = inline
+                        relation = "content"
                     )],
-                    [inst.Node(
-                        lhs = 'sequence_str',
-                        rhs = 'SingleStr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_string',
+                        sequence_id = 'SingleStr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2302,7 +2266,7 @@ def serialize_sequence_str(
                 ]
 
 
-            match_sequence_str(o, SequenceStrHandlers(
+            match_sequence_string(o, SequenceStringHandlers(
                 case_ConsStr = handle_ConsStr,  
                 case_SingleStr = handle_SingleStr 
             ))
@@ -2316,7 +2280,7 @@ def serialize_sequence_str(
 def serialize_arguments(
     o : arguments, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2328,7 +2292,7 @@ def serialize_arguments(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2339,16 +2303,16 @@ def serialize_arguments(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'arguments',
-                        rhs = 'ConsArg',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'arguments',
+                        sequence_id = 'ConsArg',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2361,12 +2325,12 @@ def serialize_arguments(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'arguments',
-                        rhs = 'SingleArg',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'arguments',
+                        sequence_id = 'SingleArg',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2379,12 +2343,12 @@ def serialize_arguments(
 
                 stack += [
                     serialize_keywords(o.kws, depth + 1, "kws", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'arguments',
-                        rhs = 'KeywordsArg',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'arguments',
+                        sequence_id = 'KeywordsArg',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2408,7 +2372,7 @@ def serialize_arguments(
 def serialize_dictionary_contents(
     o : dictionary_contents, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2420,7 +2384,7 @@ def serialize_dictionary_contents(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2431,16 +2395,16 @@ def serialize_dictionary_contents(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_Field(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'dictionary_contents',
-                        rhs = 'ConsField',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'dictionary_contents',
+                        sequence_id = 'ConsField',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2453,12 +2417,12 @@ def serialize_dictionary_contents(
 
                 stack += [
                     serialize_Field(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'dictionary_contents',
-                        rhs = 'SingleField',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'dictionary_contents',
+                        sequence_id = 'SingleField',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2478,22 +2442,22 @@ def serialize_dictionary_contents(
     return result
 
 
-def serialize_sequence_Identifier(
-    o : sequence_Identifier, depth : int = 0, relation : str = "",
+def serialize_sequence_var(
+    o : sequence_var, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
     @dataclass
     class SP:
-        o : sequence_Identifier 
+        o : sequence_var 
         depth : int
         relation : str
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2504,16 +2468,18 @@ def serialize_sequence_Identifier(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    serialize_Identifier(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'sequence_Identifier',
-                        rhs = 'ConsId',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'var',
+                        word = o.head,
+                        depth = depth + 1,
+                        relation = "head"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_var',
+                        sequence_id = 'ConsId',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2525,13 +2491,15 @@ def serialize_sequence_Identifier(
                 nonlocal stack
 
                 stack += [
-                    serialize_Identifier(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'sequence_Identifier',
-                        rhs = 'SingleId',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'var',
+                        word = o.content,
+                        depth = depth + 1,
+                        relation = "content"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_var',
+                        sequence_id = 'SingleId',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2540,7 +2508,7 @@ def serialize_sequence_Identifier(
                 ]
 
 
-            match_sequence_Identifier(o, SequenceIdentifierHandlers(
+            match_sequence_var(o, SequenceVarHandlers(
                 case_ConsId = handle_ConsId,  
                 case_SingleId = handle_SingleId 
             ))
@@ -2554,7 +2522,7 @@ def serialize_sequence_Identifier(
 def serialize_sequence_ImportName(
     o : sequence_ImportName, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2566,7 +2534,7 @@ def serialize_sequence_ImportName(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2577,16 +2545,16 @@ def serialize_sequence_ImportName(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_ImportName(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'sequence_ImportName',
-                        rhs = 'ConsImportName',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_ImportName',
+                        sequence_id = 'ConsImportName',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2599,12 +2567,12 @@ def serialize_sequence_ImportName(
 
                 stack += [
                     serialize_ImportName(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'sequence_ImportName',
-                        rhs = 'SingleImportName',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_ImportName',
+                        sequence_id = 'SingleImportName',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2627,7 +2595,7 @@ def serialize_sequence_ImportName(
 def serialize_sequence_Withitem(
     o : sequence_Withitem, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2639,7 +2607,7 @@ def serialize_sequence_Withitem(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2650,16 +2618,16 @@ def serialize_sequence_Withitem(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_Withitem(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'sequence_Withitem',
-                        rhs = 'ConsWithitem',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_Withitem',
+                        sequence_id = 'ConsWithitem',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2672,12 +2640,12 @@ def serialize_sequence_Withitem(
 
                 stack += [
                     serialize_Withitem(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'sequence_Withitem',
-                        rhs = 'SingleWithitem',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_Withitem',
+                        sequence_id = 'SingleWithitem',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2700,7 +2668,7 @@ def serialize_sequence_Withitem(
 def serialize_statements(
     o : statements, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2712,7 +2680,7 @@ def serialize_statements(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2723,16 +2691,16 @@ def serialize_statements(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_stmt(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'statements',
-                        rhs = 'ConsStmt',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'statements',
+                        sequence_id = 'ConsStmt',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2745,12 +2713,12 @@ def serialize_statements(
 
                 stack += [
                     serialize_stmt(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'statements',
-                        rhs = 'SingleStmt',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'statements',
+                        sequence_id = 'SingleStmt',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2773,7 +2741,7 @@ def serialize_statements(
 def serialize_comprehension_constraints(
     o : comprehension_constraints, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2785,7 +2753,7 @@ def serialize_comprehension_constraints(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2796,16 +2764,16 @@ def serialize_comprehension_constraints(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_constraint(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'comprehension_constraints',
-                        rhs = 'ConsConstraint',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'comprehension_constraints',
+                        sequence_id = 'ConsConstraint',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2818,12 +2786,12 @@ def serialize_comprehension_constraints(
 
                 stack += [
                     serialize_constraint(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'comprehension_constraints',
-                        rhs = 'SingleConstraint',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'comprehension_constraints',
+                        sequence_id = 'SingleConstraint',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2846,7 +2814,7 @@ def serialize_comprehension_constraints(
 def serialize_sequence_ExceptHandler(
     o : sequence_ExceptHandler, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2858,7 +2826,7 @@ def serialize_sequence_ExceptHandler(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2869,16 +2837,16 @@ def serialize_sequence_ExceptHandler(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_ExceptHandler(o.head, depth + 1, "head", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'sequence_ExceptHandler',
-                        rhs = 'ConsExceptHandler',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_ExceptHandler',
+                        sequence_id = 'ConsExceptHandler',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2891,12 +2859,12 @@ def serialize_sequence_ExceptHandler(
 
                 stack += [
                     serialize_ExceptHandler(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'sequence_ExceptHandler',
-                        rhs = 'SingleExceptHandler',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'sequence_ExceptHandler',
+                        sequence_id = 'SingleExceptHandler',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2919,7 +2887,7 @@ def serialize_sequence_ExceptHandler(
 def serialize_conditions(
     o : conditions, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -2931,7 +2899,7 @@ def serialize_conditions(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -2942,16 +2910,16 @@ def serialize_conditions(
 
                 stack += [
                     SP(o.tail, depth + 1, "tail", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_ElifBlock(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'conditions',
-                        rhs = 'ElifCond',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'conditions',
+                        sequence_id = 'ElifCond',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2964,12 +2932,12 @@ def serialize_conditions(
 
                 stack += [
                     serialize_ElseBlock(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'conditions',
-                        rhs = 'ElseCond',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'conditions',
+                        sequence_id = 'ElseCond',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -2981,9 +2949,9 @@ def serialize_conditions(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'conditions',
-                        rhs = 'NoCond',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'conditions',
+                        sequence_id = 'NoCond',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3007,7 +2975,7 @@ def serialize_conditions(
 def serialize_function_def(
     o : function_def, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -3019,7 +2987,7 @@ def serialize_function_def(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -3030,24 +2998,26 @@ def serialize_function_def(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_return_type(o.ret_typ, depth + 1, "ret_typ", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_parameters(o.params, depth + 1, "params", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    serialize_Identifier(o.name, depth + 1, "name", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'function_def',
-                        rhs = 'FunctionDef',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'function_name',
+                        word = o.name,
+                        depth = depth + 1,
+                        relation = "name"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'function_def',
+                        sequence_id = 'FunctionDef',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3060,24 +3030,26 @@ def serialize_function_def(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_return_type(o.ret_typ, depth + 1, "ret_typ", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_parameters(o.params, depth + 1, "params", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    serialize_Identifier(o.name, depth + 1, "name", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'function_def',
-                        rhs = 'AsyncFunctionDef',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'function_name',
+                        word = o.name,
+                        depth = depth + 1,
+                        relation = "name"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'function_def',
+                        sequence_id = 'AsyncFunctionDef',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3100,7 +3072,7 @@ def serialize_function_def(
 def serialize_stmt(
     o : stmt, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -3112,7 +3084,7 @@ def serialize_stmt(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -3123,16 +3095,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_function_def(o.fun_def, depth + 1, "fun_def", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_decorators(o.decs, depth + 1, "decs", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'DecFunctionDef',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'DecFunctionDef',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3145,16 +3117,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_function_def(o.fun_def, depth + 1, "fun_def", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_decorators(o.decs, depth + 1, "decs", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'DecAsyncFunctionDef',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'DecAsyncFunctionDef',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3167,16 +3139,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_ClassDef(o.class_def, depth + 1, "class_def", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_decorators(o.decs, depth + 1, "decs", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'DecClassDef',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'DecClassDef',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3189,12 +3161,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'ReturnSomething',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'ReturnSomething',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3206,9 +3178,9 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Return',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Return',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3221,12 +3193,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_comma_exprs(o.targets, depth + 1, "targets", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Delete',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Delete',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3239,16 +3211,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_target_exprs(o.targets, depth + 1, "targets", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Assign',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Assign',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3261,20 +3233,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_operator(o.op, depth + 1, "op", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'AugAssign',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'AugAssign',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3287,20 +3259,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.type, depth + 1, "type", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'TypedAssign',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'TypedAssign',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3313,16 +3285,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.type, depth + 1, "type", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'TypedDeclare',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'TypedDeclare',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3335,20 +3307,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.iter, depth + 1, "iter", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'For',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'For',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3361,24 +3333,24 @@ def serialize_stmt(
 
                 stack += [
                     serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.iter, depth + 1, "iter", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'ForElse',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'ForElse',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3391,20 +3363,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.iter, depth + 1, "iter", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'AsyncFor',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'AsyncFor',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3417,24 +3389,24 @@ def serialize_stmt(
 
                 stack += [
                     serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.iter, depth + 1, "iter", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'AsyncForElse',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'AsyncForElse',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3447,16 +3419,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.test, depth + 1, "test", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'While',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'While',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3469,20 +3441,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.test, depth + 1, "test", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'WhileElse',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'WhileElse',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3495,20 +3467,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_conditions(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_expr(o.test, depth + 1, "test", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'If',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'If',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3521,16 +3493,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_sequence_Withitem(o.items, depth + 1, "items", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'With',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'With',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3543,16 +3515,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     serialize_sequence_Withitem(o.items, depth + 1, "items", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'AsyncWith',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'AsyncWith',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3564,9 +3536,9 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Raise',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Raise',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3579,12 +3551,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.exc, depth + 1, "exc", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'RaiseExc',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'RaiseExc',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3597,16 +3569,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.caus, depth + 1, "caus", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.exc, depth + 1, "exc", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'RaiseFrom',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'RaiseFrom',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3619,16 +3591,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Try',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Try',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3641,20 +3613,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'TryElse',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'TryElse',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3667,20 +3639,20 @@ def serialize_stmt(
 
                 stack += [
                     serialize_FinallyBlock(o.fin, depth + 1, "fin", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'TryFin',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'TryFin',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3693,24 +3665,24 @@ def serialize_stmt(
 
                 stack += [
                     serialize_FinallyBlock(o.fin, depth + 1, "fin", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_ElseBlock(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_sequence_ExceptHandler(o.handlers, depth + 1, "handlers", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     serialize_statements(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'TryElseFin',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'TryElseFin',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3723,12 +3695,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.test, depth + 1, "test", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Assert',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Assert',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3741,16 +3713,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.msg, depth + 1, "msg", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.test, depth + 1, "test", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'AssertMsg',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'AssertMsg',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3763,12 +3735,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_sequence_ImportName(o.names, depth + 1, "names", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Import',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Import',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3781,16 +3753,16 @@ def serialize_stmt(
 
                 stack += [
                     serialize_sequence_ImportName(o.names, depth + 1, "names", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_module_id(o.module, depth + 1, "module", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'ImportFrom',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'ImportFrom',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3803,12 +3775,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_module_id(o.module, depth + 1, "module", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'ImportWildCard',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'ImportWildCard',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3820,13 +3792,13 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    serialize_sequence_Identifier(o.names, depth + 1, "names", 
-                        inst.next_indent_width(indent_width, InLine()),
+                    serialize_sequence_var(o.names, depth + 1, "names", 
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Global',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Global',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3838,13 +3810,13 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    serialize_sequence_Identifier(o.names, depth + 1, "names", 
-                        inst.next_indent_width(indent_width, InLine()),
+                    serialize_sequence_var(o.names, depth + 1, "names", 
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Nonlocal',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Nonlocal',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3857,12 +3829,12 @@ def serialize_stmt(
 
                 stack += [
                     serialize_expr(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Expr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Expr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3874,9 +3846,9 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Pass',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Pass',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3888,9 +3860,9 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Break',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Break',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3902,9 +3874,9 @@ def serialize_stmt(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'stmt',
-                        rhs = 'Continue',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'stmt',
+                        sequence_id = 'Continue',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -3962,7 +3934,7 @@ def serialize_stmt(
 def serialize_expr(
     o : expr, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -3974,7 +3946,7 @@ def serialize_expr(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -3985,20 +3957,20 @@ def serialize_expr(
 
                 stack += [
                     SP(o.right, depth + 1, "right", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_boolop(o.op, depth + 1, "op", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.left, depth + 1, "left", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'BoolOp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'BoolOp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4011,16 +3983,16 @@ def serialize_expr(
 
                 stack += [
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'NamedExpr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'NamedExpr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4033,20 +4005,20 @@ def serialize_expr(
 
                 stack += [
                     SP(o.right, depth + 1, "right", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_operator(o.op, depth + 1, "op", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.left, depth + 1, "left", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'BinOp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'BinOp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4059,16 +4031,16 @@ def serialize_expr(
 
                 stack += [
                     SP(o.right, depth + 1, "right", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_unaryop(o.op, depth + 1, "op", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'UnaryOp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'UnaryOp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4081,16 +4053,16 @@ def serialize_expr(
 
                 stack += [
                     SP(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_parameters(o.params, depth + 1, "params", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Lambda',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Lambda',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4103,20 +4075,20 @@ def serialize_expr(
 
                 stack += [
                     SP(o.orelse, depth + 1, "orelse", 
-                        inst.next_indent_width(indent_width, NewLine()),
+                        prod_inst.next_indent_width(indent_width, NewLine()),
                         False,
                     ), 
                     SP(o.test, depth + 1, "test", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.body, depth + 1, "body", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'IfExp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'IfExp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4129,12 +4101,12 @@ def serialize_expr(
 
                 stack += [
                     serialize_dictionary_contents(o.contents, depth + 1, "contents", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Dictionary',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Dictionary',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4146,9 +4118,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'EmptyDictionary',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'EmptyDictionary',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4161,12 +4133,12 @@ def serialize_expr(
 
                 stack += [
                     serialize_comma_exprs(o.contents, depth + 1, "contents", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Set',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Set',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4179,16 +4151,16 @@ def serialize_expr(
 
                 stack += [
                     serialize_comprehension_constraints(o.constraints, depth + 1, "constraints", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'ListComp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'ListComp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4201,16 +4173,16 @@ def serialize_expr(
 
                 stack += [
                     serialize_comprehension_constraints(o.constraints, depth + 1, "constraints", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'SetComp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'SetComp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4223,20 +4195,20 @@ def serialize_expr(
 
                 stack += [
                     serialize_comprehension_constraints(o.constraints, depth + 1, "constraints", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.key, depth + 1, "key", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'DictionaryComp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'DictionaryComp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4249,16 +4221,16 @@ def serialize_expr(
 
                 stack += [
                     serialize_comprehension_constraints(o.constraints, depth + 1, "constraints", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, IndentLine()),
+                        prod_inst.next_indent_width(indent_width, IndentLine()),
                         False,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'GeneratorExp',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'GeneratorExp',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4271,12 +4243,12 @@ def serialize_expr(
 
                 stack += [
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Await',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Await',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4288,9 +4260,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'YieldNothing',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'YieldNothing',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4303,12 +4275,12 @@ def serialize_expr(
 
                 stack += [
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Yield',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Yield',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4321,12 +4293,12 @@ def serialize_expr(
 
                 stack += [
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'YieldFrom',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'YieldFrom',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4339,16 +4311,16 @@ def serialize_expr(
 
                 stack += [
                     serialize_comparisons(o.comps, depth + 1, "comps", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.left, depth + 1, "left", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Compare',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Compare',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4361,12 +4333,12 @@ def serialize_expr(
 
                 stack += [
                     SP(o.func, depth + 1, "func", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Call',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Call',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4379,16 +4351,16 @@ def serialize_expr(
 
                 stack += [
                     serialize_arguments(o.args, depth + 1, "args", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.func, depth + 1, "func", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'CallArgs',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'CallArgs',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4400,17 +4372,15 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'symbol',
-                        rhs = o.content,
+                    [prod_inst.make_Vocab(
+                        choices_id = 'integer',
+                        word = o.content,
                         depth = depth + 1,
-                        relation = "content",
-                        indent_width = indent_width,
-                        inline = inline
+                        relation = "content"
                     )],
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Integer',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Integer',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4422,17 +4392,15 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'symbol',
-                        rhs = o.content,
+                    [prod_inst.make_Vocab(
+                        choices_id = 'float',
+                        word = o.content,
                         depth = depth + 1,
-                        relation = "content",
-                        indent_width = indent_width,
-                        inline = inline
+                        relation = "content"
                     )],
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Float',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Float',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4444,13 +4412,13 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    serialize_sequence_str(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                    serialize_sequence_string(o.content, depth + 1, "content", 
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'ConcatString',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'ConcatString',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4462,9 +4430,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'True_',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'True_',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4476,9 +4444,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'False_',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'False_',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4490,9 +4458,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'None_',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'None_',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4504,9 +4472,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Ellip',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Ellip',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4518,17 +4486,19 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    serialize_Identifier(o.attr, depth + 1, "attr", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
+                    [prod_inst.make_Vocab(
+                        choices_id = 'attribute',
+                        word = o.attr,
+                        depth = depth + 1,
+                        relation = "attr"
+                    )],
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Attribute',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Attribute',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4541,16 +4511,16 @@ def serialize_expr(
 
                 stack += [
                     SP(o.slice, depth + 1, "slice", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Subscript',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Subscript',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4563,12 +4533,12 @@ def serialize_expr(
 
                 stack += [
                     SP(o.content, depth + 1, "content", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Starred',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Starred',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4580,13 +4550,15 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    serialize_Identifier(o.id, depth + 1, "id", 
-                        inst.next_indent_width(indent_width, InLine()),
-                        True,
-                    ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Name',
+                    [prod_inst.make_Vocab(
+                        choices_id = 'var',
+                        word = o.id,
+                        depth = depth + 1,
+                        relation = "id"
+                    )],
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Name',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4599,12 +4571,12 @@ def serialize_expr(
 
                 stack += [
                     serialize_comma_exprs(o.contents, depth + 1, "contents", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'List',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'List',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4616,9 +4588,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'EmptyList',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'EmptyList',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4631,12 +4603,12 @@ def serialize_expr(
 
                 stack += [
                     serialize_comma_exprs(o.contents, depth + 1, "contents", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Tuple',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Tuple',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4648,9 +4620,9 @@ def serialize_expr(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'EmptyTuple',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'EmptyTuple',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4663,20 +4635,20 @@ def serialize_expr(
 
                 stack += [
                     serialize_option_expr(o.step, depth + 1, "step", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_option_expr(o.upper, depth + 1, "upper", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_option_expr(o.lower, depth + 1, "lower", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'expr',
-                        rhs = 'Slice',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'expr',
+                        sequence_id = 'Slice',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4733,7 +4705,7 @@ def serialize_expr(
 def serialize_boolop(
     o : boolop, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -4745,7 +4717,7 @@ def serialize_boolop(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -4755,9 +4727,9 @@ def serialize_boolop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'boolop',
-                        rhs = 'And',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'boolop',
+                        sequence_id = 'And',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4769,9 +4741,9 @@ def serialize_boolop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'boolop',
-                        rhs = 'Or',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'boolop',
+                        sequence_id = 'Or',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4794,7 +4766,7 @@ def serialize_boolop(
 def serialize_operator(
     o : operator, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -4806,7 +4778,7 @@ def serialize_operator(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -4816,9 +4788,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'Add',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'Add',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4830,9 +4802,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'Sub',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'Sub',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4844,9 +4816,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'Mult',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'Mult',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4858,9 +4830,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'MatMult',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'MatMult',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4872,9 +4844,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'Div',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'Div',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4886,9 +4858,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'Mod',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'Mod',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4900,9 +4872,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'Pow',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'Pow',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4914,9 +4886,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'LShift',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'LShift',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4928,9 +4900,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'RShift',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'RShift',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4942,9 +4914,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'BitOr',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'BitOr',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4956,9 +4928,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'BitXor',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'BitXor',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4970,9 +4942,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'BitAnd',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'BitAnd',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -4984,9 +4956,9 @@ def serialize_operator(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'operator',
-                        rhs = 'FloorDiv',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'operator',
+                        sequence_id = 'FloorDiv',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5020,7 +4992,7 @@ def serialize_operator(
 def serialize_unaryop(
     o : unaryop, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -5032,7 +5004,7 @@ def serialize_unaryop(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -5042,9 +5014,9 @@ def serialize_unaryop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'unaryop',
-                        rhs = 'Invert',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'unaryop',
+                        sequence_id = 'Invert',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5056,9 +5028,9 @@ def serialize_unaryop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'unaryop',
-                        rhs = 'Not',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'unaryop',
+                        sequence_id = 'Not',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5070,9 +5042,9 @@ def serialize_unaryop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'unaryop',
-                        rhs = 'UAdd',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'unaryop',
+                        sequence_id = 'UAdd',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5084,9 +5056,9 @@ def serialize_unaryop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'unaryop',
-                        rhs = 'USub',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'unaryop',
+                        sequence_id = 'USub',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5111,7 +5083,7 @@ def serialize_unaryop(
 def serialize_cmpop(
     o : cmpop, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -5123,7 +5095,7 @@ def serialize_cmpop(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -5133,9 +5105,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'Eq',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'Eq',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5147,9 +5119,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'NotEq',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'NotEq',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5161,9 +5133,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'Lt',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'Lt',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5175,9 +5147,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'LtE',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'LtE',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5189,9 +5161,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'Gt',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'Gt',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5203,9 +5175,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'GtE',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'GtE',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5217,9 +5189,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'Is',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'Is',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5231,9 +5203,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'IsNot',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'IsNot',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5245,9 +5217,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'In',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'In',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5259,9 +5231,9 @@ def serialize_cmpop(
                 nonlocal stack
 
                 stack += [
-                    [inst.Node(
-                        lhs = 'cmpop',
-                        rhs = 'NotIn',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'cmpop',
+                        sequence_id = 'NotIn',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5292,7 +5264,7 @@ def serialize_cmpop(
 def serialize_constraint(
     o : constraint, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
-) -> list[inst.Node]:
+) -> list[prod_inst.instance]:
 
     result = []
 
@@ -5304,7 +5276,7 @@ def serialize_constraint(
         indent_width : int 
         inline : bool
 
-    stack : list[Union[SP, list[inst.Node]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
         if isinstance(item, SP):
@@ -5315,20 +5287,20 @@ def serialize_constraint(
 
                 stack += [
                     serialize_constraint_filters(o.filts, depth + 1, "filts", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.search_space, depth + 1, "search_space", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'constraint',
-                        rhs = 'AsyncConstraint',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'constraint',
+                        sequence_id = 'AsyncConstraint',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,
@@ -5341,20 +5313,20 @@ def serialize_constraint(
 
                 stack += [
                     serialize_constraint_filters(o.filts, depth + 1, "filts", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.search_space, depth + 1, "search_space", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
                     serialize_expr(o.target, depth + 1, "target", 
-                        inst.next_indent_width(indent_width, InLine()),
+                        prod_inst.next_indent_width(indent_width, InLine()),
                         True,
                     ), 
-                    [inst.Node(
-                        lhs = 'constraint',
-                        rhs = 'Constraint',
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'constraint',
+                        sequence_id = 'Constraint',
                         depth = depth,
                         relation = relation,
                         indent_width = indent_width,

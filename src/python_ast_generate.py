@@ -13,8 +13,7 @@ type_code = (
     def_type.header +
     "\n\n" +
     "\n\n".join([
-        def_type.generate_intersection(
-            schema.to_constructor(node))
+        def_type.generate_intersection(schema.to_constructor(node))
         for node in python_schema.intersections
     ]) +
     "\n\n" +
