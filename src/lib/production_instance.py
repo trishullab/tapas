@@ -86,7 +86,7 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
 
                         ),
                         case_Vocab=lambda o : (
-                            ""
+                            o.follower
                         )
                     ))
                     stack += [follower, None]

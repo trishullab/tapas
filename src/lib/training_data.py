@@ -63,7 +63,17 @@ def generate(name : str):
                     return
 
                 else:
-                    concrete_code = python_instance.concretize(instances)
+                    if (count == 150):
+                        concrete_code = python_instance.concretize(instances)
+
+                        print(f"-------------------------")
+                        print(f"source:")
+                        print(source_code)
+
+                        print(f"-------------------------")
+                        print(f"concretized:")
+                        print(concrete_code)
+                        break
 
 
                     def triple_from_instance(inst : instance) -> tuple[str, str, str]:

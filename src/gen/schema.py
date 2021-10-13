@@ -51,6 +51,7 @@ def make_Grammar(
 class Vocab(child):
     relation : str
     choices_id : str
+    follower : str
 
     def _match(self, handlers : ChildHandlers[T]) -> T:
         return handlers.case_Vocab(self)
@@ -58,11 +59,13 @@ class Vocab(child):
 
 def make_Vocab(
     relation : str,
-    choices_id : str
+    choices_id : str,
+    follower : str
 ) -> child:
     return Vocab(
         relation,
-        choices_id
+        choices_id,
+        follower
     )
 
 

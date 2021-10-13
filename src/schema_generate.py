@@ -23,7 +23,8 @@ constructors = [
         "Vocab",
         [
             Field('relation', 'str'),
-            Field('choices_id', 'str')
+            Field('choices_id', 'str'),
+            Field('follower', 'str')
         ]
     )
 ]
