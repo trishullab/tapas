@@ -26,7 +26,6 @@ def serialize_{{ node.name }}(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -44,7 +43,7 @@ def serialize_{{ node.name }}(
             o = item.o
 
             stack += [
-{% for child in node.children %}
+{% for child in node.children|reverse %}
 {% if is_vocab(child) %}
                 [prod_inst.make_Vocab(
                     choices_id = '{{ child.choices_id }}',
@@ -54,12 +53,12 @@ def serialize_{{ node.name }}(
                 )],
 {% elif child.nonterminal == node.name %}
                 serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-                    prod_inst.next_indent_width(indent_width,  {{ line_format_string(child.format) + "()" }}),
+                    prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
                     {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                 ),
 {% else %}
                 serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-                    prod_inst.next_indent_width(indent_width,  {{ line_format_string(child.format) + "()" }}),
+                    prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
                     {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                 ),
 {% endif %}

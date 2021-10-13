@@ -1592,7 +1592,7 @@ intersections : list[Node] = [
         "Param",
         "",
         [
-            Vocab("id", "var"),
+            Vocab("id", "param_name"),
             Grammar("type", "param_type", InLine(), ""),
             Grammar("default", "param_default", InLine(), "")
         ]

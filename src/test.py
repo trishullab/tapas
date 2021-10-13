@@ -137,3 +137,23 @@ def test_mbpp():
 # test_mbpp()
 
 test_filename('scratch')
+
+
+
+class Ooga:
+    x = 1
+    def foo(self):
+        return self.x 
+
+def boo():
+    return 3
+
+
+
+class var_32:
+    var_2 = 1
+    def foo():
+        return 1
+
+def foo():
+    return 3

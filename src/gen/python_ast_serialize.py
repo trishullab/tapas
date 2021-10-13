@@ -11,7 +11,6 @@ def serialize_Module(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -30,7 +29,7 @@ def serialize_Module(
 
             stack += [
                 serialize_statements(o.body, depth + 1, "body", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
                 [prod_inst.make_Grammar(
@@ -53,7 +52,6 @@ def serialize_CompareRight(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -71,12 +69,12 @@ def serialize_CompareRight(
             o = item.o
 
             stack += [
-                serialize_cmpop(o.op, depth + 1, "op", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                serialize_expr(o.rand, depth + 1, "rand", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
-                serialize_expr(o.rand, depth + 1, "rand", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                serialize_cmpop(o.op, depth + 1, "op", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
                 [prod_inst.make_Grammar(
@@ -99,7 +97,6 @@ def serialize_ExceptHandler(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -117,13 +114,13 @@ def serialize_ExceptHandler(
             o = item.o
 
             stack += [
-                serialize_except_arg(o.arg, depth + 1, "arg", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
                 serialize_statements(o.body, depth + 1, "body", 
-                    prod_inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width, IndentLine()),
                     False,
+                ),
+                serialize_except_arg(o.arg, depth + 1, "arg", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
+                    True,
                 ),
                 [prod_inst.make_Grammar(
                     nonterminal = 'ExceptHandler',
@@ -145,7 +142,6 @@ def serialize_Param(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -163,20 +159,20 @@ def serialize_Param(
             o = item.o
 
             stack += [
+                serialize_param_default(o.default, depth + 1, "default", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
+                    True,
+                ),
+                serialize_param_type(o.type, depth + 1, "type", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
+                    True,
+                ),
                 [prod_inst.make_Vocab(
-                    choices_id = 'var',
+                    choices_id = 'param_name',
                     word = o.id,
                     depth = depth + 1,
                     relation = "id"
                 )],
-                serialize_param_type(o.type, depth + 1, "type", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
-                serialize_param_default(o.default, depth + 1, "default", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
                 [prod_inst.make_Grammar(
                     nonterminal = 'Param',
                     sequence_id = 'Param',
@@ -197,7 +193,6 @@ def serialize_Field(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -215,12 +210,12 @@ def serialize_Field(
             o = item.o
 
             stack += [
-                serialize_expr(o.key, depth + 1, "key", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                serialize_expr(o.content, depth + 1, "content", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
-                serialize_expr(o.content, depth + 1, "content", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                serialize_expr(o.key, depth + 1, "key", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
                 [prod_inst.make_Grammar(
@@ -243,7 +238,6 @@ def serialize_ImportName(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -261,16 +255,16 @@ def serialize_ImportName(
             o = item.o
 
             stack += [
+                serialize_alias(o.as_name, depth + 1, "as_name", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
+                    True,
+                ),
                 [prod_inst.make_Vocab(
                     choices_id = 'module_identifier',
                     word = o.name,
                     depth = depth + 1,
                     relation = "name"
                 )],
-                serialize_alias(o.as_name, depth + 1, "as_name", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
                 [prod_inst.make_Grammar(
                     nonterminal = 'ImportName',
                     sequence_id = 'ImportName',
@@ -291,7 +285,6 @@ def serialize_Withitem(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -309,12 +302,12 @@ def serialize_Withitem(
             o = item.o
 
             stack += [
-                serialize_expr(o.contet, depth + 1, "contet", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                serialize_alias_expr(o.target, depth + 1, "target", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
-                serialize_alias_expr(o.target, depth + 1, "target", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
+                serialize_expr(o.contet, depth + 1, "contet", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
                     True,
                 ),
                 [prod_inst.make_Grammar(
@@ -337,7 +330,6 @@ def serialize_ClassDef(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -355,20 +347,20 @@ def serialize_ClassDef(
             o = item.o
 
             stack += [
+                serialize_statements(o.body, depth + 1, "body", 
+                    prod_inst.next_indent_width(indent_width, IndentLine()),
+                    False,
+                ),
+                serialize_bases(o.bs, depth + 1, "bs", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
+                    True,
+                ),
                 [prod_inst.make_Vocab(
                     choices_id = 'class_name',
                     word = o.name,
                     depth = depth + 1,
                     relation = "name"
                 )],
-                serialize_bases(o.bs, depth + 1, "bs", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
-                serialize_statements(o.body, depth + 1, "body", 
-                    prod_inst.next_indent_width(indent_width,  IndentLine()),
-                    False,
-                ),
                 [prod_inst.make_Grammar(
                     nonterminal = 'ClassDef',
                     sequence_id = 'ClassDef',
@@ -389,7 +381,6 @@ def serialize_ElifBlock(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -407,13 +398,13 @@ def serialize_ElifBlock(
             o = item.o
 
             stack += [
-                serialize_expr(o.test, depth + 1, "test", 
-                    prod_inst.next_indent_width(indent_width,  InLine()),
-                    True,
-                ),
                 serialize_statements(o.body, depth + 1, "body", 
-                    prod_inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width, IndentLine()),
                     False,
+                ),
+                serialize_expr(o.test, depth + 1, "test", 
+                    prod_inst.next_indent_width(indent_width, InLine()),
+                    True,
                 ),
                 [prod_inst.make_Grammar(
                     nonterminal = 'ElifBlock',
@@ -435,7 +426,6 @@ def serialize_ElseBlock(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -454,7 +444,7 @@ def serialize_ElseBlock(
 
             stack += [
                 serialize_statements(o.body, depth + 1, "body", 
-                    prod_inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width, IndentLine()),
                     False,
                 ),
                 [prod_inst.make_Grammar(
@@ -477,7 +467,6 @@ def serialize_FinallyBlock(
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-
     result = []
 
     @dataclass
@@ -496,7 +485,7 @@ def serialize_FinallyBlock(
 
             stack += [
                 serialize_statements(o.body, depth + 1, "body", 
-                    prod_inst.next_indent_width(indent_width,  IndentLine()),
+                    prod_inst.next_indent_width(indent_width, IndentLine()),
                     False,
                 ),
                 [prod_inst.make_Grammar(

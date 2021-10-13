@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from lib import def_type
 from lib import def_serialize
+from lib import def_rename
 
 from lib.file import write_gen
 
@@ -44,6 +45,22 @@ serialize_code = (
     ])
 )
 write_gen("python_ast_serialize.py", serialize_code)
+
+rename_code = (
+    def_rename.header +
+    "\n\n" +
+    "\n\n".join([
+        def_rename.generate_intersection_def(con)
+        for con in python_schema.intersections
+    ]) +
+    "\n\n" +
+    "\n\n".join([
+        def_rename.generate_union_def(type_name,con)
+        for type_name, con in python_schema.unions.items()
+    ])
+)
+write_gen("python_ast_rename.py", rename_code)
+
 
 
 
