@@ -39,7 +39,7 @@ def to_sequence_base(bases : list[expr], keywords : list[keyword]):
 
     )
 
-    for b in bases[::-1]:
+    for b in reversed(bases):
         result = ConsBase(b, result)
 
     return result
@@ -80,7 +80,7 @@ def to_parameters_d(
         (SingleKwParam(kw_params[-1]), kw_params[:-1])
     )
 
-    for p in kw_params[::-1]:
+    for p in reversed(kw_params):
         result = ConsKwParam(p, result)
 
     return result
@@ -120,7 +120,7 @@ def to_parameters_b(
         (SingleParam(params[-1]), params[:-1])
     )
 
-    for p in params[:-1]:
+    for p in reversed(params):
         result = ConsParam(p, result)
 
     return result
@@ -145,7 +145,7 @@ def to_parameters_a(
         SinglePosParam(pos_params[-1])
     )
 
-    for pp in reversed(pos_params[:-1]):
+    for pp in reversed(pos_params):
         result = ConsPosParam(pp, result)
 
     return result
@@ -294,7 +294,7 @@ def to_arguments(ps : list[expr], ks : list[keyword]) -> arguments:
         (SingleArg(ps[-1]), ps[:-1])
     )
 
-    for p in ps[::-1]:
+    for p in reversed(ps):
         result = ConsArg(p, result)
 
     return result

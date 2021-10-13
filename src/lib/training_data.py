@@ -67,6 +67,15 @@ def generate(name : str):
                         concrete_code = python_instance.concretize(instances)
 
                         print(f"-------------------------")
+                        print(f"generic tree:")
+                        print(generic_tree.dump(tree))
+
+                        print(f"-------------------------")
+                        print(f"production tree:")
+                        print(python_instance.dump(instances))
+
+
+                        print(f"-------------------------")
                         print(f"source:")
                         print(source_code)
 
