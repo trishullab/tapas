@@ -1057,11 +1057,11 @@ unions : dict[str, list[Node]] = {
 
         Node(
             "BoolOp",
-            "",
+            "(",
             [
                 Grammar("left", "expr", InLine(), " "),
                 Grammar("op", "boolop", InLine(), " "),
-                Grammar("right", "expr", InLine(), "")
+                Grammar("right", "expr", InLine(), ")")
             ]
         ),
 
@@ -1086,10 +1086,10 @@ unions : dict[str, list[Node]] = {
 
         Node(
             "UnaryOp",
-            "",
+            "(",
             [
                 Grammar("op", "unaryop", InLine(), " "),
-                Grammar("right", "expr", InLine(), "")
+                Grammar("right", "expr", InLine(), ")")
             ]
         ),
 

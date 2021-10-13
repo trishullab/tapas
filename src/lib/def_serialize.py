@@ -48,17 +48,17 @@ def serialize_{{ node.name }}(
                 [prod_inst.make_Vocab(
                     choices_id = '{{ child.choices_id }}',
                     word = o.{{ child.relation }},
-                    depth = depth + 1,
+                    depth = item.depth + 1,
                     relation = "{{ child.relation }}"
                 )],
 {% elif child.nonterminal == node.name %}
-                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-                    prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
+                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
+                    prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                     {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                 ),
 {% else %}
-                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-                    prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
+                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
+                    prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                     {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                 ),
 {% endif %}
@@ -66,10 +66,10 @@ def serialize_{{ node.name }}(
                 [prod_inst.make_Grammar(
                     nonterminal = '{{ node.name }}',
                     sequence_id = '{{ node.name }}',
-                    depth = depth,
-                    relation = relation,
-                    indent_width = indent_width,
-                    inline = inline
+                    depth = item.depth,
+                    relation = item.relation,
+                    indent_width = item.indent_width,
+                    inline = item.inline
                 )]
             ]
         else:
@@ -120,6 +120,8 @@ def serialize_{{ type_name }}(
 {% for node in nodes %}
             def handle_{{ node.name }}(o : {{ node.name }}): 
                 nonlocal stack
+                nonlocal item 
+                assert isinstance(item, SP)
 
                 stack += [
 {% for child in node.children|reverse %}
@@ -127,17 +129,17 @@ def serialize_{{ type_name }}(
                     [prod_inst.make_Vocab(
                         choices_id = '{{ child.choices_id }}',
                         word = o.{{ child.relation }},
-                        depth = depth + 1,
+                        depth = item.depth + 1,
                         relation = "{{ child.relation }}"
                     )],
 {% elif child.nonterminal == type_name %}
-                    SP(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-                        prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
+                    SP(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
+                        prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                         {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                     ), 
 {% else %}
-                    serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-                        prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
+                    serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
+                        prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                         {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
                     ), 
 {% endif %}
@@ -145,10 +147,10 @@ def serialize_{{ type_name }}(
                     [prod_inst.make_Grammar(
                         nonterminal = '{{ type_name }}',
                         sequence_id = '{{ node.name }}',
-                        depth = depth,
-                        relation = relation,
-                        indent_width = indent_width,
-                        inline = inline
+                        depth = item.depth,
+                        relation = item.relation,
+                        indent_width = item.indent_width,
+                        inline = item.inline
                     )]
                 ]
 

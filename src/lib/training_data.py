@@ -30,8 +30,6 @@ def generate(name : str):
         line = f.readline()
         while line: 
 
-            print(f"line number: {count}")
-
             line_obj = json.loads(line)
 
             source_code = line_obj['code']
@@ -63,17 +61,21 @@ def generate(name : str):
                     return
 
                 else:
-                    if (count == 150):
-                        concrete_code = python_instance.concretize(instances)
+                    if (0 <= count <= 1):
 
                         print(f"-------------------------")
-                        print(f"generic tree:")
-                        print(generic_tree.dump(tree))
+                        print(f"line number: {count}")
+                        print(f"-------------------------")
+
+                        concrete_code = python_instance.concretize(instances)
+
+                        # print(f"-------------------------")
+                        # print(f"generic tree:")
+                        # print(generic_tree.dump(tree))
 
                         print(f"-------------------------")
                         print(f"production tree:")
                         print(python_instance.dump(instances))
-
 
                         print(f"-------------------------")
                         print(f"source:")
@@ -82,6 +84,8 @@ def generate(name : str):
                         print(f"-------------------------")
                         print(f"concretized:")
                         print(concrete_code)
+
+                    else:
                         break
 
 
