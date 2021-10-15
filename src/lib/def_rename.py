@@ -18,6 +18,8 @@ jinja_env = jinja2.Environment(trim_blocks=True)
 
 # collect all function def identifiers to pass into local scope of all nested scopes. 
 
+# create stack machine that places target and its children as a row on stack, with flag to indicate if a child has been processed
+
 header = """
 from __future__ import annotations
 from lib import production_instance as prod_inst 
