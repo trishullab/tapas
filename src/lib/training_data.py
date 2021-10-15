@@ -31,6 +31,10 @@ def generate(name : str):
     write_res_gen(f'{name}_vocab.json', '')
     write_res_gen(f'{name}_training.txt', '')
 
+    from datetime import datetime
+
+    start = datetime.now()
+
     with open(fpath, 'r') as f:
         count = 1
         line = f.readline()
@@ -157,3 +161,7 @@ def generate(name : str):
             },
             indent=4
         ))
+
+
+    end = datetime.now()
+    print(f"time: {end - start}")
