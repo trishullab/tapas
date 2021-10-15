@@ -5,7 +5,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "InLine",
                     "follower": ""
@@ -19,13 +20,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "op",
+                    "kind": "grammar",
+                    "relation": "op",
                     "nonterminal": "cmpop",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "rand",
+                    "kind": "grammar",
+                    "relation": "rand",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -39,13 +42,15 @@
             "leader": "except ",
             "children": [
                 {
-                    "alias": "arg",
+                    "kind": "grammar",
+                    "relation": "arg",
                     "nonterminal": "except_arg",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -59,19 +64,20 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "id",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 },
                 {
-                    "alias": "type",
+                    "kind": "grammar",
+                    "relation": "type",
                     "nonterminal": "param_type",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "default",
+                    "kind": "grammar",
+                    "relation": "default",
                     "nonterminal": "param_default",
                     "format": "InLine",
                     "follower": ""
@@ -85,13 +91,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "key",
+                    "kind": "grammar",
+                    "relation": "key",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -105,28 +113,14 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "name",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "module_identifier"
                 },
                 {
-                    "alias": "as_name",
+                    "kind": "grammar",
+                    "relation": "as_name",
                     "nonterminal": "alias",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
-        }
-    ],
-    "Identifier": [
-        {
-            "name": "Identifier",
-            "leader": "",
-            "children": [
-                {
-                    "alias": "symbol",
-                    "nonterminal": "str",
                     "format": "InLine",
                     "follower": ""
                 }
@@ -139,13 +133,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "contet",
+                    "kind": "grammar",
+                    "relation": "contet",
                     "nonterminal": "expr",
                     "format": "InLine",
-                    "follower": " as "
+                    "follower": ""
                 },
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "alias_expr",
                     "format": "InLine",
                     "follower": ""
@@ -159,19 +155,20 @@
             "leader": "class ",
             "children": [
                 {
-                    "alias": "name",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 },
                 {
-                    "alias": "bs",
+                    "kind": "grammar",
+                    "relation": "bs",
                     "nonterminal": "bases",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -185,13 +182,15 @@
             "leader": "elif ",
             "children": [
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -205,7 +204,8 @@
             "leader": "else:",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -219,7 +219,8 @@
             "leader": "finally:",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -233,7 +234,8 @@
             "leader": " -> ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -252,16 +254,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "module_identifier"
                 }
             ]
         },
         {
             "name": "NoModuleId",
-            "leader": ". ",
+            "leader": ".",
             "children": []
         }
     ],
@@ -271,7 +272,8 @@
             "leader": " ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -283,16 +285,16 @@
             "leader": " ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " as "
                 },
                 {
-                    "alias": "name",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 }
             ]
         },
@@ -308,7 +310,8 @@
             "leader": " : ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -327,7 +330,8 @@
             "leader": " = ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -346,13 +350,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "parameters_d",
                     "format": "InLine",
                     "follower": ""
@@ -364,7 +370,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ""
@@ -376,7 +383,8 @@
             "leader": "**",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ""
@@ -390,7 +398,8 @@
             "leader": "*",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ""
@@ -402,13 +411,15 @@
             "leader": "*",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "parameters_d",
                     "format": "InLine",
                     "follower": ""
@@ -420,7 +431,8 @@
             "leader": "*, ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "parameters_d",
                     "format": "InLine",
                     "follower": ""
@@ -434,13 +446,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "parameters_b",
                     "format": "InLine",
                     "follower": ""
@@ -452,7 +466,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ""
@@ -464,7 +479,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "parameters_c",
                     "format": "InLine",
                     "follower": ""
@@ -478,7 +494,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "parameters_a",
                     "format": "InLine",
                     "follower": ""
@@ -490,7 +507,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "parameters_b",
                     "format": "InLine",
                     "follower": ""
@@ -509,13 +527,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "parameters_a",
                     "format": "InLine",
                     "follower": ""
@@ -527,7 +547,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ", /"
@@ -539,13 +560,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Param",
                     "format": "InLine",
                     "follower": ", /, "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "parameters_b",
                     "format": "InLine",
                     "follower": ""
@@ -559,13 +582,13 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "name",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": " = "
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -577,7 +600,8 @@
             "leader": "**",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -591,10 +615,9 @@
             "leader": " as ",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "identifier"
                 }
             ]
         },
@@ -610,7 +633,8 @@
             "leader": " as ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -629,7 +653,8 @@
             "leader": "(",
             "children": [
                 {
-                    "alias": "bases",
+                    "kind": "grammar",
+                    "relation": "bases",
                     "nonterminal": "bases_a",
                     "format": "InLine",
                     "follower": ")"
@@ -648,13 +673,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "bases_a",
                     "format": "InLine",
                     "follower": ""
@@ -666,7 +693,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -678,7 +706,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "kws",
+                    "kind": "grammar",
+                    "relation": "kws",
                     "nonterminal": "keywords",
                     "format": "InLine",
                     "follower": ""
@@ -692,13 +721,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "keyword",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "keywords",
                     "format": "InLine",
                     "follower": ""
@@ -710,7 +741,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "keyword",
                     "format": "InLine",
                     "follower": ""
@@ -724,13 +756,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "CompareRight",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "comparisons",
                     "format": "InLine",
                     "follower": ""
@@ -742,7 +776,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "CompareRight",
                     "format": "InLine",
                     "follower": ""
@@ -756,7 +791,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -775,13 +811,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "comma_exprs",
                     "format": "InLine",
                     "follower": ""
@@ -793,7 +831,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -807,13 +846,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " = "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "target_exprs",
                     "format": "InLine",
                     "follower": ""
@@ -825,7 +866,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -839,13 +881,15 @@
             "leader": "@",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "decorators",
                     "format": "InLine",
                     "follower": ""
@@ -864,13 +908,15 @@
             "leader": "if ",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "expr",
                     "format": "NewLine",
                     "follower": ""
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "constraint_filters",
                     "format": "InLine",
                     "follower": ""
@@ -882,7 +928,8 @@
             "leader": "if ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "NewLine",
                     "follower": ""
@@ -895,20 +942,20 @@
             "children": []
         }
     ],
-    "sequence_str": [
+    "sequence_string": [
         {
             "name": "ConsStr",
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
-                    "nonterminal": "str",
-                    "format": "InLine",
-                    "follower": " "
+                    "kind": "vocab",
+                    "relation": "head",
+                    "choices_id": "string"
                 },
                 {
-                    "alias": "tail",
-                    "nonterminal": "sequence_str",
+                    "kind": "grammar",
+                    "relation": "tail",
+                    "nonterminal": "sequence_string",
                     "format": "InLine",
                     "follower": ""
                 }
@@ -919,10 +966,9 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "str",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "string"
                 }
             ]
         }
@@ -933,13 +979,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "arguments",
                     "format": "InLine",
                     "follower": ""
@@ -951,7 +999,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -963,7 +1012,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "kws",
+                    "kind": "grammar",
+                    "relation": "kws",
                     "nonterminal": "keywords",
                     "format": "InLine",
                     "follower": ""
@@ -977,13 +1027,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Field",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "dictionary_contents",
                     "format": "NewLine",
                     "follower": ""
@@ -995,7 +1047,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Field",
                     "format": "InLine",
                     "follower": ""
@@ -1003,20 +1056,20 @@
             ]
         }
     ],
-    "sequence_Identifier": [
+    "sequence_var": [
         {
             "name": "ConsId",
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ", "
+                    "kind": "vocab",
+                    "relation": "head",
+                    "choices_id": "identifier"
                 },
                 {
-                    "alias": "tail",
-                    "nonterminal": "sequence_Identifier",
+                    "kind": "grammar",
+                    "relation": "tail",
+                    "nonterminal": "sequence_var",
                     "format": "InLine",
                     "follower": ""
                 }
@@ -1027,10 +1080,9 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "identifier"
                 }
             ]
         }
@@ -1041,13 +1093,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "ImportName",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "sequence_ImportName",
                     "format": "InLine",
                     "follower": ""
@@ -1059,7 +1113,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "ImportName",
                     "format": "InLine",
                     "follower": ""
@@ -1073,13 +1128,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "Withitem",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "sequence_Withitem",
                     "format": "InLine",
                     "follower": ""
@@ -1091,7 +1148,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "Withitem",
                     "format": "InLine",
                     "follower": ""
@@ -1105,13 +1163,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "stmt",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "statements",
                     "format": "NewLine",
                     "follower": ""
@@ -1123,7 +1183,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "stmt",
                     "format": "InLine",
                     "follower": ""
@@ -1137,13 +1198,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "constraint",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "comprehension_constraints",
                     "format": "NewLine",
                     "follower": ""
@@ -1155,7 +1218,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "constraint",
                     "format": "InLine",
                     "follower": ""
@@ -1169,13 +1233,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "head",
+                    "kind": "grammar",
+                    "relation": "head",
                     "nonterminal": "ExceptHandler",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "sequence_ExceptHandler",
                     "format": "NewLine",
                     "follower": ""
@@ -1187,7 +1253,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "ExceptHandler",
                     "format": "InLine",
                     "follower": ""
@@ -1201,13 +1268,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "ElifBlock",
                     "format": "NewLine",
                     "follower": ""
                 },
                 {
-                    "alias": "tail",
+                    "kind": "grammar",
+                    "relation": "tail",
                     "nonterminal": "conditions",
                     "format": "InLine",
                     "follower": ""
@@ -1219,7 +1288,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "ElseBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1238,25 +1308,27 @@
             "leader": "def ",
             "children": [
                 {
-                    "alias": "name",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": "("
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 },
                 {
-                    "alias": "params",
+                    "kind": "grammar",
+                    "relation": "params",
                     "nonterminal": "parameters",
                     "format": "InLine",
                     "follower": ")"
                 },
                 {
-                    "alias": "ret_typ",
+                    "kind": "grammar",
+                    "relation": "ret_typ",
                     "nonterminal": "return_type",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1268,25 +1340,27 @@
             "leader": "def ",
             "children": [
                 {
-                    "alias": "name",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": "("
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 },
                 {
-                    "alias": "params",
+                    "kind": "grammar",
+                    "relation": "params",
                     "nonterminal": "parameters",
                     "format": "InLine",
                     "follower": ")"
                 },
                 {
-                    "alias": "ret_typ",
+                    "kind": "grammar",
+                    "relation": "ret_typ",
                     "nonterminal": "return_type",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1300,13 +1374,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "decs",
+                    "kind": "grammar",
+                    "relation": "decs",
                     "nonterminal": "decorators",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "fun_def",
+                    "kind": "grammar",
+                    "relation": "fun_def",
                     "nonterminal": "function_def",
                     "format": "NewLine",
                     "follower": ""
@@ -1318,13 +1394,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "decs",
+                    "kind": "grammar",
+                    "relation": "decs",
                     "nonterminal": "decorators",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "fun_def",
+                    "kind": "grammar",
+                    "relation": "fun_def",
                     "nonterminal": "function_def",
                     "format": "NewLine",
                     "follower": ""
@@ -1336,13 +1414,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "decs",
+                    "kind": "grammar",
+                    "relation": "decs",
                     "nonterminal": "decorators",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "class_def",
+                    "kind": "grammar",
+                    "relation": "class_def",
                     "nonterminal": "ClassDef",
                     "format": "NewLine",
                     "follower": ""
@@ -1354,7 +1434,8 @@
             "leader": "return ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1371,7 +1452,8 @@
             "leader": "del",
             "children": [
                 {
-                    "alias": "targets",
+                    "kind": "grammar",
+                    "relation": "targets",
                     "nonterminal": "comma_exprs",
                     "format": "InLine",
                     "follower": ""
@@ -1383,13 +1465,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "targets",
+                    "kind": "grammar",
+                    "relation": "targets",
                     "nonterminal": "target_exprs",
                     "format": "InLine",
                     "follower": " = "
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1401,19 +1485,22 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "op",
+                    "kind": "grammar",
+                    "relation": "op",
                     "nonterminal": "operator",
                     "format": "InLine",
                     "follower": "= "
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1425,19 +1512,22 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "type",
+                    "kind": "grammar",
+                    "relation": "type",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " = "
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1449,13 +1539,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "type",
+                    "kind": "grammar",
+                    "relation": "type",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1467,19 +1559,22 @@
             "leader": "for ",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " in "
                 },
                 {
-                    "alias": "iter",
+                    "kind": "grammar",
+                    "relation": "iter",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1491,25 +1586,29 @@
             "leader": "for ",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " in "
                 },
                 {
-                    "alias": "iter",
+                    "kind": "grammar",
+                    "relation": "iter",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "ElseBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1521,19 +1620,22 @@
             "leader": "async for ",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " in "
                 },
                 {
-                    "alias": "iter",
+                    "kind": "grammar",
+                    "relation": "iter",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1545,25 +1647,29 @@
             "leader": "async for ",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " in "
                 },
                 {
-                    "alias": "iter",
+                    "kind": "grammar",
+                    "relation": "iter",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "ElseBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1575,13 +1681,15 @@
             "leader": "while ",
             "children": [
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ": "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1593,19 +1701,22 @@
             "leader": "while ",
             "children": [
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ": "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "ElseBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1617,19 +1728,22 @@
             "leader": "if ",
             "children": [
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ": "
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "conditions",
                     "format": "InLine",
                     "follower": ""
@@ -1641,13 +1755,15 @@
             "leader": "with ",
             "children": [
                 {
-                    "alias": "items",
+                    "kind": "grammar",
+                    "relation": "items",
                     "nonterminal": "sequence_Withitem",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1659,13 +1775,15 @@
             "leader": "async with ",
             "children": [
                 {
-                    "alias": "items",
+                    "kind": "grammar",
+                    "relation": "items",
                     "nonterminal": "sequence_Withitem",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
@@ -1682,7 +1800,8 @@
             "leader": "raise ",
             "children": [
                 {
-                    "alias": "exc",
+                    "kind": "grammar",
+                    "relation": "exc",
                     "nonterminal": "expr",
                     "format": "IndentLine",
                     "follower": ""
@@ -1694,13 +1813,15 @@
             "leader": "raise ",
             "children": [
                 {
-                    "alias": "exc",
+                    "kind": "grammar",
+                    "relation": "exc",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " from "
                 },
                 {
-                    "alias": "caus",
+                    "kind": "grammar",
+                    "relation": "caus",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1712,13 +1833,15 @@
             "leader": "try:",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "handlers",
+                    "kind": "grammar",
+                    "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
                     "format": "NewLine",
                     "follower": ""
@@ -1730,19 +1853,22 @@
             "leader": "try:",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "handlers",
+                    "kind": "grammar",
+                    "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
                     "format": "NewLine",
                     "follower": ""
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "ElseBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1754,19 +1880,22 @@
             "leader": "try:",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "handlers",
+                    "kind": "grammar",
+                    "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
                     "format": "NewLine",
                     "follower": ""
                 },
                 {
-                    "alias": "fin",
+                    "kind": "grammar",
+                    "relation": "fin",
                     "nonterminal": "FinallyBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1778,25 +1907,29 @@
             "leader": "try:",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "statements",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "handlers",
+                    "kind": "grammar",
+                    "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
                     "format": "NewLine",
                     "follower": ""
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "ElseBlock",
                     "format": "NewLine",
                     "follower": ""
                 },
                 {
-                    "alias": "fin",
+                    "kind": "grammar",
+                    "relation": "fin",
                     "nonterminal": "FinallyBlock",
                     "format": "NewLine",
                     "follower": ""
@@ -1808,7 +1941,8 @@
             "leader": "assert ",
             "children": [
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1820,13 +1954,15 @@
             "leader": "assert ",
             "children": [
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ", "
                 },
                 {
-                    "alias": "msg",
+                    "kind": "grammar",
+                    "relation": "msg",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1838,7 +1974,8 @@
             "leader": "import ",
             "children": [
                 {
-                    "alias": "names",
+                    "kind": "grammar",
+                    "relation": "names",
                     "nonterminal": "sequence_ImportName",
                     "format": "InLine",
                     "follower": ""
@@ -1850,13 +1987,15 @@
             "leader": "from ",
             "children": [
                 {
-                    "alias": "module",
+                    "kind": "grammar",
+                    "relation": "module",
                     "nonterminal": "module_id",
                     "format": "InLine",
                     "follower": " import "
                 },
                 {
-                    "alias": "names",
+                    "kind": "grammar",
+                    "relation": "names",
                     "nonterminal": "sequence_ImportName",
                     "format": "InLine",
                     "follower": ""
@@ -1868,7 +2007,8 @@
             "leader": "from ",
             "children": [
                 {
-                    "alias": "module",
+                    "kind": "grammar",
+                    "relation": "module",
                     "nonterminal": "module_id",
                     "format": "InLine",
                     "follower": " import *"
@@ -1880,8 +2020,9 @@
             "leader": "global ",
             "children": [
                 {
-                    "alias": "names",
-                    "nonterminal": "sequence_Identifier",
+                    "kind": "grammar",
+                    "relation": "names",
+                    "nonterminal": "sequence_var",
                     "format": "InLine",
                     "follower": ""
                 }
@@ -1892,8 +2033,9 @@
             "leader": "nonlocal ",
             "children": [
                 {
-                    "alias": "names",
-                    "nonterminal": "sequence_Identifier",
+                    "kind": "grammar",
+                    "relation": "names",
+                    "nonterminal": "sequence_var",
                     "format": "InLine",
                     "follower": ""
                 }
@@ -1904,7 +2046,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1930,25 +2073,28 @@
     "expr": [
         {
             "name": "BoolOp",
-            "leader": "",
+            "leader": "(",
             "children": [
                 {
-                    "alias": "left",
+                    "kind": "grammar",
+                    "relation": "left",
                     "nonterminal": "expr",
                     "format": "InLine",
-                    "follower": ""
+                    "follower": " "
                 },
                 {
-                    "alias": "op",
+                    "kind": "grammar",
+                    "relation": "op",
                     "nonterminal": "boolop",
                     "format": "InLine",
-                    "follower": ""
+                    "follower": " "
                 },
                 {
-                    "alias": "right",
+                    "kind": "grammar",
+                    "relation": "right",
                     "nonterminal": "expr",
                     "format": "InLine",
-                    "follower": ""
+                    "follower": ")"
                 }
             ]
         },
@@ -1957,13 +2103,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " := "
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -1975,19 +2123,22 @@
             "leader": "(",
             "children": [
                 {
-                    "alias": "left",
+                    "kind": "grammar",
+                    "relation": "left",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "op",
+                    "kind": "grammar",
+                    "relation": "op",
                     "nonterminal": "operator",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "right",
+                    "kind": "grammar",
+                    "relation": "right",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ")"
@@ -1996,19 +2147,21 @@
         },
         {
             "name": "UnaryOp",
-            "leader": "",
+            "leader": "(",
             "children": [
                 {
-                    "alias": "op",
+                    "kind": "grammar",
+                    "relation": "op",
                     "nonterminal": "unaryop",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "right",
+                    "kind": "grammar",
+                    "relation": "right",
                     "nonterminal": "expr",
                     "format": "InLine",
-                    "follower": ""
+                    "follower": ")"
                 }
             ]
         },
@@ -2017,13 +2170,15 @@
             "leader": "lambda ",
             "children": [
                 {
-                    "alias": "params",
+                    "kind": "grammar",
+                    "relation": "params",
                     "nonterminal": "parameters",
                     "format": "InLine",
                     "follower": " :"
                 },
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -2035,19 +2190,22 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "body",
+                    "kind": "grammar",
+                    "relation": "body",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": "if "
                 },
                 {
-                    "alias": "test",
+                    "kind": "grammar",
+                    "relation": "test",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " else"
                 },
                 {
-                    "alias": "orelse",
+                    "kind": "grammar",
+                    "relation": "orelse",
                     "nonterminal": "expr",
                     "format": "NewLine",
                     "follower": ""
@@ -2059,7 +2217,8 @@
             "leader": "{",
             "children": [
                 {
-                    "alias": "contents",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "dictionary_contents",
                     "format": "IndentLine",
                     "follower": "}"
@@ -2076,7 +2235,8 @@
             "leader": "{",
             "children": [
                 {
-                    "alias": "contents",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "comma_exprs",
                     "format": "IndentLine",
                     "follower": "}"
@@ -2088,13 +2248,15 @@
             "leader": "[",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "constraints",
+                    "kind": "grammar",
+                    "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
                     "format": "IndentLine",
                     "follower": "]"
@@ -2106,13 +2268,15 @@
             "leader": "{",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "constraints",
+                    "kind": "grammar",
+                    "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
                     "format": "IndentLine",
                     "follower": "}"
@@ -2124,19 +2288,22 @@
             "leader": "{",
             "children": [
                 {
-                    "alias": "key",
+                    "kind": "grammar",
+                    "relation": "key",
                     "nonterminal": "expr",
                     "format": "IndentLine",
                     "follower": " : "
                 },
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "constraints",
+                    "kind": "grammar",
+                    "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
                     "format": "IndentLine",
                     "follower": "}"
@@ -2148,13 +2315,15 @@
             "leader": "(",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "IndentLine",
                     "follower": ""
                 },
                 {
-                    "alias": "constraints",
+                    "kind": "grammar",
+                    "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
                     "format": "IndentLine",
                     "follower": ")"
@@ -2166,7 +2335,8 @@
             "leader": "await ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -2183,7 +2353,8 @@
             "leader": "yield ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -2195,7 +2366,8 @@
             "leader": "yield from ",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -2207,13 +2379,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "left",
+                    "kind": "grammar",
+                    "relation": "left",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " "
                 },
                 {
-                    "alias": "comps",
+                    "kind": "grammar",
+                    "relation": "comps",
                     "nonterminal": "comparisons",
                     "format": "InLine",
                     "follower": ""
@@ -2225,7 +2399,8 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "func",
+                    "kind": "grammar",
+                    "relation": "func",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": "()"
@@ -2237,13 +2412,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "func",
+                    "kind": "grammar",
+                    "relation": "func",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": "("
                 },
                 {
-                    "alias": "args",
+                    "kind": "grammar",
+                    "relation": "args",
                     "nonterminal": "arguments",
                     "format": "InLine",
                     "follower": ")"
@@ -2255,10 +2432,9 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "str",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "integer"
                 }
             ]
         },
@@ -2267,10 +2443,9 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "str",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "float"
                 }
             ]
         },
@@ -2279,8 +2454,9 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
-                    "nonterminal": "sequence_str",
+                    "kind": "grammar",
+                    "relation": "contents",
+                    "nonterminal": "sequence_string",
                     "format": "InLine",
                     "follower": ""
                 }
@@ -2311,16 +2487,16 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": "."
                 },
                 {
-                    "alias": "attr",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "name",
+                    "choices_id": "identifier"
                 }
             ]
         },
@@ -2329,13 +2505,15 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": "["
                 },
                 {
-                    "alias": "slice",
+                    "kind": "grammar",
+                    "relation": "slice",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": "]"
@@ -2347,7 +2525,8 @@
             "leader": "*",
             "children": [
                 {
-                    "alias": "content",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
@@ -2359,10 +2538,9 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "id",
-                    "nonterminal": "Identifier",
-                    "format": "InLine",
-                    "follower": ""
+                    "kind": "vocab",
+                    "relation": "contents",
+                    "choices_id": "identifier"
                 }
             ]
         },
@@ -2371,7 +2549,8 @@
             "leader": "[",
             "children": [
                 {
-                    "alias": "contents",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "comma_exprs",
                     "format": "InLine",
                     "follower": "]"
@@ -2388,7 +2567,8 @@
             "leader": "(",
             "children": [
                 {
-                    "alias": "contents",
+                    "kind": "grammar",
+                    "relation": "contents",
                     "nonterminal": "comma_exprs",
                     "format": "InLine",
                     "follower": ")"
@@ -2405,19 +2585,22 @@
             "leader": "",
             "children": [
                 {
-                    "alias": "lower",
+                    "kind": "grammar",
+                    "relation": "lower",
                     "nonterminal": "option_expr",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "upper",
+                    "kind": "grammar",
+                    "relation": "upper",
                     "nonterminal": "option_expr",
                     "format": "InLine",
                     "follower": ":"
                 },
                 {
-                    "alias": "step",
+                    "kind": "grammar",
+                    "relation": "step",
                     "nonterminal": "option_expr",
                     "format": "InLine",
                     "follower": ""
@@ -2584,19 +2767,22 @@
             "leader": "async for ",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " in "
                 },
                 {
-                    "alias": "search_space",
+                    "kind": "grammar",
+                    "relation": "search_space",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "filts",
+                    "kind": "grammar",
+                    "relation": "filts",
                     "nonterminal": "constraint_filters",
                     "format": "InLine",
                     "follower": ""
@@ -2608,19 +2794,22 @@
             "leader": "for ",
             "children": [
                 {
-                    "alias": "target",
+                    "kind": "grammar",
+                    "relation": "target",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": " in "
                 },
                 {
-                    "alias": "search_space",
+                    "kind": "grammar",
+                    "relation": "search_space",
                     "nonterminal": "expr",
                     "format": "InLine",
                     "follower": ""
                 },
                 {
-                    "alias": "filts",
+                    "kind": "grammar",
+                    "relation": "filts",
                     "nonterminal": "constraint_filters",
                     "format": "InLine",
                     "follower": ""

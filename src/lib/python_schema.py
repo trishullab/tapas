@@ -14,7 +14,7 @@ unions : dict[str, list[Node]] = {
             "SomeReturnType",
             " -> ",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -31,7 +31,7 @@ unions : dict[str, list[Node]] = {
             "SomeModuleId",
             "",
             [
-                Vocab("content", "module_name", "")
+                Vocab("contents", "module_identifier", "")
             ]
         ),
 
@@ -47,7 +47,7 @@ unions : dict[str, list[Node]] = {
             "SomeExceptArg",
             " ",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -55,8 +55,8 @@ unions : dict[str, list[Node]] = {
             "SomeExceptArgName",
             " ",
             [
-                Grammar("content", "expr", InLine(), " as "),
-                Vocab("name", "var", ""),
+                Grammar("contents", "expr", InLine(), " as "),
+                Vocab("name", "identifier", ""),
             ]
         ),
 
@@ -72,7 +72,7 @@ unions : dict[str, list[Node]] = {
             "SomeParamType",
             " : ",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -88,7 +88,7 @@ unions : dict[str, list[Node]] = {
             "SomeParamDefault",
             " = ",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -113,7 +113,7 @@ unions : dict[str, list[Node]] = {
             "SingleKwParam",
             "",
             [
-                Grammar("content", "Param", InLine(), ""),
+                Grammar("contents", "Param", InLine(), ""),
             ]
         ),
 
@@ -121,7 +121,7 @@ unions : dict[str, list[Node]] = {
             "DictionarySplatParam",
             "**",
             [
-                Grammar("content", "Param", InLine(), "")
+                Grammar("contents", "Param", InLine(), "")
             ]
         )
 
@@ -132,7 +132,7 @@ unions : dict[str, list[Node]] = {
             "SingleListSplatParam",
             "*",
             [
-                Grammar("content", "Param", InLine(), ""),
+                Grammar("contents", "Param", InLine(), ""),
             ]
         ),
 
@@ -149,7 +149,7 @@ unions : dict[str, list[Node]] = {
             "ParamsD",
             "*, ",
             [
-                Grammar("content", "parameters_d", InLine(), ""),
+                Grammar("contents", "parameters_d", InLine(), ""),
             ]
         ),
     ],
@@ -168,7 +168,7 @@ unions : dict[str, list[Node]] = {
             "SingleParam",
             "",
             [
-                Grammar("content", "Param", InLine(), ""),
+                Grammar("contents", "Param", InLine(), ""),
             ]
         ),
 
@@ -176,7 +176,7 @@ unions : dict[str, list[Node]] = {
             "ParamsC",
             "",
             [
-                Grammar("content", "parameters_c", InLine(), ""),
+                Grammar("contents", "parameters_c", InLine(), ""),
             ]
         ),
 
@@ -187,7 +187,7 @@ unions : dict[str, list[Node]] = {
             "ParamsA",
             "",
             [
-                Grammar("content", "parameters_a", InLine(), ""),
+                Grammar("contents", "parameters_a", InLine(), ""),
             ]
         ),
 
@@ -196,7 +196,7 @@ unions : dict[str, list[Node]] = {
             "ParamsB",
             "",
             [
-                Grammar("content", "parameters_b", InLine(), "")
+                Grammar("contents", "parameters_b", InLine(), "")
             ]
         ),
 
@@ -222,7 +222,7 @@ unions : dict[str, list[Node]] = {
             "SinglePosParam",
             "",
             [
-                Grammar("content", "Param", InLine(), ", /"),
+                Grammar("contents", "Param", InLine(), ", /"),
             ]
         ),
 
@@ -244,8 +244,8 @@ unions : dict[str, list[Node]] = {
             "NamedKeyword",
             "",
             [
-                Vocab("name", "var", " = "),
-                Grammar("content", "expr", InLine(), "")
+                Vocab("name", "identifier", " = "),
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -253,7 +253,7 @@ unions : dict[str, list[Node]] = {
             "SplatKeyword",
             "**",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
     ],
@@ -264,7 +264,7 @@ unions : dict[str, list[Node]] = {
             "SomeAlias",
             " as ",
             [
-                Vocab("content", "var", "")
+                Vocab("contents", "identifier", "")
             ]
         ),
 
@@ -282,7 +282,7 @@ unions : dict[str, list[Node]] = {
             "SomeAliasExpr",
             " as ",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -324,7 +324,7 @@ unions : dict[str, list[Node]] = {
             "SingleBase",
             "",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -352,7 +352,7 @@ unions : dict[str, list[Node]] = {
             "SingleKeyword",
             "",
             [
-                Grammar("content", "keyword", InLine(), ""),
+                Grammar("contents", "keyword", InLine(), ""),
             ]
         ),
 
@@ -372,7 +372,7 @@ unions : dict[str, list[Node]] = {
             "SingleCompareRight",
             "",
             [
-                Grammar("content", "CompareRight", InLine(), ""),
+                Grammar("contents", "CompareRight", InLine(), ""),
             ]
         ),
 
@@ -383,7 +383,7 @@ unions : dict[str, list[Node]] = {
             "SomeExpr",
             "",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -409,7 +409,7 @@ unions : dict[str, list[Node]] = {
             "SingleExpr",
             "",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -429,7 +429,7 @@ unions : dict[str, list[Node]] = {
             "SingleTargetExpr",
             "",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -467,7 +467,7 @@ unions : dict[str, list[Node]] = {
             "SingleFilter",
             "if ",
             [
-                Grammar("content", "expr", NewLine(), ""),
+                Grammar("contents", "expr", NewLine(), ""),
             ]
         ),
 
@@ -494,7 +494,7 @@ unions : dict[str, list[Node]] = {
             "SingleStr",
             "",
             [
-                Vocab("content", "string", ""),
+                Vocab("contents", "string", ""),
             ]
         ),
 
@@ -514,7 +514,7 @@ unions : dict[str, list[Node]] = {
             "SingleArg",
             "",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -542,7 +542,7 @@ unions : dict[str, list[Node]] = {
             "SingleField",
             "",
             [
-                Grammar("content", "Field", InLine(), ""),
+                Grammar("contents", "Field", InLine(), ""),
             ]
         ),
 
@@ -553,7 +553,7 @@ unions : dict[str, list[Node]] = {
             "ConsId",
             "",
             [
-                Vocab("head", "var", ", "),
+                Vocab("head", "identifier", ", "),
                 Grammar("tail", "sequence_var", InLine(), ""),
             ]
         ),
@@ -562,7 +562,7 @@ unions : dict[str, list[Node]] = {
             "SingleId",
             "",
             [
-                Vocab("content", "var", ""),
+                Vocab("contents", "identifier", ""),
             ]
         ),
 
@@ -583,7 +583,7 @@ unions : dict[str, list[Node]] = {
             "SingleImportName",
             "",
             [
-                Grammar("content", "ImportName", InLine(), ""),
+                Grammar("contents", "ImportName", InLine(), ""),
             ]
         ),
 
@@ -603,7 +603,7 @@ unions : dict[str, list[Node]] = {
             "SingleWithitem",
             "",
             [
-                Grammar("content", "Withitem", InLine(), ""),
+                Grammar("contents", "Withitem", InLine(), ""),
             ]
         ),
 
@@ -624,7 +624,7 @@ unions : dict[str, list[Node]] = {
             "SingleStmt",
             "",
             [
-                Grammar("content", "stmt", InLine(), ""),
+                Grammar("contents", "stmt", InLine(), ""),
             ]
         ),
 
@@ -644,7 +644,7 @@ unions : dict[str, list[Node]] = {
             "SingleConstraint",
             "",
             [
-                Grammar("content", "constraint", InLine(), ""),
+                Grammar("contents", "constraint", InLine(), ""),
             ]
         ),
 
@@ -664,7 +664,7 @@ unions : dict[str, list[Node]] = {
             "SingleExceptHandler",
             "",
             [
-                Grammar("content", "ExceptHandler", InLine(), ""),
+                Grammar("contents", "ExceptHandler", InLine(), ""),
             ]
         ),
 
@@ -676,7 +676,7 @@ unions : dict[str, list[Node]] = {
             "ElifCond",
             "",
             [
-                Grammar("content", "ElifBlock", NewLine(), ""),
+                Grammar("contents", "ElifBlock", NewLine(), ""),
                 Grammar("tail", "conditions", InLine(), ""),
             ]
         ),
@@ -685,7 +685,7 @@ unions : dict[str, list[Node]] = {
             "ElseCond",
             "",
             [
-                Grammar("content", "ElseBlock", NewLine(), ""),
+                Grammar("contents", "ElseBlock", NewLine(), ""),
             ]
         ),
 
@@ -702,7 +702,7 @@ unions : dict[str, list[Node]] = {
             "FunctionDef",
             "def ",
             [ 
-                Vocab("name", "function_name", "("),
+                Vocab("name", "identifier", "("),
                 Grammar("params", "parameters", InLine(), ")"),
                 Grammar("ret_typ", "return_type", InLine(), ":"),
                 Grammar("body", "statements", IndentLine(), "")
@@ -713,7 +713,7 @@ unions : dict[str, list[Node]] = {
             "AsyncFunctionDef",
             "def ",
             [
-                Vocab("name", "function_name", "("),
+                Vocab("name", "identifier", "("),
                 Grammar("params", "parameters", InLine(), ")"),
                 Grammar("ret_typ", "return_type", InLine(), ":"),
                 Grammar("body", "statements", IndentLine(), "")
@@ -755,7 +755,7 @@ unions : dict[str, list[Node]] = {
             "ReturnSomething",
             "return ", 
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -778,7 +778,7 @@ unions : dict[str, list[Node]] = {
             "",
             [
                 Grammar("targets", "target_exprs", InLine(), " = "),
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -788,7 +788,7 @@ unions : dict[str, list[Node]] = {
             [
                 Grammar("target", "expr", InLine(), " "),
                 Grammar("op", "operator", InLine(), "= "),
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -798,7 +798,7 @@ unions : dict[str, list[Node]] = {
             [
                 Grammar("target", "expr", InLine(), " : "),
                 Grammar("type", "expr", InLine(), " = "),
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ],
         ),
 
@@ -1029,7 +1029,7 @@ unions : dict[str, list[Node]] = {
             "Expr",
             "",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -1070,7 +1070,7 @@ unions : dict[str, list[Node]] = {
             "",
             [
                 Grammar("target", "expr", InLine(), " := "),
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -1138,7 +1138,7 @@ unions : dict[str, list[Node]] = {
             "ListComp",
             "[",
             [
-                Grammar("content", "expr", IndentLine(), ""),
+                Grammar("contents", "expr", IndentLine(), ""),
                 Grammar("constraints", "comprehension_constraints", IndentLine(), "]")
             ]
         ),
@@ -1147,7 +1147,7 @@ unions : dict[str, list[Node]] = {
             "SetComp",
             "{",
             [
-                Grammar("content", "expr", IndentLine(), ""),
+                Grammar("contents", "expr", IndentLine(), ""),
                 Grammar("constraints", "comprehension_constraints", IndentLine(), "}")
             ]
         ),
@@ -1157,7 +1157,7 @@ unions : dict[str, list[Node]] = {
             "{",
             [
                 Grammar("key", "expr", IndentLine(), " : "),
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
                 Grammar("constraints", "comprehension_constraints", IndentLine(), "}")
             ]
         ),
@@ -1166,7 +1166,7 @@ unions : dict[str, list[Node]] = {
             "GeneratorExp",
             "(",
             [
-                Grammar("content", "expr", IndentLine(), ""),
+                Grammar("contents", "expr", IndentLine(), ""),
                 Grammar("constraints", "comprehension_constraints", IndentLine(), ")")
             ]
         ),
@@ -1175,7 +1175,7 @@ unions : dict[str, list[Node]] = {
             "Await",
             "await ",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -1189,7 +1189,7 @@ unions : dict[str, list[Node]] = {
             "Yield",
             "yield ",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -1197,7 +1197,7 @@ unions : dict[str, list[Node]] = {
             "YieldFrom",
             "yield from ",
             [
-                Grammar("content", "expr", InLine(), "")
+                Grammar("contents", "expr", InLine(), "")
             ]
         ),
 
@@ -1233,7 +1233,7 @@ unions : dict[str, list[Node]] = {
             "Integer",
             "",
             [
-                Vocab("content", "integer", "")
+                Vocab("contents", "integer", "")
             ]
         ),
 
@@ -1241,7 +1241,7 @@ unions : dict[str, list[Node]] = {
             "Float",
             "",
             [
-                Vocab("content", "float", "")
+                Vocab("contents", "float", "")
             ]
         ),
 
@@ -1249,7 +1249,7 @@ unions : dict[str, list[Node]] = {
             "ConcatString",
             "",
             [
-                Grammar("content", "sequence_string", InLine(), "")
+                Grammar("contents", "sequence_string", InLine(), "")
             ]
         ),
 
@@ -1282,8 +1282,8 @@ unions : dict[str, list[Node]] = {
             "Attribute",
             "",
             [
-                Grammar("content", "expr", InLine(), "."),
-                Vocab("attr", "attribute", "")
+                Grammar("contents", "expr", InLine(), "."),
+                Vocab("name", "identifier", "")
             ]
         ),
 
@@ -1291,7 +1291,7 @@ unions : dict[str, list[Node]] = {
             "Subscript",
             "",
             [
-                Grammar("content", "expr", InLine(), "["),
+                Grammar("contents", "expr", InLine(), "["),
                 Grammar("slice", "expr", InLine(), "]")
             ]
         ),
@@ -1300,7 +1300,7 @@ unions : dict[str, list[Node]] = {
             "Starred",
             "*",
             [
-                Grammar("content", "expr", InLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -1308,7 +1308,7 @@ unions : dict[str, list[Node]] = {
             "Name",
             "",
             [
-                Vocab("id", "var", ""),
+                Vocab("contents", "identifier", ""),
             ]
         ),
 
@@ -1592,7 +1592,7 @@ intersections : list[Node] = [
         "Param",
         "",
         [
-            Vocab("id", "param_name", ""),
+            Vocab("name", "identifier", ""),
             Grammar("type", "param_type", InLine(), ""),
             Grammar("default", "param_default", InLine(), "")
         ]
@@ -1603,7 +1603,7 @@ intersections : list[Node] = [
         "",
         [
             Grammar("key", "expr", InLine(), " : "),
-            Grammar("content", "expr", InLine(), "")
+            Grammar("contents", "expr", InLine(), "")
         ]
     ),
 
@@ -1630,7 +1630,7 @@ intersections : list[Node] = [
         "ClassDef",
         "class ",
         [
-            Vocab("name", "class_name", ""),
+            Vocab("name", "identifier", ""),
             Grammar("bs", "bases", InLine(), ":"), 
             Grammar("body", "statements", IndentLine(), "")
         ]
@@ -1716,7 +1716,7 @@ def format() -> str:
             case_Grammar=lambda o : (
                 lf := line_format.to_string(o.format),
                 fol := o.follower,
-                "(grammar " + lf + ' : ' + o.relation + ' : ' + o.nonterminal + ") " + f"`{fol}`"
+                "(grammar : " + lf + ' : ' + o.relation + ' : ' + o.nonterminal + ") " + f"`{fol}`"
             )[-1],
             case_Vocab=lambda o : (
                 "(vocab : " + o.relation + ' : ' + o.choices_id + ")" 

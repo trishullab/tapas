@@ -82,7 +82,7 @@ def rename_Param(
 
     return Param (
 
-        o.id,         rename_param_type(
+        o.name,         rename_param_type(
             o.type,
             global_map,
             nonlocal_map,
@@ -111,7 +111,7 @@ def rename_Field(
             nonlocal_map,
             local_map
         ),         rename_expr(
-            o.content,
+            o.contents,
             global_map,
             nonlocal_map,
             local_map
@@ -253,7 +253,7 @@ def rename_return_type(
 
         return SomeReturnType(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -282,7 +282,7 @@ def rename_module_id(
     def handle_SomeModuleId(o : SomeModuleId): 
 
         return SomeModuleId(
-            o.content        )
+            o.contents        )
 
     def handle_NoModuleId(o : NoModuleId): 
 
@@ -308,7 +308,7 @@ def rename_except_arg(
 
         return SomeExceptArg(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -318,7 +318,7 @@ def rename_except_arg(
 
         return SomeExceptArgName(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -349,7 +349,7 @@ def rename_param_type(
 
         return SomeParamType(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -379,7 +379,7 @@ def rename_param_default(
 
         return SomeParamDefault(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -424,7 +424,7 @@ def rename_parameters_d(
 
         return SingleKwParam(
             rename_Param(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -434,7 +434,7 @@ def rename_parameters_d(
 
         return DictionarySplatParam(
             rename_Param(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -460,7 +460,7 @@ def rename_parameters_c(
 
         return SingleListSplatParam(
             rename_Param(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -485,7 +485,7 @@ def rename_parameters_c(
 
         return ParamsD(
             rename_parameters_d(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -526,7 +526,7 @@ def rename_parameters_b(
 
         return SingleParam(
             rename_Param(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -536,7 +536,7 @@ def rename_parameters_b(
 
         return ParamsC(
             rename_parameters_c(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -562,7 +562,7 @@ def rename_parameters(
 
         return ParamsA(
             rename_parameters_a(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -572,7 +572,7 @@ def rename_parameters(
 
         return ParamsB(
             rename_parameters_b(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -618,7 +618,7 @@ def rename_parameters_a(
 
         return SinglePosParam(
             rename_Param(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -659,7 +659,7 @@ def rename_keyword(
 
         return NamedKeyword(
             o.name,             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -669,7 +669,7 @@ def rename_keyword(
 
         return SplatKeyword(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -693,7 +693,7 @@ def rename_alias(
     def handle_SomeAlias(o : SomeAlias): 
 
         return SomeAlias(
-            o.content        )
+            o.contents        )
 
     def handle_NoAlias(o : NoAlias): 
 
@@ -719,7 +719,7 @@ def rename_alias_expr(
 
         return SomeAliasExpr(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -794,7 +794,7 @@ def rename_bases_a(
 
         return SingleBase(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -845,7 +845,7 @@ def rename_keywords(
 
         return SingleKeyword(
             rename_keyword(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -885,7 +885,7 @@ def rename_comparisons(
 
         return SingleCompareRight(
             rename_CompareRight(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -910,7 +910,7 @@ def rename_option_expr(
 
         return SomeExpr(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -955,7 +955,7 @@ def rename_comma_exprs(
 
         return SingleExpr(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -995,7 +995,7 @@ def rename_target_exprs(
 
         return SingleTargetExpr(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1070,7 +1070,7 @@ def rename_constraint_filters(
 
         return SingleFilter(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1110,7 +1110,7 @@ def rename_sequence_string(
     def handle_SingleStr(o : SingleStr): 
 
         return SingleStr(
-            o.content        )
+            o.contents        )
 
 
     return match_sequence_string(o, SequenceStringHandlers(
@@ -1146,7 +1146,7 @@ def rename_arguments(
 
         return SingleArg(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1197,7 +1197,7 @@ def rename_dictionary_contents(
 
         return SingleField(
             rename_Field(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1231,7 +1231,7 @@ def rename_sequence_var(
     def handle_SingleId(o : SingleId): 
 
         return SingleId(
-            o.content        )
+            o.contents        )
 
 
     return match_sequence_var(o, SequenceVarHandlers(
@@ -1267,7 +1267,7 @@ def rename_sequence_ImportName(
 
         return SingleImportName(
             rename_ImportName(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1307,7 +1307,7 @@ def rename_sequence_Withitem(
 
         return SingleWithitem(
             rename_Withitem(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1347,7 +1347,7 @@ def rename_statements(
 
         return SingleStmt(
             rename_stmt(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1387,7 +1387,7 @@ def rename_comprehension_constraints(
 
         return SingleConstraint(
             rename_constraint(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1427,7 +1427,7 @@ def rename_sequence_ExceptHandler(
 
         return SingleExceptHandler(
             rename_ExceptHandler(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1452,7 +1452,7 @@ def rename_conditions(
 
         return ElifCond(
             rename_ElifBlock(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1467,7 +1467,7 @@ def rename_conditions(
 
         return ElseCond(
             rename_ElseBlock(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1598,7 +1598,7 @@ def rename_stmt(
 
         return ReturnSomething(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1628,7 +1628,7 @@ def rename_stmt(
                 nonlocal_map,
                 local_map
             ),             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1648,7 +1648,7 @@ def rename_stmt(
                 nonlocal_map,
                 local_map
             ),             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -1668,7 +1668,7 @@ def rename_stmt(
                 nonlocal_map,
                 local_map
             ),             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2058,7 +2058,7 @@ def rename_stmt(
 
         return Expr(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2158,7 +2158,7 @@ def rename_expr(
                 nonlocal_map,
                 local_map
             ),             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2263,7 +2263,7 @@ def rename_expr(
 
         return ListComp(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2278,7 +2278,7 @@ def rename_expr(
 
         return SetComp(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2298,7 +2298,7 @@ def rename_expr(
                 nonlocal_map,
                 local_map
             ),             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2313,7 +2313,7 @@ def rename_expr(
 
         return GeneratorExp(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2328,7 +2328,7 @@ def rename_expr(
 
         return Await(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2343,7 +2343,7 @@ def rename_expr(
 
         return Yield(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2353,7 +2353,7 @@ def rename_expr(
 
         return YieldFrom(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2402,18 +2402,18 @@ def rename_expr(
     def handle_Integer(o : Integer): 
 
         return Integer(
-            o.content        )
+            o.contents        )
 
     def handle_Float(o : Float): 
 
         return Float(
-            o.content        )
+            o.contents        )
 
     def handle_ConcatString(o : ConcatString): 
 
         return ConcatString(
             rename_sequence_string(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2443,17 +2443,17 @@ def rename_expr(
 
         return Attribute(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
-            ),             o.attr        )
+            ),             o.name        )
 
     def handle_Subscript(o : Subscript): 
 
         return Subscript(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2468,7 +2468,7 @@ def rename_expr(
 
         return Starred(
             rename_expr(
-                o.content,
+                o.contents,
                 global_map,
                 nonlocal_map,
                 local_map
@@ -2477,7 +2477,7 @@ def rename_expr(
     def handle_Name(o : Name): 
 
         return Name(
-            o.id        )
+            o.contents        )
 
     def handle_List(o : List): 
 

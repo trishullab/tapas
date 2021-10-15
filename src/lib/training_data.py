@@ -13,7 +13,7 @@ from lib import generic_tree
 from lib.python_ast_from_generic_ast import from_generic_ast
 from lib.python_ast_serialize import serialize_Module
 from lib import python_instance
-from lib.file import write_res, write_append_res, write_append_res_gen
+from lib.file import write_res, write_append_res, write_res_gen, write_append_res_gen
 
 from lib.production_instance import instance
 
@@ -24,6 +24,12 @@ def generate(name : str):
     base_path = pathlib.Path(__file__).parent.absolute()
     dirpath = os.path.join(base_path, "../../res")
     fpath = os.path.join(dirpath, f"{name}.jsonl")
+
+
+    vocab : dict[str, set[str]] = {}
+
+    write_res_gen(f'{name}_vocab.json', '')
+    write_res_gen(f'{name}_training.txt', '')
 
     with open(fpath, 'r') as f:
         count = 1
@@ -61,32 +67,29 @@ def generate(name : str):
                     return
 
                 else:
-                    if (0 <= count <= 1):
 
-                        print(f"-------------------------")
-                        print(f"line number: {count}")
-                        print(f"-------------------------")
+                        # print(f"-------------------------")
+                        # print(f"line number: {count}")
+                        # print(f"-------------------------")
 
-                        concrete_code = python_instance.concretize(instances)
+                        # concrete_code = python_instance.concretize(instances)
 
                         # print(f"-------------------------")
                         # print(f"generic tree:")
                         # print(generic_tree.dump(tree))
 
-                        print(f"-------------------------")
-                        print(f"production tree:")
-                        print(python_instance.dump(instances))
+                        # print(f"-------------------------")
+                        # print(f"production tree:")
+                        # print(python_instance.dump(instances))
 
-                        print(f"-------------------------")
-                        print(f"source:")
-                        print(source_code)
+                        # print(f"-------------------------")
+                        # print(f"source:")
+                        # print(source_code)
 
-                        print(f"-------------------------")
-                        print(f"concretized:")
-                        print(concrete_code)
+                        # print(f"-------------------------")
+                        # print(f"concretized:")
+                        # print(concrete_code)
 
-                    else:
-                        break
 
 
                     def triple_from_instance(inst : instance) -> tuple[str, str, str]:
@@ -101,14 +104,32 @@ def generate(name : str):
 
 
                     training_data = [
-                        triple_from_instance(i) 
+                        f"[{t[0]},{t[1]},{t[2]}]"
                         for i in instances
+                        for t in [triple_from_instance(i)] 
                     ]
 
-                    write_append_res_gen(f'{name}_training.txt', json.dumps(training_data) + '\n\n<|endoftext|>\n\n')
+
+                    # update vocabulary
+                    for inst in instances:
+                        def handle_Vocab(o):
+                            if o.choices_id in vocab.keys():
+                                vocab[o.choices_id].add(o.word)
+                            else:
+                                vocab[o.choices_id] = {o.word}
+
+                        match_instance(inst, InstanceHandlers(
+                            case_Grammar=lambda o : (),
+                            case_Vocab=handle_Vocab 
+                        )) 
+
+
+                    write_append_res_gen(f'{name}_training.txt', "[" + ",".join(training_data) + "]" + '\n\n<|endoftext|>\n\n')
 
             except Exception as x:
 
+
+                print(f"Another Exception {x}")
                 print(f"\n\n")
 
                 print(f"""--Generic Tree--\n{
@@ -128,3 +149,11 @@ def generate(name : str):
             # update
             line = f.readline()
             count += 1
+        
+        write_res_gen(f'{name}_vocab.json', json.dumps(
+            {
+                k:list(v)
+                for k,v in vocab.items()
+            },
+            indent=4
+        ))

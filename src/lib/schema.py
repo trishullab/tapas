@@ -20,14 +20,14 @@ def to_dictionary(node: Node):
         'children' : [
             match_child(c, ChildHandlers[dict](
                 case_Grammar = lambda o : ({
-                    'kind' : 'fixed',
+                    'kind' : 'grammar',
                     'relation' : o.relation,
                     'nonterminal' : o.nonterminal,
                     'format' : lf.to_string(o.format),
                     'follower' : o.follower
                 }),
                 case_Vocab = lambda o : ({
-                    'kind' : 'flex',
+                    'kind' : 'vocab',
                     'relation' : o.relation,
                     'choices_id' : o.choices_id
                 })

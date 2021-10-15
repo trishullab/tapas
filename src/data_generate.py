@@ -7,7 +7,7 @@ from lib import apps_training_data
 from lib import training_data
 
 # write_res_gen('python_grammar.txt', python_schema.format())
-# write_res_gen('python_grammar.json', json.dumps(python_schema.grammar_dictionary, indent=4))
+write_res_gen('python_grammar.json', json.dumps(python_schema.grammar_dictionary, indent=4))
 
 training_data.generate('mbpp')
 
