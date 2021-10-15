@@ -21,6 +21,15 @@ from gen.line_format import InLine, NewLine, IndentLine
 """
 
 intersection_str = """
+
+@dataclass
+class SP_{{ node.name }}:
+    o : {{ node.name }} 
+    depth : int
+    relation : str
+    indent_width : int 
+    inline : bool
+
 def serialize_{{ node.name }}(
     o : {{ node.name }}, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
@@ -28,41 +37,40 @@ def serialize_{{ node.name }}(
 
     result = []
 
-    @dataclass
-    class SP:
-        o : {{ node.name }} 
-        depth : int
-        relation : str
-        indent_width : int 
-        inline : bool
 
-    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP_{{ node.name }}, list[prod_inst.instance]]] = [SP_{{ node.name }}(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
-        if isinstance(item, SP):
+        if isinstance(item, SP_{{ node.name }}):
             o = item.o
 
-            stack += [
 {% for child in node.children|reverse %}
 {% if is_vocab(child) %}
+            stack.append(
                 [prod_inst.make_Vocab(
                     choices_id = '{{ child.choices_id }}',
                     word = o.{{ child.relation }},
                     depth = item.depth + 1,
                     relation = "{{ child.relation }}"
-                )],
+                )]
+            )
 {% elif child.nonterminal == node.name %}
-                serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
+            stack.append(
+                SP_{{ node.name }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
                     prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                     {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
-                ),
+                )
+            )
 {% else %}
+            stack.append(
                 serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
                     prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                     {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
-                ),
+                )
+            )
 {% endif %}
 {% endfor %}
+            stack.append(
                 [prod_inst.make_Grammar(
                     nonterminal = '{{ node.name }}',
                     sequence_id = '{{ node.name }}',
@@ -71,7 +79,7 @@ def serialize_{{ node.name }}(
                     indent_width = item.indent_width,
                     inline = item.inline
                 )]
-            ]
+            )
         else:
             result += item
 
@@ -96,6 +104,16 @@ def generate_intersection_def(
 
 
 union_str = """
+
+
+@dataclass
+class SP_{{ type_name }}:
+    o : {{ type_name }} 
+    depth : int
+    relation : str
+    indent_width : int 
+    inline : bool
+
 def serialize_{{ type_name }}(
     o : {{ type_name }}, depth : int = 0, relation : str = "",
     indent_width : int = 0, inline : bool = True
@@ -103,47 +121,45 @@ def serialize_{{ type_name }}(
 
     result = []
 
-    @dataclass
-    class SP:
-        o : {{ type_name }} 
-        depth : int
-        relation : str
-        indent_width : int 
-        inline : bool
-
-    stack : list[Union[SP, list[prod_inst.instance]]] = [SP(o, depth, relation, indent_width, inline)]
+    stack : list[Union[SP_{{ type_name }}, list[prod_inst.instance]]] = [SP_{{ type_name }}(o, depth, relation, indent_width, inline)]
     while stack:
         item = stack.pop()
-        if isinstance(item, SP):
+        if isinstance(item, SP_{{ type_name }}):
             o = item.o
 
 {% for node in nodes %}
             def handle_{{ node.name }}(o : {{ node.name }}): 
                 nonlocal stack
                 nonlocal item 
-                assert isinstance(item, SP)
+                assert isinstance(item, SP_{{ type_name }})
 
-                stack += [
 {% for child in node.children|reverse %}
 {% if is_vocab(child) %}
+                stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = '{{ child.choices_id }}',
                         word = o.{{ child.relation }},
                         depth = item.depth + 1,
                         relation = "{{ child.relation }}"
-                    )],
+                    )]
+                )
 {% elif child.nonterminal == type_name %}
-                    SP(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
+                stack.append(
+                    SP_{{ type_name }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
                         prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                         {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
-                    ), 
+                    )
+                )
 {% else %}
+                stack.append(
                     serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
                         prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
                         {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
-                    ), 
+                    )
+                )
 {% endif %}
 {% endfor %}
+                stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = '{{ type_name }}',
                         sequence_id = '{{ node.name }}',
@@ -152,7 +168,7 @@ def serialize_{{ type_name }}(
                         indent_width = item.indent_width,
                         inline = item.inline
                     )]
-                ]
+                )
 
 {% endfor %}
 
