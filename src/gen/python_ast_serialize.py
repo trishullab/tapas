@@ -7,564 +7,298 @@ from gen.line_format import InLine, NewLine, IndentLine
 
 
 
-@dataclass
-class SP_Module:
-    o : Module 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_Module(
     o : Module, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'Module',
+            sequence_id = 'Module',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_statements(o.body, depth + 1, "body", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        )
+    )
 
 
-    stack : list[Union[SP_Module, list[prod_inst.instance]]] = [SP_Module(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_Module):
-            o = item.o
-
-            stack.append(
-                serialize_statements(o.body, item.depth + 1, "body", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'Module',
-                    sequence_id = 'Module',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_CompareRight:
-    o : CompareRight 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_CompareRight(
     o : CompareRight, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'CompareRight',
+            sequence_id = 'CompareRight',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_cmpop(o.op, depth + 1, "op", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_expr(o.rand, depth + 1, "rand", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        )
+    )
 
 
-    stack : list[Union[SP_CompareRight, list[prod_inst.instance]]] = [SP_CompareRight(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_CompareRight):
-            o = item.o
-
-            stack.append(
-                serialize_expr(o.rand, item.depth + 1, "rand", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                serialize_cmpop(o.op, item.depth + 1, "op", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'CompareRight',
-                    sequence_id = 'CompareRight',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_ExceptHandler:
-    o : ExceptHandler 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_ExceptHandler(
     o : ExceptHandler, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'ExceptHandler',
+            sequence_id = 'ExceptHandler',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_except_arg(o.arg, depth + 1, "arg", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_statements(o.body, depth + 1, "body", 
+            prod_inst.next_indent_width(indent_width, IndentLine()),
+            False
+        )
+    )
 
 
-    stack : list[Union[SP_ExceptHandler, list[prod_inst.instance]]] = [SP_ExceptHandler(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_ExceptHandler):
-            o = item.o
-
-            stack.append(
-                serialize_statements(o.body, item.depth + 1, "body", 
-                    prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                    False,
-                )
-            )
-            stack.append(
-                serialize_except_arg(o.arg, item.depth + 1, "arg", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'ExceptHandler',
-                    sequence_id = 'ExceptHandler',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_Param:
-    o : Param 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_Param(
     o : Param, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'Param',
+            sequence_id = 'Param',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        [prod_inst.make_Vocab(
+            choices_id = 'identifier',
+            word = o.name,
+            depth = depth + 1,
+            relation = "name"
+        )] +
+        serialize_param_type(o.type, depth + 1, "type", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_param_default(o.default, depth + 1, "default", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        )
+    )
 
 
-    stack : list[Union[SP_Param, list[prod_inst.instance]]] = [SP_Param(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_Param):
-            o = item.o
-
-            stack.append(
-                serialize_param_default(o.default, item.depth + 1, "default", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                serialize_param_type(o.type, item.depth + 1, "type", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Vocab(
-                    choices_id = 'identifier',
-                    word = o.name,
-                    depth = item.depth + 1,
-                    relation = "name"
-                )]
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'Param',
-                    sequence_id = 'Param',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_Field:
-    o : Field 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_Field(
     o : Field, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'Field',
+            sequence_id = 'Field',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_expr(o.key, depth + 1, "key", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_expr(o.contents, depth + 1, "contents", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        )
+    )
 
 
-    stack : list[Union[SP_Field, list[prod_inst.instance]]] = [SP_Field(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_Field):
-            o = item.o
-
-            stack.append(
-                serialize_expr(o.contents, item.depth + 1, "contents", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                serialize_expr(o.key, item.depth + 1, "key", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'Field',
-                    sequence_id = 'Field',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_ImportName:
-    o : ImportName 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_ImportName(
     o : ImportName, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'ImportName',
+            sequence_id = 'ImportName',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        [prod_inst.make_Vocab(
+            choices_id = 'module_identifier',
+            word = o.name,
+            depth = depth + 1,
+            relation = "name"
+        )] +
+        serialize_alias(o.as_name, depth + 1, "as_name", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        )
+    )
 
 
-    stack : list[Union[SP_ImportName, list[prod_inst.instance]]] = [SP_ImportName(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_ImportName):
-            o = item.o
-
-            stack.append(
-                serialize_alias(o.as_name, item.depth + 1, "as_name", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Vocab(
-                    choices_id = 'module_identifier',
-                    word = o.name,
-                    depth = item.depth + 1,
-                    relation = "name"
-                )]
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'ImportName',
-                    sequence_id = 'ImportName',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_Withitem:
-    o : Withitem 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_Withitem(
     o : Withitem, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'Withitem',
+            sequence_id = 'Withitem',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_expr(o.contet, depth + 1, "contet", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_alias_expr(o.target, depth + 1, "target", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        )
+    )
 
 
-    stack : list[Union[SP_Withitem, list[prod_inst.instance]]] = [SP_Withitem(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_Withitem):
-            o = item.o
-
-            stack.append(
-                serialize_alias_expr(o.target, item.depth + 1, "target", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                serialize_expr(o.contet, item.depth + 1, "contet", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'Withitem',
-                    sequence_id = 'Withitem',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_ClassDef:
-    o : ClassDef 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_ClassDef(
     o : ClassDef, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'ClassDef',
+            sequence_id = 'ClassDef',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        [prod_inst.make_Vocab(
+            choices_id = 'identifier',
+            word = o.name,
+            depth = depth + 1,
+            relation = "name"
+        )] +
+        serialize_bases(o.bs, depth + 1, "bs", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_statements(o.body, depth + 1, "body", 
+            prod_inst.next_indent_width(indent_width, IndentLine()),
+            False
+        )
+    )
 
 
-    stack : list[Union[SP_ClassDef, list[prod_inst.instance]]] = [SP_ClassDef(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_ClassDef):
-            o = item.o
-
-            stack.append(
-                serialize_statements(o.body, item.depth + 1, "body", 
-                    prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                    False,
-                )
-            )
-            stack.append(
-                serialize_bases(o.bs, item.depth + 1, "bs", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Vocab(
-                    choices_id = 'identifier',
-                    word = o.name,
-                    depth = item.depth + 1,
-                    relation = "name"
-                )]
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'ClassDef',
-                    sequence_id = 'ClassDef',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_ElifBlock:
-    o : ElifBlock 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_ElifBlock(
     o : ElifBlock, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'ElifBlock',
+            sequence_id = 'ElifBlock',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_expr(o.test, depth + 1, "test", 
+            prod_inst.next_indent_width(indent_width, InLine()),
+            True
+        ) +
+
+        serialize_statements(o.body, depth + 1, "body", 
+            prod_inst.next_indent_width(indent_width, IndentLine()),
+            False
+        )
+    )
 
 
-    stack : list[Union[SP_ElifBlock, list[prod_inst.instance]]] = [SP_ElifBlock(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_ElifBlock):
-            o = item.o
-
-            stack.append(
-                serialize_statements(o.body, item.depth + 1, "body", 
-                    prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                    False,
-                )
-            )
-            stack.append(
-                serialize_expr(o.test, item.depth + 1, "test", 
-                    prod_inst.next_indent_width(item.indent_width, InLine()),
-                    True,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'ElifBlock',
-                    sequence_id = 'ElifBlock',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_ElseBlock:
-    o : ElseBlock 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_ElseBlock(
     o : ElseBlock, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'ElseBlock',
+            sequence_id = 'ElseBlock',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_statements(o.body, depth + 1, "body", 
+            prod_inst.next_indent_width(indent_width, IndentLine()),
+            False
+        )
+    )
 
 
-    stack : list[Union[SP_ElseBlock, list[prod_inst.instance]]] = [SP_ElseBlock(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_ElseBlock):
-            o = item.o
-
-            stack.append(
-                serialize_statements(o.body, item.depth + 1, "body", 
-                    prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                    False,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'ElseBlock',
-                    sequence_id = 'ElseBlock',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
-
-
-
-@dataclass
-class SP_FinallyBlock:
-    o : FinallyBlock 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
 
 def serialize_FinallyBlock(
     o : FinallyBlock, depth : int = 0, relation : str = "", 
     indent_width : int = 0, inline : bool = True
 ) -> list[prod_inst.instance]:
 
-    result = []
-
-
-    stack : list[Union[SP_FinallyBlock, list[prod_inst.instance]]] = [SP_FinallyBlock(o, depth, relation, indent_width, inline)]
-    while stack:
-        item = stack.pop()
-        if isinstance(item, SP_FinallyBlock):
-            o = item.o
-
-            stack.append(
-                serialize_statements(o.body, item.depth + 1, "body", 
-                    prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                    False,
-                )
-            )
-            stack.append(
-                [prod_inst.make_Grammar(
-                    nonterminal = 'FinallyBlock',
-                    sequence_id = 'FinallyBlock',
-                    depth = item.depth,
-                    relation = item.relation,
-                    indent_width = item.indent_width,
-                    inline = item.inline
-                )]
-            )
-        else:
-            result += item
-
-    return result
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = 'FinallyBlock',
+            sequence_id = 'FinallyBlock',
+            depth = depth,
+            relation = relation,
+            indent_width = indent_width,
+            inline = inline
+        )] +
+        serialize_statements(o.body, depth + 1, "body", 
+            prod_inst.next_indent_width(indent_width, IndentLine()),
+            False
+        )
+    )
 
 
 
