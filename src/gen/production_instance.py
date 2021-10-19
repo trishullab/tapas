@@ -24,10 +24,6 @@ class instance(ABC):
 class Grammar(instance):
     nonterminal : str
     sequence_id : str
-    relation : str
-    depth : int
-    indent_width : int
-    inline : bool
 
     def _match(self, handlers : InstanceHandlers[T]) -> T:
         return handlers.case_Grammar(self)
@@ -35,19 +31,11 @@ class Grammar(instance):
 
 def make_Grammar(
     nonterminal : str,
-    sequence_id : str,
-    relation : str,
-    depth : int,
-    indent_width : int,
-    inline : bool
+    sequence_id : str
 ) -> instance:
     return Grammar(
         nonterminal,
-        sequence_id,
-        relation,
-        depth,
-        indent_width,
-        inline
+        sequence_id
     )
 
 
@@ -55,8 +43,6 @@ def make_Grammar(
 class Vocab(instance):
     choices_id : str
     word : str
-    relation : str
-    depth : int
 
     def _match(self, handlers : InstanceHandlers[T]) -> T:
         return handlers.case_Vocab(self)
@@ -64,15 +50,11 @@ class Vocab(instance):
 
 def make_Vocab(
     choices_id : str,
-    word : str,
-    relation : str,
-    depth : int
+    word : str
 ) -> instance:
     return Vocab(
         choices_id,
-        word,
-        relation,
-        depth
+        word
     )
 
 

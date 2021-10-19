@@ -13,11 +13,7 @@ constructors = [
         "Grammar",
         [
             Field('nonterminal', 'str'),
-            Field('sequence_id', 'str'),
-            Field('relation', 'str'),
-            Field('depth', 'int'),
-            Field('indent_width', 'int'),
-            Field('inline', 'bool')
+            Field('sequence_id', 'str')
         ]
     ),
 
@@ -25,9 +21,7 @@ constructors = [
         "Vocab",
         [
             Field('choices_id', 'str'),
-            Field('word', 'str'),
-            Field('relation', 'str'),
-            Field('depth', 'int')
+            Field('word', 'str')
         ]
     )
 ]

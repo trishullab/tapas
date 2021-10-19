@@ -23,34 +23,24 @@ from gen.line_format import InLine, NewLine, IndentLine
 intersection_str = """
 
 def serialize_{{ node.name }}(
-    o : {{ node.name }}, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : {{ node.name }}
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = '{{ node.name }}',
-            sequence_id = '{{ node.name }}',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = '{{ node.name }}'
         )]{% if node.children %} +
 {% endif %}
 {% for child in node.children %}
 {% if is_vocab(child) %}
         [prod_inst.make_Vocab(
             choices_id = '{{ child.choices_id }}',
-            word = o.{{ child.relation }},
-            depth = depth + 1,
-            relation = "{{ child.relation }}"
+            word = o.{{ child.relation }}
         )]{% if not loop.last %} +
 {% endif %}
 {% else %}
-        serialize_{{ child.nonterminal }}(o.{{ child.relation }}, depth + 1, "{{ child.relation }}", 
-            prod_inst.next_indent_width(indent_width, {{ line_format_string(child.format) + "()" }}),
-            {{ "True" if line_format_string(child.format) == "InLine" else "False"  }}
-        ){% if not loop.last %} +
+        serialize_{{ child.nonterminal }}(o.{{ child.relation }}){% if not loop.last %} +
 {% endif %}
 
 {% endif %}
@@ -78,80 +68,57 @@ def generate_intersection_def(
 union_str = """
 
 
-@dataclass
-class SP_{{ type_name }}:
-    o : {{ type_name }} 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_{{ type_name }}(
-    o : {{ type_name }}, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : {{ type_name }}
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_{{ type_name }}, list[prod_inst.instance]]] = [SP_{{ type_name }}(o, depth, relation, indent_width, inline)]
+    stack : list[Union[{{ type_name }}, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_{{ type_name }}):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, {{ type_name }}):
 
 {% for node in nodes %}
             def handle_{{ node.name }}(o : {{ node.name }}): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_{{ type_name }})
+                assert isinstance(o, {{ type_name }})
 
 {% for child in node.children|reverse %}
 {% if is_vocab(child) %}
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = '{{ child.choices_id }}',
-                        word = o.{{ child.relation }},
-                        depth = item.depth + 1,
-                        relation = "{{ child.relation }}"
+                        word = o.{{ child.relation }}
                     )]
                 )
 {% elif child.nonterminal == type_name %}
                 stack.append(
-                    SP_{{ type_name }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
-                        prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
-                        {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
-                    )
+                    o.{{ child.relation }}
                 )
 {% else %}
                 stack.append(
-                    serialize_{{ child.nonterminal }}(o.{{ child.relation }}, item.depth + 1, "{{ child.relation }}", 
-                        prod_inst.next_indent_width(item.indent_width, {{ line_format_string(child.format) + "()" }}),
-                        {{ "True" if line_format_string(child.format) == "InLine" else "False"  }},
-                    )
+                    serialize_{{ child.nonterminal }}(o.{{ child.relation }})
                 )
 {% endif %}
 {% endfor %}
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = '{{ type_name }}',
-                        sequence_id = '{{ node.name }}',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = '{{ node.name }}'
                     )]
                 )
 
 {% endfor %}
 
-            match_{{ type_name }}(o, {{ handlers_name }}(
+            match_{{ type_name }}(stack_item, {{ handlers_name }}(
 {% for node in nodes %}
                 case_{{ node.name }} = handle_{{ node.name }}{% if not loop.last %}, {% endif %} 
 {% endfor %}
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 """

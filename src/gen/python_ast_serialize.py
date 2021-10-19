@@ -8,4289 +8,2793 @@ from gen.line_format import InLine, NewLine, IndentLine
 
 
 def serialize_Module(
-    o : Module, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : Module
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'Module',
-            sequence_id = 'Module',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'Module'
         )] +
-        serialize_statements(o.body, depth + 1, "body", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        )
+        serialize_statements(o.body)
     )
 
 
 
 def serialize_CompareRight(
-    o : CompareRight, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : CompareRight
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'CompareRight',
-            sequence_id = 'CompareRight',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'CompareRight'
         )] +
-        serialize_cmpop(o.op, depth + 1, "op", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_cmpop(o.op) +
 
-        serialize_expr(o.rand, depth + 1, "rand", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        )
+        serialize_expr(o.rand)
     )
 
 
 
 def serialize_ExceptHandler(
-    o : ExceptHandler, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : ExceptHandler
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'ExceptHandler',
-            sequence_id = 'ExceptHandler',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'ExceptHandler'
         )] +
-        serialize_except_arg(o.arg, depth + 1, "arg", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_except_arg(o.arg) +
 
-        serialize_statements(o.body, depth + 1, "body", 
-            prod_inst.next_indent_width(indent_width, IndentLine()),
-            False
-        )
+        serialize_statements(o.body)
     )
 
 
 
 def serialize_Param(
-    o : Param, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : Param
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'Param',
-            sequence_id = 'Param',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'Param'
         )] +
         [prod_inst.make_Vocab(
             choices_id = 'identifier',
-            word = o.name,
-            depth = depth + 1,
-            relation = "name"
+            word = o.name
         )] +
-        serialize_param_type(o.type, depth + 1, "type", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_param_type(o.type) +
 
-        serialize_param_default(o.default, depth + 1, "default", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        )
+        serialize_param_default(o.default)
     )
 
 
 
 def serialize_Field(
-    o : Field, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : Field
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'Field',
-            sequence_id = 'Field',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'Field'
         )] +
-        serialize_expr(o.key, depth + 1, "key", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_expr(o.key) +
 
-        serialize_expr(o.contents, depth + 1, "contents", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        )
+        serialize_expr(o.contents)
     )
 
 
 
 def serialize_ImportName(
-    o : ImportName, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : ImportName
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'ImportName',
-            sequence_id = 'ImportName',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'ImportName'
         )] +
         [prod_inst.make_Vocab(
             choices_id = 'module_identifier',
-            word = o.name,
-            depth = depth + 1,
-            relation = "name"
+            word = o.name
         )] +
-        serialize_alias(o.as_name, depth + 1, "as_name", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        )
+        serialize_alias(o.as_name)
     )
 
 
 
 def serialize_Withitem(
-    o : Withitem, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : Withitem
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'Withitem',
-            sequence_id = 'Withitem',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'Withitem'
         )] +
-        serialize_expr(o.contet, depth + 1, "contet", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_expr(o.contet) +
 
-        serialize_alias_expr(o.target, depth + 1, "target", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        )
+        serialize_alias_expr(o.target)
     )
 
 
 
 def serialize_ClassDef(
-    o : ClassDef, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : ClassDef
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'ClassDef',
-            sequence_id = 'ClassDef',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'ClassDef'
         )] +
         [prod_inst.make_Vocab(
             choices_id = 'identifier',
-            word = o.name,
-            depth = depth + 1,
-            relation = "name"
+            word = o.name
         )] +
-        serialize_bases(o.bs, depth + 1, "bs", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_bases(o.bs) +
 
-        serialize_statements(o.body, depth + 1, "body", 
-            prod_inst.next_indent_width(indent_width, IndentLine()),
-            False
-        )
+        serialize_statements(o.body)
     )
 
 
 
 def serialize_ElifBlock(
-    o : ElifBlock, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : ElifBlock
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'ElifBlock',
-            sequence_id = 'ElifBlock',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'ElifBlock'
         )] +
-        serialize_expr(o.test, depth + 1, "test", 
-            prod_inst.next_indent_width(indent_width, InLine()),
-            True
-        ) +
+        serialize_expr(o.test) +
 
-        serialize_statements(o.body, depth + 1, "body", 
-            prod_inst.next_indent_width(indent_width, IndentLine()),
-            False
-        )
+        serialize_statements(o.body)
     )
 
 
 
 def serialize_ElseBlock(
-    o : ElseBlock, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : ElseBlock
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'ElseBlock',
-            sequence_id = 'ElseBlock',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'ElseBlock'
         )] +
-        serialize_statements(o.body, depth + 1, "body", 
-            prod_inst.next_indent_width(indent_width, IndentLine()),
-            False
-        )
+        serialize_statements(o.body)
     )
 
 
 
 def serialize_FinallyBlock(
-    o : FinallyBlock, depth : int = 0, relation : str = "", 
-    indent_width : int = 0, inline : bool = True
+    o : FinallyBlock
 ) -> list[prod_inst.instance]:
 
     return (
         [prod_inst.make_Grammar(
             nonterminal = 'FinallyBlock',
-            sequence_id = 'FinallyBlock',
-            depth = depth,
-            relation = relation,
-            indent_width = indent_width,
-            inline = inline
+            sequence_id = 'FinallyBlock'
         )] +
-        serialize_statements(o.body, depth + 1, "body", 
-            prod_inst.next_indent_width(indent_width, IndentLine()),
-            False
-        )
+        serialize_statements(o.body)
     )
 
 
 
 
-@dataclass
-class SP_return_type:
-    o : return_type 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_return_type(
-    o : return_type, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : return_type
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_return_type, list[prod_inst.instance]]] = [SP_return_type(o, depth, relation, indent_width, inline)]
+    stack : list[Union[return_type, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_return_type):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, return_type):
 
             def handle_SomeReturnType(o : SomeReturnType): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_return_type)
+                assert isinstance(o, return_type)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'return_type',
-                        sequence_id = 'SomeReturnType',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeReturnType'
                     )]
                 )
 
             def handle_NoReturnType(o : NoReturnType): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_return_type)
+                assert isinstance(o, return_type)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'return_type',
-                        sequence_id = 'NoReturnType',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoReturnType'
                     )]
                 )
 
 
-            match_return_type(o, ReturnTypeHandlers(
+            match_return_type(stack_item, ReturnTypeHandlers(
                 case_SomeReturnType = handle_SomeReturnType,  
                 case_NoReturnType = handle_NoReturnType 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_module_id:
-    o : module_id 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_module_id(
-    o : module_id, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : module_id
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_module_id, list[prod_inst.instance]]] = [SP_module_id(o, depth, relation, indent_width, inline)]
+    stack : list[Union[module_id, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_module_id):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, module_id):
 
             def handle_SomeModuleId(o : SomeModuleId): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_module_id)
+                assert isinstance(o, module_id)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'module_identifier',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'module_id',
-                        sequence_id = 'SomeModuleId',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeModuleId'
                     )]
                 )
 
             def handle_NoModuleId(o : NoModuleId): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_module_id)
+                assert isinstance(o, module_id)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'module_id',
-                        sequence_id = 'NoModuleId',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoModuleId'
                     )]
                 )
 
 
-            match_module_id(o, ModuleIdHandlers(
+            match_module_id(stack_item, ModuleIdHandlers(
                 case_SomeModuleId = handle_SomeModuleId,  
                 case_NoModuleId = handle_NoModuleId 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_except_arg:
-    o : except_arg 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_except_arg(
-    o : except_arg, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : except_arg
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_except_arg, list[prod_inst.instance]]] = [SP_except_arg(o, depth, relation, indent_width, inline)]
+    stack : list[Union[except_arg, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_except_arg):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, except_arg):
 
             def handle_SomeExceptArg(o : SomeExceptArg): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_except_arg)
+                assert isinstance(o, except_arg)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'except_arg',
-                        sequence_id = 'SomeExceptArg',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeExceptArg'
                     )]
                 )
 
             def handle_SomeExceptArgName(o : SomeExceptArgName): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_except_arg)
+                assert isinstance(o, except_arg)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.name,
-                        depth = item.depth + 1,
-                        relation = "name"
+                        word = o.name
                     )]
                 )
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'except_arg',
-                        sequence_id = 'SomeExceptArgName',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeExceptArgName'
                     )]
                 )
 
             def handle_NoExceptArg(o : NoExceptArg): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_except_arg)
+                assert isinstance(o, except_arg)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'except_arg',
-                        sequence_id = 'NoExceptArg',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoExceptArg'
                     )]
                 )
 
 
-            match_except_arg(o, ExceptArgHandlers(
+            match_except_arg(stack_item, ExceptArgHandlers(
                 case_SomeExceptArg = handle_SomeExceptArg,  
                 case_SomeExceptArgName = handle_SomeExceptArgName,  
                 case_NoExceptArg = handle_NoExceptArg 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_param_type:
-    o : param_type 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_param_type(
-    o : param_type, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : param_type
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_param_type, list[prod_inst.instance]]] = [SP_param_type(o, depth, relation, indent_width, inline)]
+    stack : list[Union[param_type, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_param_type):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, param_type):
 
             def handle_SomeParamType(o : SomeParamType): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_param_type)
+                assert isinstance(o, param_type)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'param_type',
-                        sequence_id = 'SomeParamType',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeParamType'
                     )]
                 )
 
             def handle_NoParamType(o : NoParamType): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_param_type)
+                assert isinstance(o, param_type)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'param_type',
-                        sequence_id = 'NoParamType',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoParamType'
                     )]
                 )
 
 
-            match_param_type(o, ParamTypeHandlers(
+            match_param_type(stack_item, ParamTypeHandlers(
                 case_SomeParamType = handle_SomeParamType,  
                 case_NoParamType = handle_NoParamType 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_param_default:
-    o : param_default 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_param_default(
-    o : param_default, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : param_default
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_param_default, list[prod_inst.instance]]] = [SP_param_default(o, depth, relation, indent_width, inline)]
+    stack : list[Union[param_default, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_param_default):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, param_default):
 
             def handle_SomeParamDefault(o : SomeParamDefault): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_param_default)
+                assert isinstance(o, param_default)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'param_default',
-                        sequence_id = 'SomeParamDefault',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeParamDefault'
                     )]
                 )
 
             def handle_NoParamDefault(o : NoParamDefault): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_param_default)
+                assert isinstance(o, param_default)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'param_default',
-                        sequence_id = 'NoParamDefault',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoParamDefault'
                     )]
                 )
 
 
-            match_param_default(o, ParamDefaultHandlers(
+            match_param_default(stack_item, ParamDefaultHandlers(
                 case_SomeParamDefault = handle_SomeParamDefault,  
                 case_NoParamDefault = handle_NoParamDefault 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_parameters_d:
-    o : parameters_d 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_parameters_d(
-    o : parameters_d, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : parameters_d
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_parameters_d, list[prod_inst.instance]]] = [SP_parameters_d(o, depth, relation, indent_width, inline)]
+    stack : list[Union[parameters_d, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_parameters_d):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, parameters_d):
 
             def handle_ConsKwParam(o : ConsKwParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_d)
+                assert isinstance(o, parameters_d)
 
                 stack.append(
-                    SP_parameters_d(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_Param(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_d',
-                        sequence_id = 'ConsKwParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsKwParam'
                     )]
                 )
 
             def handle_SingleKwParam(o : SingleKwParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_d)
+                assert isinstance(o, parameters_d)
 
                 stack.append(
-                    serialize_Param(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_d',
-                        sequence_id = 'SingleKwParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleKwParam'
                     )]
                 )
 
             def handle_DictionarySplatParam(o : DictionarySplatParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_d)
+                assert isinstance(o, parameters_d)
 
                 stack.append(
-                    serialize_Param(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_d',
-                        sequence_id = 'DictionarySplatParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'DictionarySplatParam'
                     )]
                 )
 
 
-            match_parameters_d(o, ParametersDHandlers(
+            match_parameters_d(stack_item, ParametersDHandlers(
                 case_ConsKwParam = handle_ConsKwParam,  
                 case_SingleKwParam = handle_SingleKwParam,  
                 case_DictionarySplatParam = handle_DictionarySplatParam 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_parameters_c:
-    o : parameters_c 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_parameters_c(
-    o : parameters_c, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : parameters_c
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_parameters_c, list[prod_inst.instance]]] = [SP_parameters_c(o, depth, relation, indent_width, inline)]
+    stack : list[Union[parameters_c, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_parameters_c):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, parameters_c):
 
             def handle_SingleListSplatParam(o : SingleListSplatParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_c)
+                assert isinstance(o, parameters_c)
 
                 stack.append(
-                    serialize_Param(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_c',
-                        sequence_id = 'SingleListSplatParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleListSplatParam'
                     )]
                 )
 
             def handle_TransListSplatParam(o : TransListSplatParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_c)
+                assert isinstance(o, parameters_c)
 
                 stack.append(
-                    serialize_parameters_d(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters_d(o.tail)
                 )
                 stack.append(
-                    serialize_Param(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_c',
-                        sequence_id = 'TransListSplatParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TransListSplatParam'
                     )]
                 )
 
             def handle_ParamsD(o : ParamsD): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_c)
+                assert isinstance(o, parameters_c)
 
                 stack.append(
-                    serialize_parameters_d(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters_d(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_c',
-                        sequence_id = 'ParamsD',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ParamsD'
                     )]
                 )
 
 
-            match_parameters_c(o, ParametersCHandlers(
+            match_parameters_c(stack_item, ParametersCHandlers(
                 case_SingleListSplatParam = handle_SingleListSplatParam,  
                 case_TransListSplatParam = handle_TransListSplatParam,  
                 case_ParamsD = handle_ParamsD 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_parameters_b:
-    o : parameters_b 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_parameters_b(
-    o : parameters_b, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : parameters_b
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_parameters_b, list[prod_inst.instance]]] = [SP_parameters_b(o, depth, relation, indent_width, inline)]
+    stack : list[Union[parameters_b, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_parameters_b):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, parameters_b):
 
             def handle_ConsParam(o : ConsParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_b)
+                assert isinstance(o, parameters_b)
 
                 stack.append(
-                    SP_parameters_b(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_Param(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_b',
-                        sequence_id = 'ConsParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsParam'
                     )]
                 )
 
             def handle_SingleParam(o : SingleParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_b)
+                assert isinstance(o, parameters_b)
 
                 stack.append(
-                    serialize_Param(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_b',
-                        sequence_id = 'SingleParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleParam'
                     )]
                 )
 
             def handle_ParamsC(o : ParamsC): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_b)
+                assert isinstance(o, parameters_b)
 
                 stack.append(
-                    serialize_parameters_c(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters_c(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_b',
-                        sequence_id = 'ParamsC',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ParamsC'
                     )]
                 )
 
 
-            match_parameters_b(o, ParametersBHandlers(
+            match_parameters_b(stack_item, ParametersBHandlers(
                 case_ConsParam = handle_ConsParam,  
                 case_SingleParam = handle_SingleParam,  
                 case_ParamsC = handle_ParamsC 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_parameters:
-    o : parameters 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_parameters(
-    o : parameters, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : parameters
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_parameters, list[prod_inst.instance]]] = [SP_parameters(o, depth, relation, indent_width, inline)]
+    stack : list[Union[parameters, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_parameters):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, parameters):
 
             def handle_ParamsA(o : ParamsA): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters)
+                assert isinstance(o, parameters)
 
                 stack.append(
-                    serialize_parameters_a(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters_a(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters',
-                        sequence_id = 'ParamsA',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ParamsA'
                     )]
                 )
 
             def handle_ParamsB(o : ParamsB): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters)
+                assert isinstance(o, parameters)
 
                 stack.append(
-                    serialize_parameters_b(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters_b(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters',
-                        sequence_id = 'ParamsB',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ParamsB'
                     )]
                 )
 
             def handle_NoParam(o : NoParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters)
+                assert isinstance(o, parameters)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters',
-                        sequence_id = 'NoParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoParam'
                     )]
                 )
 
 
-            match_parameters(o, ParametersHandlers(
+            match_parameters(stack_item, ParametersHandlers(
                 case_ParamsA = handle_ParamsA,  
                 case_ParamsB = handle_ParamsB,  
                 case_NoParam = handle_NoParam 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_parameters_a:
-    o : parameters_a 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_parameters_a(
-    o : parameters_a, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : parameters_a
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_parameters_a, list[prod_inst.instance]]] = [SP_parameters_a(o, depth, relation, indent_width, inline)]
+    stack : list[Union[parameters_a, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_parameters_a):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, parameters_a):
 
             def handle_ConsPosParam(o : ConsPosParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_a)
+                assert isinstance(o, parameters_a)
 
                 stack.append(
-                    SP_parameters_a(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_Param(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_a',
-                        sequence_id = 'ConsPosParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsPosParam'
                     )]
                 )
 
             def handle_SinglePosParam(o : SinglePosParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_a)
+                assert isinstance(o, parameters_a)
 
                 stack.append(
-                    serialize_Param(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_a',
-                        sequence_id = 'SinglePosParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SinglePosParam'
                     )]
                 )
 
             def handle_TransPosParam(o : TransPosParam): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_parameters_a)
+                assert isinstance(o, parameters_a)
 
                 stack.append(
-                    serialize_parameters_b(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters_b(o.tail)
                 )
                 stack.append(
-                    serialize_Param(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Param(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'parameters_a',
-                        sequence_id = 'TransPosParam',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TransPosParam'
                     )]
                 )
 
 
-            match_parameters_a(o, ParametersAHandlers(
+            match_parameters_a(stack_item, ParametersAHandlers(
                 case_ConsPosParam = handle_ConsPosParam,  
                 case_SinglePosParam = handle_SinglePosParam,  
                 case_TransPosParam = handle_TransPosParam 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_keyword:
-    o : keyword 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_keyword(
-    o : keyword, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : keyword
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_keyword, list[prod_inst.instance]]] = [SP_keyword(o, depth, relation, indent_width, inline)]
+    stack : list[Union[keyword, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_keyword):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, keyword):
 
             def handle_NamedKeyword(o : NamedKeyword): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_keyword)
+                assert isinstance(o, keyword)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.name,
-                        depth = item.depth + 1,
-                        relation = "name"
+                        word = o.name
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'keyword',
-                        sequence_id = 'NamedKeyword',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NamedKeyword'
                     )]
                 )
 
             def handle_SplatKeyword(o : SplatKeyword): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_keyword)
+                assert isinstance(o, keyword)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'keyword',
-                        sequence_id = 'SplatKeyword',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SplatKeyword'
                     )]
                 )
 
 
-            match_keyword(o, KeywordHandlers(
+            match_keyword(stack_item, KeywordHandlers(
                 case_NamedKeyword = handle_NamedKeyword,  
                 case_SplatKeyword = handle_SplatKeyword 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_alias:
-    o : alias 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_alias(
-    o : alias, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : alias
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_alias, list[prod_inst.instance]]] = [SP_alias(o, depth, relation, indent_width, inline)]
+    stack : list[Union[alias, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_alias):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, alias):
 
             def handle_SomeAlias(o : SomeAlias): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_alias)
+                assert isinstance(o, alias)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'alias',
-                        sequence_id = 'SomeAlias',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeAlias'
                     )]
                 )
 
             def handle_NoAlias(o : NoAlias): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_alias)
+                assert isinstance(o, alias)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'alias',
-                        sequence_id = 'NoAlias',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoAlias'
                     )]
                 )
 
 
-            match_alias(o, AliasHandlers(
+            match_alias(stack_item, AliasHandlers(
                 case_SomeAlias = handle_SomeAlias,  
                 case_NoAlias = handle_NoAlias 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_alias_expr:
-    o : alias_expr 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_alias_expr(
-    o : alias_expr, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : alias_expr
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_alias_expr, list[prod_inst.instance]]] = [SP_alias_expr(o, depth, relation, indent_width, inline)]
+    stack : list[Union[alias_expr, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_alias_expr):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, alias_expr):
 
             def handle_SomeAliasExpr(o : SomeAliasExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_alias_expr)
+                assert isinstance(o, alias_expr)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'alias_expr',
-                        sequence_id = 'SomeAliasExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeAliasExpr'
                     )]
                 )
 
             def handle_NoAliasExpr(o : NoAliasExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_alias_expr)
+                assert isinstance(o, alias_expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'alias_expr',
-                        sequence_id = 'NoAliasExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoAliasExpr'
                     )]
                 )
 
 
-            match_alias_expr(o, AliasExprHandlers(
+            match_alias_expr(stack_item, AliasExprHandlers(
                 case_SomeAliasExpr = handle_SomeAliasExpr,  
                 case_NoAliasExpr = handle_NoAliasExpr 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_bases:
-    o : bases 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_bases(
-    o : bases, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : bases
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_bases, list[prod_inst.instance]]] = [SP_bases(o, depth, relation, indent_width, inline)]
+    stack : list[Union[bases, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_bases):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, bases):
 
             def handle_SomeBases(o : SomeBases): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_bases)
+                assert isinstance(o, bases)
 
                 stack.append(
-                    serialize_bases_a(o.bases, item.depth + 1, "bases", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_bases_a(o.bases)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'bases',
-                        sequence_id = 'SomeBases',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeBases'
                     )]
                 )
 
             def handle_NoBases(o : NoBases): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_bases)
+                assert isinstance(o, bases)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'bases',
-                        sequence_id = 'NoBases',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoBases'
                     )]
                 )
 
 
-            match_bases(o, BasesHandlers(
+            match_bases(stack_item, BasesHandlers(
                 case_SomeBases = handle_SomeBases,  
                 case_NoBases = handle_NoBases 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_bases_a:
-    o : bases_a 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_bases_a(
-    o : bases_a, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : bases_a
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_bases_a, list[prod_inst.instance]]] = [SP_bases_a(o, depth, relation, indent_width, inline)]
+    stack : list[Union[bases_a, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_bases_a):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, bases_a):
 
             def handle_ConsBase(o : ConsBase): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_bases_a)
+                assert isinstance(o, bases_a)
 
                 stack.append(
-                    SP_bases_a(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_expr(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'bases_a',
-                        sequence_id = 'ConsBase',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsBase'
                     )]
                 )
 
             def handle_SingleBase(o : SingleBase): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_bases_a)
+                assert isinstance(o, bases_a)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'bases_a',
-                        sequence_id = 'SingleBase',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleBase'
                     )]
                 )
 
             def handle_KeywordsBase(o : KeywordsBase): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_bases_a)
+                assert isinstance(o, bases_a)
 
                 stack.append(
-                    serialize_keywords(o.kws, item.depth + 1, "kws", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_keywords(o.kws)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'bases_a',
-                        sequence_id = 'KeywordsBase',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'KeywordsBase'
                     )]
                 )
 
 
-            match_bases_a(o, BasesAHandlers(
+            match_bases_a(stack_item, BasesAHandlers(
                 case_ConsBase = handle_ConsBase,  
                 case_SingleBase = handle_SingleBase,  
                 case_KeywordsBase = handle_KeywordsBase 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_keywords:
-    o : keywords 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_keywords(
-    o : keywords, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : keywords
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_keywords, list[prod_inst.instance]]] = [SP_keywords(o, depth, relation, indent_width, inline)]
+    stack : list[Union[keywords, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_keywords):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, keywords):
 
             def handle_ConsKeyword(o : ConsKeyword): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_keywords)
+                assert isinstance(o, keywords)
 
                 stack.append(
-                    SP_keywords(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_keyword(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_keyword(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'keywords',
-                        sequence_id = 'ConsKeyword',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsKeyword'
                     )]
                 )
 
             def handle_SingleKeyword(o : SingleKeyword): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_keywords)
+                assert isinstance(o, keywords)
 
                 stack.append(
-                    serialize_keyword(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_keyword(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'keywords',
-                        sequence_id = 'SingleKeyword',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleKeyword'
                     )]
                 )
 
 
-            match_keywords(o, KeywordsHandlers(
+            match_keywords(stack_item, KeywordsHandlers(
                 case_ConsKeyword = handle_ConsKeyword,  
                 case_SingleKeyword = handle_SingleKeyword 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_comparisons:
-    o : comparisons 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_comparisons(
-    o : comparisons, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : comparisons
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_comparisons, list[prod_inst.instance]]] = [SP_comparisons(o, depth, relation, indent_width, inline)]
+    stack : list[Union[comparisons, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_comparisons):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, comparisons):
 
             def handle_ConsCompareRight(o : ConsCompareRight): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_comparisons)
+                assert isinstance(o, comparisons)
 
                 stack.append(
-                    SP_comparisons(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_CompareRight(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_CompareRight(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'comparisons',
-                        sequence_id = 'ConsCompareRight',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsCompareRight'
                     )]
                 )
 
             def handle_SingleCompareRight(o : SingleCompareRight): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_comparisons)
+                assert isinstance(o, comparisons)
 
                 stack.append(
-                    serialize_CompareRight(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_CompareRight(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'comparisons',
-                        sequence_id = 'SingleCompareRight',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleCompareRight'
                     )]
                 )
 
 
-            match_comparisons(o, ComparisonsHandlers(
+            match_comparisons(stack_item, ComparisonsHandlers(
                 case_ConsCompareRight = handle_ConsCompareRight,  
                 case_SingleCompareRight = handle_SingleCompareRight 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_option_expr:
-    o : option_expr 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_option_expr(
-    o : option_expr, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : option_expr
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_option_expr, list[prod_inst.instance]]] = [SP_option_expr(o, depth, relation, indent_width, inline)]
+    stack : list[Union[option_expr, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_option_expr):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, option_expr):
 
             def handle_SomeExpr(o : SomeExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_option_expr)
+                assert isinstance(o, option_expr)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'option_expr',
-                        sequence_id = 'SomeExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SomeExpr'
                     )]
                 )
 
             def handle_NoExpr(o : NoExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_option_expr)
+                assert isinstance(o, option_expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'option_expr',
-                        sequence_id = 'NoExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoExpr'
                     )]
                 )
 
 
-            match_option_expr(o, OptionExprHandlers(
+            match_option_expr(stack_item, OptionExprHandlers(
                 case_SomeExpr = handle_SomeExpr,  
                 case_NoExpr = handle_NoExpr 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_comma_exprs:
-    o : comma_exprs 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_comma_exprs(
-    o : comma_exprs, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : comma_exprs
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_comma_exprs, list[prod_inst.instance]]] = [SP_comma_exprs(o, depth, relation, indent_width, inline)]
+    stack : list[Union[comma_exprs, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_comma_exprs):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, comma_exprs):
 
             def handle_ConsExpr(o : ConsExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_comma_exprs)
+                assert isinstance(o, comma_exprs)
 
                 stack.append(
-                    SP_comma_exprs(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_expr(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'comma_exprs',
-                        sequence_id = 'ConsExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsExpr'
                     )]
                 )
 
             def handle_SingleExpr(o : SingleExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_comma_exprs)
+                assert isinstance(o, comma_exprs)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'comma_exprs',
-                        sequence_id = 'SingleExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleExpr'
                     )]
                 )
 
 
-            match_comma_exprs(o, CommaExprsHandlers(
+            match_comma_exprs(stack_item, CommaExprsHandlers(
                 case_ConsExpr = handle_ConsExpr,  
                 case_SingleExpr = handle_SingleExpr 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_target_exprs:
-    o : target_exprs 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_target_exprs(
-    o : target_exprs, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : target_exprs
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_target_exprs, list[prod_inst.instance]]] = [SP_target_exprs(o, depth, relation, indent_width, inline)]
+    stack : list[Union[target_exprs, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_target_exprs):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, target_exprs):
 
             def handle_ConsTargetExpr(o : ConsTargetExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_target_exprs)
+                assert isinstance(o, target_exprs)
 
                 stack.append(
-                    SP_target_exprs(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_expr(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'target_exprs',
-                        sequence_id = 'ConsTargetExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsTargetExpr'
                     )]
                 )
 
             def handle_SingleTargetExpr(o : SingleTargetExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_target_exprs)
+                assert isinstance(o, target_exprs)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'target_exprs',
-                        sequence_id = 'SingleTargetExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleTargetExpr'
                     )]
                 )
 
 
-            match_target_exprs(o, TargetExprsHandlers(
+            match_target_exprs(stack_item, TargetExprsHandlers(
                 case_ConsTargetExpr = handle_ConsTargetExpr,  
                 case_SingleTargetExpr = handle_SingleTargetExpr 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_decorators:
-    o : decorators 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_decorators(
-    o : decorators, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : decorators
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_decorators, list[prod_inst.instance]]] = [SP_decorators(o, depth, relation, indent_width, inline)]
+    stack : list[Union[decorators, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_decorators):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, decorators):
 
             def handle_ConsDec(o : ConsDec): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_decorators)
+                assert isinstance(o, decorators)
 
                 stack.append(
-                    SP_decorators(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_expr(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'decorators',
-                        sequence_id = 'ConsDec',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsDec'
                     )]
                 )
 
             def handle_NoDec(o : NoDec): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_decorators)
+                assert isinstance(o, decorators)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'decorators',
-                        sequence_id = 'NoDec',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoDec'
                     )]
                 )
 
 
-            match_decorators(o, DecoratorsHandlers(
+            match_decorators(stack_item, DecoratorsHandlers(
                 case_ConsDec = handle_ConsDec,  
                 case_NoDec = handle_NoDec 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_constraint_filters:
-    o : constraint_filters 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_constraint_filters(
-    o : constraint_filters, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : constraint_filters
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_constraint_filters, list[prod_inst.instance]]] = [SP_constraint_filters(o, depth, relation, indent_width, inline)]
+    stack : list[Union[constraint_filters, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_constraint_filters):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, constraint_filters):
 
             def handle_ConsFilter(o : ConsFilter): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_constraint_filters)
+                assert isinstance(o, constraint_filters)
 
                 stack.append(
-                    SP_constraint_filters(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_expr(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_expr(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'constraint_filters',
-                        sequence_id = 'ConsFilter',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsFilter'
                     )]
                 )
 
             def handle_SingleFilter(o : SingleFilter): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_constraint_filters)
+                assert isinstance(o, constraint_filters)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'constraint_filters',
-                        sequence_id = 'SingleFilter',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleFilter'
                     )]
                 )
 
             def handle_NoFilter(o : NoFilter): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_constraint_filters)
+                assert isinstance(o, constraint_filters)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'constraint_filters',
-                        sequence_id = 'NoFilter',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoFilter'
                     )]
                 )
 
 
-            match_constraint_filters(o, ConstraintFiltersHandlers(
+            match_constraint_filters(stack_item, ConstraintFiltersHandlers(
                 case_ConsFilter = handle_ConsFilter,  
                 case_SingleFilter = handle_SingleFilter,  
                 case_NoFilter = handle_NoFilter 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_sequence_string:
-    o : sequence_string 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_sequence_string(
-    o : sequence_string, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : sequence_string
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_sequence_string, list[prod_inst.instance]]] = [SP_sequence_string(o, depth, relation, indent_width, inline)]
+    stack : list[Union[sequence_string, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_sequence_string):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, sequence_string):
 
             def handle_ConsStr(o : ConsStr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_string)
+                assert isinstance(o, sequence_string)
 
                 stack.append(
-                    SP_sequence_string(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'string',
-                        word = o.head,
-                        depth = item.depth + 1,
-                        relation = "head"
+                        word = o.head
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_string',
-                        sequence_id = 'ConsStr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsStr'
                     )]
                 )
 
             def handle_SingleStr(o : SingleStr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_string)
+                assert isinstance(o, sequence_string)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'string',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_string',
-                        sequence_id = 'SingleStr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleStr'
                     )]
                 )
 
 
-            match_sequence_string(o, SequenceStringHandlers(
+            match_sequence_string(stack_item, SequenceStringHandlers(
                 case_ConsStr = handle_ConsStr,  
                 case_SingleStr = handle_SingleStr 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_arguments:
-    o : arguments 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_arguments(
-    o : arguments, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : arguments
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_arguments, list[prod_inst.instance]]] = [SP_arguments(o, depth, relation, indent_width, inline)]
+    stack : list[Union[arguments, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_arguments):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, arguments):
 
             def handle_ConsArg(o : ConsArg): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_arguments)
+                assert isinstance(o, arguments)
 
                 stack.append(
-                    SP_arguments(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_expr(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'arguments',
-                        sequence_id = 'ConsArg',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsArg'
                     )]
                 )
 
             def handle_SingleArg(o : SingleArg): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_arguments)
+                assert isinstance(o, arguments)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'arguments',
-                        sequence_id = 'SingleArg',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleArg'
                     )]
                 )
 
             def handle_KeywordsArg(o : KeywordsArg): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_arguments)
+                assert isinstance(o, arguments)
 
                 stack.append(
-                    serialize_keywords(o.kws, item.depth + 1, "kws", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_keywords(o.kws)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'arguments',
-                        sequence_id = 'KeywordsArg',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'KeywordsArg'
                     )]
                 )
 
 
-            match_arguments(o, ArgumentsHandlers(
+            match_arguments(stack_item, ArgumentsHandlers(
                 case_ConsArg = handle_ConsArg,  
                 case_SingleArg = handle_SingleArg,  
                 case_KeywordsArg = handle_KeywordsArg 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_dictionary_contents:
-    o : dictionary_contents 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_dictionary_contents(
-    o : dictionary_contents, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : dictionary_contents
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_dictionary_contents, list[prod_inst.instance]]] = [SP_dictionary_contents(o, depth, relation, indent_width, inline)]
+    stack : list[Union[dictionary_contents, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_dictionary_contents):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, dictionary_contents):
 
             def handle_ConsField(o : ConsField): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_dictionary_contents)
+                assert isinstance(o, dictionary_contents)
 
                 stack.append(
-                    SP_dictionary_contents(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_Field(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Field(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'dictionary_contents',
-                        sequence_id = 'ConsField',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsField'
                     )]
                 )
 
             def handle_SingleField(o : SingleField): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_dictionary_contents)
+                assert isinstance(o, dictionary_contents)
 
                 stack.append(
-                    serialize_Field(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Field(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'dictionary_contents',
-                        sequence_id = 'SingleField',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleField'
                     )]
                 )
 
 
-            match_dictionary_contents(o, DictionaryContentsHandlers(
+            match_dictionary_contents(stack_item, DictionaryContentsHandlers(
                 case_ConsField = handle_ConsField,  
                 case_SingleField = handle_SingleField 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_sequence_var:
-    o : sequence_var 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_sequence_var(
-    o : sequence_var, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : sequence_var
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_sequence_var, list[prod_inst.instance]]] = [SP_sequence_var(o, depth, relation, indent_width, inline)]
+    stack : list[Union[sequence_var, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_sequence_var):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, sequence_var):
 
             def handle_ConsId(o : ConsId): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_var)
+                assert isinstance(o, sequence_var)
 
                 stack.append(
-                    SP_sequence_var(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.head,
-                        depth = item.depth + 1,
-                        relation = "head"
+                        word = o.head
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_var',
-                        sequence_id = 'ConsId',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsId'
                     )]
                 )
 
             def handle_SingleId(o : SingleId): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_var)
+                assert isinstance(o, sequence_var)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_var',
-                        sequence_id = 'SingleId',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleId'
                     )]
                 )
 
 
-            match_sequence_var(o, SequenceVarHandlers(
+            match_sequence_var(stack_item, SequenceVarHandlers(
                 case_ConsId = handle_ConsId,  
                 case_SingleId = handle_SingleId 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_sequence_ImportName:
-    o : sequence_ImportName 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_sequence_ImportName(
-    o : sequence_ImportName, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : sequence_ImportName
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_sequence_ImportName, list[prod_inst.instance]]] = [SP_sequence_ImportName(o, depth, relation, indent_width, inline)]
+    stack : list[Union[sequence_ImportName, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_sequence_ImportName):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, sequence_ImportName):
 
             def handle_ConsImportName(o : ConsImportName): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_ImportName)
+                assert isinstance(o, sequence_ImportName)
 
                 stack.append(
-                    SP_sequence_ImportName(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_ImportName(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_ImportName(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_ImportName',
-                        sequence_id = 'ConsImportName',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsImportName'
                     )]
                 )
 
             def handle_SingleImportName(o : SingleImportName): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_ImportName)
+                assert isinstance(o, sequence_ImportName)
 
                 stack.append(
-                    serialize_ImportName(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_ImportName(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_ImportName',
-                        sequence_id = 'SingleImportName',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleImportName'
                     )]
                 )
 
 
-            match_sequence_ImportName(o, SequenceImportNameHandlers(
+            match_sequence_ImportName(stack_item, SequenceImportNameHandlers(
                 case_ConsImportName = handle_ConsImportName,  
                 case_SingleImportName = handle_SingleImportName 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_sequence_Withitem:
-    o : sequence_Withitem 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_sequence_Withitem(
-    o : sequence_Withitem, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : sequence_Withitem
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_sequence_Withitem, list[prod_inst.instance]]] = [SP_sequence_Withitem(o, depth, relation, indent_width, inline)]
+    stack : list[Union[sequence_Withitem, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_sequence_Withitem):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, sequence_Withitem):
 
             def handle_ConsWithitem(o : ConsWithitem): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_Withitem)
+                assert isinstance(o, sequence_Withitem)
 
                 stack.append(
-                    SP_sequence_Withitem(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_Withitem(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Withitem(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_Withitem',
-                        sequence_id = 'ConsWithitem',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsWithitem'
                     )]
                 )
 
             def handle_SingleWithitem(o : SingleWithitem): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_Withitem)
+                assert isinstance(o, sequence_Withitem)
 
                 stack.append(
-                    serialize_Withitem(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_Withitem(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_Withitem',
-                        sequence_id = 'SingleWithitem',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleWithitem'
                     )]
                 )
 
 
-            match_sequence_Withitem(o, SequenceWithitemHandlers(
+            match_sequence_Withitem(stack_item, SequenceWithitemHandlers(
                 case_ConsWithitem = handle_ConsWithitem,  
                 case_SingleWithitem = handle_SingleWithitem 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_statements:
-    o : statements 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_statements(
-    o : statements, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : statements
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_statements, list[prod_inst.instance]]] = [SP_statements(o, depth, relation, indent_width, inline)]
+    stack : list[Union[statements, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_statements):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, statements):
 
             def handle_ConsStmt(o : ConsStmt): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_statements)
+                assert isinstance(o, statements)
 
                 stack.append(
-                    SP_statements(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_stmt(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_stmt(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'statements',
-                        sequence_id = 'ConsStmt',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsStmt'
                     )]
                 )
 
             def handle_SingleStmt(o : SingleStmt): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_statements)
+                assert isinstance(o, statements)
 
                 stack.append(
-                    serialize_stmt(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_stmt(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'statements',
-                        sequence_id = 'SingleStmt',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleStmt'
                     )]
                 )
 
 
-            match_statements(o, StatementsHandlers(
+            match_statements(stack_item, StatementsHandlers(
                 case_ConsStmt = handle_ConsStmt,  
                 case_SingleStmt = handle_SingleStmt 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_comprehension_constraints:
-    o : comprehension_constraints 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_comprehension_constraints(
-    o : comprehension_constraints, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : comprehension_constraints
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_comprehension_constraints, list[prod_inst.instance]]] = [SP_comprehension_constraints(o, depth, relation, indent_width, inline)]
+    stack : list[Union[comprehension_constraints, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_comprehension_constraints):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, comprehension_constraints):
 
             def handle_ConsConstraint(o : ConsConstraint): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_comprehension_constraints)
+                assert isinstance(o, comprehension_constraints)
 
                 stack.append(
-                    SP_comprehension_constraints(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_constraint(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_constraint(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'comprehension_constraints',
-                        sequence_id = 'ConsConstraint',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsConstraint'
                     )]
                 )
 
             def handle_SingleConstraint(o : SingleConstraint): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_comprehension_constraints)
+                assert isinstance(o, comprehension_constraints)
 
                 stack.append(
-                    serialize_constraint(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_constraint(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'comprehension_constraints',
-                        sequence_id = 'SingleConstraint',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleConstraint'
                     )]
                 )
 
 
-            match_comprehension_constraints(o, ComprehensionConstraintsHandlers(
+            match_comprehension_constraints(stack_item, ComprehensionConstraintsHandlers(
                 case_ConsConstraint = handle_ConsConstraint,  
                 case_SingleConstraint = handle_SingleConstraint 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_sequence_ExceptHandler:
-    o : sequence_ExceptHandler 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_sequence_ExceptHandler(
-    o : sequence_ExceptHandler, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : sequence_ExceptHandler
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_sequence_ExceptHandler, list[prod_inst.instance]]] = [SP_sequence_ExceptHandler(o, depth, relation, indent_width, inline)]
+    stack : list[Union[sequence_ExceptHandler, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_sequence_ExceptHandler):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, sequence_ExceptHandler):
 
             def handle_ConsExceptHandler(o : ConsExceptHandler): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_ExceptHandler)
+                assert isinstance(o, sequence_ExceptHandler)
 
                 stack.append(
-                    SP_sequence_ExceptHandler(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_ExceptHandler(o.head, item.depth + 1, "head", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_ExceptHandler(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_ExceptHandler',
-                        sequence_id = 'ConsExceptHandler',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConsExceptHandler'
                     )]
                 )
 
             def handle_SingleExceptHandler(o : SingleExceptHandler): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_sequence_ExceptHandler)
+                assert isinstance(o, sequence_ExceptHandler)
 
                 stack.append(
-                    serialize_ExceptHandler(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_ExceptHandler(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'sequence_ExceptHandler',
-                        sequence_id = 'SingleExceptHandler',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SingleExceptHandler'
                     )]
                 )
 
 
-            match_sequence_ExceptHandler(o, SequenceExceptHandlerHandlers(
+            match_sequence_ExceptHandler(stack_item, SequenceExceptHandlerHandlers(
                 case_ConsExceptHandler = handle_ConsExceptHandler,  
                 case_SingleExceptHandler = handle_SingleExceptHandler 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_conditions:
-    o : conditions 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_conditions(
-    o : conditions, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : conditions
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_conditions, list[prod_inst.instance]]] = [SP_conditions(o, depth, relation, indent_width, inline)]
+    stack : list[Union[conditions, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_conditions):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, conditions):
 
             def handle_ElifCond(o : ElifCond): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_conditions)
+                assert isinstance(o, conditions)
 
                 stack.append(
-                    SP_conditions(o.tail, item.depth + 1, "tail", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.tail
                 )
                 stack.append(
-                    serialize_ElifBlock(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElifBlock(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'conditions',
-                        sequence_id = 'ElifCond',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ElifCond'
                     )]
                 )
 
             def handle_ElseCond(o : ElseCond): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_conditions)
+                assert isinstance(o, conditions)
 
                 stack.append(
-                    serialize_ElseBlock(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElseBlock(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'conditions',
-                        sequence_id = 'ElseCond',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ElseCond'
                     )]
                 )
 
             def handle_NoCond(o : NoCond): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_conditions)
+                assert isinstance(o, conditions)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'conditions',
-                        sequence_id = 'NoCond',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NoCond'
                     )]
                 )
 
 
-            match_conditions(o, ConditionsHandlers(
+            match_conditions(stack_item, ConditionsHandlers(
                 case_ElifCond = handle_ElifCond,  
                 case_ElseCond = handle_ElseCond,  
                 case_NoCond = handle_NoCond 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_function_def:
-    o : function_def 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_function_def(
-    o : function_def, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : function_def
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_function_def, list[prod_inst.instance]]] = [SP_function_def(o, depth, relation, indent_width, inline)]
+    stack : list[Union[function_def, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_function_def):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, function_def):
 
             def handle_FunctionDef(o : FunctionDef): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_function_def)
+                assert isinstance(o, function_def)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_return_type(o.ret_typ, item.depth + 1, "ret_typ", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_return_type(o.ret_typ)
                 )
                 stack.append(
-                    serialize_parameters(o.params, item.depth + 1, "params", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters(o.params)
                 )
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.name,
-                        depth = item.depth + 1,
-                        relation = "name"
+                        word = o.name
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'function_def',
-                        sequence_id = 'FunctionDef',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'FunctionDef'
                     )]
                 )
 
             def handle_AsyncFunctionDef(o : AsyncFunctionDef): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_function_def)
+                assert isinstance(o, function_def)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_return_type(o.ret_typ, item.depth + 1, "ret_typ", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_return_type(o.ret_typ)
                 )
                 stack.append(
-                    serialize_parameters(o.params, item.depth + 1, "params", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters(o.params)
                 )
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.name,
-                        depth = item.depth + 1,
-                        relation = "name"
+                        word = o.name
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'function_def',
-                        sequence_id = 'AsyncFunctionDef',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AsyncFunctionDef'
                     )]
                 )
 
 
-            match_function_def(o, FunctionDefHandlers(
+            match_function_def(stack_item, FunctionDefHandlers(
                 case_FunctionDef = handle_FunctionDef,  
                 case_AsyncFunctionDef = handle_AsyncFunctionDef 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_stmt:
-    o : stmt 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_stmt(
-    o : stmt, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : stmt
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_stmt, list[prod_inst.instance]]] = [SP_stmt(o, depth, relation, indent_width, inline)]
+    stack : list[Union[stmt, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_stmt):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, stmt):
 
             def handle_DecFunctionDef(o : DecFunctionDef): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_function_def(o.fun_def, item.depth + 1, "fun_def", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_function_def(o.fun_def)
                 )
                 stack.append(
-                    serialize_decorators(o.decs, item.depth + 1, "decs", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_decorators(o.decs)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'DecFunctionDef',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'DecFunctionDef'
                     )]
                 )
 
             def handle_DecAsyncFunctionDef(o : DecAsyncFunctionDef): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_function_def(o.fun_def, item.depth + 1, "fun_def", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_function_def(o.fun_def)
                 )
                 stack.append(
-                    serialize_decorators(o.decs, item.depth + 1, "decs", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_decorators(o.decs)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'DecAsyncFunctionDef',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'DecAsyncFunctionDef'
                     )]
                 )
 
             def handle_DecClassDef(o : DecClassDef): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_ClassDef(o.class_def, item.depth + 1, "class_def", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ClassDef(o.class_def)
                 )
                 stack.append(
-                    serialize_decorators(o.decs, item.depth + 1, "decs", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_decorators(o.decs)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'DecClassDef',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'DecClassDef'
                     )]
                 )
 
             def handle_ReturnSomething(o : ReturnSomething): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'ReturnSomething',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ReturnSomething'
                     )]
                 )
 
             def handle_Return(o : Return): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Return',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Return'
                     )]
                 )
 
             def handle_Delete(o : Delete): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_comma_exprs(o.targets, item.depth + 1, "targets", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_comma_exprs(o.targets)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Delete',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Delete'
                     )]
                 )
 
             def handle_Assign(o : Assign): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
-                    serialize_target_exprs(o.targets, item.depth + 1, "targets", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_target_exprs(o.targets)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Assign',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Assign'
                     )]
                 )
 
             def handle_AugAssign(o : AugAssign): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
-                    serialize_operator(o.op, item.depth + 1, "op", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_operator(o.op)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'AugAssign',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AugAssign'
                     )]
                 )
 
             def handle_TypedAssign(o : TypedAssign): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
-                    serialize_expr(o.type, item.depth + 1, "type", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.type)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'TypedAssign',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TypedAssign'
                     )]
                 )
 
             def handle_TypedDeclare(o : TypedDeclare): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.type, item.depth + 1, "type", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.type)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'TypedDeclare',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TypedDeclare'
                     )]
                 )
 
             def handle_For(o : For): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.iter, item.depth + 1, "iter", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.iter)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'For',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'For'
                     )]
                 )
 
             def handle_ForElse(o : ForElse): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_ElseBlock(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElseBlock(o.orelse)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.iter, item.depth + 1, "iter", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.iter)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'ForElse',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ForElse'
                     )]
                 )
 
             def handle_AsyncFor(o : AsyncFor): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.iter, item.depth + 1, "iter", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.iter)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'AsyncFor',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AsyncFor'
                     )]
                 )
 
             def handle_AsyncForElse(o : AsyncForElse): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_ElseBlock(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElseBlock(o.orelse)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.iter, item.depth + 1, "iter", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.iter)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'AsyncForElse',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AsyncForElse'
                     )]
                 )
 
             def handle_While(o : While): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.test, item.depth + 1, "test", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.test)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'While',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'While'
                     )]
                 )
 
             def handle_WhileElse(o : WhileElse): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_ElseBlock(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElseBlock(o.orelse)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.test, item.depth + 1, "test", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.test)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'WhileElse',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'WhileElse'
                     )]
                 )
 
             def handle_If(o : If): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_conditions(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_conditions(o.orelse)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_expr(o.test, item.depth + 1, "test", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.test)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'If',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'If'
                     )]
                 )
 
             def handle_With(o : With): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_sequence_Withitem(o.items, item.depth + 1, "items", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_Withitem(o.items)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'With',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'With'
                     )]
                 )
 
             def handle_AsyncWith(o : AsyncWith): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
-                    serialize_sequence_Withitem(o.items, item.depth + 1, "items", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_Withitem(o.items)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'AsyncWith',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AsyncWith'
                     )]
                 )
 
             def handle_Raise(o : Raise): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Raise',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Raise'
                     )]
                 )
 
             def handle_RaiseExc(o : RaiseExc): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.exc, item.depth + 1, "exc", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_expr(o.exc)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'RaiseExc',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'RaiseExc'
                     )]
                 )
 
             def handle_RaiseFrom(o : RaiseFrom): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.caus, item.depth + 1, "caus", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.caus)
                 )
                 stack.append(
-                    serialize_expr(o.exc, item.depth + 1, "exc", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.exc)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'RaiseFrom',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'RaiseFrom'
                     )]
                 )
 
             def handle_Try(o : Try): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers, item.depth + 1, "handlers", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_sequence_ExceptHandler(o.handlers)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Try',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Try'
                     )]
                 )
 
             def handle_TryElse(o : TryElse): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_ElseBlock(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElseBlock(o.orelse)
                 )
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers, item.depth + 1, "handlers", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_sequence_ExceptHandler(o.handlers)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'TryElse',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TryElse'
                     )]
                 )
 
             def handle_TryFin(o : TryFin): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_FinallyBlock(o.fin, item.depth + 1, "fin", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_FinallyBlock(o.fin)
                 )
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers, item.depth + 1, "handlers", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_sequence_ExceptHandler(o.handlers)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'TryFin',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TryFin'
                     )]
                 )
 
             def handle_TryElseFin(o : TryElseFin): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_FinallyBlock(o.fin, item.depth + 1, "fin", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_FinallyBlock(o.fin)
                 )
                 stack.append(
-                    serialize_ElseBlock(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_ElseBlock(o.orelse)
                 )
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers, item.depth + 1, "handlers", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    serialize_sequence_ExceptHandler(o.handlers)
                 )
                 stack.append(
-                    serialize_statements(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_statements(o.body)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'TryElseFin',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'TryElseFin'
                     )]
                 )
 
             def handle_Assert(o : Assert): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.test, item.depth + 1, "test", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.test)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Assert',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Assert'
                     )]
                 )
 
             def handle_AssertMsg(o : AssertMsg): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.msg, item.depth + 1, "msg", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.msg)
                 )
                 stack.append(
-                    serialize_expr(o.test, item.depth + 1, "test", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.test)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'AssertMsg',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AssertMsg'
                     )]
                 )
 
             def handle_Import(o : Import): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_sequence_ImportName(o.names, item.depth + 1, "names", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_ImportName(o.names)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Import',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Import'
                     )]
                 )
 
             def handle_ImportFrom(o : ImportFrom): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_sequence_ImportName(o.names, item.depth + 1, "names", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_ImportName(o.names)
                 )
                 stack.append(
-                    serialize_module_id(o.module, item.depth + 1, "module", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_module_id(o.module)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'ImportFrom',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ImportFrom'
                     )]
                 )
 
             def handle_ImportWildCard(o : ImportWildCard): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_module_id(o.module, item.depth + 1, "module", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_module_id(o.module)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'ImportWildCard',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ImportWildCard'
                     )]
                 )
 
             def handle_Global(o : Global): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_sequence_var(o.names, item.depth + 1, "names", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_var(o.names)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Global',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Global'
                     )]
                 )
 
             def handle_Nonlocal(o : Nonlocal): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_sequence_var(o.names, item.depth + 1, "names", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_var(o.names)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Nonlocal',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Nonlocal'
                     )]
                 )
 
             def handle_Expr(o : Expr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
-                    serialize_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Expr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Expr'
                     )]
                 )
 
             def handle_Pass(o : Pass): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Pass',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Pass'
                     )]
                 )
 
             def handle_Break(o : Break): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Break',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Break'
                     )]
                 )
 
             def handle_Continue(o : Continue): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_stmt)
+                assert isinstance(o, stmt)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'stmt',
-                        sequence_id = 'Continue',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Continue'
                     )]
                 )
 
 
-            match_stmt(o, StmtHandlers(
+            match_stmt(stack_item, StmtHandlers(
                 case_DecFunctionDef = handle_DecFunctionDef,  
                 case_DecAsyncFunctionDef = handle_DecAsyncFunctionDef,  
                 case_DecClassDef = handle_DecClassDef,  
@@ -4331,908 +2835,578 @@ def serialize_stmt(
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_expr:
-    o : expr 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_expr(
-    o : expr, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : expr
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_expr, list[prod_inst.instance]]] = [SP_expr(o, depth, relation, indent_width, inline)]
+    stack : list[Union[expr, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_expr):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, expr):
 
             def handle_BoolOp(o : BoolOp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.right, item.depth + 1, "right", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.right
                 )
                 stack.append(
-                    serialize_boolop(o.op, item.depth + 1, "op", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_boolop(o.op)
                 )
                 stack.append(
-                    SP_expr(o.left, item.depth + 1, "left", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.left
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'BoolOp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'BoolOp'
                     )]
                 )
 
             def handle_NamedExpr(o : NamedExpr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
-                    SP_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.target
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'NamedExpr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NamedExpr'
                     )]
                 )
 
             def handle_BinOp(o : BinOp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.right, item.depth + 1, "right", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.right
                 )
                 stack.append(
-                    serialize_operator(o.op, item.depth + 1, "op", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_operator(o.op)
                 )
                 stack.append(
-                    SP_expr(o.left, item.depth + 1, "left", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.left
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'BinOp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'BinOp'
                     )]
                 )
 
             def handle_UnaryOp(o : UnaryOp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.right, item.depth + 1, "right", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.right
                 )
                 stack.append(
-                    serialize_unaryop(o.op, item.depth + 1, "op", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_unaryop(o.op)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'UnaryOp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'UnaryOp'
                     )]
                 )
 
             def handle_Lambda(o : Lambda): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.body
                 )
                 stack.append(
-                    serialize_parameters(o.params, item.depth + 1, "params", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_parameters(o.params)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Lambda',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Lambda'
                     )]
                 )
 
             def handle_IfExp(o : IfExp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.orelse, item.depth + 1, "orelse", 
-                        prod_inst.next_indent_width(item.indent_width, NewLine()),
-                        False,
-                    )
+                    o.orelse
                 )
                 stack.append(
-                    SP_expr(o.test, item.depth + 1, "test", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.test
                 )
                 stack.append(
-                    SP_expr(o.body, item.depth + 1, "body", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.body
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'IfExp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'IfExp'
                     )]
                 )
 
             def handle_Dictionary(o : Dictionary): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_dictionary_contents(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_dictionary_contents(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Dictionary',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Dictionary'
                     )]
                 )
 
             def handle_EmptyDictionary(o : EmptyDictionary): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'EmptyDictionary',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'EmptyDictionary'
                     )]
                 )
 
             def handle_Set(o : Set): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comma_exprs(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_comma_exprs(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Set',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Set'
                     )]
                 )
 
             def handle_ListComp(o : ListComp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints, item.depth + 1, "constraints", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_comprehension_constraints(o.constraints)
                 )
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'ListComp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ListComp'
                     )]
                 )
 
             def handle_SetComp(o : SetComp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints, item.depth + 1, "constraints", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_comprehension_constraints(o.constraints)
                 )
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'SetComp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'SetComp'
                     )]
                 )
 
             def handle_DictionaryComp(o : DictionaryComp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints, item.depth + 1, "constraints", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_comprehension_constraints(o.constraints)
                 )
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
-                    SP_expr(o.key, item.depth + 1, "key", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    o.key
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'DictionaryComp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'DictionaryComp'
                     )]
                 )
 
             def handle_GeneratorExp(o : GeneratorExp): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints, item.depth + 1, "constraints", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    serialize_comprehension_constraints(o.constraints)
                 )
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, IndentLine()),
-                        False,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'GeneratorExp',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'GeneratorExp'
                     )]
                 )
 
             def handle_Await(o : Await): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Await',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Await'
                     )]
                 )
 
             def handle_YieldNothing(o : YieldNothing): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'YieldNothing',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'YieldNothing'
                     )]
                 )
 
             def handle_Yield(o : Yield): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Yield',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Yield'
                     )]
                 )
 
             def handle_YieldFrom(o : YieldFrom): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'YieldFrom',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'YieldFrom'
                     )]
                 )
 
             def handle_Compare(o : Compare): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comparisons(o.comps, item.depth + 1, "comps", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_comparisons(o.comps)
                 )
                 stack.append(
-                    SP_expr(o.left, item.depth + 1, "left", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.left
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Compare',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Compare'
                     )]
                 )
 
             def handle_Call(o : Call): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.func, item.depth + 1, "func", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.func
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Call',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Call'
                     )]
                 )
 
             def handle_CallArgs(o : CallArgs): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_arguments(o.args, item.depth + 1, "args", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_arguments(o.args)
                 )
                 stack.append(
-                    SP_expr(o.func, item.depth + 1, "func", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.func
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'CallArgs',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'CallArgs'
                     )]
                 )
 
             def handle_Integer(o : Integer): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'integer',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Integer',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Integer'
                     )]
                 )
 
             def handle_Float(o : Float): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'float',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Float',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Float'
                     )]
                 )
 
             def handle_ConcatString(o : ConcatString): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_sequence_string(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_sequence_string(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'ConcatString',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'ConcatString'
                     )]
                 )
 
             def handle_True_(o : True_): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'True_',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'True_'
                     )]
                 )
 
             def handle_False_(o : False_): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'False_',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'False_'
                     )]
                 )
 
             def handle_None_(o : None_): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'None_',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'None_'
                     )]
                 )
 
             def handle_Ellip(o : Ellip): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Ellip',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Ellip'
                     )]
                 )
 
             def handle_Attribute(o : Attribute): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.name,
-                        depth = item.depth + 1,
-                        relation = "name"
+                        word = o.name
                     )]
                 )
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Attribute',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Attribute'
                     )]
                 )
 
             def handle_Subscript(o : Subscript): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.slice, item.depth + 1, "slice", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.slice
                 )
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Subscript',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Subscript'
                     )]
                 )
 
             def handle_Starred(o : Starred): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    SP_expr(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    o.contents
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Starred',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Starred'
                     )]
                 )
 
             def handle_Name(o : Name): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Vocab(
                         choices_id = 'identifier',
-                        word = o.contents,
-                        depth = item.depth + 1,
-                        relation = "contents"
+                        word = o.contents
                     )]
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Name',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Name'
                     )]
                 )
 
             def handle_List(o : List): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comma_exprs(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_comma_exprs(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'List',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'List'
                     )]
                 )
 
             def handle_EmptyList(o : EmptyList): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'EmptyList',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'EmptyList'
                     )]
                 )
 
             def handle_Tuple(o : Tuple): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_comma_exprs(o.contents, item.depth + 1, "contents", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_comma_exprs(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Tuple',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Tuple'
                     )]
                 )
 
             def handle_EmptyTuple(o : EmptyTuple): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'EmptyTuple',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'EmptyTuple'
                     )]
                 )
 
             def handle_Slice(o : Slice): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_expr)
+                assert isinstance(o, expr)
 
                 stack.append(
-                    serialize_option_expr(o.step, item.depth + 1, "step", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_option_expr(o.step)
                 )
                 stack.append(
-                    serialize_option_expr(o.upper, item.depth + 1, "upper", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_option_expr(o.upper)
                 )
                 stack.append(
-                    serialize_option_expr(o.lower, item.depth + 1, "lower", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_option_expr(o.lower)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'expr',
-                        sequence_id = 'Slice',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Slice'
                     )]
                 )
 
 
-            match_expr(o, ExprHandlers(
+            match_expr(stack_item, ExprHandlers(
                 case_BoolOp = handle_BoolOp,  
                 case_NamedExpr = handle_NamedExpr,  
                 case_BinOp = handle_BinOp,  
@@ -5272,311 +3446,216 @@ def serialize_expr(
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_boolop:
-    o : boolop 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_boolop(
-    o : boolop, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : boolop
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_boolop, list[prod_inst.instance]]] = [SP_boolop(o, depth, relation, indent_width, inline)]
+    stack : list[Union[boolop, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_boolop):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, boolop):
 
             def handle_And(o : And): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_boolop)
+                assert isinstance(o, boolop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'boolop',
-                        sequence_id = 'And',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'And'
                     )]
                 )
 
             def handle_Or(o : Or): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_boolop)
+                assert isinstance(o, boolop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'boolop',
-                        sequence_id = 'Or',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Or'
                     )]
                 )
 
 
-            match_boolop(o, BoolopHandlers(
+            match_boolop(stack_item, BoolopHandlers(
                 case_And = handle_And,  
                 case_Or = handle_Or 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_operator:
-    o : operator 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_operator(
-    o : operator, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : operator
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_operator, list[prod_inst.instance]]] = [SP_operator(o, depth, relation, indent_width, inline)]
+    stack : list[Union[operator, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_operator):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, operator):
 
             def handle_Add(o : Add): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'Add',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Add'
                     )]
                 )
 
             def handle_Sub(o : Sub): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'Sub',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Sub'
                     )]
                 )
 
             def handle_Mult(o : Mult): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'Mult',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Mult'
                     )]
                 )
 
             def handle_MatMult(o : MatMult): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'MatMult',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'MatMult'
                     )]
                 )
 
             def handle_Div(o : Div): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'Div',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Div'
                     )]
                 )
 
             def handle_Mod(o : Mod): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'Mod',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Mod'
                     )]
                 )
 
             def handle_Pow(o : Pow): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'Pow',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Pow'
                     )]
                 )
 
             def handle_LShift(o : LShift): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'LShift',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'LShift'
                     )]
                 )
 
             def handle_RShift(o : RShift): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'RShift',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'RShift'
                     )]
                 )
 
             def handle_BitOr(o : BitOr): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'BitOr',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'BitOr'
                     )]
                 )
 
             def handle_BitXor(o : BitXor): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'BitXor',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'BitXor'
                     )]
                 )
 
             def handle_BitAnd(o : BitAnd): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'BitAnd',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'BitAnd'
                     )]
                 )
 
             def handle_FloorDiv(o : FloorDiv): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_operator)
+                assert isinstance(o, operator)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'operator',
-                        sequence_id = 'FloorDiv',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'FloorDiv'
                     )]
                 )
 
 
-            match_operator(o, OperatorHandlers(
+            match_operator(stack_item, OperatorHandlers(
                 case_Add = handle_Add,  
                 case_Sub = handle_Sub,  
                 case_Mult = handle_Mult,  
@@ -5593,100 +3672,70 @@ def serialize_operator(
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_unaryop:
-    o : unaryop 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_unaryop(
-    o : unaryop, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : unaryop
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_unaryop, list[prod_inst.instance]]] = [SP_unaryop(o, depth, relation, indent_width, inline)]
+    stack : list[Union[unaryop, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_unaryop):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, unaryop):
 
             def handle_Invert(o : Invert): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_unaryop)
+                assert isinstance(o, unaryop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'unaryop',
-                        sequence_id = 'Invert',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Invert'
                     )]
                 )
 
             def handle_Not(o : Not): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_unaryop)
+                assert isinstance(o, unaryop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'unaryop',
-                        sequence_id = 'Not',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Not'
                     )]
                 )
 
             def handle_UAdd(o : UAdd): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_unaryop)
+                assert isinstance(o, unaryop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'unaryop',
-                        sequence_id = 'UAdd',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'UAdd'
                     )]
                 )
 
             def handle_USub(o : USub): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_unaryop)
+                assert isinstance(o, unaryop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'unaryop',
-                        sequence_id = 'USub',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'USub'
                     )]
                 )
 
 
-            match_unaryop(o, UnaryopHandlers(
+            match_unaryop(stack_item, UnaryopHandlers(
                 case_Invert = handle_Invert,  
                 case_Not = handle_Not,  
                 case_UAdd = handle_UAdd,  
@@ -5694,196 +3743,136 @@ def serialize_unaryop(
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_cmpop:
-    o : cmpop 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_cmpop(
-    o : cmpop, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : cmpop
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_cmpop, list[prod_inst.instance]]] = [SP_cmpop(o, depth, relation, indent_width, inline)]
+    stack : list[Union[cmpop, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_cmpop):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, cmpop):
 
             def handle_Eq(o : Eq): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'Eq',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Eq'
                     )]
                 )
 
             def handle_NotEq(o : NotEq): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'NotEq',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NotEq'
                     )]
                 )
 
             def handle_Lt(o : Lt): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'Lt',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Lt'
                     )]
                 )
 
             def handle_LtE(o : LtE): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'LtE',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'LtE'
                     )]
                 )
 
             def handle_Gt(o : Gt): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'Gt',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Gt'
                     )]
                 )
 
             def handle_GtE(o : GtE): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'GtE',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'GtE'
                     )]
                 )
 
             def handle_Is(o : Is): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'Is',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Is'
                     )]
                 )
 
             def handle_IsNot(o : IsNot): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'IsNot',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'IsNot'
                     )]
                 )
 
             def handle_In(o : In): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'In',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'In'
                     )]
                 )
 
             def handle_NotIn(o : NotIn): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_cmpop)
+                assert isinstance(o, cmpop)
 
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'cmpop',
-                        sequence_id = 'NotIn',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'NotIn'
                     )]
                 )
 
 
-            match_cmpop(o, CmpopHandlers(
+            match_cmpop(stack_item, CmpopHandlers(
                 case_Eq = handle_Eq,  
                 case_NotEq = handle_NotEq,  
                 case_Lt = handle_Lt,  
@@ -5897,109 +3886,71 @@ def serialize_cmpop(
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result
 
 
 
 
-@dataclass
-class SP_constraint:
-    o : constraint 
-    depth : int
-    relation : str
-    indent_width : int 
-    inline : bool
-
 def serialize_constraint(
-    o : constraint, depth : int = 0, relation : str = "",
-    indent_width : int = 0, inline : bool = True
+    o : constraint
 ) -> list[prod_inst.instance]:
 
     result = []
 
-    stack : list[Union[SP_constraint, list[prod_inst.instance]]] = [SP_constraint(o, depth, relation, indent_width, inline)]
+    stack : list[Union[constraint, list[prod_inst.instance]]] = [o]
     while stack:
-        item = stack.pop()
-        if isinstance(item, SP_constraint):
-            o = item.o
+        stack_item = stack.pop()
+        if isinstance(stack_item, constraint):
 
             def handle_AsyncConstraint(o : AsyncConstraint): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_constraint)
+                assert isinstance(o, constraint)
 
                 stack.append(
-                    serialize_constraint_filters(o.filts, item.depth + 1, "filts", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_constraint_filters(o.filts)
                 )
                 stack.append(
-                    serialize_expr(o.search_space, item.depth + 1, "search_space", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.search_space)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'constraint',
-                        sequence_id = 'AsyncConstraint',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'AsyncConstraint'
                     )]
                 )
 
             def handle_Constraint(o : Constraint): 
                 nonlocal stack
-                nonlocal item 
-                assert isinstance(item, SP_constraint)
+                assert isinstance(o, constraint)
 
                 stack.append(
-                    serialize_constraint_filters(o.filts, item.depth + 1, "filts", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_constraint_filters(o.filts)
                 )
                 stack.append(
-                    serialize_expr(o.search_space, item.depth + 1, "search_space", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.search_space)
                 )
                 stack.append(
-                    serialize_expr(o.target, item.depth + 1, "target", 
-                        prod_inst.next_indent_width(item.indent_width, InLine()),
-                        True,
-                    )
+                    serialize_expr(o.target)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'constraint',
-                        sequence_id = 'Constraint',
-                        depth = item.depth,
-                        relation = item.relation,
-                        indent_width = item.indent_width,
-                        inline = item.inline
+                        sequence_id = 'Constraint'
                     )]
                 )
 
 
-            match_constraint(o, ConstraintHandlers(
+            match_constraint(stack_item, ConstraintHandlers(
                 case_AsyncConstraint = handle_AsyncConstraint,  
                 case_Constraint = handle_Constraint 
             ))
 
         else:
-            result += item
+            result += stack_item 
 
     return result

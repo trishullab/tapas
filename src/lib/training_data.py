@@ -72,27 +72,29 @@ def generate(name : str):
 
                 else:
 
-                    # print(f"-------------------------")
-                    # print(f"line number: {count}")
-                    # print(f"-------------------------")
+                    if count < 21:
 
-                    # concrete_code = python_instance.concretize(instances)
+                        print(f"-------------------------")
+                        print(f"line number: {count}")
+                        print(f"-------------------------")
 
-                    # print(f"-------------------------")
-                    # print(f"generic tree:")
-                    # print(generic_tree.dump(tree))
+                        concrete_code = python_instance.concretize(instances)
 
-                    # print(f"-------------------------")
-                    # print(f"production tree:")
-                    # print(python_instance.dump(instances))
+                        # print(f"-------------------------")
+                        # print(f"generic tree:")
+                        # print(generic_tree.dump(tree))
 
-                    # print(f"-------------------------")
-                    # print(f"source:")
-                    # print(source_code)
+                        print(f"-------------------------")
+                        print(f"production tree:")
+                        print(python_instance.dump(instances))
 
-                    # print(f"-------------------------")
-                    # print(f"concretized:")
-                    # print(concrete_code)
+                        print(f"-------------------------")
+                        print(f"source:")
+                        print(source_code)
+
+                        print(f"-------------------------")
+                        print(f"concretized:")
+                        print(concrete_code)
 
 
 
