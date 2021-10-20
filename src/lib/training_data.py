@@ -13,29 +13,31 @@ from lib import generic_tree
 from lib.python_ast_from_generic_ast import from_generic_ast
 from lib.python_ast_serialize import serialize_Module
 from lib import python_instance
-from lib.file import write_res, write_append_res, write_res_gen, write_append_res_gen
+from lib.file import write
 
 from lib.production_instance import instance
 
 
+base_path = pathlib.Path(__file__).parent.absolute()
 
-def generate(name : str):
+
+def generate(dirname : str, name : str):
     logging.basicConfig(level=logging.INFO)
-    base_path = pathlib.Path(__file__).parent.absolute()
-    dirpath = os.path.join(base_path, "../../res")
-    fpath = os.path.join(dirpath, f"{name}.jsonl")
+    dir = os.path.join(base_path, f"../../res/{dirname}")
+
+    read_path = os.path.join(dir, f"{name}.jsonl")
 
 
     vocab : dict[str, set[str]] = {}
 
-    write_res_gen(f'{name}_vocab.json', '')
-    write_res_gen(f'{name}_training.txt', '')
+    write(dir, f'{name}_vocab.json', '')
+    write(dir, f'{name}_training.txt', '')
 
     from datetime import datetime
 
     start = datetime.now()
 
-    with open(fpath, 'r') as f:
+    with open(read_path, 'r') as f:
         count = 1
         line = f.readline()
         while line: 
@@ -130,7 +132,7 @@ def generate(name : str):
                         )) 
 
 
-                    write_append_res_gen(f'{name}_training.txt', "[" + ",".join(training_data) + "]" + '\n\n<|endoftext|>\n\n')
+                    write(dir, f'{name}_training.txt', "[" + ",".join(training_data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
 
             except Exception as x:
 
@@ -156,13 +158,13 @@ def generate(name : str):
             line = f.readline()
             count += 1
         
-        write_res_gen(f'{name}_vocab.json', json.dumps(
+        write(dir, f'{name}_vocab.json', json.dumps(
             {
                 k:list(v)
                 for k,v in vocab.items()
             },
             indent=4
-        ))
+        ), append=True)
 
 
     end = datetime.now()

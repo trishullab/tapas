@@ -113,7 +113,7 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
     inst_iter = iter(instances)
 
     stack : list[Union[str, Format]] = [Format(True, 0)] # str is concrete syntax, and int is indentation of the instance from the iterator 
-    count = 0
+    instance_count = 0
 
     while stack:
 
@@ -128,14 +128,7 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
 
             inst = next(inst_iter)
             assert inst
-            print(f"---------------")
-            print(f"debug count: {count}")
-            print(f"debug instance:\n{inst}")
-            print(f"---------------")
-            print(f"debug result:\n{result}")
-            print(f"---------------")
-
-            count += 1
+            instance_count += 1
 
             def concretize_grammar(inst : Grammar):
                 nonlocal stack
@@ -154,7 +147,6 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
 
                                 ""
                             )
-
                         ),
                         case_Vocab=lambda o : (
                             format,
