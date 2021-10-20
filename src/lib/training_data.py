@@ -72,7 +72,7 @@ def generate(name : str):
 
                 else:
 
-                    if count < 21:
+                    if count < 50:
 
                         print(f"-------------------------")
                         print(f"line number: {count}")
@@ -84,9 +84,9 @@ def generate(name : str):
                         # print(f"generic tree:")
                         # print(generic_tree.dump(tree))
 
-                        print(f"-------------------------")
-                        print(f"production tree:")
-                        print(python_instance.dump(instances))
+                        # print(f"-------------------------")
+                        # print(f"production tree:")
+                        # print(python_instance.dump(instances))
 
                         print(f"-------------------------")
                         print(f"source:")

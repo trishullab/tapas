@@ -113,8 +113,10 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
     inst_iter = iter(instances)
 
     stack : list[Union[str, Format]] = [Format(True, 0)] # str is concrete syntax, and int is indentation of the instance from the iterator 
+    count = 0
 
     while stack:
+
 
         stack_item : Union[str, Format] = stack.pop()
         if isinstance(stack_item, str):
@@ -123,8 +125,17 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
             assert isinstance(stack_item, Format)
             format = stack_item
             # take an element from the iterator
+
             inst = next(inst_iter)
             assert inst
+            print(f"---------------")
+            print(f"debug count: {count}")
+            print(f"debug instance:\n{inst}")
+            print(f"---------------")
+            print(f"debug result:\n{result}")
+            print(f"---------------")
+
+            count += 1
 
             def concretize_grammar(inst : Grammar):
                 nonlocal stack
