@@ -24,32 +24,52 @@ def test(fpath : str):
 
     with open(fpath, 'r') as f:
         all_prediction_data = f.read()
+        # print(f"all pd: {all_prediction_data}")
+        print(f"-----------------------------")
 
-        for prediction_data in all_prediction_data.split(f"\n<|endoftext|>\n"):
+        # regex = r"(.|(\"\"\".+\"\"\"))+(?<!\"\"\").*\n\n<\|endoftext\|>\n"
+        regex = r'(?!""".*)\n\n<\|endoftext\|>\n\n(?!""".*)' # + r"|" + r"((?!'''.*)\n\n<\|endoftext\|>\n\n(?!'''.*))"
+        # (?!\'.*)
 
-            prediction_instances : list[instance] = [
-                (
-                    prod_inst.make_Grammar(triple[1], triple[2])
-                    if triple[0] == "grammar" else
+        for idx, prediction_data in enumerate(re.split(regex, all_prediction_data)):
 
-                    prod_inst.make_Vocab(triple[1], triple[2])
+            if True:
 
-                )
-                for match in re.findall(r"\[[^,]+,[^,]+,[^,]+\]", prediction_data[1:-1])
-                for triple in [match[1:-1].split(",")]
-            ]
+                print(f"pd: {prediction_data}")
+
+                prediction_instances : list[instance] = [
+                    (
+                        prod_inst.make_Grammar(triple[1], triple[2])
+                        if triple[0] == "grammar" else
+
+                        prod_inst.make_Vocab(triple[1], triple[2])
+
+                    )
+                    for match in re.findall(r"\[[^,]+,[^,]+,[^,]+\]", prediction_data[1:-1])
+                    for triple in [match[1:-1].split(",")]
+                ]
+
+                print(f"")
+                print(f"prediction instances:")
+                for pi in prediction_instances:
+                    print(pi)
+
+                # print(f"-------------------------")
+                # print(f"generic tree:")
+                # print(generic_tree.dump(tree))
 
 
-            # print(f"-------------------------")
-            # print(f"generic tree:")
-            # print(generic_tree.dump(tree))
+                concrete_code = python_instance.concretize(prediction_instances)
+                print(f"")
+                print(f"concretized:")
+                print(concrete_code)
+                print(f"")
+                print(f"-------------------------")
+                print(f"")
 
-            # print(f"-------------------------")
-            # print(f"production tree:")
-            # print(python_instance.dump(prediction_instances))
 
-            concrete_code = python_instance.concretize(prediction_instances)
-            print(f"-------------------------")
-            print(f"concretized:")
-            print(concrete_code)
-            print(f"-------------------------")
+
+
+base_path = pathlib.Path(__file__).parent.absolute()
+fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction.txt')
+test(fpath)

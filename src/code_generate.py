@@ -4,13 +4,41 @@ from lib import def_type
 from lib import def_serialize
 from lib import def_rename
 
-from lib.file import write_gen
+from lib.file import write
 
 from lib import python_schema
 from lib import schema
+from lib import line_format_def_type
+from lib import production_instance_def_type
+
+import pathlib
+import os
 
 
-type_code = (
+base_path = pathlib.Path(__file__).parent.absolute()
+
+dirpath = os.path.join(base_path, 'gen')
+
+write(dirpath, "line_format.py", (
+    def_type.header +
+    "\n\n" +
+    "\n\n".join([
+        def_type.generate_union(line_format_def_type.type_name, line_format_def_type.constructors)
+    ])
+))
+
+
+
+write(dirpath, "production_instance.py", (
+    def_type.header +
+    "\n\n" +
+    "\n\n".join([
+        def_type.generate_union(production_instance_def_type.type_name, production_instance_def_type.constructors)
+    ])
+))
+
+
+write(dirpath, "python_ast.py", (
     def_type.header +
     "\n\n" +
     "\n\n".join([
@@ -25,13 +53,10 @@ type_code = (
         ])
         for type_name, nodes in python_schema.unions.items()
     ])
-)
+))
 
 
-write_gen("python_ast.py", type_code)
-
-
-serialize_code = (
+write(dirpath, "python_ast_serialize.py", (
     def_serialize.header +
     "\n\n" +
     "\n\n".join([
@@ -43,10 +68,9 @@ serialize_code = (
         def_serialize.generate_union_def(type_name,con)
         for type_name, con in python_schema.unions.items()
     ])
-)
-write_gen("python_ast_serialize.py", serialize_code)
+))
 
-rename_code = (
+write(dirpath, "python_ast_rename.py", (
     def_rename.header +
     "\n\n" +
     "\n\n".join([
@@ -58,8 +82,7 @@ rename_code = (
         def_rename.generate_union_def(type_name,con)
         for type_name, con in python_schema.unions.items()
     ])
-)
-write_gen("python_ast_rename.py", rename_code)
+))
 
 
 
