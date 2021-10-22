@@ -33,28 +33,42 @@ def test(fpath : str):
             r"\n\n<\|endoftext\|>\n\n"
         )
 
+        triple_end_regex = (
+            # r'(?:""".+"""\])|' + 
+            # r'(?:r".+"\])|' + 
+            # r'(?:f".+"\])|' + 
+            # r'(?:".+"\])|' + 
+            # r"(?:'''.+'''\])|" + 
+            # r"(?:r'.+'\])|" + 
+            # r"(?:f'.+'\])|" + 
+            # r"(?:'.+'\])|" +
+            r'[^,\[\]]+\]'
+        )
+
         for prediction_data in re.split(program_delim_regex, all_prediction_data):
 
             print(f"pd: {prediction_data}")
             print(f"")
             print(f"-------")
 
-            # prediction_instances : list[instance] = [
-            #     (
-            #         prod_inst.make_Grammar(triple[1], triple[2])
-            #         if triple[0] == "grammar" else
 
-            #         prod_inst.make_Vocab(triple[1], triple[2])
+            prediction_instances : list[instance] = [
+                # (
+                #     prod_inst.make_Grammar(triple[1], triple[2])
+                #     if triple[0] == "grammar" else
 
-            #     )
-            #     for match in re.findall(r"\[[^,]+,[^,]+,[^,]+\]", prediction_data[1:-1])
-            #     for triple in [match[1:-1].split(",")]
-            # ]
+                #     prod_inst.make_Vocab(triple[1], triple[2])
 
-            # print(f"")
-            # print(f"prediction instances:")
-            # for pi in prediction_instances:
-            #     print(pi)
+                # )
+                triple
+                for match in re.findall(r"\[[^,\[\]]+,[^,\[\]]+," + triple_end_regex, prediction_data[1:-1])
+                for triple in [match[1:-1].split(",")]
+            ]
+
+            print(f"")
+            print(f"prediction instances:")
+            for pi in prediction_instances:
+                print(pi)
 
             # print(f"-------------------------")
             # print(f"generic tree:")
