@@ -34,15 +34,15 @@ def test(fpath : str):
         )
 
         triple_end_regex = (
-            # r'(?:""".+"""\])|' + 
-            # r'(?:r".+"\])|' + 
-            # r'(?:f".+"\])|' + 
-            # r'(?:".+"\])|' + 
-            # r"(?:'''.+'''\])|" + 
-            # r"(?:r'.+'\])|" + 
-            # r"(?:f'.+'\])|" + 
-            # r"(?:'.+'\])|" +
-            r'[^,\[\]]+\]'
+            r'[^,\[\]]+\]|' +
+            r'"""[.\n]+"""\]|' + 
+            r'r".+"\]|' + 
+            r'f".+"\]|' + 
+            r'".+"\]|' + 
+            r"'''[.\n]+'''\]|" + 
+            r"r'.+'\]|" + 
+            r"f'.+'\]|" + 
+            r"'.+'\]"
         )
 
         for prediction_data in re.split(program_delim_regex, all_prediction_data):
@@ -60,9 +60,10 @@ def test(fpath : str):
                 #     prod_inst.make_Vocab(triple[1], triple[2])
 
                 # )
-                triple
-                for match in re.findall(r"\[[^,\[\]]+,[^,\[\]]+," + triple_end_regex, prediction_data[1:-1])
-                for triple in [match[1:-1].split(",")]
+                # triple
+                match
+                for match in re.findall(r"\[[^,\[\]]+,[^,\[\]]+,(?:" + triple_end_regex + r")", prediction_data[1:-1])
+                # for triple in [match[1:-1].split(",")]
             ]
 
             print(f"")
