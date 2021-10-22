@@ -27,49 +27,51 @@ def test(fpath : str):
         # print(f"all pd: {all_prediction_data}")
         print(f"-----------------------------")
 
-        # regex = r"(.|(\"\"\".+\"\"\"))+(?<!\"\"\").*\n\n<\|endoftext\|>\n"
-        regex = r'(?!""".*)\n\n<\|endoftext\|>\n\n(?!""".*)' # + r"|" + r"((?!'''.*)\n\n<\|endoftext\|>\n\n(?!'''.*))"
-        # (?!\'.*)
+        program_delim_regex = (
+            r'(?=(?!""".*)\n\n<\|endoftext\|>\n\n(?!""".*))' + 
+            r"(?=(?!'''.*)\n\n<\|endoftext\|>\n\n(?!'''.*))" + 
+            r"\n\n<\|endoftext\|>\n\n"
+        )
 
-        for idx, prediction_data in enumerate(re.split(regex, all_prediction_data)):
+        for prediction_data in re.split(program_delim_regex, all_prediction_data):
 
-            if True:
+            print(f"pd: {prediction_data}")
+            print(f"")
+            print(f"-------")
 
-                print(f"pd: {prediction_data}")
+            # prediction_instances : list[instance] = [
+            #     (
+            #         prod_inst.make_Grammar(triple[1], triple[2])
+            #         if triple[0] == "grammar" else
 
-                prediction_instances : list[instance] = [
-                    (
-                        prod_inst.make_Grammar(triple[1], triple[2])
-                        if triple[0] == "grammar" else
+            #         prod_inst.make_Vocab(triple[1], triple[2])
 
-                        prod_inst.make_Vocab(triple[1], triple[2])
+            #     )
+            #     for match in re.findall(r"\[[^,]+,[^,]+,[^,]+\]", prediction_data[1:-1])
+            #     for triple in [match[1:-1].split(",")]
+            # ]
 
-                    )
-                    for match in re.findall(r"\[[^,]+,[^,]+,[^,]+\]", prediction_data[1:-1])
-                    for triple in [match[1:-1].split(",")]
-                ]
+            # print(f"")
+            # print(f"prediction instances:")
+            # for pi in prediction_instances:
+            #     print(pi)
 
-                print(f"")
-                print(f"prediction instances:")
-                for pi in prediction_instances:
-                    print(pi)
-
-                # print(f"-------------------------")
-                # print(f"generic tree:")
-                # print(generic_tree.dump(tree))
+            # print(f"-------------------------")
+            # print(f"generic tree:")
+            # print(generic_tree.dump(tree))
 
 
-                concrete_code = python_instance.concretize(prediction_instances)
-                print(f"")
-                print(f"concretized:")
-                print(concrete_code)
-                print(f"")
-                print(f"-------------------------")
-                print(f"")
+            # concrete_code = python_instance.concretize(prediction_instances)
+            # print(f"")
+            # print(f"concretized:")
+            # print(concrete_code)
+            # print(f"")
+            # print(f"-------------------------")
+            # print(f"")
 
 
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
-fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction.txt')
+fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction_test.txt')
 test(fpath)
