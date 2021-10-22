@@ -53,17 +53,15 @@ def test(fpath : str):
 
 
             prediction_instances : list[instance] = [
-                # (
-                #     prod_inst.make_Grammar(triple[1], triple[2])
-                #     if triple[0] == "grammar" else
+                (
+                    prod_inst.make_Grammar(triple[1], triple[2])
+                    if triple[0] == "grammar" else
 
-                #     prod_inst.make_Vocab(triple[1], triple[2])
+                    prod_inst.make_Vocab(triple[1], triple[2])
 
-                # )
-                # triple
-                match
+                )
                 for match in re.findall(r"\[[^,\[\]]+,[^,\[\]]+,(?:" + triple_end_regex + r")", prediction_data[1:-1])
-                # for triple in [match[1:-1].split(",")]
+                for triple in [match[1:-1].split(",")]
             ]
 
             print(f"")
