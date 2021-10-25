@@ -28,63 +28,63 @@ def test(fpath : str):
         print(f"-----------------------------")
 
         program_delim_regex = (
-            r'(?=(?!""".*)\n\n<\|endoftext\|>\n\n(?!""".*))' + 
-            r"(?=(?!'''.*)\n\n<\|endoftext\|>\n\n(?!'''.*))" + 
+            r'(?=(?!".*)\n\n<\|endoftext\|>\n\n(?!".*))' + 
             r"\n\n<\|endoftext\|>\n\n"
         )
 
-        triple_end_regex = (
-            r'[^,\[\]]+\]|' +
-            r'"""[.\n]+"""\]|' + 
-            r'r".+"\]|' + 
-            r'f".+"\]|' + 
-            r'".+"\]|' + 
-            r"'''[.\n]+'''\]|" + 
-            r"r'.+'\]|" + 
-            r"f'.+'\]|" + 
-            r"'.+'\]"
-        )
-
+        count = 0
         for prediction_data in re.split(program_delim_regex, all_prediction_data):
 
+            print(f"\n-------------------------\n")
+            print(f"count: {count}")
+            count += 1
+            print(f"\n-------------------------\n")
             print(f"pd: {prediction_data}")
-            print(f"")
-            print(f"-------")
+
+            prediction_list = json.loads(prediction_data)
+            print(f"\n-------------------------\n")
+            print(f"prediction_list:")
+            print(prediction_list)
+
+            # triples = [prediction_list[i:i + 3] for i in range(0, len(prediction_list), 3)]
+
+            # print(f"\n-------------------------\n")
+            # print(f"triples:")
+            # for t in triples:
+            #     print(t)
+
+            # prediction_instances : list[instance] = [
+            #     (
+            #         prod_inst.make_Grammar(triple[1], triple[2])
+            #         if triple[0] == "grammar" else
+
+            #         prod_inst.make_Vocab(triple[1], triple[2])
+
+            #     )
+            #     for triple in triples
+            # ]
 
 
-            prediction_instances : list[instance] = [
-                (
-                    prod_inst.make_Grammar(triple[1], triple[2])
-                    if triple[0] == "grammar" else
+            # print(f"\n-------------------------\n")
+            # print(f"prediction instances:")
+            # for pi in prediction_instances:
+            #     print(pi)
 
-                    prod_inst.make_Vocab(triple[1], triple[2])
-
-                )
-                for match in re.findall(r"\[[^,\[\]]+,[^,\[\]]+,(?:" + triple_end_regex + r")", prediction_data[1:-1])
-                for triple in [match[1:-1].split(",")]
-            ]
-
-            print(f"")
-            print(f"prediction instances:")
-            for pi in prediction_instances:
-                print(pi)
-
-            # print(f"-------------------------")
-            # print(f"generic tree:")
-            # print(generic_tree.dump(tree))
+            # print(f"\n-------------------------\n")
+            # print(f"instance tree:")
+            # print(python_instance.dump(prediction_instances))
 
 
             # concrete_code = python_instance.concretize(prediction_instances)
-            # print(f"")
+            # print(f"\n-------------------------\n")
             # print(f"concretized:")
             # print(concrete_code)
-            # print(f"")
-            # print(f"-------------------------")
-            # print(f"")
+
+            # print(f"\n-------------------------\n")
 
 
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
-fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction_test.txt')
+fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction.txt')
 test(fpath)

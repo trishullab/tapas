@@ -1,22 +1,22 @@
-[[grammar,Module,Module],[grammar,statements,ConsStmt],[grammar,expr,ConcatString],[grammar,sequence_string,SingleStr],[vocab,string,"""
+grammar,Module,Module,grammar,statements,ConsStmt,grammar,expr,ConcatString,grammar,sequence_string,SingleStr,vocab,string,"""
 
 <|endoftext|>
 ,
 
-"""],[grammar,statements,SingleStmt],[grammar,stmt,If],[grammar,expr,CallArgs]]
+""",grammar,statements,SingleStmt,grammar,stmt,If,grammar,expr,CallArgs
 
 <|endoftext|>
 
-[[grammar,Module,Module],[grammar,statements,SingleStmt]]
+grammar,Module,Module,grammar,statements,SingleStmt
 
 <|endoftext|>
 
-[[grammar,Module,Module],[grammar,statements,SingleStmt]]
+grammar,Module,Module,grammar,statements,SingleStmt
 
 <|endoftext|>
 
-[[grammar,Module,Module],[grammar,statements,ConsStmt],[grammar,expr,ConcatString],[grammar,sequence_string,SingleStr],[vocab,string,"""
+grammar,Module,Module,grammar,statements,ConsStmt,grammar,expr,ConcatString,grammar,sequence_string,SingleStr,vocab,string,"""
 
 <|endoftext|>
 
-"""],[grammar,statements,SingleStmt],[grammar,stmt,If],[grammar,expr,CallArgs]]
+""",grammar,statements,SingleStmt,grammar,stmt,If,grammar,expr,CallArgs
