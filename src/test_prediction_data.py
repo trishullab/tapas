@@ -38,47 +38,48 @@ def test(fpath : str):
             print(f"\n-------------------------\n")
             print(f"count: {count}")
             count += 1
-            print(f"\n-------------------------\n")
-            print(f"pd: {prediction_data}")
+
 
             prediction_list = json.loads(prediction_data)
+            # print(f"\n-------------------------\n")
+            # print(f"pd: {prediction_data}")
+            # print(f"\n-------------------------\n")
+            # print(f"prediction_list:")
+            # print(prediction_list)
+
+            triples = [prediction_list[i:i + 3] for i in range(0, len(prediction_list), 3)]
+
             print(f"\n-------------------------\n")
-            print(f"prediction_list:")
-            print(prediction_list)
+            print(f"triples:")
+            for t in triples:
+                print(t)
 
-            # triples = [prediction_list[i:i + 3] for i in range(0, len(prediction_list), 3)]
+            prediction_instances : list[instance] = [
+                (
+                    prod_inst.make_Grammar(triple[1], triple[2])
+                    if triple[0] == "grammar" else
 
-            # print(f"\n-------------------------\n")
-            # print(f"triples:")
-            # for t in triples:
-            #     print(t)
+                    prod_inst.make_Vocab(triple[1], triple[2])
 
-            # prediction_instances : list[instance] = [
-            #     (
-            #         prod_inst.make_Grammar(triple[1], triple[2])
-            #         if triple[0] == "grammar" else
-
-            #         prod_inst.make_Vocab(triple[1], triple[2])
-
-            #     )
-            #     for triple in triples
-            # ]
+                )
+                for triple in triples
+            ]
 
 
-            # print(f"\n-------------------------\n")
-            # print(f"prediction instances:")
-            # for pi in prediction_instances:
-            #     print(pi)
+            print(f"\n-------------------------\n")
+            print(f"prediction instances:")
+            for pi in prediction_instances:
+                print(pi)
 
             # print(f"\n-------------------------\n")
             # print(f"instance tree:")
             # print(python_instance.dump(prediction_instances))
 
 
-            # concrete_code = python_instance.concretize(prediction_instances)
-            # print(f"\n-------------------------\n")
-            # print(f"concretized:")
-            # print(concrete_code)
+            concrete_code = python_instance.concretize(prediction_instances)
+            print(f"\n-------------------------\n")
+            print(f"concretized:")
+            print(concrete_code)
 
             # print(f"\n-------------------------\n")
 
