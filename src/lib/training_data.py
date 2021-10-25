@@ -32,6 +32,7 @@ def generate(dirname : str, name : str):
 
     write(dir, f'{name}_vocab.json', '')
     write(dir, f'{name}_training.txt', '')
+    write(dir, f'{name}_training_json.txt', '')
 
     from datetime import datetime
 
@@ -116,23 +117,31 @@ def generate(dirname : str, name : str):
                         for i in instances
                         for t in [triple_from_instance(i)] 
                     ]
+                    write(dir, f'{name}_training.txt', "[" + ",".join(training_data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
 
+
+                    json_training_data = []
+                    for i in instances:
+                        triple = triple_from_instance(i)
+                        for ti in triple:
+                            json_training_data.append(ti)
+
+                    write(dir, f'{name}_training_json.txt', json.dumps(json_training_data) + '\n\n<|endoftext|>\n\n', append=True)
+
+                    def handle_Vocab(o):
+                        if o.choices_id in vocab.keys():
+                            vocab[o.choices_id].add(o.word)
+                        else:
+                            vocab[o.choices_id] = {o.word}
 
                     # update vocabulary
                     for inst in instances:
-                        def handle_Vocab(o):
-                            if o.choices_id in vocab.keys():
-                                vocab[o.choices_id].add(o.word)
-                            else:
-                                vocab[o.choices_id] = {o.word}
 
                         match_instance(inst, InstanceHandlers(
                             case_Grammar=lambda o : (),
                             case_Vocab=handle_Vocab 
                         )) 
 
-
-                    write(dir, f'{name}_training.txt', "[" + ",".join(training_data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
 
             except Exception as x:
 
