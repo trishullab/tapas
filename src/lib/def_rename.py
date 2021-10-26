@@ -20,15 +20,17 @@ jinja_env = jinja2.Environment(trim_blocks=True)
 
 # create stack machine that places target and its children as a row on stack, with flag to indicate if a child has been processed
 
+# use type inference in order to rename class field names and function parameter names
+# generate `if isinstance` condition switch for each type that is inferred, if there is more than one type inferred
+
 header = """
 from __future__ import annotations
 from lib import production_instance as prod_inst 
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
-import sys
-
-sys.setrecursionlimit(10**6)
 """
+
+
 
 intersection_str = """
 def rename_{{ node.name }}(
@@ -38,8 +40,7 @@ def rename_{{ node.name }}(
     local_map : dict[str, str]
 ) -> {{ node.name }}:
 
-    return {{ node.name }} (
-
+    return {{ node.name }}(
 {% for child in node.children %}
 {% if is_vocab(child) %}
         o.{{ child.relation }}{% if not loop.last %}, {% endif %}
@@ -81,31 +82,69 @@ def rename_{{ type_name }}(
     local_map : dict[str, str]
 ) -> {{ type_name }}:
 
-{% for node in nodes %}
-    def handle_{{ node.name }}(o : {{ node.name }}): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[{{ node.name }}, int]]= [(o, -1)]
+    result : {{ node.name }}
 
-        return {{ node.name }}(
-{% for child in node.children %}
-{% if is_vocab(child) %}
-            o.{{ child.relation }}{% if not loop.last %}, {% endif %}
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
+{% for node in nodes %}
+
+        def handle_{{ node.name }}(o : {{ node.name }}):
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+
+            recursion_sites = [
+{% for child in [child for child in node.children if type_name == child.nonterminal] %}
+                "{{ child.relation }}"{% if not loop.last %}, {% endif %}
+{% endfor %}
+            ]
+
+            if recursion_site == len(recursion_sites):
+                result = partial_result
+            else: 
+
+                next_partial_result = partial_result
+                if recursion_site >= 0:
+
+                    # update the stack with the result at the recursion_site
+                    if false:
+                        assert false
+
+{% for site_child in [child for child in node.children if node.name == child.nonterminal] %}
+                    elif recursion_sites[recursion_site] == "{{% site_child.relation %}}":
+                        stack.append({{ node.name }}(
+{% for arg_child in node.children %}
+{% if arg_child.relation == site_child.relation %}
+                            result{% if not loop.last %}, {% endif %}
 {% else %}
-            rename_{{ child.nonterminal }}(
-                o.{{ child.relation }},
-                global_map,
-                nonlocal_map,
-                local_map
-            ){% if not loop.last %}, {% endif %}
+                            partial_result.{{ arg_child.relation }}{% if not loop.last %}, {% endif %}
 {% endif %}
 {% endfor %}
-        )
-
+                        ), recursion_site + 1)
 {% endfor %}
+
+
+                    # update the stack with the node at the next recursion_site 
+                    if recursion_site >= len(recursion_sites):
+                        pass
+{% for site_child in [child for child in node.children if node.name == child.nonterminal] %}
+                    elif recursion_sites[recursion_site + 1] == "{{% site_child.relation %}}":
+                        stack.append({{ node.name }}(
+                            partial_result.{{ site_child.relation }}{% if not loop.last %}, {% endif %}
+                        ), -1)
+{% endfor %}{# site_child loop #}
+
+{% endfor %}{# schema.node loop #}
+
 
     return match_{{ type_name }}(o, {{ handlers_name }}(
 {% for node in nodes %}
         case_{{ node.name }} = handle_{{ node.name }}{% if not loop.last %}, {% endif %} 
 {% endfor %}
     ))
+
 
 """
 
