@@ -3,9 +3,6 @@ from __future__ import annotations
 from lib import production_instance as prod_inst 
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
-import sys
-
-sys.setrecursionlimit(10**6)
 
 
 
@@ -16,8 +13,7 @@ def rename_Module(
     local_map : dict[str, str]
 ) -> Module:
 
-    return Module (
-
+    return Module(
         rename_statements(
             o.body,
             global_map,
@@ -34,8 +30,7 @@ def rename_CompareRight(
     local_map : dict[str, str]
 ) -> CompareRight:
 
-    return CompareRight (
-
+    return CompareRight(
         rename_cmpop(
             o.op,
             global_map,
@@ -57,8 +52,7 @@ def rename_ExceptHandler(
     local_map : dict[str, str]
 ) -> ExceptHandler:
 
-    return ExceptHandler (
-
+    return ExceptHandler(
         rename_except_arg(
             o.arg,
             global_map,
@@ -80,8 +74,7 @@ def rename_Param(
     local_map : dict[str, str]
 ) -> Param:
 
-    return Param (
-
+    return Param(
         o.name,         rename_param_type(
             o.type,
             global_map,
@@ -103,8 +96,7 @@ def rename_Field(
     local_map : dict[str, str]
 ) -> Field:
 
-    return Field (
-
+    return Field(
         rename_expr(
             o.key,
             global_map,
@@ -126,8 +118,7 @@ def rename_ImportName(
     local_map : dict[str, str]
 ) -> ImportName:
 
-    return ImportName (
-
+    return ImportName(
         o.name,         rename_alias(
             o.as_name,
             global_map,
@@ -144,8 +135,7 @@ def rename_Withitem(
     local_map : dict[str, str]
 ) -> Withitem:
 
-    return Withitem (
-
+    return Withitem(
         rename_expr(
             o.contet,
             global_map,
@@ -167,8 +157,7 @@ def rename_ClassDef(
     local_map : dict[str, str]
 ) -> ClassDef:
 
-    return ClassDef (
-
+    return ClassDef(
         o.name,         rename_bases(
             o.bs,
             global_map,
@@ -190,8 +179,7 @@ def rename_ElifBlock(
     local_map : dict[str, str]
 ) -> ElifBlock:
 
-    return ElifBlock (
-
+    return ElifBlock(
         rename_expr(
             o.test,
             global_map,
@@ -213,8 +201,7 @@ def rename_ElseBlock(
     local_map : dict[str, str]
 ) -> ElseBlock:
 
-    return ElseBlock (
-
+    return ElseBlock(
         rename_statements(
             o.body,
             global_map,
@@ -231,8 +218,7 @@ def rename_FinallyBlock(
     local_map : dict[str, str]
 ) -> FinallyBlock:
 
-    return FinallyBlock (
-
+    return FinallyBlock(
         rename_statements(
             o.body,
             global_map,
@@ -249,26 +235,68 @@ def rename_return_type(
     local_map : dict[str, str]
 ) -> return_type:
 
-    def handle_SomeReturnType(o : SomeReturnType): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[return_type, int]] = [(o, -1)]
+    result : return_type = o
 
-        return SomeReturnType(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoReturnType(o : NoReturnType): 
+        def handle_SomeReturnType(o : SomeReturnType): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoReturnType(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_return_type(o, ReturnTypeHandlers(
-        case_SomeReturnType = handle_SomeReturnType,  
-        case_NoReturnType = handle_NoReturnType 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoReturnType(o : NoReturnType): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_return_type(o, ReturnTypeHandlers(
+            case_SomeReturnType = handle_SomeReturnType,  
+            case_NoReturnType = handle_NoReturnType 
+         ))
+    return result
+
 
 
 
@@ -279,21 +307,68 @@ def rename_module_id(
     local_map : dict[str, str]
 ) -> module_id:
 
-    def handle_SomeModuleId(o : SomeModuleId): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[module_id, int]] = [(o, -1)]
+    result : module_id = o
 
-        return SomeModuleId(
-            o.contents        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoModuleId(o : NoModuleId): 
+        def handle_SomeModuleId(o : SomeModuleId): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoModuleId(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_module_id(o, ModuleIdHandlers(
-        case_SomeModuleId = handle_SomeModuleId,  
-        case_NoModuleId = handle_NoModuleId 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoModuleId(o : NoModuleId): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_module_id(o, ModuleIdHandlers(
+            case_SomeModuleId = handle_SomeModuleId,  
+            case_NoModuleId = handle_NoModuleId 
+         ))
+    return result
+
 
 
 
@@ -304,37 +379,93 @@ def rename_except_arg(
     local_map : dict[str, str]
 ) -> except_arg:
 
-    def handle_SomeExceptArg(o : SomeExceptArg): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[except_arg, int]] = [(o, -1)]
+    result : except_arg = o
 
-        return SomeExceptArg(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SomeExceptArgName(o : SomeExceptArgName): 
+        def handle_SomeExceptArg(o : SomeExceptArg): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SomeExceptArgName(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             o.name        )
+            recursion_sites = [
+            ]
 
-    def handle_NoExceptArg(o : NoExceptArg): 
+            if recursion_site >= 0:
 
-        return NoExceptArg(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_except_arg(o, ExceptArgHandlers(
-        case_SomeExceptArg = handle_SomeExceptArg,  
-        case_SomeExceptArgName = handle_SomeExceptArgName,  
-        case_NoExceptArg = handle_NoExceptArg 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_SomeExceptArgName(o : SomeExceptArgName): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoExceptArg(o : NoExceptArg): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_except_arg(o, ExceptArgHandlers(
+            case_SomeExceptArg = handle_SomeExceptArg,  
+            case_SomeExceptArgName = handle_SomeExceptArgName,  
+            case_NoExceptArg = handle_NoExceptArg 
+         ))
+    return result
+
 
 
 
@@ -345,26 +476,68 @@ def rename_param_type(
     local_map : dict[str, str]
 ) -> param_type:
 
-    def handle_SomeParamType(o : SomeParamType): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[param_type, int]] = [(o, -1)]
+    result : param_type = o
 
-        return SomeParamType(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoParamType(o : NoParamType): 
+        def handle_SomeParamType(o : SomeParamType): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoParamType(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_param_type(o, ParamTypeHandlers(
-        case_SomeParamType = handle_SomeParamType,  
-        case_NoParamType = handle_NoParamType 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoParamType(o : NoParamType): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_param_type(o, ParamTypeHandlers(
+            case_SomeParamType = handle_SomeParamType,  
+            case_NoParamType = handle_NoParamType 
+         ))
+    return result
+
 
 
 
@@ -375,26 +548,68 @@ def rename_param_default(
     local_map : dict[str, str]
 ) -> param_default:
 
-    def handle_SomeParamDefault(o : SomeParamDefault): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[param_default, int]] = [(o, -1)]
+    result : param_default = o
 
-        return SomeParamDefault(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoParamDefault(o : NoParamDefault): 
+        def handle_SomeParamDefault(o : SomeParamDefault): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoParamDefault(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_param_default(o, ParamDefaultHandlers(
-        case_SomeParamDefault = handle_SomeParamDefault,  
-        case_NoParamDefault = handle_NoParamDefault 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoParamDefault(o : NoParamDefault): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_param_default(o, ParamDefaultHandlers(
+            case_SomeParamDefault = handle_SomeParamDefault,  
+            case_NoParamDefault = handle_NoParamDefault 
+         ))
+    return result
+
 
 
 
@@ -405,47 +620,99 @@ def rename_parameters_d(
     local_map : dict[str, str]
 ) -> parameters_d:
 
-    def handle_ConsKwParam(o : ConsKwParam): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[parameters_d, int]] = [(o, -1)]
+    result : parameters_d = o
 
-        return ConsKwParam(
-            rename_Param(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_parameters_d(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleKwParam(o : SingleKwParam): 
+        def handle_ConsKwParam(o : ConsKwParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleKwParam(
-            rename_Param(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_DictionarySplatParam(o : DictionarySplatParam): 
+            if recursion_site >= 0:
 
-        return DictionarySplatParam(
-            rename_Param(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsKwParam(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_parameters_d(o, ParametersDHandlers(
-        case_ConsKwParam = handle_ConsKwParam,  
-        case_SingleKwParam = handle_SingleKwParam,  
-        case_DictionarySplatParam = handle_DictionarySplatParam 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleKwParam(o : SingleKwParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_DictionarySplatParam(o : DictionarySplatParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_parameters_d(o, ParametersDHandlers(
+            case_ConsKwParam = handle_ConsKwParam,  
+            case_SingleKwParam = handle_SingleKwParam,  
+            case_DictionarySplatParam = handle_DictionarySplatParam 
+         ))
+    return result
+
 
 
 
@@ -456,47 +723,93 @@ def rename_parameters_c(
     local_map : dict[str, str]
 ) -> parameters_c:
 
-    def handle_SingleListSplatParam(o : SingleListSplatParam): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[parameters_c, int]] = [(o, -1)]
+    result : parameters_c = o
 
-        return SingleListSplatParam(
-            rename_Param(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_TransListSplatParam(o : TransListSplatParam): 
+        def handle_SingleListSplatParam(o : SingleListSplatParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return TransListSplatParam(
-            rename_Param(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_parameters_d(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+            ]
 
-    def handle_ParamsD(o : ParamsD): 
+            if recursion_site >= 0:
 
-        return ParamsD(
-            rename_parameters_d(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_parameters_c(o, ParametersCHandlers(
-        case_SingleListSplatParam = handle_SingleListSplatParam,  
-        case_TransListSplatParam = handle_TransListSplatParam,  
-        case_ParamsD = handle_ParamsD 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TransListSplatParam(o : TransListSplatParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ParamsD(o : ParamsD): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_parameters_c(o, ParametersCHandlers(
+            case_SingleListSplatParam = handle_SingleListSplatParam,  
+            case_TransListSplatParam = handle_TransListSplatParam,  
+            case_ParamsD = handle_ParamsD 
+         ))
+    return result
+
 
 
 
@@ -507,47 +820,99 @@ def rename_parameters_b(
     local_map : dict[str, str]
 ) -> parameters_b:
 
-    def handle_ConsParam(o : ConsParam): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[parameters_b, int]] = [(o, -1)]
+    result : parameters_b = o
 
-        return ConsParam(
-            rename_Param(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_parameters_b(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleParam(o : SingleParam): 
+        def handle_ConsParam(o : ConsParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleParam(
-            rename_Param(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_ParamsC(o : ParamsC): 
+            if recursion_site >= 0:
 
-        return ParamsC(
-            rename_parameters_c(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsParam(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_parameters_b(o, ParametersBHandlers(
-        case_ConsParam = handle_ConsParam,  
-        case_SingleParam = handle_SingleParam,  
-        case_ParamsC = handle_ParamsC 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleParam(o : SingleParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ParamsC(o : ParamsC): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_parameters_b(o, ParametersBHandlers(
+            case_ConsParam = handle_ConsParam,  
+            case_SingleParam = handle_SingleParam,  
+            case_ParamsC = handle_ParamsC 
+         ))
+    return result
+
 
 
 
@@ -558,37 +923,93 @@ def rename_parameters(
     local_map : dict[str, str]
 ) -> parameters:
 
-    def handle_ParamsA(o : ParamsA): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[parameters, int]] = [(o, -1)]
+    result : parameters = o
 
-        return ParamsA(
-            rename_parameters_a(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_ParamsB(o : ParamsB): 
+        def handle_ParamsA(o : ParamsA): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return ParamsB(
-            rename_parameters_b(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+            ]
 
-    def handle_NoParam(o : NoParam): 
+            if recursion_site >= 0:
 
-        return NoParam(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_parameters(o, ParametersHandlers(
-        case_ParamsA = handle_ParamsA,  
-        case_ParamsB = handle_ParamsB,  
-        case_NoParam = handle_NoParam 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ParamsB(o : ParamsB): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoParam(o : NoParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_parameters(o, ParametersHandlers(
+            case_ParamsA = handle_ParamsA,  
+            case_ParamsB = handle_ParamsB,  
+            case_NoParam = handle_NoParam 
+         ))
+    return result
+
 
 
 
@@ -599,52 +1020,99 @@ def rename_parameters_a(
     local_map : dict[str, str]
 ) -> parameters_a:
 
-    def handle_ConsPosParam(o : ConsPosParam): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[parameters_a, int]] = [(o, -1)]
+    result : parameters_a = o
 
-        return ConsPosParam(
-            rename_Param(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_parameters_a(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SinglePosParam(o : SinglePosParam): 
+        def handle_ConsPosParam(o : ConsPosParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SinglePosParam(
-            rename_Param(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_TransPosParam(o : TransPosParam): 
+            if recursion_site >= 0:
 
-        return TransPosParam(
-            rename_Param(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_parameters_b(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsPosParam(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_parameters_a(o, ParametersAHandlers(
-        case_ConsPosParam = handle_ConsPosParam,  
-        case_SinglePosParam = handle_SinglePosParam,  
-        case_TransPosParam = handle_TransPosParam 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SinglePosParam(o : SinglePosParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TransPosParam(o : TransPosParam): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_parameters_a(o, ParametersAHandlers(
+            case_ConsPosParam = handle_ConsPosParam,  
+            case_SinglePosParam = handle_SinglePosParam,  
+            case_TransPosParam = handle_TransPosParam 
+         ))
+    return result
+
 
 
 
@@ -655,31 +1123,68 @@ def rename_keyword(
     local_map : dict[str, str]
 ) -> keyword:
 
-    def handle_NamedKeyword(o : NamedKeyword): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[keyword, int]] = [(o, -1)]
+    result : keyword = o
 
-        return NamedKeyword(
-            o.name,             rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SplatKeyword(o : SplatKeyword): 
+        def handle_NamedKeyword(o : NamedKeyword): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SplatKeyword(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_keyword(o, KeywordHandlers(
-        case_NamedKeyword = handle_NamedKeyword,  
-        case_SplatKeyword = handle_SplatKeyword 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_SplatKeyword(o : SplatKeyword): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_keyword(o, KeywordHandlers(
+            case_NamedKeyword = handle_NamedKeyword,  
+            case_SplatKeyword = handle_SplatKeyword 
+         ))
+    return result
+
 
 
 
@@ -690,21 +1195,68 @@ def rename_alias(
     local_map : dict[str, str]
 ) -> alias:
 
-    def handle_SomeAlias(o : SomeAlias): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[alias, int]] = [(o, -1)]
+    result : alias = o
 
-        return SomeAlias(
-            o.contents        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoAlias(o : NoAlias): 
+        def handle_SomeAlias(o : SomeAlias): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoAlias(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_alias(o, AliasHandlers(
-        case_SomeAlias = handle_SomeAlias,  
-        case_NoAlias = handle_NoAlias 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoAlias(o : NoAlias): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_alias(o, AliasHandlers(
+            case_SomeAlias = handle_SomeAlias,  
+            case_NoAlias = handle_NoAlias 
+         ))
+    return result
+
 
 
 
@@ -715,26 +1267,68 @@ def rename_alias_expr(
     local_map : dict[str, str]
 ) -> alias_expr:
 
-    def handle_SomeAliasExpr(o : SomeAliasExpr): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[alias_expr, int]] = [(o, -1)]
+    result : alias_expr = o
 
-        return SomeAliasExpr(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoAliasExpr(o : NoAliasExpr): 
+        def handle_SomeAliasExpr(o : SomeAliasExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoAliasExpr(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_alias_expr(o, AliasExprHandlers(
-        case_SomeAliasExpr = handle_SomeAliasExpr,  
-        case_NoAliasExpr = handle_NoAliasExpr 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoAliasExpr(o : NoAliasExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_alias_expr(o, AliasExprHandlers(
+            case_SomeAliasExpr = handle_SomeAliasExpr,  
+            case_NoAliasExpr = handle_NoAliasExpr 
+         ))
+    return result
+
 
 
 
@@ -745,26 +1339,68 @@ def rename_bases(
     local_map : dict[str, str]
 ) -> bases:
 
-    def handle_SomeBases(o : SomeBases): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[bases, int]] = [(o, -1)]
+    result : bases = o
 
-        return SomeBases(
-            rename_bases_a(
-                o.bases,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoBases(o : NoBases): 
+        def handle_SomeBases(o : SomeBases): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoBases(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_bases(o, BasesHandlers(
-        case_SomeBases = handle_SomeBases,  
-        case_NoBases = handle_NoBases 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoBases(o : NoBases): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_bases(o, BasesHandlers(
+            case_SomeBases = handle_SomeBases,  
+            case_NoBases = handle_NoBases 
+         ))
+    return result
+
 
 
 
@@ -775,47 +1411,99 @@ def rename_bases_a(
     local_map : dict[str, str]
 ) -> bases_a:
 
-    def handle_ConsBase(o : ConsBase): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[bases_a, int]] = [(o, -1)]
+    result : bases_a = o
 
-        return ConsBase(
-            rename_expr(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_bases_a(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleBase(o : SingleBase): 
+        def handle_ConsBase(o : ConsBase): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleBase(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_KeywordsBase(o : KeywordsBase): 
+            if recursion_site >= 0:
 
-        return KeywordsBase(
-            rename_keywords(
-                o.kws,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsBase(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_bases_a(o, BasesAHandlers(
-        case_ConsBase = handle_ConsBase,  
-        case_SingleBase = handle_SingleBase,  
-        case_KeywordsBase = handle_KeywordsBase 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleBase(o : SingleBase): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_KeywordsBase(o : KeywordsBase): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_bases_a(o, BasesAHandlers(
+            case_ConsBase = handle_ConsBase,  
+            case_SingleBase = handle_SingleBase,  
+            case_KeywordsBase = handle_KeywordsBase 
+         ))
+    return result
+
 
 
 
@@ -826,36 +1514,74 @@ def rename_keywords(
     local_map : dict[str, str]
 ) -> keywords:
 
-    def handle_ConsKeyword(o : ConsKeyword): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[keywords, int]] = [(o, -1)]
+    result : keywords = o
 
-        return ConsKeyword(
-            rename_keyword(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_keywords(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleKeyword(o : SingleKeyword): 
+        def handle_ConsKeyword(o : ConsKeyword): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleKeyword(
-            rename_keyword(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsKeyword(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_keywords(o, KeywordsHandlers(
-        case_ConsKeyword = handle_ConsKeyword,  
-        case_SingleKeyword = handle_SingleKeyword 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleKeyword(o : SingleKeyword): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_keywords(o, KeywordsHandlers(
+            case_ConsKeyword = handle_ConsKeyword,  
+            case_SingleKeyword = handle_SingleKeyword 
+         ))
+    return result
+
 
 
 
@@ -866,36 +1592,74 @@ def rename_comparisons(
     local_map : dict[str, str]
 ) -> comparisons:
 
-    def handle_ConsCompareRight(o : ConsCompareRight): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[comparisons, int]] = [(o, -1)]
+    result : comparisons = o
 
-        return ConsCompareRight(
-            rename_CompareRight(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comparisons(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleCompareRight(o : SingleCompareRight): 
+        def handle_ConsCompareRight(o : ConsCompareRight): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleCompareRight(
-            rename_CompareRight(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsCompareRight(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_comparisons(o, ComparisonsHandlers(
-        case_ConsCompareRight = handle_ConsCompareRight,  
-        case_SingleCompareRight = handle_SingleCompareRight 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleCompareRight(o : SingleCompareRight): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_comparisons(o, ComparisonsHandlers(
+            case_ConsCompareRight = handle_ConsCompareRight,  
+            case_SingleCompareRight = handle_SingleCompareRight 
+         ))
+    return result
+
 
 
 
@@ -906,26 +1670,68 @@ def rename_option_expr(
     local_map : dict[str, str]
 ) -> option_expr:
 
-    def handle_SomeExpr(o : SomeExpr): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[option_expr, int]] = [(o, -1)]
+    result : option_expr = o
 
-        return SomeExpr(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoExpr(o : NoExpr): 
+        def handle_SomeExpr(o : SomeExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoExpr(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_option_expr(o, OptionExprHandlers(
-        case_SomeExpr = handle_SomeExpr,  
-        case_NoExpr = handle_NoExpr 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoExpr(o : NoExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_option_expr(o, OptionExprHandlers(
+            case_SomeExpr = handle_SomeExpr,  
+            case_NoExpr = handle_NoExpr 
+         ))
+    return result
+
 
 
 
@@ -936,36 +1742,74 @@ def rename_comma_exprs(
     local_map : dict[str, str]
 ) -> comma_exprs:
 
-    def handle_ConsExpr(o : ConsExpr): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[comma_exprs, int]] = [(o, -1)]
+    result : comma_exprs = o
 
-        return ConsExpr(
-            rename_expr(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comma_exprs(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleExpr(o : SingleExpr): 
+        def handle_ConsExpr(o : ConsExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleExpr(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsExpr(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_comma_exprs(o, CommaExprsHandlers(
-        case_ConsExpr = handle_ConsExpr,  
-        case_SingleExpr = handle_SingleExpr 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleExpr(o : SingleExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_comma_exprs(o, CommaExprsHandlers(
+            case_ConsExpr = handle_ConsExpr,  
+            case_SingleExpr = handle_SingleExpr 
+         ))
+    return result
+
 
 
 
@@ -976,36 +1820,74 @@ def rename_target_exprs(
     local_map : dict[str, str]
 ) -> target_exprs:
 
-    def handle_ConsTargetExpr(o : ConsTargetExpr): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[target_exprs, int]] = [(o, -1)]
+    result : target_exprs = o
 
-        return ConsTargetExpr(
-            rename_expr(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_target_exprs(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleTargetExpr(o : SingleTargetExpr): 
+        def handle_ConsTargetExpr(o : ConsTargetExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleTargetExpr(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsTargetExpr(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_target_exprs(o, TargetExprsHandlers(
-        case_ConsTargetExpr = handle_ConsTargetExpr,  
-        case_SingleTargetExpr = handle_SingleTargetExpr 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleTargetExpr(o : SingleTargetExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_target_exprs(o, TargetExprsHandlers(
+            case_ConsTargetExpr = handle_ConsTargetExpr,  
+            case_SingleTargetExpr = handle_SingleTargetExpr 
+         ))
+    return result
+
 
 
 
@@ -1016,31 +1898,74 @@ def rename_decorators(
     local_map : dict[str, str]
 ) -> decorators:
 
-    def handle_ConsDec(o : ConsDec): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[decorators, int]] = [(o, -1)]
+    result : decorators = o
 
-        return ConsDec(
-            rename_expr(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_decorators(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NoDec(o : NoDec): 
+        def handle_ConsDec(o : ConsDec): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NoDec(
-        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsDec(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_decorators(o, DecoratorsHandlers(
-        case_ConsDec = handle_ConsDec,  
-        case_NoDec = handle_NoDec 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_NoDec(o : NoDec): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_decorators(o, DecoratorsHandlers(
+            case_ConsDec = handle_ConsDec,  
+            case_NoDec = handle_NoDec 
+         ))
+    return result
+
 
 
 
@@ -1051,42 +1976,99 @@ def rename_constraint_filters(
     local_map : dict[str, str]
 ) -> constraint_filters:
 
-    def handle_ConsFilter(o : ConsFilter): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[constraint_filters, int]] = [(o, -1)]
+    result : constraint_filters = o
 
-        return ConsFilter(
-            rename_expr(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_constraint_filters(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleFilter(o : SingleFilter): 
+        def handle_ConsFilter(o : ConsFilter): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleFilter(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_NoFilter(o : NoFilter): 
+            if recursion_site >= 0:
 
-        return NoFilter(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsFilter(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_constraint_filters(o, ConstraintFiltersHandlers(
-        case_ConsFilter = handle_ConsFilter,  
-        case_SingleFilter = handle_SingleFilter,  
-        case_NoFilter = handle_NoFilter 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleFilter(o : SingleFilter): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoFilter(o : NoFilter): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_constraint_filters(o, ConstraintFiltersHandlers(
+            case_ConsFilter = handle_ConsFilter,  
+            case_SingleFilter = handle_SingleFilter,  
+            case_NoFilter = handle_NoFilter 
+         ))
+    return result
+
 
 
 
@@ -1097,26 +2079,74 @@ def rename_sequence_string(
     local_map : dict[str, str]
 ) -> sequence_string:
 
-    def handle_ConsStr(o : ConsStr): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[sequence_string, int]] = [(o, -1)]
+    result : sequence_string = o
 
-        return ConsStr(
-            o.head,             rename_sequence_string(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleStr(o : SingleStr): 
+        def handle_ConsStr(o : ConsStr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleStr(
-            o.contents        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsStr(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_sequence_string(o, SequenceStringHandlers(
-        case_ConsStr = handle_ConsStr,  
-        case_SingleStr = handle_SingleStr 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleStr(o : SingleStr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_sequence_string(o, SequenceStringHandlers(
+            case_ConsStr = handle_ConsStr,  
+            case_SingleStr = handle_SingleStr 
+         ))
+    return result
+
 
 
 
@@ -1127,47 +2157,99 @@ def rename_arguments(
     local_map : dict[str, str]
 ) -> arguments:
 
-    def handle_ConsArg(o : ConsArg): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[arguments, int]] = [(o, -1)]
+    result : arguments = o
 
-        return ConsArg(
-            rename_expr(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_arguments(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleArg(o : SingleArg): 
+        def handle_ConsArg(o : ConsArg): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleArg(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_KeywordsArg(o : KeywordsArg): 
+            if recursion_site >= 0:
 
-        return KeywordsArg(
-            rename_keywords(
-                o.kws,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsArg(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_arguments(o, ArgumentsHandlers(
-        case_ConsArg = handle_ConsArg,  
-        case_SingleArg = handle_SingleArg,  
-        case_KeywordsArg = handle_KeywordsArg 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleArg(o : SingleArg): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_KeywordsArg(o : KeywordsArg): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_arguments(o, ArgumentsHandlers(
+            case_ConsArg = handle_ConsArg,  
+            case_SingleArg = handle_SingleArg,  
+            case_KeywordsArg = handle_KeywordsArg 
+         ))
+    return result
+
 
 
 
@@ -1178,36 +2260,74 @@ def rename_dictionary_contents(
     local_map : dict[str, str]
 ) -> dictionary_contents:
 
-    def handle_ConsField(o : ConsField): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[dictionary_contents, int]] = [(o, -1)]
+    result : dictionary_contents = o
 
-        return ConsField(
-            rename_Field(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_dictionary_contents(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleField(o : SingleField): 
+        def handle_ConsField(o : ConsField): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleField(
-            rename_Field(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsField(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_dictionary_contents(o, DictionaryContentsHandlers(
-        case_ConsField = handle_ConsField,  
-        case_SingleField = handle_SingleField 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleField(o : SingleField): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_dictionary_contents(o, DictionaryContentsHandlers(
+            case_ConsField = handle_ConsField,  
+            case_SingleField = handle_SingleField 
+         ))
+    return result
+
 
 
 
@@ -1218,26 +2338,74 @@ def rename_sequence_var(
     local_map : dict[str, str]
 ) -> sequence_var:
 
-    def handle_ConsId(o : ConsId): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[sequence_var, int]] = [(o, -1)]
+    result : sequence_var = o
 
-        return ConsId(
-            o.head,             rename_sequence_var(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleId(o : SingleId): 
+        def handle_ConsId(o : ConsId): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleId(
-            o.contents        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsId(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_sequence_var(o, SequenceVarHandlers(
-        case_ConsId = handle_ConsId,  
-        case_SingleId = handle_SingleId 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleId(o : SingleId): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_sequence_var(o, SequenceVarHandlers(
+            case_ConsId = handle_ConsId,  
+            case_SingleId = handle_SingleId 
+         ))
+    return result
+
 
 
 
@@ -1248,36 +2416,74 @@ def rename_sequence_ImportName(
     local_map : dict[str, str]
 ) -> sequence_ImportName:
 
-    def handle_ConsImportName(o : ConsImportName): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[sequence_ImportName, int]] = [(o, -1)]
+    result : sequence_ImportName = o
 
-        return ConsImportName(
-            rename_ImportName(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ImportName(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleImportName(o : SingleImportName): 
+        def handle_ConsImportName(o : ConsImportName): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleImportName(
-            rename_ImportName(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsImportName(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_sequence_ImportName(o, SequenceImportNameHandlers(
-        case_ConsImportName = handle_ConsImportName,  
-        case_SingleImportName = handle_SingleImportName 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleImportName(o : SingleImportName): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_sequence_ImportName(o, SequenceImportNameHandlers(
+            case_ConsImportName = handle_ConsImportName,  
+            case_SingleImportName = handle_SingleImportName 
+         ))
+    return result
+
 
 
 
@@ -1288,36 +2494,74 @@ def rename_sequence_Withitem(
     local_map : dict[str, str]
 ) -> sequence_Withitem:
 
-    def handle_ConsWithitem(o : ConsWithitem): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[sequence_Withitem, int]] = [(o, -1)]
+    result : sequence_Withitem = o
 
-        return ConsWithitem(
-            rename_Withitem(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_Withitem(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleWithitem(o : SingleWithitem): 
+        def handle_ConsWithitem(o : ConsWithitem): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleWithitem(
-            rename_Withitem(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsWithitem(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_sequence_Withitem(o, SequenceWithitemHandlers(
-        case_ConsWithitem = handle_ConsWithitem,  
-        case_SingleWithitem = handle_SingleWithitem 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleWithitem(o : SingleWithitem): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_sequence_Withitem(o, SequenceWithitemHandlers(
+            case_ConsWithitem = handle_ConsWithitem,  
+            case_SingleWithitem = handle_SingleWithitem 
+         ))
+    return result
+
 
 
 
@@ -1328,36 +2572,74 @@ def rename_statements(
     local_map : dict[str, str]
 ) -> statements:
 
-    def handle_ConsStmt(o : ConsStmt): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[statements, int]] = [(o, -1)]
+    result : statements = o
 
-        return ConsStmt(
-            rename_stmt(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleStmt(o : SingleStmt): 
+        def handle_ConsStmt(o : ConsStmt): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleStmt(
-            rename_stmt(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsStmt(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_statements(o, StatementsHandlers(
-        case_ConsStmt = handle_ConsStmt,  
-        case_SingleStmt = handle_SingleStmt 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleStmt(o : SingleStmt): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_statements(o, StatementsHandlers(
+            case_ConsStmt = handle_ConsStmt,  
+            case_SingleStmt = handle_SingleStmt 
+         ))
+    return result
+
 
 
 
@@ -1368,36 +2650,74 @@ def rename_comprehension_constraints(
     local_map : dict[str, str]
 ) -> comprehension_constraints:
 
-    def handle_ConsConstraint(o : ConsConstraint): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[comprehension_constraints, int]] = [(o, -1)]
+    result : comprehension_constraints = o
 
-        return ConsConstraint(
-            rename_constraint(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comprehension_constraints(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleConstraint(o : SingleConstraint): 
+        def handle_ConsConstraint(o : ConsConstraint): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleConstraint(
-            rename_constraint(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsConstraint(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_comprehension_constraints(o, ComprehensionConstraintsHandlers(
-        case_ConsConstraint = handle_ConsConstraint,  
-        case_SingleConstraint = handle_SingleConstraint 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleConstraint(o : SingleConstraint): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_comprehension_constraints(o, ComprehensionConstraintsHandlers(
+            case_ConsConstraint = handle_ConsConstraint,  
+            case_SingleConstraint = handle_SingleConstraint 
+         ))
+    return result
+
 
 
 
@@ -1408,36 +2728,74 @@ def rename_sequence_ExceptHandler(
     local_map : dict[str, str]
 ) -> sequence_ExceptHandler:
 
-    def handle_ConsExceptHandler(o : ConsExceptHandler): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[sequence_ExceptHandler, int]] = [(o, -1)]
+    result : sequence_ExceptHandler = o
 
-        return ConsExceptHandler(
-            rename_ExceptHandler(
-                o.head,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ExceptHandler(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_SingleExceptHandler(o : SingleExceptHandler): 
+        def handle_ConsExceptHandler(o : ConsExceptHandler): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return SingleExceptHandler(
-            rename_ExceptHandler(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ConsExceptHandler(
+                        o.head,                         result                    ), recursion_site + 1))
 
 
-    return match_sequence_ExceptHandler(o, SequenceExceptHandlerHandlers(
-        case_ConsExceptHandler = handle_ConsExceptHandler,  
-        case_SingleExceptHandler = handle_SingleExceptHandler 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_SingleExceptHandler(o : SingleExceptHandler): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_sequence_ExceptHandler(o, SequenceExceptHandlerHandlers(
+            case_ConsExceptHandler = handle_ConsExceptHandler,  
+            case_SingleExceptHandler = handle_SingleExceptHandler 
+         ))
+    return result
+
 
 
 
@@ -1448,42 +2806,99 @@ def rename_conditions(
     local_map : dict[str, str]
 ) -> conditions:
 
-    def handle_ElifCond(o : ElifCond): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[conditions, int]] = [(o, -1)]
+    result : conditions = o
 
-        return ElifCond(
-            rename_ElifBlock(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_conditions(
-                o.tail,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_ElseCond(o : ElseCond): 
+        def handle_ElifCond(o : ElifCond): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return ElseCond(
-            rename_ElseBlock(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+                "tail"
+            ]
 
-    def handle_NoCond(o : NoCond): 
+            if recursion_site >= 0:
 
-        return NoCond(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "tail":
+                    stack.append((ElifCond(
+                        o.contents,                         result                    ), recursion_site + 1))
 
 
-    return match_conditions(o, ConditionsHandlers(
-        case_ElifCond = handle_ElifCond,  
-        case_ElseCond = handle_ElseCond,  
-        case_NoCond = handle_NoCond 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "tail":
+                    stack.append((o.tail, recursion_site + 1))
+ 
+
+
+        def handle_ElseCond(o : ElseCond): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NoCond(o : NoCond): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_conditions(o, ConditionsHandlers(
+            case_ElifCond = handle_ElifCond,  
+            case_ElseCond = handle_ElseCond,  
+            case_NoCond = handle_NoCond 
+         ))
+    return result
+
 
 
 
@@ -1494,51 +2909,68 @@ def rename_function_def(
     local_map : dict[str, str]
 ) -> function_def:
 
-    def handle_FunctionDef(o : FunctionDef): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[function_def, int]] = [(o, -1)]
+    result : function_def = o
 
-        return FunctionDef(
-            o.name,             rename_parameters(
-                o.params,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_return_type(
-                o.ret_typ,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_AsyncFunctionDef(o : AsyncFunctionDef): 
+        def handle_FunctionDef(o : FunctionDef): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return AsyncFunctionDef(
-            o.name,             rename_parameters(
-                o.params,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_return_type(
-                o.ret_typ,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_function_def(o, FunctionDefHandlers(
-        case_FunctionDef = handle_FunctionDef,  
-        case_AsyncFunctionDef = handle_AsyncFunctionDef 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_AsyncFunctionDef(o : AsyncFunctionDef): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_function_def(o, FunctionDefHandlers(
+            case_FunctionDef = handle_FunctionDef,  
+            case_AsyncFunctionDef = handle_AsyncFunctionDef 
+         ))
+    return result
+
 
 
 
@@ -1549,576 +2981,943 @@ def rename_stmt(
     local_map : dict[str, str]
 ) -> stmt:
 
-    def handle_DecFunctionDef(o : DecFunctionDef): 
-
-        return DecFunctionDef(
-            rename_decorators(
-                o.decs,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_function_def(
-                o.fun_def,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_DecAsyncFunctionDef(o : DecAsyncFunctionDef): 
-
-        return DecAsyncFunctionDef(
-            rename_decorators(
-                o.decs,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_function_def(
-                o.fun_def,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_DecClassDef(o : DecClassDef): 
-
-        return DecClassDef(
-            rename_decorators(
-                o.decs,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_ClassDef(
-                o.class_def,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_ReturnSomething(o : ReturnSomething): 
-
-        return ReturnSomething(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Return(o : Return): 
-
-        return Return(
-        )
-
-    def handle_Delete(o : Delete): 
-
-        return Delete(
-            rename_comma_exprs(
-                o.targets,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Assign(o : Assign): 
-
-        return Assign(
-            rename_target_exprs(
-                o.targets,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_AugAssign(o : AugAssign): 
-
-        return AugAssign(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_operator(
-                o.op,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_TypedAssign(o : TypedAssign): 
-
-        return TypedAssign(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.type,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_TypedDeclare(o : TypedDeclare): 
-
-        return TypedDeclare(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.type,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_For(o : For): 
-
-        return For(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.iter,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_ForElse(o : ForElse): 
-
-        return ForElse(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.iter,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_ElseBlock(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_AsyncFor(o : AsyncFor): 
-
-        return AsyncFor(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.iter,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_AsyncForElse(o : AsyncForElse): 
-
-        return AsyncForElse(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.iter,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_ElseBlock(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_While(o : While): 
-
-        return While(
-            rename_expr(
-                o.test,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_WhileElse(o : WhileElse): 
-
-        return WhileElse(
-            rename_expr(
-                o.test,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_ElseBlock(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_If(o : If): 
-
-        return If(
-            rename_expr(
-                o.test,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_conditions(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_With(o : With): 
-
-        return With(
-            rename_sequence_Withitem(
-                o.items,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_AsyncWith(o : AsyncWith): 
-
-        return AsyncWith(
-            rename_sequence_Withitem(
-                o.items,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Raise(o : Raise): 
-
-        return Raise(
-        )
-
-    def handle_RaiseExc(o : RaiseExc): 
-
-        return RaiseExc(
-            rename_expr(
-                o.exc,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_RaiseFrom(o : RaiseFrom): 
-
-        return RaiseFrom(
-            rename_expr(
-                o.exc,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.caus,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Try(o : Try): 
-
-        return Try(
-            rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ExceptHandler(
-                o.handlers,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_TryElse(o : TryElse): 
-
-        return TryElse(
-            rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ExceptHandler(
-                o.handlers,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_ElseBlock(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_TryFin(o : TryFin): 
-
-        return TryFin(
-            rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ExceptHandler(
-                o.handlers,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_FinallyBlock(
-                o.fin,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_TryElseFin(o : TryElseFin): 
-
-        return TryElseFin(
-            rename_statements(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ExceptHandler(
-                o.handlers,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_ElseBlock(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_FinallyBlock(
-                o.fin,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Assert(o : Assert): 
-
-        return Assert(
-            rename_expr(
-                o.test,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_AssertMsg(o : AssertMsg): 
-
-        return AssertMsg(
-            rename_expr(
-                o.test,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.msg,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Import(o : Import): 
-
-        return Import(
-            rename_sequence_ImportName(
-                o.names,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_ImportFrom(o : ImportFrom): 
-
-        return ImportFrom(
-            rename_module_id(
-                o.module,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_sequence_ImportName(
-                o.names,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_ImportWildCard(o : ImportWildCard): 
-
-        return ImportWildCard(
-            rename_module_id(
-                o.module,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Global(o : Global): 
-
-        return Global(
-            rename_sequence_var(
-                o.names,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Nonlocal(o : Nonlocal): 
-
-        return Nonlocal(
-            rename_sequence_var(
-                o.names,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Expr(o : Expr): 
-
-        return Expr(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Pass(o : Pass): 
-
-        return Pass(
-        )
-
-    def handle_Break(o : Break): 
-
-        return Break(
-        )
-
-    def handle_Continue(o : Continue): 
-
-        return Continue(
-        )
-
-
-    return match_stmt(o, StmtHandlers(
-        case_DecFunctionDef = handle_DecFunctionDef,  
-        case_DecAsyncFunctionDef = handle_DecAsyncFunctionDef,  
-        case_DecClassDef = handle_DecClassDef,  
-        case_ReturnSomething = handle_ReturnSomething,  
-        case_Return = handle_Return,  
-        case_Delete = handle_Delete,  
-        case_Assign = handle_Assign,  
-        case_AugAssign = handle_AugAssign,  
-        case_TypedAssign = handle_TypedAssign,  
-        case_TypedDeclare = handle_TypedDeclare,  
-        case_For = handle_For,  
-        case_ForElse = handle_ForElse,  
-        case_AsyncFor = handle_AsyncFor,  
-        case_AsyncForElse = handle_AsyncForElse,  
-        case_While = handle_While,  
-        case_WhileElse = handle_WhileElse,  
-        case_If = handle_If,  
-        case_With = handle_With,  
-        case_AsyncWith = handle_AsyncWith,  
-        case_Raise = handle_Raise,  
-        case_RaiseExc = handle_RaiseExc,  
-        case_RaiseFrom = handle_RaiseFrom,  
-        case_Try = handle_Try,  
-        case_TryElse = handle_TryElse,  
-        case_TryFin = handle_TryFin,  
-        case_TryElseFin = handle_TryElseFin,  
-        case_Assert = handle_Assert,  
-        case_AssertMsg = handle_AssertMsg,  
-        case_Import = handle_Import,  
-        case_ImportFrom = handle_ImportFrom,  
-        case_ImportWildCard = handle_ImportWildCard,  
-        case_Global = handle_Global,  
-        case_Nonlocal = handle_Nonlocal,  
-        case_Expr = handle_Expr,  
-        case_Pass = handle_Pass,  
-        case_Break = handle_Break,  
-        case_Continue = handle_Continue 
-    ))
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[stmt, int]] = [(o, -1)]
+    result : stmt = o
+
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
+
+        def handle_DecFunctionDef(o : DecFunctionDef): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_DecAsyncFunctionDef(o : DecAsyncFunctionDef): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_DecClassDef(o : DecClassDef): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ReturnSomething(o : ReturnSomething): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Return(o : Return): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Delete(o : Delete): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Assign(o : Assign): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_AugAssign(o : AugAssign): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TypedAssign(o : TypedAssign): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TypedDeclare(o : TypedDeclare): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_For(o : For): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ForElse(o : ForElse): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_AsyncFor(o : AsyncFor): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_AsyncForElse(o : AsyncForElse): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_While(o : While): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_WhileElse(o : WhileElse): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_If(o : If): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_With(o : With): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_AsyncWith(o : AsyncWith): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Raise(o : Raise): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_RaiseExc(o : RaiseExc): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_RaiseFrom(o : RaiseFrom): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Try(o : Try): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TryElse(o : TryElse): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TryFin(o : TryFin): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_TryElseFin(o : TryElseFin): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Assert(o : Assert): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_AssertMsg(o : AssertMsg): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Import(o : Import): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ImportFrom(o : ImportFrom): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ImportWildCard(o : ImportWildCard): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Global(o : Global): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Nonlocal(o : Nonlocal): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Expr(o : Expr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Pass(o : Pass): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Break(o : Break): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Continue(o : Continue): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_stmt(o, StmtHandlers(
+            case_DecFunctionDef = handle_DecFunctionDef,  
+            case_DecAsyncFunctionDef = handle_DecAsyncFunctionDef,  
+            case_DecClassDef = handle_DecClassDef,  
+            case_ReturnSomething = handle_ReturnSomething,  
+            case_Return = handle_Return,  
+            case_Delete = handle_Delete,  
+            case_Assign = handle_Assign,  
+            case_AugAssign = handle_AugAssign,  
+            case_TypedAssign = handle_TypedAssign,  
+            case_TypedDeclare = handle_TypedDeclare,  
+            case_For = handle_For,  
+            case_ForElse = handle_ForElse,  
+            case_AsyncFor = handle_AsyncFor,  
+            case_AsyncForElse = handle_AsyncForElse,  
+            case_While = handle_While,  
+            case_WhileElse = handle_WhileElse,  
+            case_If = handle_If,  
+            case_With = handle_With,  
+            case_AsyncWith = handle_AsyncWith,  
+            case_Raise = handle_Raise,  
+            case_RaiseExc = handle_RaiseExc,  
+            case_RaiseFrom = handle_RaiseFrom,  
+            case_Try = handle_Try,  
+            case_TryElse = handle_TryElse,  
+            case_TryFin = handle_TryFin,  
+            case_TryElseFin = handle_TryElseFin,  
+            case_Assert = handle_Assert,  
+            case_AssertMsg = handle_AssertMsg,  
+            case_Import = handle_Import,  
+            case_ImportFrom = handle_ImportFrom,  
+            case_ImportWildCard = handle_ImportWildCard,  
+            case_Global = handle_Global,  
+            case_Nonlocal = handle_Nonlocal,  
+            case_Expr = handle_Expr,  
+            case_Pass = handle_Pass,  
+            case_Break = handle_Break,  
+            case_Continue = handle_Continue 
+         ))
+    return result
+
 
 
 
@@ -2129,445 +3928,1081 @@ def rename_expr(
     local_map : dict[str, str]
 ) -> expr:
 
-    def handle_BoolOp(o : BoolOp): 
-
-        return BoolOp(
-            rename_expr(
-                o.left,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_boolop(
-                o.op,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.right,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_NamedExpr(o : NamedExpr): 
-
-        return NamedExpr(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_BinOp(o : BinOp): 
-
-        return BinOp(
-            rename_expr(
-                o.left,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_operator(
-                o.op,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.right,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_UnaryOp(o : UnaryOp): 
-
-        return UnaryOp(
-            rename_unaryop(
-                o.op,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.right,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Lambda(o : Lambda): 
-
-        return Lambda(
-            rename_parameters(
-                o.params,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_IfExp(o : IfExp): 
-
-        return IfExp(
-            rename_expr(
-                o.body,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.test,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.orelse,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Dictionary(o : Dictionary): 
-
-        return Dictionary(
-            rename_dictionary_contents(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_EmptyDictionary(o : EmptyDictionary): 
-
-        return EmptyDictionary(
-        )
-
-    def handle_Set(o : Set): 
-
-        return Set(
-            rename_comma_exprs(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_ListComp(o : ListComp): 
-
-        return ListComp(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comprehension_constraints(
-                o.constraints,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_SetComp(o : SetComp): 
-
-        return SetComp(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comprehension_constraints(
-                o.constraints,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_DictionaryComp(o : DictionaryComp): 
-
-        return DictionaryComp(
-            rename_expr(
-                o.key,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comprehension_constraints(
-                o.constraints,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_GeneratorExp(o : GeneratorExp): 
-
-        return GeneratorExp(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comprehension_constraints(
-                o.constraints,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Await(o : Await): 
-
-        return Await(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_YieldNothing(o : YieldNothing): 
-
-        return YieldNothing(
-        )
-
-    def handle_Yield(o : Yield): 
-
-        return Yield(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_YieldFrom(o : YieldFrom): 
-
-        return YieldFrom(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Compare(o : Compare): 
-
-        return Compare(
-            rename_expr(
-                o.left,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_comparisons(
-                o.comps,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Call(o : Call): 
-
-        return Call(
-            rename_expr(
-                o.func,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_CallArgs(o : CallArgs): 
-
-        return CallArgs(
-            rename_expr(
-                o.func,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_arguments(
-                o.args,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Integer(o : Integer): 
-
-        return Integer(
-            o.contents        )
-
-    def handle_Float(o : Float): 
-
-        return Float(
-            o.contents        )
-
-    def handle_ConcatString(o : ConcatString): 
-
-        return ConcatString(
-            rename_sequence_string(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_True_(o : True_): 
-
-        return True_(
-        )
-
-    def handle_False_(o : False_): 
-
-        return False_(
-        )
-
-    def handle_None_(o : None_): 
-
-        return None_(
-        )
-
-    def handle_Ellip(o : Ellip): 
-
-        return Ellip(
-        )
-
-    def handle_Attribute(o : Attribute): 
-
-        return Attribute(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             o.name        )
-
-    def handle_Subscript(o : Subscript): 
-
-        return Subscript(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.slice,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Starred(o : Starred): 
-
-        return Starred(
-            rename_expr(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_Name(o : Name): 
-
-        return Name(
-            o.contents        )
-
-    def handle_List(o : List): 
-
-        return List(
-            rename_comma_exprs(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_EmptyList(o : EmptyList): 
-
-        return EmptyList(
-        )
-
-    def handle_Tuple(o : Tuple): 
-
-        return Tuple(
-            rename_comma_exprs(
-                o.contents,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-    def handle_EmptyTuple(o : EmptyTuple): 
-
-        return EmptyTuple(
-        )
-
-    def handle_Slice(o : Slice): 
-
-        return Slice(
-            rename_option_expr(
-                o.lower,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_option_expr(
-                o.upper,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_option_expr(
-                o.step,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
-
-
-    return match_expr(o, ExprHandlers(
-        case_BoolOp = handle_BoolOp,  
-        case_NamedExpr = handle_NamedExpr,  
-        case_BinOp = handle_BinOp,  
-        case_UnaryOp = handle_UnaryOp,  
-        case_Lambda = handle_Lambda,  
-        case_IfExp = handle_IfExp,  
-        case_Dictionary = handle_Dictionary,  
-        case_EmptyDictionary = handle_EmptyDictionary,  
-        case_Set = handle_Set,  
-        case_ListComp = handle_ListComp,  
-        case_SetComp = handle_SetComp,  
-        case_DictionaryComp = handle_DictionaryComp,  
-        case_GeneratorExp = handle_GeneratorExp,  
-        case_Await = handle_Await,  
-        case_YieldNothing = handle_YieldNothing,  
-        case_Yield = handle_Yield,  
-        case_YieldFrom = handle_YieldFrom,  
-        case_Compare = handle_Compare,  
-        case_Call = handle_Call,  
-        case_CallArgs = handle_CallArgs,  
-        case_Integer = handle_Integer,  
-        case_Float = handle_Float,  
-        case_ConcatString = handle_ConcatString,  
-        case_True_ = handle_True_,  
-        case_False_ = handle_False_,  
-        case_None_ = handle_None_,  
-        case_Ellip = handle_Ellip,  
-        case_Attribute = handle_Attribute,  
-        case_Subscript = handle_Subscript,  
-        case_Starred = handle_Starred,  
-        case_Name = handle_Name,  
-        case_List = handle_List,  
-        case_EmptyList = handle_EmptyList,  
-        case_Tuple = handle_Tuple,  
-        case_EmptyTuple = handle_EmptyTuple,  
-        case_Slice = handle_Slice 
-    ))
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[expr, int]] = [(o, -1)]
+    result : expr = o
+
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
+
+        def handle_BoolOp(o : BoolOp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "left",
+
+                "right"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "left":
+                    stack.append((BoolOp(
+                        result,                         o.op,                         o.right                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "right":
+                    stack.append((BoolOp(
+                        o.left,                         o.op,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "left":
+                    stack.append((o.left, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "right":
+                    stack.append((o.right, recursion_site + 1))
+ 
+
+
+        def handle_NamedExpr(o : NamedExpr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "target",
+
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "target":
+                    stack.append((NamedExpr(
+                        result,                         o.contents                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((NamedExpr(
+                        o.target,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "target":
+                    stack.append((o.target, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_BinOp(o : BinOp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "left",
+
+                "right"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "left":
+                    stack.append((BinOp(
+                        result,                         o.op,                         o.right                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "right":
+                    stack.append((BinOp(
+                        o.left,                         o.op,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "left":
+                    stack.append((o.left, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "right":
+                    stack.append((o.right, recursion_site + 1))
+ 
+
+
+        def handle_UnaryOp(o : UnaryOp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "right"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "right":
+                    stack.append((UnaryOp(
+                        o.op,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "right":
+                    stack.append((o.right, recursion_site + 1))
+ 
+
+
+        def handle_Lambda(o : Lambda): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "body"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "body":
+                    stack.append((Lambda(
+                        o.params,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "body":
+                    stack.append((o.body, recursion_site + 1))
+ 
+
+
+        def handle_IfExp(o : IfExp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "body",
+
+                "test",
+
+                "orelse"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "body":
+                    stack.append((IfExp(
+                        result,                         o.test,                         o.orelse                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "test":
+                    stack.append((IfExp(
+                        o.body,                         result,                         o.orelse                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "orelse":
+                    stack.append((IfExp(
+                        o.body,                         o.test,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "body":
+                    stack.append((o.body, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "test":
+                    stack.append((o.test, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "orelse":
+                    stack.append((o.orelse, recursion_site + 1))
+ 
+
+
+        def handle_Dictionary(o : Dictionary): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_EmptyDictionary(o : EmptyDictionary): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Set(o : Set): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ListComp(o : ListComp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((ListComp(
+                        result,                         o.constraints                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_SetComp(o : SetComp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((SetComp(
+                        result,                         o.constraints                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_DictionaryComp(o : DictionaryComp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "key",
+
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "key":
+                    stack.append((DictionaryComp(
+                        result,                         o.contents,                         o.constraints                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((DictionaryComp(
+                        o.key,                         result,                         o.constraints                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "key":
+                    stack.append((o.key, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_GeneratorExp(o : GeneratorExp): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((GeneratorExp(
+                        result,                         o.constraints                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_Await(o : Await): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((Await(
+                        result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_YieldNothing(o : YieldNothing): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Yield(o : Yield): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((Yield(
+                        result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_YieldFrom(o : YieldFrom): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((YieldFrom(
+                        result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_Compare(o : Compare): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "left"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "left":
+                    stack.append((Compare(
+                        result,                         o.comps                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "left":
+                    stack.append((o.left, recursion_site + 1))
+ 
+
+
+        def handle_Call(o : Call): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "func"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "func":
+                    stack.append((Call(
+                        result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "func":
+                    stack.append((o.func, recursion_site + 1))
+ 
+
+
+        def handle_CallArgs(o : CallArgs): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "func"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "func":
+                    stack.append((CallArgs(
+                        result,                         o.args                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "func":
+                    stack.append((o.func, recursion_site + 1))
+ 
+
+
+        def handle_Integer(o : Integer): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Float(o : Float): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_ConcatString(o : ConcatString): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_True_(o : True_): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_False_(o : False_): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_None_(o : None_): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Ellip(o : Ellip): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Attribute(o : Attribute): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((Attribute(
+                        result,                         o.name                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_Subscript(o : Subscript): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents",
+
+                "slice"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((Subscript(
+                        result,                         o.slice                    ), recursion_site + 1))
+                elif recursion_sites[recursion_site] == "slice":
+                    stack.append((Subscript(
+                        o.contents,                         result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+                elif recursion_sites[recursion_site + 1] == "slice":
+                    stack.append((o.slice, recursion_site + 1))
+ 
+
+
+        def handle_Starred(o : Starred): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+                "contents"
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+                elif recursion_sites[recursion_site] == "contents":
+                    stack.append((Starred(
+                        result                    ), recursion_site + 1))
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+                elif recursion_sites[recursion_site + 1] == "contents":
+                    stack.append((o.contents, recursion_site + 1))
+ 
+
+
+        def handle_Name(o : Name): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_List(o : List): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_EmptyList(o : EmptyList): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Tuple(o : Tuple): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_EmptyTuple(o : EmptyTuple): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Slice(o : Slice): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_expr(o, ExprHandlers(
+            case_BoolOp = handle_BoolOp,  
+            case_NamedExpr = handle_NamedExpr,  
+            case_BinOp = handle_BinOp,  
+            case_UnaryOp = handle_UnaryOp,  
+            case_Lambda = handle_Lambda,  
+            case_IfExp = handle_IfExp,  
+            case_Dictionary = handle_Dictionary,  
+            case_EmptyDictionary = handle_EmptyDictionary,  
+            case_Set = handle_Set,  
+            case_ListComp = handle_ListComp,  
+            case_SetComp = handle_SetComp,  
+            case_DictionaryComp = handle_DictionaryComp,  
+            case_GeneratorExp = handle_GeneratorExp,  
+            case_Await = handle_Await,  
+            case_YieldNothing = handle_YieldNothing,  
+            case_Yield = handle_Yield,  
+            case_YieldFrom = handle_YieldFrom,  
+            case_Compare = handle_Compare,  
+            case_Call = handle_Call,  
+            case_CallArgs = handle_CallArgs,  
+            case_Integer = handle_Integer,  
+            case_Float = handle_Float,  
+            case_ConcatString = handle_ConcatString,  
+            case_True_ = handle_True_,  
+            case_False_ = handle_False_,  
+            case_None_ = handle_None_,  
+            case_Ellip = handle_Ellip,  
+            case_Attribute = handle_Attribute,  
+            case_Subscript = handle_Subscript,  
+            case_Starred = handle_Starred,  
+            case_Name = handle_Name,  
+            case_List = handle_List,  
+            case_EmptyList = handle_EmptyList,  
+            case_Tuple = handle_Tuple,  
+            case_EmptyTuple = handle_EmptyTuple,  
+            case_Slice = handle_Slice 
+         ))
+    return result
+
 
 
 
@@ -2578,21 +5013,68 @@ def rename_boolop(
     local_map : dict[str, str]
 ) -> boolop:
 
-    def handle_And(o : And): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[boolop, int]] = [(o, -1)]
+    result : boolop = o
 
-        return And(
-        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_Or(o : Or): 
+        def handle_And(o : And): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return Or(
-        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_boolop(o, BoolopHandlers(
-        case_And = handle_And,  
-        case_Or = handle_Or 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Or(o : Or): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_boolop(o, BoolopHandlers(
+            case_And = handle_And,  
+            case_Or = handle_Or 
+         ))
+    return result
+
 
 
 
@@ -2603,87 +5085,343 @@ def rename_operator(
     local_map : dict[str, str]
 ) -> operator:
 
-    def handle_Add(o : Add): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[operator, int]] = [(o, -1)]
+    result : operator = o
 
-        return Add(
-        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_Sub(o : Sub): 
+        def handle_Add(o : Add): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return Sub(
-        )
+            recursion_sites = [
+            ]
 
-    def handle_Mult(o : Mult): 
+            if recursion_site >= 0:
 
-        return Mult(
-        )
-
-    def handle_MatMult(o : MatMult): 
-
-        return MatMult(
-        )
-
-    def handle_Div(o : Div): 
-
-        return Div(
-        )
-
-    def handle_Mod(o : Mod): 
-
-        return Mod(
-        )
-
-    def handle_Pow(o : Pow): 
-
-        return Pow(
-        )
-
-    def handle_LShift(o : LShift): 
-
-        return LShift(
-        )
-
-    def handle_RShift(o : RShift): 
-
-        return RShift(
-        )
-
-    def handle_BitOr(o : BitOr): 
-
-        return BitOr(
-        )
-
-    def handle_BitXor(o : BitXor): 
-
-        return BitXor(
-        )
-
-    def handle_BitAnd(o : BitAnd): 
-
-        return BitAnd(
-        )
-
-    def handle_FloorDiv(o : FloorDiv): 
-
-        return FloorDiv(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_operator(o, OperatorHandlers(
-        case_Add = handle_Add,  
-        case_Sub = handle_Sub,  
-        case_Mult = handle_Mult,  
-        case_MatMult = handle_MatMult,  
-        case_Div = handle_Div,  
-        case_Mod = handle_Mod,  
-        case_Pow = handle_Pow,  
-        case_LShift = handle_LShift,  
-        case_RShift = handle_RShift,  
-        case_BitOr = handle_BitOr,  
-        case_BitXor = handle_BitXor,  
-        case_BitAnd = handle_BitAnd,  
-        case_FloorDiv = handle_FloorDiv 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Sub(o : Sub): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Mult(o : Mult): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_MatMult(o : MatMult): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Div(o : Div): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Mod(o : Mod): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Pow(o : Pow): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_LShift(o : LShift): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_RShift(o : RShift): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_BitOr(o : BitOr): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_BitXor(o : BitXor): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_BitAnd(o : BitAnd): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_FloorDiv(o : FloorDiv): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_operator(o, OperatorHandlers(
+            case_Add = handle_Add,  
+            case_Sub = handle_Sub,  
+            case_Mult = handle_Mult,  
+            case_MatMult = handle_MatMult,  
+            case_Div = handle_Div,  
+            case_Mod = handle_Mod,  
+            case_Pow = handle_Pow,  
+            case_LShift = handle_LShift,  
+            case_RShift = handle_RShift,  
+            case_BitOr = handle_BitOr,  
+            case_BitXor = handle_BitXor,  
+            case_BitAnd = handle_BitAnd,  
+            case_FloorDiv = handle_FloorDiv 
+         ))
+    return result
+
 
 
 
@@ -2694,33 +5432,118 @@ def rename_unaryop(
     local_map : dict[str, str]
 ) -> unaryop:
 
-    def handle_Invert(o : Invert): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[unaryop, int]] = [(o, -1)]
+    result : unaryop = o
 
-        return Invert(
-        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_Not(o : Not): 
+        def handle_Invert(o : Invert): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return Not(
-        )
+            recursion_sites = [
+            ]
 
-    def handle_UAdd(o : UAdd): 
+            if recursion_site >= 0:
 
-        return UAdd(
-        )
-
-    def handle_USub(o : USub): 
-
-        return USub(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_unaryop(o, UnaryopHandlers(
-        case_Invert = handle_Invert,  
-        case_Not = handle_Not,  
-        case_UAdd = handle_UAdd,  
-        case_USub = handle_USub 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Not(o : Not): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_UAdd(o : UAdd): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_USub(o : USub): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_unaryop(o, UnaryopHandlers(
+            case_Invert = handle_Invert,  
+            case_Not = handle_Not,  
+            case_UAdd = handle_UAdd,  
+            case_USub = handle_USub 
+         ))
+    return result
+
 
 
 
@@ -2731,69 +5554,268 @@ def rename_cmpop(
     local_map : dict[str, str]
 ) -> cmpop:
 
-    def handle_Eq(o : Eq): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[cmpop, int]] = [(o, -1)]
+    result : cmpop = o
 
-        return Eq(
-        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_NotEq(o : NotEq): 
+        def handle_Eq(o : Eq): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return NotEq(
-        )
+            recursion_sites = [
+            ]
 
-    def handle_Lt(o : Lt): 
+            if recursion_site >= 0:
 
-        return Lt(
-        )
-
-    def handle_LtE(o : LtE): 
-
-        return LtE(
-        )
-
-    def handle_Gt(o : Gt): 
-
-        return Gt(
-        )
-
-    def handle_GtE(o : GtE): 
-
-        return GtE(
-        )
-
-    def handle_Is(o : Is): 
-
-        return Is(
-        )
-
-    def handle_IsNot(o : IsNot): 
-
-        return IsNot(
-        )
-
-    def handle_In(o : In): 
-
-        return In(
-        )
-
-    def handle_NotIn(o : NotIn): 
-
-        return NotIn(
-        )
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_cmpop(o, CmpopHandlers(
-        case_Eq = handle_Eq,  
-        case_NotEq = handle_NotEq,  
-        case_Lt = handle_Lt,  
-        case_LtE = handle_LtE,  
-        case_Gt = handle_Gt,  
-        case_GtE = handle_GtE,  
-        case_Is = handle_Is,  
-        case_IsNot = handle_IsNot,  
-        case_In = handle_In,  
-        case_NotIn = handle_NotIn 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NotEq(o : NotEq): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Lt(o : Lt): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_LtE(o : LtE): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Gt(o : Gt): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_GtE(o : GtE): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Is(o : Is): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_IsNot(o : IsNot): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_In(o : In): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_NotIn(o : NotIn): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_cmpop(o, CmpopHandlers(
+            case_Eq = handle_Eq,  
+            case_NotEq = handle_NotEq,  
+            case_Lt = handle_Lt,  
+            case_LtE = handle_LtE,  
+            case_Gt = handle_Gt,  
+            case_GtE = handle_GtE,  
+            case_Is = handle_Is,  
+            case_IsNot = handle_IsNot,  
+            case_In = handle_In,  
+            case_NotIn = handle_NotIn 
+         ))
+    return result
+
 
 
 
@@ -2804,48 +5826,65 @@ def rename_constraint(
     local_map : dict[str, str]
 ) -> constraint:
 
-    def handle_AsyncConstraint(o : AsyncConstraint): 
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[constraint, int]] = [(o, -1)]
+    result : constraint = o
 
-        return AsyncConstraint(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.search_space,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_constraint_filters(
-                o.filts,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
 
-    def handle_Constraint(o : Constraint): 
+        def handle_AsyncConstraint(o : AsyncConstraint): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
 
-        return Constraint(
-            rename_expr(
-                o.target,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_expr(
-                o.search_space,
-                global_map,
-                nonlocal_map,
-                local_map
-            ),             rename_constraint_filters(
-                o.filts,
-                global_map,
-                nonlocal_map,
-                local_map
-            )        )
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
 
 
-    return match_constraint(o, ConstraintHandlers(
-        case_AsyncConstraint = handle_AsyncConstraint,  
-        case_Constraint = handle_Constraint 
-    ))
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_Constraint(o : Constraint): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_constraint(o, ConstraintHandlers(
+            case_AsyncConstraint = handle_AsyncConstraint,  
+            case_Constraint = handle_Constraint 
+         ))
+    return result
+
