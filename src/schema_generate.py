@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from lib.file import write_gen
+from lib.file import write
 
 from lib.def_type import Constructor, Field
 from lib import def_type
+import pathlib
+import os
 
 
 type_name = "child"
@@ -55,7 +57,9 @@ type_code = (
 )
 
 
-write_gen("schema.py", type_code)
+base_path = pathlib.Path(__file__).parent.absolute()
+dirpath = os.path.join(base_path, 'gen')
+write(dirpath, "schema.py", type_code)
 
 
 
