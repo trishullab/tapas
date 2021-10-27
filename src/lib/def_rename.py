@@ -88,55 +88,50 @@ def rename_{{ type_name }}(
 
     while stack:
         (partial_result, recursion_site) = stack.pop() 
+
 {% for node in nodes %}
-
-        def handle_{{ node.name }}(o : {{ node.name }}): 
+        def handle_{{ node.name }}(partial_result : {{ node.name }}): 
             nonlocal stack
-            nonlocal partial_result
-            nonlocal recursion_site
             nonlocal result
+            nonlocal recursion_site
 
-            recursion_sites = [
-{% for child in filter_recursion_children(node.children) %}
-                "{{ child.relation }}"{% if not loop.last %},
-{% endif %}
+{% set inductive_children = filter_inductive_children(node.children) %}
 
-{% endfor %}
-            ]
-
-            if recursion_site >= 0:
-
-                # update the stack with the result at the recursion_site
-                if False:
-                    assert False
-{% for site_child in filter_recursion_children(node.children) %}
-                elif recursion_sites[recursion_site] == "{{ site_child.relation }}":
-                    stack.append(({{ node.name }}(
+            # update the partial result with the result at the recursion_site
+            next_partial_result = partial_result 
+            if recursion_site == -1:
+                next_partial_result = partial_result
+{% for each_site in range(0, inductive_children|length) %}
+            elif recursion_site == {{ each_site }}:
+                next_partial_result = {{ node.name }}(
 {% for arg_child in node.children %}
-{% if arg_child.relation == site_child.relation %}
-                        result{% if not loop.last %}, {% endif %}
+{% if arg_child.relation == inductive_children[each_site].relation %}
+                    result{% if not loop.last %},
+{% endif %}
 {% else %}
-                        o.{{ arg_child.relation }}{% if not loop.last %}, {% endif %}{% endif %}
+                    partial_result.{{ arg_child.relation }}{% if not loop.last %},
+{% endif %}
+{% endif %}
 {% endfor %}{# end child arguments #}
-                    ), recursion_site + 1))
+
+                )
 {% endfor %}{# end recursion sites #}
 
-
-
-                # update the stack with the node at the next recursion_site 
-                # if the current recursion site is not the last
-                if recursion_site + 1 >= len(recursion_sites):
-                    result = partial_result
-{% for site_child in filter_recursion_children(node.children) %}
-                elif recursion_sites[recursion_site + 1] == "{{ site_child.relation }}":
-                    stack.append((o.{{ site_child.relation }}, recursion_site + 1))
+            # update the stack with the node at the next recursion_site 
+            # if the current recursion site is not the last
+            if recursion_site + 1 >= {{ inductive_children|length }}:
+                result = next_partial_result
+{% for each_site in range(0, inductive_children|length)|reverse %}
+            elif recursion_site + 1 == {{ each_site }}:
+                stack.append((next_partial_result, recursion_site + 1))
+                stack.append((next_partial_result.{{ inductive_children[each_site].relation }}, -1))
 {% endfor %} {# end recursion site conditions #}
 
 
 {% endfor %} {# end node function defs #}
 
 
-        match_{{ type_name }}(o, {{ handlers_name }}(
+        match_{{ type_name }}(partial_result, {{ handlers_name }}(
 {% for node in nodes %}
             case_{{ node.name }} = handle_{{ node.name }}{% if not loop.last %}, {% endif %} 
 {% endfor %} {# end node cases #}
@@ -159,6 +154,6 @@ def generate_union_def(
         handlers_name = handlers_name,
         line_format_string = line_format.to_string,
         is_vocab = is_vocab,
-        filter_recursion_children = lambda children : [child for child in children if isinstance(child, schema.Grammar) and type_name == child.nonterminal]
+        filter_inductive_children = lambda children : [child for child in children if isinstance(child, schema.Grammar) and type_name == child.nonterminal]
     )
     return code 
