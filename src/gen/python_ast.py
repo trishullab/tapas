@@ -43,14 +43,6 @@ class Param:
     
 
 
-# type and constructor Field
-@dataclass
-class Field:
-    key : expr
-    contents : expr
-    
-
-
 # type and constructor ImportName
 @dataclass
 class ImportName:
@@ -1535,6 +1527,62 @@ def match_arguments(o : arguments, handlers : ArgumentsHandlers[T]) -> T :
     return o._match(handlers)
 
 
+# type dictionary_item
+@dataclass
+class dictionary_item(ABC):
+    @abstractmethod
+    def _match(self, handlers : DictionaryItemHandlers[T]) -> T: pass
+
+
+# constructors for type dictionary_item
+
+@dataclass
+class Field(dictionary_item):
+    key : expr
+    contents : expr
+
+    def _match(self, handlers : DictionaryItemHandlers[T]) -> T:
+        return handlers.case_Field(self)
+
+
+def make_Field(
+    key : expr,
+    contents : expr
+) -> dictionary_item:
+    return Field(
+        key,
+        contents
+    )
+
+
+@dataclass
+class DictionarySplatFields(dictionary_item):
+    contents : expr
+
+    def _match(self, handlers : DictionaryItemHandlers[T]) -> T:
+        return handlers.case_DictionarySplatFields(self)
+
+
+def make_DictionarySplatFields(
+    contents : expr
+) -> dictionary_item:
+    return DictionarySplatFields(
+        contents
+    )
+
+
+# case handlers for type dictionary_item
+@dataclass
+class DictionaryItemHandlers(Generic[T]):
+    case_Field : Callable[[Field], T]
+    case_DictionarySplatFields : Callable[[DictionarySplatFields], T]
+
+
+# matching for type dictionary_item
+def match_dictionary_item(o : dictionary_item, handlers : DictionaryItemHandlers[T]) -> T :
+    return o._match(handlers)
+
+
 # type dictionary_contents
 @dataclass
 class dictionary_contents(ABC):
@@ -1545,36 +1593,36 @@ class dictionary_contents(ABC):
 # constructors for type dictionary_contents
 
 @dataclass
-class ConsField(dictionary_contents):
-    head : Field
+class ConsDictionaryItem(dictionary_contents):
+    head : dictionary_item
     tail : dictionary_contents
 
     def _match(self, handlers : DictionaryContentsHandlers[T]) -> T:
-        return handlers.case_ConsField(self)
+        return handlers.case_ConsDictionaryItem(self)
 
 
-def make_ConsField(
-    head : Field,
+def make_ConsDictionaryItem(
+    head : dictionary_item,
     tail : dictionary_contents
 ) -> dictionary_contents:
-    return ConsField(
+    return ConsDictionaryItem(
         head,
         tail
     )
 
 
 @dataclass
-class SingleField(dictionary_contents):
-    contents : Field
+class SingleDictionaryItem(dictionary_contents):
+    contents : dictionary_item
 
     def _match(self, handlers : DictionaryContentsHandlers[T]) -> T:
-        return handlers.case_SingleField(self)
+        return handlers.case_SingleDictionaryItem(self)
 
 
-def make_SingleField(
-    contents : Field
+def make_SingleDictionaryItem(
+    contents : dictionary_item
 ) -> dictionary_contents:
-    return SingleField(
+    return SingleDictionaryItem(
         contents
     )
 
@@ -1582,8 +1630,8 @@ def make_SingleField(
 # case handlers for type dictionary_contents
 @dataclass
 class DictionaryContentsHandlers(Generic[T]):
-    case_ConsField : Callable[[ConsField], T]
-    case_SingleField : Callable[[SingleField], T]
+    case_ConsDictionaryItem : Callable[[ConsDictionaryItem], T]
+    case_SingleDictionaryItem : Callable[[SingleDictionaryItem], T]
 
 
 # matching for type dictionary_contents

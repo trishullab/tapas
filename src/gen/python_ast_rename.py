@@ -89,28 +89,6 @@ def rename_Param(
 
 
 
-def rename_Field(
-    o : Field, 
-    global_map : dict[str, str],
-    nonlocal_map : dict[str, str],
-    local_map : dict[str, str]
-) -> Field:
-
-    return Field(
-        rename_expr(
-            o.key,
-            global_map,
-            nonlocal_map,
-            local_map
-        ),         rename_expr(
-            o.contents,
-            global_map,
-            nonlocal_map,
-            local_map
-        )    )
-
-
-
 def rename_ImportName(
     o : ImportName, 
     global_map : dict[str, str],
@@ -2253,6 +2231,78 @@ def rename_arguments(
 
 
 
+def rename_dictionary_item(
+    o : dictionary_item, 
+    global_map : dict[str, str],
+    nonlocal_map : dict[str, str],
+    local_map : dict[str, str]
+) -> dictionary_item:
+
+    # int (starting at 0 zero) represents which recursion site is in progress
+    stack : list[tuple[dictionary_item, int]] = [(o, -1)]
+    result : dictionary_item = o
+
+    while stack:
+        (partial_result, recursion_site) = stack.pop() 
+
+        def handle_Field(o : Field): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+
+        def handle_DictionarySplatFields(o : DictionarySplatFields): 
+            nonlocal stack
+            nonlocal partial_result
+            nonlocal recursion_site
+            nonlocal result
+
+            recursion_sites = [
+            ]
+
+            if recursion_site >= 0:
+
+                # update the stack with the result at the recursion_site
+                if False:
+                    assert False
+
+
+
+                # update the stack with the node at the next recursion_site 
+                # if the current recursion site is not the last
+                if recursion_site + 1 >= len(recursion_sites):
+                    result = partial_result
+ 
+
+ 
+
+        match_dictionary_item(o, DictionaryItemHandlers(
+            case_Field = handle_Field,  
+            case_DictionarySplatFields = handle_DictionarySplatFields 
+         ))
+    return result
+
+
+
+
 def rename_dictionary_contents(
     o : dictionary_contents, 
     global_map : dict[str, str],
@@ -2267,7 +2317,7 @@ def rename_dictionary_contents(
     while stack:
         (partial_result, recursion_site) = stack.pop() 
 
-        def handle_ConsField(o : ConsField): 
+        def handle_ConsDictionaryItem(o : ConsDictionaryItem): 
             nonlocal stack
             nonlocal partial_result
             nonlocal recursion_site
@@ -2283,7 +2333,7 @@ def rename_dictionary_contents(
                 if False:
                     assert False
                 elif recursion_sites[recursion_site] == "tail":
-                    stack.append((ConsField(
+                    stack.append((ConsDictionaryItem(
                         o.head,                         result                    ), recursion_site + 1))
 
 
@@ -2297,7 +2347,7 @@ def rename_dictionary_contents(
  
 
 
-        def handle_SingleField(o : SingleField): 
+        def handle_SingleDictionaryItem(o : SingleDictionaryItem): 
             nonlocal stack
             nonlocal partial_result
             nonlocal recursion_site
@@ -2323,8 +2373,8 @@ def rename_dictionary_contents(
  
 
         match_dictionary_contents(o, DictionaryContentsHandlers(
-            case_ConsField = handle_ConsField,  
-            case_SingleField = handle_SingleField 
+            case_ConsDictionaryItem = handle_ConsDictionaryItem,  
+            case_SingleDictionaryItem = handle_SingleDictionaryItem 
          ))
     return result
 

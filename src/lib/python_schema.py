@@ -528,21 +528,42 @@ unions : dict[str, list[Node]] = {
 
     ],
 
-    "dictionary_contents" : [
+    "dictionary_item" : [
+
         Node(
-            "ConsField",
+            "Field",
             "",
             [
-                Grammar("head", "Field", InLine(), ", "),
+                Grammar("key", "expr", InLine(), " : "),
+                Grammar("contents", "expr", InLine(), "")
+            ]
+        ),
+
+        Node(
+            "DictionarySplatFields",
+            "**",
+            [
+                Grammar("contents", "expr", InLine(), "")
+            ]
+        )
+
+    ],
+
+    "dictionary_contents" : [
+        Node(
+            "ConsDictionaryItem",
+            "",
+            [
+                Grammar("head", "dictionary_item", InLine(), ", "),
                 Grammar("tail", "dictionary_contents", NewLine(), ""),
             ]
         ),
 
         Node(
-            "SingleField",
+            "SingleDictionaryItem",
             "",
             [
-                Grammar("contents", "Field", InLine(), ""),
+                Grammar("contents", "dictionary_item", InLine(), ""),
             ]
         ),
 
@@ -1595,15 +1616,6 @@ intersections : list[Node] = [
             Vocab("name", "identifier", ""),
             Grammar("type", "param_type", InLine(), ""),
             Grammar("default", "param_default", InLine(), "")
-        ]
-    ),
-
-    Node(
-        "Field",
-        "",
-        [
-            Grammar("key", "expr", InLine(), ": "),
-            Grammar("contents", "expr", InLine(), "")
         ]
     ),
 

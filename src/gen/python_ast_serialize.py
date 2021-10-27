@@ -73,22 +73,6 @@ def serialize_Param(
 
 
 
-def serialize_Field(
-    o : Field
-) -> list[prod_inst.instance]:
-
-    return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'Field',
-            sequence_id = 'Field'
-        )] +
-        serialize_expr(o.key) +
-
-        serialize_expr(o.contents)
-    )
-
-
-
 def serialize_ImportName(
     o : ImportName
 ) -> list[prod_inst.instance]:
@@ -1625,6 +1609,62 @@ def serialize_arguments(
 
 
 
+def serialize_dictionary_item(
+    o : dictionary_item
+) -> list[prod_inst.instance]:
+
+    result = []
+
+    stack : list[Union[dictionary_item, list[prod_inst.instance]]] = [o]
+    while stack:
+        stack_item = stack.pop()
+        if isinstance(stack_item, dictionary_item):
+
+            def handle_Field(o : Field): 
+                nonlocal stack
+                assert isinstance(o, dictionary_item)
+
+                stack.append(
+                    serialize_expr(o.contents)
+                )
+                stack.append(
+                    serialize_expr(o.key)
+                )
+                stack.append(
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'dictionary_item',
+                        sequence_id = 'Field'
+                    )]
+                )
+
+            def handle_DictionarySplatFields(o : DictionarySplatFields): 
+                nonlocal stack
+                assert isinstance(o, dictionary_item)
+
+                stack.append(
+                    serialize_expr(o.contents)
+                )
+                stack.append(
+                    [prod_inst.make_Grammar(
+                        nonterminal = 'dictionary_item',
+                        sequence_id = 'DictionarySplatFields'
+                    )]
+                )
+
+
+            match_dictionary_item(stack_item, DictionaryItemHandlers(
+                case_Field = handle_Field,  
+                case_DictionarySplatFields = handle_DictionarySplatFields 
+            ))
+
+        else:
+            result += stack_item 
+
+    return result
+
+
+
+
 def serialize_dictionary_contents(
     o : dictionary_contents
 ) -> list[prod_inst.instance]:
@@ -1636,7 +1676,7 @@ def serialize_dictionary_contents(
         stack_item = stack.pop()
         if isinstance(stack_item, dictionary_contents):
 
-            def handle_ConsField(o : ConsField): 
+            def handle_ConsDictionaryItem(o : ConsDictionaryItem): 
                 nonlocal stack
                 assert isinstance(o, dictionary_contents)
 
@@ -1644,33 +1684,33 @@ def serialize_dictionary_contents(
                     o.tail
                 )
                 stack.append(
-                    serialize_Field(o.head)
+                    serialize_dictionary_item(o.head)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'dictionary_contents',
-                        sequence_id = 'ConsField'
+                        sequence_id = 'ConsDictionaryItem'
                     )]
                 )
 
-            def handle_SingleField(o : SingleField): 
+            def handle_SingleDictionaryItem(o : SingleDictionaryItem): 
                 nonlocal stack
                 assert isinstance(o, dictionary_contents)
 
                 stack.append(
-                    serialize_Field(o.contents)
+                    serialize_dictionary_item(o.contents)
                 )
                 stack.append(
                     [prod_inst.make_Grammar(
                         nonterminal = 'dictionary_contents',
-                        sequence_id = 'SingleField'
+                        sequence_id = 'SingleDictionaryItem'
                     )]
                 )
 
 
             match_dictionary_contents(stack_item, DictionaryContentsHandlers(
-                case_ConsField = handle_ConsField,  
-                case_SingleField = handle_SingleField 
+                case_ConsDictionaryItem = handle_ConsDictionaryItem,  
+                case_SingleDictionaryItem = handle_SingleDictionaryItem 
             ))
 
         else:

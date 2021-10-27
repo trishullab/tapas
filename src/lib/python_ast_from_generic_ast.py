@@ -161,12 +161,12 @@ def to_comparisons(crs : list[CompareRight]) -> comparisons:
 
     return result
 
-def to_dictionary_contents(fs : list[Field]) -> dictionary_contents:
-    assert fs 
+def to_dictionary_contents(items : list[dictionary_item]) -> dictionary_contents:
+    assert items 
 
-    result = SingleField(fs[-1])
-    for f in reversed(fs[:-1]):
-        result = ConsField(f, result)
+    result = SingleDictionaryItem(items[-1])
+    for f in reversed(items[:-1]):
+        result = ConsDictionaryItem(f, result)
 
     return result
 
@@ -766,20 +766,29 @@ def from_generic_ast_to_expr(node : GenericNode) -> expr:
             if child.syntax_part != ","
         ]
 
-        def assert_colon(pair): 
-            assert pair[1].syntax_part == ":"
+        def is_pair(pair): 
+            return pair.syntax_part == "pair" and pair.children[1].syntax_part == ":"
 
-        fields = [
-            Field(k, v)
-            for pair_node in children
-            for pair in [pair_node.children]
-            for k in [from_generic_ast_to_expr(pair[0])]
-            for _ in [assert_colon(pair)]
-            for v in [from_generic_ast_to_expr(pair[2])]
+        def assert_splat(dsplat): 
+            assert dsplat.syntax_part == "dictionary_splat" and dsplat.children[0].syntax_part == "**" 
+
+        items = [
+            (
+                make_Field(
+                    from_generic_ast_to_expr(child_node.children[0]), 
+                    from_generic_ast_to_expr(child_node.children[2])
+                )
+                if is_pair(child_node) else
+
+                (assert_splat(child_node), 
+                make_DictionarySplatFields(from_generic_ast_to_expr(child_node.children[1])))[-1]
+
+            )
+            for child_node in children
         ]
 
-        if fields:
-            return Dictionary(to_dictionary_contents(fields))
+        if items:
+            return Dictionary(to_dictionary_contents(items))
         else:
             return EmptyDictionary()
 
