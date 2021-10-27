@@ -816,7 +816,7 @@ unions : dict[str, list[Node]] = {
             "for ",
             [
                 Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), " : "),
+                Grammar("iter", "expr", InLine(), ": "),
                 Grammar("body", "statements", IndentLine(), ""),
             ]
         ),
@@ -826,7 +826,7 @@ unions : dict[str, list[Node]] = {
             "for ",
             [
                 Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), " : "),
+                Grammar("iter", "expr", InLine(), ": "),
                 Grammar("body", "statements", IndentLine(), ""),
                 Grammar("orelse", "ElseBlock", NewLine(), "")
             ]
@@ -837,7 +837,7 @@ unions : dict[str, list[Node]] = {
             "async for ",
             [
                 Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), " : "),
+                Grammar("iter", "expr", InLine(), ": "),
                 Grammar("body", "statements", IndentLine(), ""),
             ]
         ),
@@ -847,7 +847,7 @@ unions : dict[str, list[Node]] = {
             "async for ",
             [
                 Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), " : "),
+                Grammar("iter", "expr", InLine(), ": "),
                 Grammar("body", "statements", IndentLine(), ""),
                 Grammar("orelse", "ElseBlock", NewLine(), "")
             ]
@@ -1156,7 +1156,7 @@ unions : dict[str, list[Node]] = {
             "DictionaryComp",
             "{",
             [
-                Grammar("key", "expr", IndentLine(), " : "),
+                Grammar("key", "expr", IndentLine(), ": "),
                 Grammar("contents", "expr", InLine(), ""),
                 Grammar("constraints", "comprehension_constraints", IndentLine(), "}")
             ]
@@ -1602,7 +1602,7 @@ intersections : list[Node] = [
         "Field",
         "",
         [
-            Grammar("key", "expr", InLine(), " : "),
+            Grammar("key", "expr", InLine(), ": "),
             Grammar("contents", "expr", InLine(), "")
         ]
     ),

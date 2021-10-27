@@ -16,6 +16,7 @@ from lib import python_instance
 from lib.file import write
 
 from lib.production_instance import instance
+from gen import python_ast_rename
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
@@ -52,6 +53,7 @@ def generate(dirname : str, name : str):
 
             try:
                 mod = from_generic_ast(tree)
+                mod = python_ast_rename.rename_Module(mod, {}, {}, {})
 
                 instances = []
                 try:
@@ -147,19 +149,20 @@ def generate(dirname : str, name : str):
 
 
                 print(f"Another Exception {x}")
-                print(f"\n\n")
+                print(f"\n-------------------------\n")
+                print(f"line number: {count}")
 
+                print(f"\n-------------------------\n")
                 print(f"""--Generic Tree--\n{
                     generic_tree.dump(tree, 
                         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
                     )
                 }\n""")
 
-                print(f"\n\n")
+                print(f"\n-------------------------\n")
                 print(f"---Source Code---")
                 print(source_code)
-                print(f"-------------------------")
-                print(f"line number: {count}")
+
 
                 raise x
 
