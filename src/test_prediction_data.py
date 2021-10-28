@@ -87,5 +87,5 @@ def test(fpath : str):
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
-fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction.txt')
+fpath = os.path.join(base_path, '../res/mbpp/mbpp_prediction_20211028.txt')
 test(fpath)
