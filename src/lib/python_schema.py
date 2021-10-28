@@ -458,8 +458,8 @@ unions : dict[str, list[Node]] = {
             "ConsFilter",
             "if ",
             [
-                Grammar("head", "expr", NewLine(), ""),
-                Grammar("tail", "constraint_filters", InLine(), ""),
+                Grammar("head", "expr", InLine(), ""),
+                Grammar("tail", "constraint_filters", NewLine(), ""),
             ]
         ),
 
@@ -467,7 +467,7 @@ unions : dict[str, list[Node]] = {
             "SingleFilter",
             "if ",
             [
-                Grammar("contents", "expr", NewLine(), ""),
+                Grammar("contents", "expr", InLine(), ""),
             ]
         ),
 
@@ -1563,7 +1563,7 @@ unions : dict[str, list[Node]] = {
             [
                 Grammar("target", "expr", InLine(), " in "),
                 Grammar("search_space", "expr", InLine(), ""),
-                Grammar("filts", "constraint_filters", InLine(), "")
+                Grammar("filts", "constraint_filters", NewLine(), "")
             ] 
         ),
 
@@ -1573,7 +1573,7 @@ unions : dict[str, list[Node]] = {
             [
                 Grammar("target", "expr", InLine(), " in "),
                 Grammar("search_space", "expr", InLine(), ""),
-                Grammar("filts", "constraint_filters", InLine(), "")
+                Grammar("filts", "constraint_filters", NewLine(), "")
             ] 
         ),
 
