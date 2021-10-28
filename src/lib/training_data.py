@@ -149,8 +149,6 @@ def generate(dirname : str, name : str):
 
 
                 print(f"Another Exception {x}")
-                print(f"\n-------------------------\n")
-                print(f"line number: {count}")
 
                 print(f"\n-------------------------\n")
                 print(f"""--Generic Tree--\n{
@@ -159,9 +157,13 @@ def generate(dirname : str, name : str):
                     )
                 }\n""")
 
+
                 print(f"\n-------------------------\n")
                 print(f"---Source Code---")
                 print(source_code)
+
+                print(f"\n-------------------------\n")
+                print(f"line number: {count}")
 
 
                 raise x
