@@ -1772,13 +1772,19 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
         ) 
 
         assert children[0].syntax_part == "with"
+
         with_clause_node = children[1]
+        assert with_clause_node.syntax_part == "with_clause"
+
         with_items = to_sequence_Withitem([
             from_generic_ast_to_Withitem(item_node)
             for item_node in with_clause_node.children
         ])
 
-        block_node = children[1]
+
+        assert children[2].syntax_part == ":"
+        block_node = children[3]
+        assert block_node.syntax_part == "block"
         stmts = to_statements([
             stmt
             for stmt_node in block_node.children
