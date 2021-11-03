@@ -10,8 +10,7 @@ import pathlib
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
-# write(os.path.join(base_path, '../res'), 'python_grammar.txt', python_schema.format())
-# write(os.path.join(base_path, '../res'), 'python_grammar.json', json.dumps(python_schema.grammar_dictionary, indent=4))
+# write(os.path.join(base_path, '../res'), 'python_grammar.json', json.dumps(python_schema.grammar, indent=4))
 
 # training_data.generate('mbpp', 'mbpp')
 
@@ -25,9 +24,9 @@ base_path = pathlib.Path(__file__).parent.absolute()
 # training_data.generate('apps', 'apps_2')
 # training_data.generate('apps', 'apps_3')
 # training_data.generate('apps', 'apps_4')
+# training_data.generate('apps', 'apps_5')
 
-training_data.generate('apps', 'apps_5')
-# training_data.generate('apps', 'apps_6')
+training_data.generate('apps', 'apps_6')
 # training_data.generate('apps', 'apps_7')
 # training_data.generate('apps', 'apps_8')
 # training_data.generate('apps', 'apps_9')

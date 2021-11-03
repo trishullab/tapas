@@ -11,7 +11,7 @@ from gen.production_instance import InstanceHandlers, match_instance
 from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
-from lib.python_ast_serialize import serialize_Module
+from gen.python_ast_serialize import serialize_Module
 from lib import python_instance
 from lib.file import write
 

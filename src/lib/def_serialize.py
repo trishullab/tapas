@@ -20,7 +20,7 @@ from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 """
 
-intersection_str = """
+single_str = """
 
 def serialize_{{ node.name }}(
     o : {{ node.name }}
@@ -52,11 +52,11 @@ def serialize_{{ node.name }}(
 def is_vocab(o : schema.child):
     return isinstance(o, schema.Vocab)
 
-def generate_intersection_def(
+def generate_single_def(
     node : schema.Node 
 ) -> str:
     
-    tmpl = jinja_env.from_string(intersection_str)
+    tmpl = jinja_env.from_string(single_str)
     code : str = tmpl.render(
         node = node,
         line_format_string = line_format.to_string,
@@ -65,7 +65,7 @@ def generate_intersection_def(
     return code 
 
 
-union_str = """
+choice_str = """
 
 
 def serialize_{{ type_name }}(
@@ -123,13 +123,13 @@ def serialize_{{ type_name }}(
     return result
 """
 
-def generate_union_def(
+def generate_choice_def(
     type_name : str,
     nodes : list[schema.Node] 
 ) -> str:
     handlers_name = f"{inflection.camelize(type_name)}Handlers"
 
-    tmpl = jinja_env.from_string(union_str)
+    tmpl = jinja_env.from_string(choice_str)
     code : str = tmpl.render(
         type_name = type_name, 
         nodes = nodes,

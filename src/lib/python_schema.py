@@ -6,7 +6,7 @@ from lib import schema
 from gen.line_format import NewLine, InLine, IndentLine
 
 
-unions : dict[str, list[Node]] = {
+choices : dict[str, list[Node]] = {
 
     "return_type" : [
 
@@ -1581,7 +1581,7 @@ unions : dict[str, list[Node]] = {
 }
 
 
-intersections : list[Node] = [
+singles : list[Node] = [
 
     Node(
         "Module",
@@ -1676,93 +1676,21 @@ intersections : list[Node] = [
 
 ]
 
+# map from a node id (sequence id) to node (sequence) 
 node_map = {
     node.name : node 
-    for node in intersections
+    for node in singles
 } | {
     node.name : node 
-    for nodes in unions.values()
+    for nodes in choices.values()
     for node in nodes 
 }
 
-grammar_dictionary = {
+# map from a nonterminal to choices of nodes (sequences)
+grammar = {
     node.name : [schema.to_dictionary(node)]
-    for node in intersections
+    for node in singles 
 } | {
     name : [schema.to_dictionary(node) for node in nodes]
-    for name, nodes in unions.items()
+    for name, nodes in choices.items()
 }
-
-
-def format() -> str:
-
-    ### rule of non-terminal ###
-
-    rule_of_nonterm_unions = [
-        k + " : " + choices_str 
-        for k, choices in unions.items()
-        for choices_str in [ ' | '.join([
-            ck.name
-            for ck in choices
-        ])]
-    ]
-
-    import inflection
-    rule_of_nonterm_intersections = [
-        node.name + " : " + node.name
-        for node in intersections
-    ]
-
-
-    rule_of_nonterm_str = "---- RULE OF NON-TERMINAL ----\n\n" + (
-        "\n".join(rule_of_nonterm_unions) + 
-        "\n" + 
-        "\n".join(rule_of_nonterm_intersections) + 
-        "\n" 
-    )
-
-    from lib import line_format
-
-    def make_field_str(child : schema.child) -> str:
-        return schema.match_child(child, ChildHandlers[str](
-            case_Grammar=lambda o : (
-                lf := line_format.to_string(o.format),
-                fol := o.follower,
-                "(grammar : " + lf + ' : ' + o.relation + ' : ' + o.nonterminal + ") " + f"`{fol}`"
-            )[-1],
-            case_Vocab=lambda o : (
-                "(vocab : " + o.relation + ' : ' + o.choices_id + ")" 
-            )
-        ))
-
-    ### rule of sequence ###
-    rule_of_sequence_unions = [
-        k + " :: " + f"`{choice.leader}`" + " " + fields_str 
-        for choices in unions.values()
-        for choice in choices
-        for k in [choice.name]
-        for fields_str in [' '.join([
-            make_field_str(child)
-            for child in choice.children
-        ])]
-    ]
-
-    rule_of_sequence_intersections = [
-        k + " :: " + f"`{constructor.leader}`" + " " + fields_str 
-        for constructor in intersections
-        for k in [constructor.name]
-        for fields_str in [' '.join([
-            make_field_str(child)
-            for child in constructor.children
-        ])]
-    ]
-
-    rule_of_sequence_string = "---- RULE OF SEQUENCE ----\n\n" + (
-        "\n".join(rule_of_sequence_unions) + 
-        "\n" + 
-        "\n".join(rule_of_sequence_intersections) + 
-        "\n"
-    )
-
-
-    return rule_of_nonterm_str + "\n\n" + rule_of_sequence_string

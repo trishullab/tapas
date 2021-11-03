@@ -30,7 +30,7 @@ from abc import ABC, abstractmethod
 T = TypeVar('T')
 """
 
-def generate_intersection(
+def generate_single(
     constructor : Constructor 
 ) -> str:
     
@@ -49,7 +49,7 @@ class {{ constructor.name }}:
     )
     return code 
 
-def generate_union(
+def generate_choice(
     type_name : str,
     constructors : list[Constructor] 
 ) -> str:

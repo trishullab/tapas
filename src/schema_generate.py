@@ -37,13 +37,13 @@ type_code = (
     "from gen.line_format import line_format" +
     "\n\n" +
     "\n\n".join([
-        def_type.generate_union(type_name, constructors)
+        def_type.generate_choice(type_name, constructors)
     ]) +
 
     "\n\n" +
     "\n\n" +
     "\n\n".join([
-        def_type.generate_intersection(
+        def_type.generate_single(
             Constructor(
                 "Node",
                 [
