@@ -21,12 +21,12 @@ The Python schema is defined at `lib/python_schema.py`. This field `grammar` spe
 
 ## Code generation
 `lib/def_type.py`, `lib/def_serialize.py`, and other `lib/def_` prefixed files define generation of well-typed Python code.
-The script `code_generate.py` calls these definitions with the Python schema to generate well-typed constructors and procedures for Python ASTs.
-The generate code is written to the `gen` directory.
+The script `code_generate.py` calls these definitions with the Python schema to generate static types, constructors, and procedures for Python ASTs.
+The generated code is written to the `gen` directory.
 
 ## Serialized production instances
-A list of production instances generated from a Python AST, is a linear leftward depth-first representation of a Python program.
-The constructors and static types for production instances is generated and written to `gen/production_instance.py`.
-Various processing tools for production instances, including concretizing to human-readable Python programs, are defined at `lib/production_instance.py`
+A list of production instances generated from a Python AST is a linear leftward depth-first representation of a Python program.
+The constructors and static types for production instances are generated and written to `gen/production_instance.py`.
+Various procedures for production instances, including concretizing to human-readable Python programs, are defined at `lib/production_instance.py`
 
 
