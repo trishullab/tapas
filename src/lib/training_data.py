@@ -18,72 +18,62 @@ from lib.file import write
 from lib.production_instance import instance
 from gen import python_ast_rename
 
-
 base_path = pathlib.Path(__file__).parent.absolute()
 
-
-def generate(dirname : str, name : str):
-    logging.basicConfig(level=logging.INFO)
-    dir = os.path.join(base_path, f"../../res/{dirname}")
-
-    read_path = os.path.join(dir, f"{name}.jsonl")
-
-
+def generate_dir(dirname):
+    input_dirpath = os.path.join(base_path, f"../../res/{dirname}/input")
     vocab : dict[str, set[str]] = {}
 
-    write(dir, f'{name}_vocab.json', '')
-    write(dir, f'{name}_training.txt', '')
-    write(dir, f'{name}_training_json.txt', '')
+    output_dirpath = os.path.join(base_path, f"../../res/{dirname}/output")
+    write(output_dirpath, f'vocab.json', '')
 
-    from datetime import datetime
+    def generate_file(name : str):
+        nonlocal input_dirpath
+        nonlocal vocab
 
-    start = datetime.now()
+        logging.basicConfig(level=logging.INFO)
 
-    with open(read_path, 'r') as f:
-        count = 1
-        line = f.readline()
-        while line: 
+        input_path = os.path.join(input_dirpath, name)
 
-            line_obj = json.loads(line)
+        output_base = name.split(".")[0]  
+        # write(output_dirpath, f'{output_base}_training.txt', '')
+        write(output_dirpath, f'{output_base}_json.txt', '')
+        write(output_dirpath, f'{output_base}_stats.txt', '')
 
-            source_code = line_obj['code']
+        from datetime import datetime
 
-            tree = generic_tree.parse('python', source_code, 'utf8')
+        start = datetime.now()
+
+        with open(input_path, 'r') as f:
+            processed_count = 0
+            rec_error_count = 0
+            error_count = 0
+            total_count = 0
+            line = f.readline()
+            while line: 
+
+                line_obj = json.loads(line)
+
+                source_code = line_obj['code']
+
+                tree = generic_tree.parse('python', source_code, 'utf8')
 
 
-            try:
-                mod = from_generic_ast(tree)
-                mod = python_ast_rename.rename_Module(mod, {}, {}, {})
+                instances : list[instance] = []
 
-                instances = []
                 try:
+                    mod = from_generic_ast(tree)
+                    # mod = python_ast_rename.rename_Module(mod, {}, {}, {})
+
                     instances = serialize_Module(mod)
-                except RecursionError:
-                    print(f"\n\n")
 
-                    print(f"""--Generic Tree--\n{
-                        generic_tree.dump(tree, 
-                            text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                        )
-                    }\n""")
+                    # if total_count < 50:
 
-                    print(f"\n\n")
-                    print(f"---Source Code---")
-                    print(source_code)
-                    print(f"-------------------------")
-                    print(f"recursion error line number: {count}")
-                    print("RECURSION ERROR")
-                    return
+                        # print(f"-------------------------")
+                        # print(f"line number: {total_count + 1}")
+                        # print(f"-------------------------")
 
-                else:
-
-                    if count < 50:
-
-                        print(f"-------------------------")
-                        print(f"line number: {count}")
-                        print(f"-------------------------")
-
-                        concrete_code = python_instance.concretize(instances)
+                        # concrete_code = python_instance.concretize(instances)
 
                         # print(f"-------------------------")
                         # print(f"generic tree:")
@@ -93,13 +83,13 @@ def generate(dirname : str, name : str):
                         # print(f"production tree:")
                         # print(python_instance.dump(instances))
 
-                        print(f"-------------------------")
-                        print(f"source:")
-                        print(source_code)
+                        # print(f"-------------------------")
+                        # print(f"source:")
+                        # print(source_code)
 
-                        print(f"-------------------------")
-                        print(f"concretized:")
-                        print(concrete_code)
+                        # print(f"-------------------------")
+                        # print(f"concretized:")
+                        # print(concrete_code)
 
 
 
@@ -114,21 +104,21 @@ def generate(dirname : str, name : str):
                         )) 
 
 
-                    training_data = [
-                        f"[{t[0]},{t[1]},{t[2]}]"
-                        for i in instances
-                        for t in [triple_from_instance(i)] 
-                    ]
-                    write(dir, f'{name}_training.txt', "[" + ",".join(training_data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
+                    # data = [
+                    #     f"[{t[0]},{t[1]},{t[2]}]"
+                    #     for i in instances
+                    #     for t in [triple_from_instance(i)] 
+                    # ]
+                    # write(output_dirpath, f'{output_base}_training.txt', "[" + ",".join(data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
 
 
-                    json_training_data = []
+                    json_data = []
                     for i in instances:
                         triple = triple_from_instance(i)
                         for ti in triple:
-                            json_training_data.append(ti)
+                            json_data.append(ti)
 
-                    write(dir, f'{name}_training_json.txt', json.dumps(json_training_data) + '\n\n<|endoftext|>\n\n', append=True)
+                    write(output_dirpath, f'{output_base}_json.txt', json.dumps(json_data) + '\n\n<|endoftext|>\n\n', append=True)
 
                     def handle_Vocab(o):
                         if o.choices_id in vocab.keys():
@@ -143,43 +133,78 @@ def generate(dirname : str, name : str):
                             case_Grammar=lambda o : (),
                             case_Vocab=handle_Vocab 
                         )) 
+                    
+                    processed_count += 1
+
+                except RecursionError:
+                    rec_error_count += 1
+                    error_count += 1
+                    # print(f"\n\n")
+
+                    # print(f"""--Generic Tree--\n{
+                    #     generic_tree.dump(tree, 
+                    #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                    #     )
+                    # }\n""")
+
+                    # print(f"\n\n")
+                    # print(f"---Source Code---")
+                    # print(source_code)
+                    # print(f"-------------------------")
+                    # print(f"recursion error line number: {count}")
+                    # print("RECURSION ERROR")
+                    # return
+
+                except Exception as x:
+                    error_count += 1
+                    # print(f"Another Exception {x}")
+
+                    # print(f"\n-------------------------\n")
+                    # print(f"""--Generic Tree--\n{
+                    #     generic_tree.dump(tree, 
+                    #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                    #     )
+                    # }\n""")
 
 
-            except Exception as x:
+                    # print(f"\n-------------------------\n")
+                    # print(f"---Source Code---")
+                    # print(source_code)
+
+                    # print(f"\n-------------------------\n")
+                    # print(f"line number: {count}")
 
 
-                print(f"Another Exception {x}")
+                    # raise x
 
-                print(f"\n-------------------------\n")
-                print(f"""--Generic Tree--\n{
-                    generic_tree.dump(tree, 
-                        text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                    )
-                }\n""")
+                # update
+                line = f.readline()
+                total_count += 1
 
+            
 
-                print(f"\n-------------------------\n")
-                print(f"---Source Code---")
-                print(source_code)
+        end = datetime.now()
 
-                print(f"\n-------------------------\n")
-                print(f"line number: {count}")
+        stats = \
+        f"""
+            id: {dirname} :: {name}"
+            time: {end - start}
+            total count: {total_count}
+            processed count: {processed_count}
+            error count: {error_count}
+            rec error count: {rec_error_count}
+        """
 
-
-                raise x
-
-            # update
-            line = f.readline()
-            count += 1
-        
-        write(dir, f'{name}_vocab.json', json.dumps(
-            {
-                k:list(v)
-                for k,v in vocab.items()
-            },
-            indent=4
-        ), append=True)
+        write(output_dirpath, f'{output_base}_stats.txt', stats)
 
 
-    end = datetime.now()
-    print(f"time: {end - start}")
+    for filename in os.listdir(input_dirpath):
+        generate_file(filename)
+
+    write(output_dirpath, f'vocab.json', json.dumps(
+        {
+            k:list(v)
+            for k,v in vocab.items()
+        },
+        indent=4
+    ), append=True)

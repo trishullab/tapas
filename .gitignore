@@ -1,3 +1,5 @@
 **/__pycache__
 workspace.code-workspace
 env
+res
+.DS_Store

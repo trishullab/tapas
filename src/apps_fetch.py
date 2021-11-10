@@ -3,16 +3,10 @@ from tree_sitter import Language
 import logging
 import os
 import pathlib
-import tree_sitter
 import json
 
-from lib import generic_tree
 
-from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_ast_serialize import serialize_Module
-from lib import python_instance
 from lib.file import write 
-from lib import training_data
 
 import re
 
@@ -21,13 +15,13 @@ base_path = pathlib.Path(__file__).parent.absolute()
 def compile():
     logging.basicConfig(level=logging.INFO)
     base_path = pathlib.Path(__file__).parent.absolute()
-    read_path = os.path.join(base_path, "../../../apps_data/")
+    read_path = os.path.join(base_path, "../../apps_data/")
 
     solution_count = 0
     page_count = 0
     prefix = ""
 
-    write_dir = os.path.join(base_path, '../../res/apps')
+    write_dir = os.path.join(base_path, '../res/apps/input/')
 
     write(write_dir, f'apps_{0}.jsonl', '')
     for dirkey in os.listdir(read_path):
@@ -50,3 +44,4 @@ def compile():
             write(write_dir, f'apps_{page_count}.jsonl', '', append=True)
             prefix = ""
         
+compile()
