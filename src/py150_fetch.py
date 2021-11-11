@@ -11,7 +11,7 @@ def generate_code(split : str):
     success_count = 0
     total_count = 0
 
-    for d in data:
+    for i, d in enumerate(data):
 
         branches = ["master", "main"]
 
@@ -57,24 +57,25 @@ def write_code(split="train"):
     logging.basicConfig(level=logging.INFO)
     base_path = pathlib.Path(__file__).parent.absolute()
 
+    page_length = 2000
+    page_count=0
     code_count = 0
-    page_count = 0
     prefix = ""
 
     write_dir = os.path.join(base_path, f'../res/py150_{split}/input/')
 
-    write(write_dir, f'py150_{split}_{0}.jsonl', '')
+    write(write_dir, f'py150_{split}_{page_count}.jsonl', '')
     for code in generate_code(split):
         write(write_dir, f'py150_{split}_{page_count}.jsonl', prefix + json.dumps({"code" : code}), append=True)
         prefix = "\n"
 
         code_count += 1
-        if code_count >= 2000:
+        if code_count >= page_length:
             code_count = 0
             page_count += 1
             write(write_dir, f'py150_{split}_{page_count}.jsonl', '', append=True)
             prefix = ""
 
-write_code('train')
+# write_code('train')
 write_code('test')
 write_code('validation')
