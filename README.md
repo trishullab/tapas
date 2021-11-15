@@ -1,5 +1,29 @@
 # Texas Language System
 
+## Install Souffle on MacOS
+```
+brew update
+brew reinstall cmake bison libffi mcpp pkg-config
+brew reinstall gcc
+# `brew link bison --force` won't work
+echo 'export PATH="/usr/local/opt/bison/bin:$PATH"' >> ~/.zshrc
+
+# `brew link libffi --force` won't work
+# export LDFLAGS="-L/usr/local/opt/libffi/lib"
+# export CPPFLAGS="-I/usr/local/opt/libffi/include"
+#export CPPFLAGS="-Wno-error -Wno-sign-compare"
+export CPPFLAGS="-Wno-error -Wno-sign-compare"
+  
+export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig/
+
+
+git clone https://github.com/souffle-lang/souffle.git
+cd souffle
+rm -r build
+cmake -S . -B build
+cmake --build build
+```
+
 ## Install environment
 ```bash
 ./install_env.sh
