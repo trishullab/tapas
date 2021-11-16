@@ -11,8 +11,7 @@ echo 'export PATH="/usr/local/opt/bison/bin:$PATH"' >> ~/.zshrc
 # `brew link libffi --force` won't work
 # export LDFLAGS="-L/usr/local/opt/libffi/lib"
 # export CPPFLAGS="-I/usr/local/opt/libffi/include"
-#export CPPFLAGS="-Wno-error -Wno-sign-compare"
-export CPPFLAGS="-Wno-error -Wno-sign-compare"
+
   
 export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig/
 
@@ -20,6 +19,8 @@ export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig/
 git clone https://github.com/souffle-lang/souffle.git
 cd souffle
 rm -r build
+
+export CXXFLAGS="-Wno-sign-compare"
 cmake -S . -B build
 cmake --build build
 ```
