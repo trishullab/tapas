@@ -3,8 +3,9 @@
 ## Install tools for Souffle on MacOS
 ```
 brew update
-brew install cmake bison
-echo 'export PATH="/usr/local/opt/bison/bin:$PATH"' >> ~/.zshrc # `brew link bison --force` won't work
+brew reinstall cmake bison mcpp 
+echo 'export PATH="/usr/local/opt/bison/bin:$PATH"' >> ~/.zshrc 
+
 source ~/.zshrc
 ```
 
@@ -14,7 +15,7 @@ Download from https://github.com/souffle-lang/souffle/releases/
 ## Install Souffle
 ```
 cd souffle-<version>
-rm -r build
+sudo rm -r build
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr/local/opt/souffle
 sudo cmake --build build --target install
 echo 'export PATH="/usr/local/opt/souffle/bin:$PATH"' >> ~/.zshrc
