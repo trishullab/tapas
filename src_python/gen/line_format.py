@@ -23,41 +23,35 @@ class line_format(ABC):
 @dataclass
 class InLine(line_format):
 
+
     def _match(self, handlers : LineFormatHandlers[T]) -> T:
         return handlers.case_InLine(self)
 
-
-def make_InLine(
-) -> line_format:
-    return InLine(
-    )
-
+def make_InLine() -> line_format:
+    return InLine()
+        
 
 @dataclass
 class NewLine(line_format):
 
+
     def _match(self, handlers : LineFormatHandlers[T]) -> T:
         return handlers.case_NewLine(self)
 
-
-def make_NewLine(
-) -> line_format:
-    return NewLine(
-    )
-
+def make_NewLine() -> line_format:
+    return NewLine()
+        
 
 @dataclass
 class IndentLine(line_format):
 
+
     def _match(self, handlers : LineFormatHandlers[T]) -> T:
         return handlers.case_IndentLine(self)
 
-
-def make_IndentLine(
-) -> line_format:
-    return IndentLine(
-    )
-
+def make_IndentLine() -> line_format:
+    return IndentLine()
+        
 
 # case handlers for type line_format
 @dataclass
@@ -70,3 +64,5 @@ class LineFormatHandlers(Generic[T]):
 # matching for type line_format
 def match_line_format(o : line_format, handlers : LineFormatHandlers[T]) -> T :
     return o._match(handlers)
+
+    

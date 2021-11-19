@@ -75,17 +75,24 @@ def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], i
             nonlocal stack
             nonlocal format
             schema_node = schema_node_map[inst.sequence_id]
+            def assert_not_terminal(c : schema.child):
+                assert not isinstance(c, schema.Terminal)
+                raise Exception()
+
             for child in reversed(schema_node.children):
-                pass
-                child_format = schema.match_child(child, ChildHandlers[Format](
-                    case_Grammar=lambda o : (
-                        Format(o.relation, format.depth + 1)
-                    ),
-                    case_Vocab=lambda o : (
-                        Format(o.relation, format.depth + 1)
-                    )
-                ))
-                stack += [child_format]
+                if not isinstance(child, schema.Terminal):
+                    child_format = schema.match_child(child, ChildHandlers[Format](
+                        case_Terminal=lambda o : (
+                            assert_not_terminal(o)
+                        ),
+                        case_Nonterm=lambda o : (
+                            Format(o.relation, format.depth + 1)
+                        ),
+                        case_Vocab=lambda o : (
+                            Format(o.relation, format.depth + 1)
+                        )
+                    ))
+                    stack += [child_format]
 
         def format_vocab_children(inst : Vocab):
             pass
@@ -133,30 +140,35 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
             def concretize_grammar(inst : Grammar):
                 nonlocal stack
                 schema_node = schema_node_map[inst.sequence_id]
-                for child in reversed(schema_node.children):
-                    (child_format, follower) = schema.match_child(child, ChildHandlers[tuple[Format,str]](
-                        case_Grammar=lambda o : (
-                            Format(is_inline(o.format), next_indent_width(format.indent_width, o.format)),
-                            (
-                                (match_line_format(o.format, LineFormatHandlers[str](
-                                    case_InLine = lambda _ : "",
-                                    case_NewLine = lambda _ : "\n" + "    " * format.indent_width,
-                                    case_IndentLine = lambda _ : "\n" + "    " * format.indent_width
-                                )) + o.follower)
-                                if o.follower else
-
-                                ""
-                            )
+                for i, child in enumerate(reversed(schema_node.children)):
+                    schema.match_child(child, ChildHandlers(
+                        case_Terminal=lambda o : (
+                            j := len(schema_node.children) - 1 - i,
+                            prefix := (
+                                (
+                                    pred := schema_node.children[j - 1],
+                                    match_line_format(pred.format, LineFormatHandlers[str](
+                                        case_InLine = lambda _ : "",
+                                        case_NewLine = lambda _ : "\n<NewLine>" + ("    " * format.indent_width),
+                                        case_IndentLine = lambda _ : "\n<IndentLine>" + ("    " * format.indent_width)
+                                    ))
+                                    if isinstance(pred, schema.Nonterm) else ""
+                                )[-1]
+                                if j > 0 else "" 
+                            ),
+                            stack.append(prefix + o.terminal)
+                        ),
+                        case_Nonterm=lambda o : (
+                            child_format := Format(is_inline(o.format), next_indent_width(format.indent_width, o.format)),
+                            stack.append(child_format),
                         ),
                         case_Vocab=lambda o : (
-                            format,
-                            o.follower
+                            stack.append(format)
                         )
                     ))
-                    stack += [follower, child_format]
 
                 prefix = "" if format.inline else "\n" + "    " * format.indent_width
-                stack += [prefix + schema_node.leader]
+                stack += [prefix]
             
             def concretize_vocab(inst : Vocab):
                 nonlocal stack

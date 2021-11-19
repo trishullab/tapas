@@ -23,35 +23,47 @@ class child(ABC):
 # constructors for type child
 
 @dataclass
-class Grammar(child):
+class Terminal(child):
+    terminal : str
+
+    def _match(self, handlers : ChildHandlers[T]) -> T:
+        return handlers.case_Terminal(self)
+
+
+def make_Terminal(
+    terminal : str
+) -> child:
+    return Terminal(
+        terminal
+    )
+
+
+@dataclass
+class Nonterm(child):
     relation : str
     nonterminal : str
     format : line_format
-    follower : str
 
     def _match(self, handlers : ChildHandlers[T]) -> T:
-        return handlers.case_Grammar(self)
+        return handlers.case_Nonterm(self)
 
 
-def make_Grammar(
+def make_Nonterm(
     relation : str,
     nonterminal : str,
-    format : line_format,
-    follower : str
+    format : line_format
 ) -> child:
-    return Grammar(
+    return Nonterm(
         relation,
         nonterminal,
-        format,
-        follower
+        format
     )
 
 
 @dataclass
 class Vocab(child):
     relation : str
-    choices_id : str
-    follower : str
+    vocab : str
 
     def _match(self, handlers : ChildHandlers[T]) -> T:
         return handlers.case_Vocab(self)
@@ -59,20 +71,19 @@ class Vocab(child):
 
 def make_Vocab(
     relation : str,
-    choices_id : str,
-    follower : str
+    vocab : str
 ) -> child:
     return Vocab(
         relation,
-        choices_id,
-        follower
+        vocab
     )
 
 
 # case handlers for type child
 @dataclass
 class ChildHandlers(Generic[T]):
-    case_Grammar : Callable[[Grammar], T]
+    case_Terminal : Callable[[Terminal], T]
+    case_Nonterm : Callable[[Nonterm], T]
     case_Vocab : Callable[[Vocab], T]
 
 
@@ -87,6 +98,5 @@ def match_child(o : child, handlers : ChildHandlers[T]) -> T :
 @dataclass
 class Node:
     name : str
-    leader : str
     children : list[child]
     

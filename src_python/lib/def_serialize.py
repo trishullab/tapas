@@ -20,33 +20,6 @@ from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 """
 
-single_str = """
-
-def serialize_{{ node.name }}(
-    o : {{ node.name }}
-) -> list[prod_inst.instance]:
-
-    return (
-        [prod_inst.make_Grammar(
-            nonterminal = '{{ node.name }}',
-            sequence_id = '{{ node.name }}'
-        )]{% if node.children %} +
-{% endif %}
-{% for child in node.children %}
-{% if is_vocab(child) %}
-        [prod_inst.make_Vocab(
-            choices_id = '{{ child.choices_id }}',
-            word = o.{{ child.relation }}
-        )]{% if not loop.last %} +
-{% endif %}
-{% else %}
-        serialize_{{ child.nonterminal }}(o.{{ child.relation }}){% if not loop.last %} +
-{% endif %}
-
-{% endif %}
-{% endfor %}
-    )
-"""
 
 
 def is_vocab(o : schema.child):
@@ -55,86 +28,138 @@ def is_vocab(o : schema.child):
 def generate_single_def(
     node : schema.Node 
 ) -> str:
-    
-    tmpl = jinja_env.from_string(single_str)
-    code : str = tmpl.render(
-        node = node,
-        line_format_string = line_format.to_string,
-        is_vocab = is_vocab
+
+
+    def assert_not_terminal(o : schema.child) -> str:
+        assert not isinstance(o, schema.Terminal)
+        return ""
+
+    nl = "\n"
+    code = (f"""
+
+
+def serialize_{node.name}(
+    o : {node.name}
+) -> list[prod_inst.instance]:
+
+    return (
+        [prod_inst.make_Grammar(
+            nonterminal = '{node.name}',
+            sequence_id = '{node.name}'
+        )]{f' +{nl}' if node.children else ''}
+{f' +{nl}'.join([
+
+
+    schema.match_child(child, schema.ChildHandlers[str](
+        case_Vocab = lambda o : (
+            "    " * 2 + f"[prod_inst.make_Vocab(choices_id = '{o.vocab}', word = o.{o.relation})]"
+        ),
+        case_Nonterm = lambda o : (
+            "    " * 2 + f"serialize_{o.nonterminal}(o.{o.relation})"
+        ),
+        case_Terminal = lambda o : (
+            assert_not_terminal(o)
+        )
+    ))
+
+    for child in node.children
+    if not isinstance(child, schema.Terminal)
+])}
+
     )
+    """)
+    
     return code 
 
 
-choice_str = """
-
-
-def serialize_{{ type_name }}(
-    o : {{ type_name }}
-) -> list[prod_inst.instance]:
-
-    result = []
-
-    stack : list[Union[{{ type_name }}, list[prod_inst.instance]]] = [o]
-    while stack:
-        stack_item = stack.pop()
-        if isinstance(stack_item, {{ type_name }}):
-
-{% for node in nodes %}
-            def handle_{{ node.name }}(o : {{ node.name }}): 
-                nonlocal stack
-                assert isinstance(o, {{ type_name }})
-
-{% for child in node.children|reverse %}
-{% if is_vocab(child) %}
-                stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = '{{ child.choices_id }}',
-                        word = o.{{ child.relation }}
-                    )]
-                )
-{% elif child.nonterminal == type_name %}
-                stack.append(
-                    o.{{ child.relation }}
-                )
-{% else %}
-                stack.append(
-                    serialize_{{ child.nonterminal }}(o.{{ child.relation }})
-                )
-{% endif %}
-{% endfor %}
-                stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = '{{ type_name }}',
-                        sequence_id = '{{ node.name }}'
-                    )]
-                )
-
-{% endfor %}
-
-            match_{{ type_name }}(stack_item, {{ handlers_name }}(
-{% for node in nodes %}
-                case_{{ node.name }} = handle_{{ node.name }}{% if not loop.last %}, {% endif %} 
-{% endfor %}
-            ))
-
-        else:
-            result += stack_item 
-
-    return result
-"""
 
 def generate_choice_def(
     type_name : str,
     nodes : list[schema.Node] 
 ) -> str:
     handlers_name = f"{inflection.camelize(type_name)}Handlers"
+    nl = "\n"
 
-    tmpl = jinja_env.from_string(choice_str)
-    code : str = tmpl.render(
-        type_name = type_name, 
-        nodes = nodes,
-        handlers_name = handlers_name,
-        line_format_string = line_format.to_string,
-        is_vocab = is_vocab
-    )
+    def generate_child(child : schema.child):
+        return schema.match_child(child, schema.ChildHandlers[str](
+            case_Vocab=lambda o : (f"""
+                stack.append(
+                    [prod_inst.make_Vocab(
+                        choices_id = '{o.vocab}',
+                        word = o.{o.relation}
+                    )]
+                )
+            """),
+            case_Nonterm=lambda o : (
+                f"""
+                stack.append(
+                    o.{o.relation}
+                )
+                """
+                if o.nonterminal == type_name else 
+
+                f"""
+                stack.append(
+                    serialize_{o.nonterminal}(o.{o.relation})
+                )
+                """
+            ),
+            case_Terminal=lambda o : (
+                ""
+            )
+        ))
+
+
+
+    def generate_node_handler(node : schema.Node):
+        return (f"""
+
+            def handle_{node.name}(o : {node.name}): 
+                nonlocal stack
+                assert isinstance(o, {type_name})
+
+                {nl.join([
+                    generate_child(child)
+                    for child in reversed(node.children)
+                ])}
+                stack.append(
+                    [prod_inst.make_Grammar(
+                        nonterminal = '{type_name}',
+                        sequence_id = '{node.name}'
+                    )]
+                )
+        """)
+
+    code = (f"""
+
+
+def serialize_{type_name}(
+    o : {type_name}
+) -> list[prod_inst.instance]:
+
+    result = []
+
+    stack : list[Union[{type_name}, list[prod_inst.instance]]] = [o]
+    while stack:
+        stack_item = stack.pop()
+        if isinstance(stack_item, {type_name}):
+
+            {nl.join([
+                generate_node_handler(node)
+                for node in nodes
+            ])}
+
+
+            match_{type_name}(stack_item, {handlers_name}(
+{f",{nl}".join([
+    "    " * 4 + f"case_{node.name} = handle_{node.name}"
+    for node in nodes
+])}
+            ))
+
+        else:
+            result += stack_item 
+
+    return result
+    """)
     return code 

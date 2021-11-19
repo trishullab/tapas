@@ -1,7 +1,7 @@
 from __future__ import annotations
 from gen.schema import ChildHandlers
 
-from lib.schema import Node, Vocab, Grammar
+from lib.schema import Node, Vocab, Terminal, Nonterm 
 from lib import schema
 from gen.line_format import NewLine, InLine, IndentLine
 
@@ -12,15 +12,14 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "SomeReturnType",
-            " -> ",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal(" -> "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "NoReturnType",
-            "",
             []
         )
     ],
@@ -29,40 +28,40 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "SomeModuleId",
-            "",
             [
-                Vocab("contents", "module_identifier", "")
+                Vocab("contents", "module_identifier")
             ]
         ),
 
         Node(
             "NoModuleId",
-            ".",
-            []
+            [
+                Terminal(".")
+            ]
         )
     ],
 
     "except_arg" : [
         Node(
             "SomeExceptArg",
-            " ",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal(" "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "SomeExceptArgName",
-            " ",
             [
-                Grammar("contents", "expr", InLine(), " as "),
-                Vocab("name", "identifier", ""),
+                Terminal(" "),
+                Nonterm("contents", "expr", InLine()),
+                Terminal(" as "),
+                Vocab("name", "identifier"),
             ]
         ),
 
         Node(
             "NoExceptArg",
-            "",
             []
         )
     ],
@@ -70,15 +69,14 @@ choices : dict[str, list[Node]] = {
     "param_type" : [
         Node(
             "SomeParamType",
-            " : ",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Terminal(" : "),
+                Nonterm("contents", "expr", InLine()),
             ]
         ),
 
         Node(
             "NoParamType",
-            "",
             []
         ),
     ],
@@ -86,15 +84,14 @@ choices : dict[str, list[Node]] = {
     "param_default" : [
         Node(
             "SomeParamDefault",
-            " = ",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Terminal(" = "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "NoParamDefault",
-            "",
             []
         ),
     ],
@@ -102,26 +99,25 @@ choices : dict[str, list[Node]] = {
     "parameters_d" : [
         Node(
             "ConsKwParam",
-            "",
             [
-                Grammar("head", "Param", InLine(), ", "),
-                Grammar("tail", "parameters_d", InLine(), ""),
+                Nonterm("head", "Param", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "parameters_d", InLine())
             ]
         ),
 
         Node(
             "SingleKwParam",
-            "",
             [
-                Grammar("contents", "Param", InLine(), ""),
+                Nonterm("contents", "Param", InLine())
             ]
         ),
 
         Node(
             "DictionarySplatParam",
-            "**",
             [
-                Grammar("contents", "Param", InLine(), "")
+                Terminal("**"),
+                Nonterm("contents", "Param", InLine())
             ]
         )
 
@@ -130,26 +126,27 @@ choices : dict[str, list[Node]] = {
     "parameters_c" : [
         Node(
             "SingleListSplatParam",
-            "*",
             [
-                Grammar("contents", "Param", InLine(), ""),
+                Terminal("*"),
+                Nonterm("contents", "Param", InLine())
             ]
         ),
 
         Node(
             "TransListSplatParam",
-            "*",
             [
-                Grammar("head", "Param", InLine(), ", "),
-                Grammar("tail", "parameters_d", InLine(), ""),
+                Terminal("*"),
+                Nonterm("head", "Param", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "parameters_d", InLine())
             ]
         ),
 
         Node(
             "ParamsD",
-            "*, ",
             [
-                Grammar("contents", "parameters_d", InLine(), ""),
+                Terminal("*, "),
+                Nonterm("contents", "parameters_d", InLine())
             ]
         ),
     ],
@@ -157,26 +154,24 @@ choices : dict[str, list[Node]] = {
     "parameters_b" : [
         Node(
             "ConsParam",
-            "",
             [
-                Grammar("head", "Param", InLine(), ", "),
-                Grammar("tail", "parameters_b", InLine(), ""),
+                Nonterm("head", "Param", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "parameters_b", InLine())
             ]
         ),
 
         Node(
             "SingleParam",
-            "",
             [
-                Grammar("contents", "Param", InLine(), ""),
+                Nonterm("contents", "Param", InLine())
             ]
         ),
 
         Node(
             "ParamsC",
-            "",
             [
-                Grammar("contents", "parameters_c", InLine(), ""),
+                Nonterm("contents", "parameters_c", InLine())
             ]
         ),
 
@@ -185,24 +180,21 @@ choices : dict[str, list[Node]] = {
     "parameters" : [
         Node(
             "ParamsA",
-            "",
             [
-                Grammar("contents", "parameters_a", InLine(), ""),
+                Nonterm("contents", "parameters_a", InLine())
             ]
         ),
 
 
         Node(
             "ParamsB",
-            "",
             [
-                Grammar("contents", "parameters_b", InLine(), "")
+                Nonterm("contents", "parameters_b", InLine())
             ]
         ),
 
         Node(
             "NoParam",
-            "",
             []
         )
     ],
@@ -211,27 +203,27 @@ choices : dict[str, list[Node]] = {
     "parameters_a" : [
         Node(
             "ConsPosParam",
-            "",
             [
-                Grammar("head", "Param", InLine(), ", "),
-                Grammar("tail", "parameters_a", InLine(), ""),
+                Nonterm("head", "Param", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "parameters_a", InLine())
             ]
         ),
 
         Node(
             "SinglePosParam",
-            "",
             [
-                Grammar("contents", "Param", InLine(), ", /"),
+                Nonterm("contents", "Param", InLine()),
+                Terminal(", /")
             ]
         ),
 
         Node(
             "TransPosParam",
-            "",
             [
-                Grammar("head", "Param", InLine(), ", /, "),
-                Grammar("tail", "parameters_b", InLine(), ""),
+                Nonterm("head", "Param", InLine()),
+                Terminal(", /, "),
+                Nonterm("tail", "parameters_b", InLine()),
             ]
         )
 
@@ -242,18 +234,18 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "NamedKeyword",
-            "",
             [
-                Vocab("name", "identifier", " = "),
-                Grammar("contents", "expr", InLine(), "")
+                Vocab("name", "identifier"),
+                Terminal(" = "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "SplatKeyword",
-            "**",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal("**"),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
     ],
@@ -262,15 +254,14 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "SomeAlias",
-            " as ",
             [
-                Vocab("contents", "identifier", "")
+                Terminal(" as "),
+                Vocab("contents", "identifier")
             ]
         ),
 
         Node(
             "NoAlias",
-            "",
             []
         ),
 
@@ -280,15 +271,14 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "SomeAliasExpr",
-            " as ",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal(" as "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "NoAliasExpr",
-            "",
             []
         ),
 
@@ -297,15 +287,15 @@ choices : dict[str, list[Node]] = {
     "bases" : [
         Node(
             "SomeBases",
-            "(",
             [
-                Grammar("bases", "bases_a", InLine(), ")")
+                Terminal("("),
+                Nonterm("bases", "bases_a", InLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "NoBases",
-            "",
             []
         )
     ],
@@ -313,26 +303,24 @@ choices : dict[str, list[Node]] = {
     "bases_a" : [
         Node(
             "ConsBase",
-            "",
             [
-                Grammar("head", "expr", InLine(), ", "),
-                Grammar("tail", "bases_a", InLine(), ""),
+                Nonterm("head", "expr", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "bases_a", InLine()),
             ]
         ),
 
         Node(
             "SingleBase",
-            "",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "KeywordsBase",
-            "",
             [
-                Grammar("kws", "keywords", InLine(), "")
+                Nonterm("kws", "keywords", InLine())
             ]
         ),
 
@@ -341,18 +329,17 @@ choices : dict[str, list[Node]] = {
     "keywords" : [
         Node(
             "ConsKeyword",
-            "",
             [
-                Grammar("head", "keyword", InLine(), ", "),
-                Grammar("tail", "keywords", InLine(), ""),
+                Nonterm("head", "keyword", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "keywords", InLine()),
             ]
         ),
 
         Node(
             "SingleKeyword",
-            "",
             [
-                Grammar("contents", "keyword", InLine(), ""),
+                Nonterm("contents", "keyword", InLine()),
             ]
         ),
 
@@ -361,18 +348,17 @@ choices : dict[str, list[Node]] = {
     "comparisons" : [
         Node(
             "ConsCompareRight",
-            "",
             [
-                Grammar("head", "CompareRight", InLine(), " "),
-                Grammar("tail", "comparisons", InLine(), ""),
+                Nonterm("head", "CompareRight", InLine()),
+                Terminal(" "),
+                Nonterm("tail", "comparisons", InLine()),
             ]
         ),
 
         Node(
             "SingleCompareRight",
-            "",
             [
-                Grammar("contents", "CompareRight", InLine(), ""),
+                Nonterm("contents", "CompareRight", InLine())
             ]
         ),
 
@@ -381,15 +367,13 @@ choices : dict[str, list[Node]] = {
     "option_expr" : [
         Node(
             "SomeExpr",
-            "",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "NoExpr",
-            "",
             []
         )
     ],
@@ -398,18 +382,17 @@ choices : dict[str, list[Node]] = {
     "comma_exprs" : [
         Node(
             "ConsExpr",
-            "",
             [
-                Grammar("head", "expr", InLine(), ", "),
-                Grammar("tail", "comma_exprs", InLine(), ""),
+                Nonterm("head", "expr", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "comma_exprs", InLine())
             ]
         ),
 
         Node(
             "SingleExpr",
-            "",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
@@ -418,18 +401,17 @@ choices : dict[str, list[Node]] = {
     "target_exprs" : [
         Node(
             "ConsTargetExpr",
-            "",
             [
-                Grammar("head", "expr", InLine(), " = "),
-                Grammar("tail", "target_exprs", InLine(), ""),
+                Nonterm("head", "expr", InLine()),
+                Terminal(" = "),
+                Nonterm("tail", "target_exprs", InLine()),
             ]
         ),
 
         Node(
             "SingleTargetExpr",
-            "",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
@@ -438,16 +420,15 @@ choices : dict[str, list[Node]] = {
     "decorators" : [
         Node(
             "ConsDec",
-            "@",
             [
-                Grammar("head", "expr", InLine(), ""),
-                Grammar("tail", "decorators", InLine(), ""),
+                Terminal("@"),
+                Nonterm("head", "expr", InLine()),
+                Nonterm("tail", "decorators", InLine())
             ]
         ),
 
         Node(
             "NoDec",
-            "",
             []
         ),
 
@@ -456,26 +437,24 @@ choices : dict[str, list[Node]] = {
     "constraint_filters" : [
         Node(
             "ConsFilter",
-            "if ",
             [
-                Grammar("head", "expr", InLine(), ""),
-                Grammar("tail", "constraint_filters", NewLine(), ""),
+                Terminal("if "),
+                Nonterm("head", "expr", InLine()),
+                Nonterm("tail", "constraint_filters", NewLine())
             ]
         ),
 
         Node(
             "SingleFilter",
-            "if ",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Terminal("if "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "NoFilter",
-            "",
-            [
-            ]
+            []
         ),
 
     ],
@@ -483,18 +462,17 @@ choices : dict[str, list[Node]] = {
     "sequence_string" : [
         Node(
             "ConsStr",
-            "",
             [
-                Vocab("head", "string", " "),
-                Grammar("tail", "sequence_string", InLine(), ""),
+                Vocab("head", "string"),
+                Terminal(" "),
+                Nonterm("tail", "sequence_string", InLine()),
             ]
         ),
 
         Node(
             "SingleStr",
-            "",
             [
-                Vocab("contents", "string", ""),
+                Vocab("contents", "string"),
             ]
         ),
 
@@ -503,26 +481,24 @@ choices : dict[str, list[Node]] = {
     "arguments" : [
         Node(
             "ConsArg",
-            "",
             [
-                Grammar("head", "expr", InLine(), ", "),
-                Grammar("tail", "arguments", InLine(), ""),
+                Nonterm("head", "expr", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "arguments", InLine()),
             ]
         ),
 
         Node(
             "SingleArg",
-            "",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "KeywordsArg",
-            "",
             [
-                Grammar("kws", "keywords", InLine(), ""),
+                Nonterm("kws", "keywords", InLine())
             ]
         ),
 
@@ -532,18 +508,18 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "Field",
-            "",
             [
-                Grammar("key", "expr", InLine(), " : "),
-                Grammar("contents", "expr", InLine(), "")
+                Nonterm("key", "expr", InLine()),
+                Terminal(" : "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "DictionarySplatFields",
-            "**",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal("**"),
+                Nonterm("contents", "expr", InLine())
             ]
         )
 
@@ -552,18 +528,17 @@ choices : dict[str, list[Node]] = {
     "dictionary_contents" : [
         Node(
             "ConsDictionaryItem",
-            "",
             [
-                Grammar("head", "dictionary_item", InLine(), ", "),
-                Grammar("tail", "dictionary_contents", NewLine(), ""),
+                Nonterm("head", "dictionary_item", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "dictionary_contents", NewLine())
             ]
         ),
 
         Node(
             "SingleDictionaryItem",
-            "",
             [
-                Grammar("contents", "dictionary_item", InLine(), ""),
+                Nonterm("contents", "dictionary_item", InLine())
             ]
         ),
 
@@ -572,18 +547,17 @@ choices : dict[str, list[Node]] = {
     "sequence_var" : [
         Node(
             "ConsId",
-            "",
             [
-                Vocab("head", "identifier", ", "),
-                Grammar("tail", "sequence_var", InLine(), ""),
+                Vocab("head", "identifier"),
+                Terminal(", "),
+                Nonterm("tail", "sequence_var", InLine())
             ]
         ),
 
         Node(
             "SingleId",
-            "",
             [
-                Vocab("contents", "identifier", ""),
+                Vocab("contents", "identifier")
             ]
         ),
 
@@ -593,18 +567,17 @@ choices : dict[str, list[Node]] = {
     "sequence_ImportName" : [
         Node(
             "ConsImportName",
-            "",
             [
-                Grammar("head", "ImportName", InLine(), ", "),
-                Grammar("tail", "sequence_ImportName", InLine(), ""),
+                Nonterm("head", "ImportName", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "sequence_ImportName", InLine()),
             ]
         ),
 
         Node(
             "SingleImportName",
-            "",
             [
-                Grammar("contents", "ImportName", InLine(), ""),
+                Nonterm("contents", "ImportName", InLine())
             ]
         ),
 
@@ -613,18 +586,17 @@ choices : dict[str, list[Node]] = {
     "sequence_Withitem" : [
         Node(
             "ConsWithitem",
-            "",
             [
-                Grammar("head", "Withitem", InLine(), ", "),
-                Grammar("tail", "sequence_Withitem", InLine(), ""),
+                Nonterm("head", "Withitem", InLine()),
+                Terminal(", "),
+                Nonterm("tail", "sequence_Withitem", InLine())
             ]
         ),
 
         Node(
             "SingleWithitem",
-            "",
             [
-                Grammar("contents", "Withitem", InLine(), ""),
+                Nonterm("contents", "Withitem", InLine())
             ]
         ),
 
@@ -634,18 +606,16 @@ choices : dict[str, list[Node]] = {
     "statements" : [
         Node(
             "ConsStmt",
-            "",
             [
-                Grammar("head", "stmt", InLine(), ""),
-                Grammar("tail", "statements", NewLine(), ""),
+                Nonterm("head", "stmt", InLine()),
+                Nonterm("tail", "statements", NewLine())
             ]
         ),
 
         Node(
             "SingleStmt",
-            "",
             [
-                Grammar("contents", "stmt", InLine(), ""),
+                Nonterm("contents", "stmt", InLine())
             ]
         ),
 
@@ -654,18 +624,16 @@ choices : dict[str, list[Node]] = {
     "comprehension_constraints" : [
         Node(
             "ConsConstraint",
-            "",
             [
-                Grammar("head", "constraint", InLine(), ""),
-                Grammar("tail", "comprehension_constraints", NewLine(), ""),
+                Nonterm("head", "constraint", InLine()),
+                Nonterm("tail", "comprehension_constraints", NewLine())
             ]
         ),
 
         Node(
             "SingleConstraint",
-            "",
             [
-                Grammar("contents", "constraint", InLine(), ""),
+                Nonterm("contents", "constraint", InLine())
             ]
         ),
 
@@ -674,18 +642,16 @@ choices : dict[str, list[Node]] = {
     "sequence_ExceptHandler" : [
         Node(
             "ConsExceptHandler",
-            "",
             [
-                Grammar("head", "ExceptHandler", InLine(), ""),
-                Grammar("tail", "sequence_ExceptHandler", NewLine(), ""),
+                Nonterm("head", "ExceptHandler", InLine()),
+                Nonterm("tail", "sequence_ExceptHandler", NewLine())
             ]
         ),
 
         Node(
             "SingleExceptHandler",
-            "",
             [
-                Grammar("contents", "ExceptHandler", InLine(), ""),
+                Nonterm("contents", "ExceptHandler", InLine())
             ]
         ),
 
@@ -695,24 +661,21 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "ElifCond",
-            "",
             [
-                Grammar("contents", "ElifBlock", NewLine(), ""),
-                Grammar("tail", "conditions", InLine(), ""),
+                Nonterm("contents", "ElifBlock", NewLine()),
+                Nonterm("tail", "conditions", InLine())
             ]
         ),
 
         Node(
             "ElseCond",
-            "",
             [
-                Grammar("contents", "ElseBlock", NewLine(), ""),
+                Nonterm("contents", "ElseBlock", NewLine())
             ]
         ),
 
         Node(
             "NoCond",
-            "",
             []
         )
 
@@ -721,23 +684,29 @@ choices : dict[str, list[Node]] = {
     "function_def" : [
         Node(
             "FunctionDef",
-            "def ",
             [ 
-                Vocab("name", "identifier", "("),
-                Grammar("params", "parameters", InLine(), ")"),
-                Grammar("ret_typ", "return_type", InLine(), ":"),
-                Grammar("body", "statements", IndentLine(), "")
+                Terminal("def "),
+                Vocab("name", "identifier"),
+                Terminal("("),
+                Nonterm("params", "parameters", InLine()),
+                Terminal(")"),
+                Nonterm("ret_typ", "return_type", InLine()),
+                Terminal(":"),
+                Nonterm("body", "statements", IndentLine())
             ]
         ),
 
         Node(
             "AsyncFunctionDef",
-            "def ",
             [
-                Vocab("name", "identifier", "("),
-                Grammar("params", "parameters", InLine(), ")"),
-                Grammar("ret_typ", "return_type", InLine(), ":"),
-                Grammar("body", "statements", IndentLine(), "")
+                Terminal("async def "),
+                Vocab("name", "identifier"),
+                Terminal("("),
+                Nonterm("params", "parameters", InLine()),
+                Terminal(")"),
+                Nonterm("ret_typ", "return_type", InLine()),
+                Terminal(":"),
+                Nonterm("body", "statements", IndentLine())
             ]
         ),
     ],
@@ -746,260 +715,276 @@ choices : dict[str, list[Node]] = {
     "stmt" : [
         Node(
             "DecFunctionDef",
-            "",
             [ 
-                Grammar("decs", "decorators", InLine(), ""),
-                Grammar("fun_def", "function_def", NewLine(), ""),
+                Nonterm("decs", "decorators", InLine()),
+                Nonterm("fun_def", "function_def", NewLine())
             ]
         ),
 
         Node(
             "DecAsyncFunctionDef",
-            "",
             [
-                Grammar("decs", "decorators", InLine(), ""),
-                Grammar("fun_def", "function_def", NewLine(), ""),
+                Nonterm("decs", "decorators", InLine()),
+                Nonterm("fun_def", "function_def", NewLine())
             ]
         ),
 
         Node(
             "DecClassDef",
-            "",
             [
-                Grammar("decs", "decorators", InLine(), ""),
-                Grammar("class_def", "ClassDef", NewLine(), ""),
+                Nonterm("decs", "decorators", InLine()),
+                Nonterm("class_def", "ClassDef", NewLine())
             ]
         ),
 
 
         Node(
             "ReturnSomething",
-            "return ", 
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Terminal("return "), 
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "Return",
-            "return", 
-            []
+            [
+                Terminal("return ")
+            ]
         ),
 
         Node(
             "Delete",
-            "del",
             [
-                Grammar("targets", "comma_exprs", InLine(), "")
+                Terminal("del"),
+                Nonterm("targets", "comma_exprs", InLine())
             ]
         ),
 
         Node(
             "Assign",
-            "",
             [
-                Grammar("targets", "target_exprs", InLine(), " = "),
-                Grammar("contents", "expr", InLine(), "")
+                Nonterm("targets", "target_exprs", InLine()),
+                Terminal(" = "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "AugAssign",
-            "",
             [
-                Grammar("target", "expr", InLine(), " "),
-                Grammar("op", "operator", InLine(), "= "),
-                Grammar("contents", "expr", InLine(), "")
+                Nonterm("target", "expr", InLine()),
+                Terminal(" "),
+                Nonterm("op", "operator", InLine()),
+                Terminal("= "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "TypedAssign", 
-            "",
             [
-                Grammar("target", "expr", InLine(), " : "),
-                Grammar("type", "expr", InLine(), " = "),
-                Grammar("contents", "expr", InLine(), "")
+                Nonterm("target", "expr", InLine()),
+                Terminal(" : "),
+                Nonterm("type", "expr", InLine()),
+                Terminal(" = "),
+                Nonterm("contents", "expr", InLine())
             ],
         ),
 
         Node(
             "TypedDeclare", 
-            "",
             [
-                Grammar("target", "expr", InLine(), " : "),
-                Grammar("type", "expr", InLine(), "")
+                Nonterm("target", "expr", InLine()),
+                Terminal(" : "),
+                Nonterm("type", "expr", InLine())
             ],
         ),
 
         Node(
             "For",
-            "for ",
             [
-                Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
+                Terminal("for "),
+                Nonterm("target", "expr", InLine()),
+                Terminal(" in "),
+                Nonterm("iter", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine())
             ]
         ),
 
         Node(
             "ForElse",
-            "for ",
             [
-                Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("orelse", "ElseBlock", NewLine(), "")
+                Terminal("for "),
+                Nonterm("target", "expr", InLine()),
+                Terminal(" in "),
+                Nonterm("iter", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("orelse", "ElseBlock", NewLine())
             ]
         ),
 
         Node(
             "AsyncFor",
-            "async for ",
             [
-                Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
+                Terminal("async for "),
+                Nonterm("target", "expr", InLine()),
+                Terminal(" in "),
+                Nonterm("iter", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine())
             ]
         ),
 
         Node(
             "AsyncForElse",
-            "async for ",
             [
-                Grammar("target", "expr", InLine(), " in "),
-                Grammar("iter", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("orelse", "ElseBlock", NewLine(), "")
+                Terminal("async for "),
+                Nonterm("target", "expr", InLine()),
+                Terminal(" in "),
+                Nonterm("iter", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("orelse", "ElseBlock", NewLine())
             ]
         ),
 
         Node(
             "While",
-            "while ",
             [
-                Grammar("test", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
+                Terminal("while "),
+                Nonterm("test", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine()),
             ]
         ),
 
         Node(
             "WhileElse",
-            "while ",
             [
-                Grammar("test", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("orelse", "ElseBlock", NewLine(), "")
+                Terminal("while "),
+                Nonterm("test", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("orelse", "ElseBlock", NewLine())
             ]
         ),
 
         Node(
             "If",
-            "if ",
             [
-                Grammar("test", "expr", InLine(), ": "),
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("orelse", "conditions", InLine(), "")
+                Terminal("if "),
+                Nonterm("test", "expr", InLine()),
+                Terminal(": "),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("orelse", "conditions", InLine())
             ]
         ),
 
         Node(
             "With",
-            "with ",
             [
-                Grammar("items", "sequence_Withitem", InLine(), ":"),
-                Grammar("body", "statements", IndentLine(), "")
+                Terminal("with "),
+                Nonterm("items", "sequence_Withitem", InLine()),
+                Terminal(":"),
+                Nonterm("body", "statements", IndentLine())
             ]
         ),
 
         Node(
             "AsyncWith",
-            "async with ",
             [
-                Grammar("items", "sequence_Withitem", InLine(), ":"),
-                Grammar("body", "statements", IndentLine(), "")
+                Terminal("async with "),
+                Nonterm("items", "sequence_Withitem", InLine()),
+                Terminal(":"),
+                Nonterm("body", "statements", IndentLine())
             ]
         ),
 
         Node(
             "Raise",
-            "raise",
-            []
+            [
+                Terminal("raise")
+            ]
         ),
 
         Node(
             "RaiseExc",
-            "raise ",
             [
-                Grammar("exc", "expr", IndentLine(), ""),
+                Terminal("raise"),
+                Nonterm("exc", "expr", IndentLine())
             ]
         ),
 
         Node(
             "RaiseFrom",
-            "raise ",
             [
-                Grammar("exc", "expr", InLine(), " from "),
-                Grammar("caus", "expr", InLine(), "")
+                Terminal("raise"),
+                Nonterm("exc", "expr", InLine()),
+                Terminal(" from "),
+                Nonterm("caus", "expr", InLine())
             ]
         ),
 
 
         Node(
             "Try",
-            "try:",
             [
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("handlers", "sequence_ExceptHandler", NewLine(), ""),
+                Terminal("try:"),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
             ]
         ),
 
         Node(
             "TryElse",
-            "try:",
             [
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("handlers", "sequence_ExceptHandler", NewLine(), ""),
-                Grammar("orelse", "ElseBlock", NewLine(), ""),
+                Terminal("try:"),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
+                Nonterm("orelse", "ElseBlock", NewLine())
             ]
         ),
 
         Node(
             "TryFin",
-            "try:",
             [
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("handlers", "sequence_ExceptHandler", NewLine(), ""),
-                Grammar("fin", "FinallyBlock", NewLine(), "")
+                Terminal("try:"),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
+                Nonterm("fin", "FinallyBlock", NewLine())
             ]
         ),
 
         Node(
             "TryElseFin",
-            "try:",
             [
-                Grammar("body", "statements", IndentLine(), ""),
-                Grammar("handlers", "sequence_ExceptHandler", NewLine(), ""),
-                Grammar("orelse", "ElseBlock", NewLine(), ""),
-                Grammar("fin", "FinallyBlock", NewLine(), "")
+                Terminal("try:"),
+                Nonterm("body", "statements", IndentLine()),
+                Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
+                Nonterm("orelse", "ElseBlock", NewLine()),
+                Nonterm("fin", "FinallyBlock", NewLine())
             ]
         ),
 
 
         Node(
             "Assert",
-            "assert ",
             [
-                Grammar("test", "expr", InLine(), ""),
+                Terminal("assert "),
+                Nonterm("test", "expr", InLine())
             ]
         ),
 
         Node(
             "AssertMsg",
-            "assert ",
             [
-                Grammar("test", "expr", InLine(), ", "),
-                Grammar("msg", "expr", InLine(), "")
+                Terminal("assert "),
+                Nonterm("test", "expr", InLine()),
+                Terminal(", "),
+                Nonterm("msg", "expr", InLine())
             ]
         ),
 
@@ -1007,69 +992,73 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "Import",
-            "import ",
             [
-                Grammar("names", "sequence_ImportName", InLine(), "")
+                Terminal("import "),
+                Nonterm("names", "sequence_ImportName", InLine())
             ]
         ),
 
         Node(
             "ImportFrom",
-            "from ",
             [
-                Grammar("module", "module_id", InLine(), " import "),
-                Grammar("names", "sequence_ImportName", InLine(), "")
+                Terminal("from "),
+                Nonterm("module", "module_id", InLine()),
+                Terminal(" import "),
+                Nonterm("names", "sequence_ImportName", InLine())
             ]
         ),
 
         Node(
             "ImportWildCard",
-            "from ",
             [
-                Grammar("module", "module_id", InLine(), " import *"),
+                Terminal("from "),
+                Nonterm("module", "module_id", InLine()),
+                Terminal(" import *")
             ]
         ),
 
         Node(
             "Global",
-            "global ",
             [
-                Grammar("names", "sequence_var", InLine(), "")
+                Terminal("global "),
+                Nonterm("names", "sequence_var", InLine())
             ]
         ),
 
         Node(
             "Nonlocal",
-            "nonlocal ",
             [
-                Grammar("names", "sequence_var", InLine(), "")
+                Terminal("nonlocal "),
+                Nonterm("names", "sequence_var", InLine())
             ]
         ),
 
         Node(
             "Expr",
-            "",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "Pass",
-            "pass",
-            []
+            [
+                Terminal("pass")
+            ]
         ),
 
         Node(
             "Break",
-            "break",
-            []
+            [
+                Terminal("break")
+            ]
         ),
 
         Node(
             "Continue",
-            "continue",
-            []
+            [
+                Terminal("continue")
+            ]
         ),
 
     ],
@@ -1078,147 +1067,166 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "BoolOp",
-            "(",
             [
-                Grammar("left", "expr", InLine(), " "),
-                Grammar("op", "boolop", InLine(), " "),
-                Grammar("right", "expr", InLine(), ")")
+                Terminal("("),
+                Nonterm("left", "expr", InLine()),
+                Terminal(" "),
+                Nonterm("op", "boolop", InLine()),
+                Terminal(" "),
+                Nonterm("right", "expr", InLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "NamedExpr",
-            "",
             [
-                Grammar("target", "expr", InLine(), " := "),
-                Grammar("contents", "expr", InLine(), "")
+                Nonterm("target", "expr", InLine()),
+                Terminal(" := "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "BinOp",
-            "(",
             [
-                Grammar("left", "expr", InLine(), " "),
-                Grammar("op", "operator", InLine(), " "),
-                Grammar("right", "expr", InLine(), ")")
+                Terminal("("),
+                Nonterm("left", "expr", InLine()),
+                Terminal(" "),
+                Nonterm("op", "operator", InLine()),
+                Terminal(" "),
+                Nonterm("right", "expr", InLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "UnaryOp",
-            "(",
             [
-                Grammar("op", "unaryop", InLine(), " "),
-                Grammar("right", "expr", InLine(), ")")
+                Terminal("("),
+                Nonterm("op", "unaryop", InLine()),
+                Terminal(" "),
+                Nonterm("right", "expr", InLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "Lambda",
-            "lambda ",
             [
-                Grammar("params", "parameters", InLine(), " :"),
-                Grammar("body", "expr", InLine(), "")
+                Terminal("lambda "),
+                Nonterm("params", "parameters", InLine()),
+                Terminal(" :"),
+                Nonterm("body", "expr", InLine())
             ]
         ),
 
         Node(
             "IfExp",
-            "",
             [
-                Grammar("body", "expr", InLine(), "if "),
-                Grammar("test", "expr", InLine(), " else"),
-                Grammar("orelse", "expr", NewLine(), "")
+                Nonterm("body", "expr", InLine()),
+                Terminal("if "),
+                Nonterm("test", "expr", InLine()),
+                Terminal(" else"),
+                Nonterm("orelse", "expr", NewLine())
             ]
         ),
 
         Node(
             "Dictionary",
-            "{",
             [
-                Grammar("contents", "dictionary_contents", IndentLine(), "}")
+                Terminal("{"),
+                Nonterm("contents", "dictionary_contents", IndentLine()),
+                Terminal("}")
             ]
         ),
 
         Node(
             "EmptyDictionary",
-            "{}",
-            []
+            [
+                Terminal("{}")
+            ]
         ),
 
         Node(
             "Set",
-            "{",
             [
-                Grammar("contents", "comma_exprs", IndentLine(), "}")
+                Terminal("{"),
+                Nonterm("contents", "comma_exprs", IndentLine()),
+                Terminal("}")
             ]
         ),
 
         Node(
             "ListComp",
-            "[",
             [
-                Grammar("contents", "expr", IndentLine(), ""),
-                Grammar("constraints", "comprehension_constraints", IndentLine(), "]")
+                Terminal("["),
+                Nonterm("contents", "expr", IndentLine()),
+                Nonterm("constraints", "comprehension_constraints", IndentLine()),
+                Terminal("]"),
             ]
         ),
 
         Node(
             "SetComp",
-            "{",
             [
-                Grammar("contents", "expr", IndentLine(), ""),
-                Grammar("constraints", "comprehension_constraints", IndentLine(), "}")
+                Terminal("{"),
+                Nonterm("contents", "expr", IndentLine()),
+                Nonterm("constraints", "comprehension_constraints", IndentLine()),
+                Terminal("}")
             ]
         ),
 
         Node(
             "DictionaryComp",
-            "{",
             [
-                Grammar("key", "expr", IndentLine(), ": "),
-                Grammar("contents", "expr", InLine(), ""),
-                Grammar("constraints", "comprehension_constraints", IndentLine(), "}")
+                Terminal("{"),
+                Nonterm("key", "expr", IndentLine()),
+                Terminal(": "),
+                Nonterm("contents", "expr", InLine()),
+                Nonterm("constraints", "comprehension_constraints", IndentLine()),
+                Terminal("}")
             ]
         ),
 
         Node(
             "GeneratorExp",
-            "(",
             [
-                Grammar("contents", "expr", IndentLine(), ""),
-                Grammar("constraints", "comprehension_constraints", IndentLine(), ")")
+                Terminal("("),
+                Nonterm("contents", "expr", IndentLine()),
+                Nonterm("constraints", "comprehension_constraints", IndentLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "Await",
-            "await ",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal("await "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "YieldNothing",
-            "yield",
-            []
+            [
+                Terminal("yield")
+            ]
         ),
 
         Node(
             "Yield",
-            "yield ",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal("yield "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
         Node(
             "YieldFrom",
-            "yield from ",
             [
-                Grammar("contents", "expr", InLine(), "")
+                Terminal("yield from "),
+                Nonterm("contents", "expr", InLine())
             ]
         ),
 
@@ -1226,148 +1234,155 @@ choices : dict[str, list[Node]] = {
         # x < 4 < 3 and (x < 4) < 3
         Node(
             "Compare",
-            "",
             [
-                Grammar("left", "expr", InLine(), " "),
-                Grammar("comps", "comparisons", InLine(), "")
+                Nonterm("left", "expr", InLine()),
+                Terminal(" "),
+                Nonterm("comps", "comparisons", InLine())
             ]
         ),
 
         Node(
             "Call",
-            "",
             [
-                Grammar("func", "expr", InLine(), "()"),
+                Nonterm("func", "expr", InLine()),
+                Terminal("()")
             ]
         ),
 
         Node(
             "CallArgs",
-            "",
             [
-                Grammar("func", "expr", InLine(), "("),
-                Grammar("args", "arguments", InLine(), ")")
+                Nonterm("func", "expr", InLine()),
+                Terminal("("),
+                Nonterm("args", "arguments", InLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "Integer",
-            "",
             [
-                Vocab("contents", "integer", "")
+                Vocab("contents", "integer")
             ]
         ),
 
         Node(
             "Float",
-            "",
             [
-                Vocab("contents", "float", "")
+                Vocab("contents", "float")
             ]
         ),
 
         Node(
             "ConcatString",
-            "",
             [
-                Grammar("contents", "sequence_string", InLine(), "")
+                Nonterm("contents", "sequence_string", InLine())
             ]
         ),
 
         Node(
             "True_",
-            "True",
-            []
+            [
+                Terminal("True")
+            ]
         ),
 
         Node(
             "False_",
-            "False",
-            []
+            [
+                Terminal("False")
+            ]
         ),
 
 
         Node(
             "None_",
-            "None",
-            []
+            [
+                Terminal("None")
+            ]
         ),
 
         Node(
             "Ellip",
-            "...",
-            []
+            [
+                Terminal("...")
+            ]
         ),
 
         Node(
             "Attribute",
-            "",
             [
-                Grammar("contents", "expr", InLine(), "."),
-                Vocab("name", "identifier", "")
+                Nonterm("contents", "expr", InLine()),
+                Terminal("."),
+                Vocab("name", "identifier")
             ]
         ),
 
         Node(
             "Subscript",
-            "",
             [
-                Grammar("contents", "expr", InLine(), "["),
-                Grammar("slice", "expr", InLine(), "]")
+                Nonterm("contents", "expr", InLine()),
+                Terminal("["),
+                Nonterm("slice", "expr", InLine()),
+                Terminal("]")
             ]
         ),
 
         Node(
             "Starred",
-            "*",
             [
-                Grammar("contents", "expr", InLine(), ""),
+                Terminal("*"),
+                Nonterm("contents", "expr", InLine()),
             ]
         ),
 
         Node(
             "Name",
-            "",
             [
-                Vocab("contents", "identifier", ""),
+                Vocab("contents", "identifier")
             ]
         ),
 
         Node(
             "List",
-            "[",
             [
-                Grammar("contents", "comma_exprs", InLine(), "]"),
+                Terminal("["),
+                Nonterm("contents", "comma_exprs", InLine()),
+                Terminal("]")
             ]
         ),
 
         Node(
             "EmptyList",
-            "[]",
-            []
+            [
+                Terminal("[]"),
+            ]
         ),
 
         Node(
             "Tuple",
-            "(",
             [
-                Grammar("contents", "comma_exprs", InLine(), ")"),
+                Terminal("("),
+                Nonterm("contents", "comma_exprs", InLine()),
+                Terminal(")")
             ]
         ),
 
         Node(
             "EmptyTuple",
-            "()",
-            []
+            [
+                Terminal("()")
+            ]
         ),
 
         Node(
             "Slice",
-            "",
             [
-                Grammar("lower", "option_expr", InLine(), ":"),
-                Grammar("upper", "option_expr", InLine(), ":"),
-                Grammar("step", "option_expr", InLine(), "")
+                Nonterm("lower", "option_expr", InLine()),
+                Terminal(":"),
+                Nonterm("upper", "option_expr", InLine()),
+                Terminal(":"),
+                Nonterm("step", "option_expr", InLine())
             ]
         ),
 
@@ -1376,182 +1391,157 @@ choices : dict[str, list[Node]] = {
     "boolop" : [
         Node(
             "And",
-            "and",
-            [] 
+            [
+                Terminal("and")
+            ] 
         ),
 
         Node(
             "Or",
-            "or",
-            [] 
+            [
+                Terminal("or")
+            ] 
         )
     ], 
 
     "operator" : [
         Node(
             "Add",
-            "+",
-            [] 
+            [Terminal("+")]
         ),
 
         Node(
             "Sub",
-            "-",
-            [] 
+            [Terminal("-")]
         ),
 
         Node(
             "Mult",
-            "*",
-            [] 
+            [Terminal("*")]
         ),
 
         Node(
             "MatMult",
-            "@",
-            [] 
+            [Terminal("@")]
         ),
 
         Node(
             "Div",
-            "/",
-            [] 
+            [Terminal("/")]
         ),
 
         Node(
             "Mod",
-            "%",
-            [] 
+            [Terminal("%")]
         ),
 
         Node(
             "Pow",
-            "**",
-            [] 
+            [Terminal("**")]
         ),
 
         Node(
             "LShift",
-            "<<",
-            [] 
+            [Terminal("<<")]
         ),
 
         Node(
             "RShift",
-            ">>",
-            [] 
+            [Terminal(">>")]
         ),
 
         Node(
             "BitOr",
-            "|",
-            [] 
+            [Terminal("|")]
         ),
 
         Node(
             "BitXor",
-            "^",
-            [] 
+            [Terminal("^")]
         ),
 
         Node(
             "BitAnd",
-            "&",
-            [] 
+            [Terminal("&")]
         ),
 
         Node(
             "FloorDiv",
-            "//",
-            [] 
+            [Terminal("//")]
         ),
     ],
 
     "unaryop" : [
         Node(
             "Invert",
-            "~",
-            [] 
+            [Terminal("~")]
         ),
 
         Node(
             "Not",
-            "not",
-            [] 
+            [Terminal("not")]
         ),
 
         Node(
             "UAdd",
-            "+",
-            [] 
+            [Terminal("+")]
         ),
 
         Node(
             "USub",
-            "-",
-            [] 
+            [Terminal("-")]
         ),
     ],
 
     "cmpop" : [
         Node(
             "Eq",
-            "==",
-            [] 
+            [Terminal("==")]
         ),
 
         Node(
             "NotEq",
-            "!=",
-            [] 
+            [Terminal("!=")]
         ),
 
         Node(
             "Lt",
-            "<",
-            [] 
+            [Terminal("<")]
         ),
 
         Node(
             "LtE",
-            "<=",
-            [] 
+            [Terminal("<=")]
         ),
 
         Node(
             "Gt",
-            ">",
-            [] 
+            [Terminal(">")]
         ),
 
         Node(
             "GtE",
-            ">=",
-            [] 
+            [Terminal(">=")]
         ),
 
         Node(
             "Is",
-            "is",
-            [] 
+            [Terminal("is")]
         ),
 
         Node(
             "IsNot",
-            "is not",
-            [] 
+            [Terminal("is not")]
         ),
 
         Node(
             "In",
-            "in",
-            [] 
+            [Terminal("in")]
         ),
 
         Node(
             "NotIn",
-            "not in",
-            [] 
+            [Terminal("not in")]
         ),
     ],
 
@@ -1559,21 +1549,23 @@ choices : dict[str, list[Node]] = {
 
         Node(
             "AsyncConstraint",
-            "async for ",
             [
-                Grammar("target", "expr", InLine(), " in "),
-                Grammar("search_space", "expr", InLine(), ""),
-                Grammar("filts", "constraint_filters", NewLine(), "")
+                Terminal("async for "),
+                Nonterm("target", "expr", InLine()),
+                Terminal(" in "),
+                Nonterm("search_space", "expr", InLine()),
+                Nonterm("filts", "constraint_filters", NewLine())
             ] 
         ),
 
         Node(
             "Constraint",
-            "for ",
             [
-                Grammar("target", "expr", InLine(), " in "),
-                Grammar("search_space", "expr", InLine(), ""),
-                Grammar("filts", "constraint_filters", NewLine(), "")
+                Terminal("for "),
+                Nonterm("target", "expr", InLine()),
+                Terminal(" in "),
+                Nonterm("search_space", "expr", InLine()),
+                Nonterm("filts", "constraint_filters", NewLine())
             ] 
         ),
 
@@ -1585,91 +1577,90 @@ singles : list[Node] = [
 
     Node(
         "Module",
-        "",
         [
-            Grammar("body", "statements", InLine(), "")
+            Nonterm("body", "statements", InLine())
         ]
     ),
 
     Node(
         "CompareRight",
-        "",
         [
-            Grammar("op", "cmpop", InLine(), " "),
-            Grammar("rand", "expr", InLine(), "")
+            Nonterm("op", "cmpop", InLine()),
+            Terminal(" "),
+            Nonterm("rand", "expr", InLine())
         ]
     ),
 
     Node(
         "ExceptHandler",
-        "except ",
         [
-            Grammar("arg", "except_arg", InLine(), ":"),
-            Grammar("body", "statements", IndentLine(), "")
+            Terminal("except "),
+            Nonterm("arg", "except_arg", InLine()),
+            Terminal(":"),
+            Nonterm("body", "statements", IndentLine())
         ]
     ),
 
     Node(
         "Param",
-        "",
         [
-            Vocab("name", "identifier", ""),
-            Grammar("type", "param_type", InLine(), ""),
-            Grammar("default", "param_default", InLine(), "")
+            Vocab("name", "identifier"),
+            Nonterm("type", "param_type", InLine()),
+            Nonterm("default", "param_default", InLine())
         ]
     ),
 
     Node(
         "ImportName",
-        "",
         [
-            Vocab("name", "module_identifier", ""),
-            Grammar("as_name", "alias", InLine(), "")
+            Vocab("name", "module_identifier"),
+            Nonterm("as_name", "alias", InLine())
         ]
     ),
 
 
     Node(
         "Withitem",
-        "",
         [
-            Grammar("contet", "expr", InLine(), ""),
-            Grammar("target", "alias_expr", InLine(), "")
+            Nonterm("contet", "expr", InLine()),
+            Nonterm("target", "alias_expr", InLine())
         ]
     ),
 
     Node(
         "ClassDef",
-        "class ",
         [
-            Vocab("name", "identifier", ""),
-            Grammar("bs", "bases", InLine(), ":"), 
-            Grammar("body", "statements", IndentLine(), "")
+            Terminal("class "),
+            Vocab("name", "identifier"),
+            Nonterm("bs", "bases", InLine()),
+            Terminal(":"), 
+            Nonterm("body", "statements", IndentLine())
         ]
     ),
 
     Node(
         "ElifBlock",
-        "elif ",
         [
-            Grammar("test", "expr", InLine(), ":"),
-            Grammar("body", "statements", IndentLine(), ""),
+            Terminal("elif "),
+            Nonterm("test", "expr", InLine()),
+            Terminal(":"),
+            Nonterm("body", "statements", IndentLine()),
         ]
     ),
 
     Node(
         "ElseBlock",
-        "else:",
         [
-            Grammar("body", "statements", IndentLine(), ""),
+            Terminal("else:"),
+            Nonterm("body", "statements", IndentLine()),
         ]
     ),
 
     Node(
         "FinallyBlock",
-        "finally:",
         [
-            Grammar("body", "statements", IndentLine(), ""),
+            Terminal("finally:"),
+            Nonterm("body", "statements", IndentLine())
         ]
     )
 

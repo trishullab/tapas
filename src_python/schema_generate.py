@@ -8,52 +8,49 @@ import pathlib
 import os
 
 
-type_name = "child"
-
-constructors = [
-    Constructor(
-        "Grammar",
-        [
-            Field('relation', 'str'),
-            Field('nonterminal', 'str'),
-            Field('format', 'line_format'),
-            Field('follower', 'str')
-        ]
-    ),
-
-    Constructor(
-        "Vocab",
-        [
-            Field('relation', 'str'),
-            Field('choices_id', 'str'),
-            Field('follower', 'str')
-        ]
-    )
-]
 
 type_code = (
     def_type.header +
     "\n\n" +
     "from gen.line_format import line_format" +
     "\n\n" +
-    "\n\n".join([
-        def_type.generate_choice(type_name, constructors)
+    def_type.generate_choice("child", [
+        Constructor(
+            "Terminal",
+            [
+                Field('terminal', 'str')
+            ]
+        ),
+
+        Constructor(
+            "Nonterm",
+            [
+                Field('relation', 'str'),
+                Field('nonterminal', 'str'),
+                Field('format', 'line_format'),
+            ]
+        ),
+
+        Constructor(
+            "Vocab",
+            [
+                Field('relation', 'str'),
+                Field('vocab', 'str'),
+            ]
+        )
     ]) +
 
     "\n\n" +
     "\n\n" +
-    "\n\n".join([
-        def_type.generate_single(
-            Constructor(
-                "Node",
-                [
-                    Field('name', 'str'), 
-                    Field('leader', 'str'),
-                    Field('children', 'list[child]')
-                ]
-            )
+    def_type.generate_single(
+        Constructor(
+            "Node",
+            [
+                Field('name', 'str'), 
+                Field('children', 'list[child]')
+            ]
         )
-    ])
+    )
 )
 
 

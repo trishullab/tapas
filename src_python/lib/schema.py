@@ -16,20 +16,22 @@ from lib import line_format as lf
 def to_dictionary(node: Node):
     return {
         'name' : node.name,
-        'leader' : node.leader,
         'children' : [
             match_child(c, ChildHandlers[dict](
-                case_Grammar = lambda o : ({
+                case_Terminal = lambda o : ({
+                    'kind' : 'terminal',
+                    'terminal' : o.terminal
+                }),
+                case_Nonterm = lambda o : ({
                     'kind' : 'grammar',
                     'relation' : o.relation,
                     'nonterminal' : o.nonterminal,
                     'format' : lf.to_string(o.format),
-                    'follower' : o.follower
                 }),
                 case_Vocab = lambda o : ({
                     'kind' : 'vocab',
                     'relation' : o.relation,
-                    'choices_id' : o.choices_id
+                    'vocab' : o.vocab
                 })
             )) 
             for c in node.children
@@ -38,12 +40,18 @@ def to_dictionary(node: Node):
     }
 
 def to_constructor(n : Node) -> def_type.Constructor:
+
+    def fail():
+        assert False 
+
     return def_type.Constructor(
         n.name,
         [
-
             match_child(c, ChildHandlers[def_type.Field](
-                case_Grammar = lambda o : (
+                case_Terminal = lambda o : (
+                    fail()
+                ),
+                case_Nonterm = lambda o : (
                     def_type.Field(attr = o.relation, typ = o.nonterminal)
                 ),
                 case_Vocab = lambda o : (
@@ -51,5 +59,6 @@ def to_constructor(n : Node) -> def_type.Constructor:
                 )
             )) 
             for c in n.children
+            if not isinstance(c, Terminal)
         ]
     )

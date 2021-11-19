@@ -26,11 +26,11 @@ def test_string(sourceCode):
 
     generic_syntax_tree = generic_tree.parse('python', sourceCode, 'utf8')
 
-    print(f"""--Generic Tree--\n{
-        generic_tree.dump(generic_syntax_tree, 
-            text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-        )
-    }\n""")
+    # print(f"""--Generic Tree--\n{
+    #     generic_tree.dump(generic_syntax_tree, 
+    #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+    #     )
+    # }\n""")
 
     mod = from_generic_ast(generic_syntax_tree)
 
@@ -63,8 +63,8 @@ def test_string(sourceCode):
 
         print(f"--Concretized--\n{python_instance.concretize(instance_list)}\n")
         print(f"\n")
-        print(f"---Source Code---")
-        print(sourceCode)
+        # print(f"---Source Code---")
+        # print(sourceCode)
 
 def test_filename(fname):
     import logging
@@ -104,7 +104,7 @@ def test_mbpp():
 
     logging.basicConfig(level=logging.INFO)
     base_path = pathlib.Path(__file__).parent.absolute()
-    dirpath = os.path.join(base_path, "../res")
+    dirpath = os.path.join(base_path, "../res/mbpp/input")
     fpath = os.path.join(dirpath, "mbpp.jsonl")
 
     with open(fpath, 'r') as f:
@@ -134,4 +134,4 @@ def test_mbpp():
 
 
 
-# test_mbpp()
+test_mbpp()
