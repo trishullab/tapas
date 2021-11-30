@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from lib import def_type
 from lib import line_format_def_type
-from lib import production_instance_def_type
+from lib import instance_def_type
 
-from lib import schema
+import lib.rule
 from lib import python_schema
 
 from lib import def_serialize
@@ -27,11 +27,11 @@ write(dirpath, "line_format.py", (
     ])
 ))
 
-write(dirpath, "production_instance.py", (
+write(dirpath, "instance.py", (
     def_type.header +
     "\n\n" +
     "\n\n".join([
-        def_type.generate_choice(production_instance_def_type.type_name, production_instance_def_type.constructors)
+        def_type.generate_choice(instance_def_type.type_name, instance_def_type.constructors)
     ])
 ))
 
@@ -39,21 +39,21 @@ write(dirpath, "python_ast.py", (
     def_type.header +
     "\n\n" +
     "\n\n".join([
-        def_type.generate_single(schema.to_constructor(node))
-        for node in python_schema.singles
+        def_type.generate_single(lib.rule.to_constructor(rule))
+        for rule in python_schema.singles
     ]) +
     "\n\n" +
     "\n\n".join([
         def_type.generate_choice(type_name, [
-            schema.to_constructor(node)
-            for node in nodes 
+            lib.rule.to_constructor(rule)
+            for rule in rules 
         ])
-        for type_name, nodes in python_schema.choices.items()
+        for type_name, rules in python_schema.choices.items()
     ])
 ))
 
 
-write(dirpath, "python_ast_serialize.py", (
+write(dirpath, "python_serialize.py", (
     def_serialize.header +
     "\n\n" +
     "\n\n".join([

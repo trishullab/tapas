@@ -64,5 +64,4 @@ class LineFormatHandlers(Generic[T]):
 # matching for type line_format
 def match_line_format(o : line_format, handlers : LineFormatHandlers[T]) -> T :
     return o._match(handlers)
-
     

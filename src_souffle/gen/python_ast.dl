@@ -1,0 +1,293 @@
+.type Module = 
+    Module {body : statements}
+
+.type CompareRight = 
+    CompareRight {op : cmpop, rand : expr}
+
+.type ExceptHandler = 
+    ExceptHandler {arg : except_arg, body : statements}
+
+.type Param = 
+    Param {name : symbol, type : param_type, default : param_default}
+
+.type ImportName = 
+    ImportName {name : symbol, as_name : alias}
+
+.type Withitem = 
+    Withitem {contet : expr, target : alias_expr}
+
+.type ClassDef = 
+    ClassDef {name : symbol, bs : bases, body : statements}
+
+.type ElifBlock = 
+    ElifBlock {test : expr, body : statements}
+
+.type ElseBlock = 
+    ElseBlock {body : statements}
+
+.type FinallyBlock = 
+    FinallyBlock {body : statements}
+
+.type return_type = 
+    SomeReturnType {contents : expr} |
+    NoReturnType {}
+
+.type module_id = 
+    SomeModuleId {contents : symbol} |
+    NoModuleId {}
+
+.type except_arg = 
+    SomeExceptArg {contents : expr} |
+    SomeExceptArgName {contents : expr, name : symbol} |
+    NoExceptArg {}
+
+.type param_type = 
+    SomeParamType {contents : expr} |
+    NoParamType {}
+
+.type param_default = 
+    SomeParamDefault {contents : expr} |
+    NoParamDefault {}
+
+.type parameters_d = 
+    ConsKwParam {head : Param, tail : parameters_d} |
+    SingleKwParam {contents : Param} |
+    DictionarySplatParam {contents : Param}
+
+.type parameters_c = 
+    SingleListSplatParam {contents : Param} |
+    TransListSplatParam {head : Param, tail : parameters_d} |
+    ParamsD {contents : parameters_d}
+
+.type parameters_b = 
+    ConsParam {head : Param, tail : parameters_b} |
+    SingleParam {contents : Param} |
+    ParamsC {contents : parameters_c}
+
+.type parameters = 
+    ParamsA {contents : parameters_a} |
+    ParamsB {contents : parameters_b} |
+    NoParam {}
+
+.type parameters_a = 
+    ConsPosParam {head : Param, tail : parameters_a} |
+    SinglePosParam {contents : Param} |
+    TransPosParam {head : Param, tail : parameters_b}
+
+.type keyword = 
+    NamedKeyword {name : symbol, contents : expr} |
+    SplatKeyword {contents : expr}
+
+.type alias = 
+    SomeAlias {contents : symbol} |
+    NoAlias {}
+
+.type alias_expr = 
+    SomeAliasExpr {contents : expr} |
+    NoAliasExpr {}
+
+.type bases = 
+    SomeBases {bases : bases_a} |
+    NoBases {}
+
+.type bases_a = 
+    ConsBase {head : expr, tail : bases_a} |
+    SingleBase {contents : expr} |
+    KeywordsBase {kws : keywords}
+
+.type keywords = 
+    ConsKeyword {head : keyword, tail : keywords} |
+    SingleKeyword {contents : keyword}
+
+.type comparisons = 
+    ConsCompareRight {head : CompareRight, tail : comparisons} |
+    SingleCompareRight {contents : CompareRight}
+
+.type option_expr = 
+    SomeExpr {contents : expr} |
+    NoExpr {}
+
+.type comma_exprs = 
+    ConsExpr {head : expr, tail : comma_exprs} |
+    SingleExpr {contents : expr}
+
+.type target_exprs = 
+    ConsTargetExpr {head : expr, tail : target_exprs} |
+    SingleTargetExpr {contents : expr}
+
+.type decorators = 
+    ConsDec {head : expr, tail : decorators} |
+    NoDec {}
+
+.type constraint_filters = 
+    ConsFilter {head : expr, tail : constraint_filters} |
+    SingleFilter {contents : expr} |
+    NoFilter {}
+
+.type sequence_string = 
+    ConsStr {head : symbol, tail : sequence_string} |
+    SingleStr {contents : symbol}
+
+.type arguments = 
+    ConsArg {head : expr, tail : arguments} |
+    SingleArg {contents : expr} |
+    KeywordsArg {kws : keywords}
+
+.type dictionary_item = 
+    Field {key : expr, contents : expr} |
+    DictionarySplatFields {contents : expr}
+
+.type dictionary_contents = 
+    ConsDictionaryItem {head : dictionary_item, tail : dictionary_contents} |
+    SingleDictionaryItem {contents : dictionary_item}
+
+.type sequence_var = 
+    ConsId {head : symbol, tail : sequence_var} |
+    SingleId {contents : symbol}
+
+.type sequence_ImportName = 
+    ConsImportName {head : ImportName, tail : sequence_ImportName} |
+    SingleImportName {contents : ImportName}
+
+.type sequence_Withitem = 
+    ConsWithitem {head : Withitem, tail : sequence_Withitem} |
+    SingleWithitem {contents : Withitem}
+
+.type statements = 
+    ConsStmt {head : stmt, tail : statements} |
+    SingleStmt {contents : stmt}
+
+.type comprehension_constraints = 
+    ConsConstraint {head : constraint, tail : comprehension_constraints} |
+    SingleConstraint {contents : constraint}
+
+.type sequence_ExceptHandler = 
+    ConsExceptHandler {head : ExceptHandler, tail : sequence_ExceptHandler} |
+    SingleExceptHandler {contents : ExceptHandler}
+
+.type conditions = 
+    ElifCond {contents : ElifBlock, tail : conditions} |
+    ElseCond {contents : ElseBlock} |
+    NoCond {}
+
+.type function_def = 
+    FunctionDef {name : symbol, params : parameters, ret_typ : return_type, body : statements} |
+    AsyncFunctionDef {name : symbol, params : parameters, ret_typ : return_type, body : statements}
+
+.type stmt = 
+    DecFunctionDef {decs : decorators, fun_def : function_def} |
+    DecAsyncFunctionDef {decs : decorators, fun_def : function_def} |
+    DecClassDef {decs : decorators, class_def : ClassDef} |
+    ReturnSomething {contents : expr} |
+    Return {} |
+    Delete {targets : comma_exprs} |
+    Assign {targets : target_exprs, contents : expr} |
+    AugAssign {target : expr, op : operator, contents : expr} |
+    TypedAssign {target : expr, type : expr, contents : expr} |
+    TypedDeclare {target : expr, type : expr} |
+    For {target : expr, iter : expr, body : statements} |
+    ForElse {target : expr, iter : expr, body : statements, orelse : ElseBlock} |
+    AsyncFor {target : expr, iter : expr, body : statements} |
+    AsyncForElse {target : expr, iter : expr, body : statements, orelse : ElseBlock} |
+    While {test : expr, body : statements} |
+    WhileElse {test : expr, body : statements, orelse : ElseBlock} |
+    If {test : expr, body : statements, orelse : conditions} |
+    With {items : sequence_Withitem, body : statements} |
+    AsyncWith {items : sequence_Withitem, body : statements} |
+    Raise {} |
+    RaiseExc {exc : expr} |
+    RaiseFrom {exc : expr, caus : expr} |
+    Try {body : statements, handlers : sequence_ExceptHandler} |
+    TryElse {body : statements, handlers : sequence_ExceptHandler, orelse : ElseBlock} |
+    TryFin {body : statements, handlers : sequence_ExceptHandler, fin : FinallyBlock} |
+    TryElseFin {body : statements, handlers : sequence_ExceptHandler, orelse : ElseBlock, fin : FinallyBlock} |
+    Assert {test : expr} |
+    AssertMsg {test : expr, msg : expr} |
+    Import {names : sequence_ImportName} |
+    ImportFrom {module : module_id, names : sequence_ImportName} |
+    ImportWildCard {module : module_id} |
+    Global {names : sequence_var} |
+    Nonlocal {names : sequence_var} |
+    Expr {contents : expr} |
+    Pass {} |
+    Break {} |
+    Continue {}
+
+.type expr = 
+    BoolOp {left : expr, op : boolop, right : expr} |
+    NamedExpr {target : expr, contents : expr} |
+    BinOp {left : expr, op : operator, right : expr} |
+    UnaryOp {op : unaryop, right : expr} |
+    Lambda {params : parameters, body : expr} |
+    IfExp {body : expr, test : expr, orelse : expr} |
+    Dictionary {contents : dictionary_contents} |
+    EmptyDictionary {} |
+    Set {contents : comma_exprs} |
+    ListComp {contents : expr, constraints : comprehension_constraints} |
+    SetComp {contents : expr, constraints : comprehension_constraints} |
+    DictionaryComp {key : expr, contents : expr, constraints : comprehension_constraints} |
+    GeneratorExp {contents : expr, constraints : comprehension_constraints} |
+    Await {contents : expr} |
+    YieldNothing {} |
+    Yield {contents : expr} |
+    YieldFrom {contents : expr} |
+    Compare {left : expr, comps : comparisons} |
+    Call {func : expr} |
+    CallArgs {func : expr, args : arguments} |
+    Integer {contents : symbol} |
+    Float {contents : symbol} |
+    ConcatString {contents : sequence_string} |
+    True_ {} |
+    False_ {} |
+    None_ {} |
+    Ellip {} |
+    Attribute {contents : expr, name : symbol} |
+    Subscript {contents : expr, slice : expr} |
+    Starred {contents : expr} |
+    Name {contents : symbol} |
+    List {contents : comma_exprs} |
+    EmptyList {} |
+    Tuple {contents : comma_exprs} |
+    EmptyTuple {} |
+    Slice {lower : option_expr, upper : option_expr, step : option_expr}
+
+.type boolop = 
+    And {} |
+    Or {}
+
+.type operator = 
+    Add {} |
+    Sub {} |
+    Mult {} |
+    MatMult {} |
+    Div {} |
+    Mod {} |
+    Pow {} |
+    LShift {} |
+    RShift {} |
+    BitOr {} |
+    BitXor {} |
+    BitAnd {} |
+    FloorDiv {}
+
+.type unaryop = 
+    Invert {} |
+    Not {} |
+    UAdd {} |
+    USub {}
+
+.type cmpop = 
+    Eq {} |
+    NotEq {} |
+    Lt {} |
+    LtE {} |
+    Gt {} |
+    GtE {} |
+    Is {} |
+    IsNot {} |
+    In {} |
+    NotIn {}
+
+.type constraint = 
+    AsyncConstraint {target : expr, search_space : expr, filts : constraint_filters} |
+    Constraint {target : expr, search_space : expr, filts : constraint_filters}

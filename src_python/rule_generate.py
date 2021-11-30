@@ -14,7 +14,7 @@ type_code = (
     "\n\n" +
     "from gen.line_format import line_format" +
     "\n\n" +
-    def_type.generate_choice("child", [
+    def_type.generate_choice("item", [
         Constructor(
             "Terminal",
             [
@@ -44,10 +44,10 @@ type_code = (
     "\n\n" +
     def_type.generate_single(
         Constructor(
-            "Node",
+            "Rule",
             [
                 Field('name', 'str'), 
-                Field('children', 'list[child]')
+                Field('content', 'list[item]')
             ]
         )
     )
@@ -56,7 +56,7 @@ type_code = (
 
 base_path = pathlib.Path(__file__).parent.absolute()
 dirpath = os.path.join(base_path, 'gen')
-write(dirpath, "schema.py", type_code)
+write(dirpath, "rule.py", type_code)
 
 
 

@@ -1,16 +1,15 @@
 from __future__ import annotations
-from gen.schema import ChildHandlers
-
-from lib.schema import Node, Vocab, Terminal, Nonterm 
-from lib import schema
+from gen.rule import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
 from gen.line_format import NewLine, InLine, IndentLine
+import lib.rule
 
 
-choices : dict[str, list[Node]] = {
+
+choices : dict[str, list[Rule]] = {
 
     "return_type" : [
 
-        Node(
+        Rule(
             "SomeReturnType",
             [
                 Terminal(" -> "),
@@ -18,7 +17,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoReturnType",
             []
         )
@@ -26,14 +25,14 @@ choices : dict[str, list[Node]] = {
 
     "module_id" : [
 
-        Node(
+        Rule(
             "SomeModuleId",
             [
                 Vocab("contents", "module_identifier")
             ]
         ),
 
-        Node(
+        Rule(
             "NoModuleId",
             [
                 Terminal(".")
@@ -42,7 +41,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "except_arg" : [
-        Node(
+        Rule(
             "SomeExceptArg",
             [
                 Terminal(" "),
@@ -50,7 +49,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SomeExceptArgName",
             [
                 Terminal(" "),
@@ -60,14 +59,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoExceptArg",
             []
         )
     ],
 
     "param_type" : [
-        Node(
+        Rule(
             "SomeParamType",
             [
                 Terminal(" : "),
@@ -75,14 +74,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoParamType",
             []
         ),
     ],
 
     "param_default" : [
-        Node(
+        Rule(
             "SomeParamDefault",
             [
                 Terminal(" = "),
@@ -90,14 +89,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoParamDefault",
             []
         ),
     ],
 
     "parameters_d" : [
-        Node(
+        Rule(
             "ConsKwParam",
             [
                 Nonterm("head", "Param", InLine()),
@@ -106,14 +105,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleKwParam",
             [
                 Nonterm("contents", "Param", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "DictionarySplatParam",
             [
                 Terminal("**"),
@@ -124,7 +123,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "parameters_c" : [
-        Node(
+        Rule(
             "SingleListSplatParam",
             [
                 Terminal("*"),
@@ -132,7 +131,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "TransListSplatParam",
             [
                 Terminal("*"),
@@ -142,7 +141,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "ParamsD",
             [
                 Terminal("*, "),
@@ -152,7 +151,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "parameters_b" : [
-        Node(
+        Rule(
             "ConsParam",
             [
                 Nonterm("head", "Param", InLine()),
@@ -161,14 +160,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleParam",
             [
                 Nonterm("contents", "Param", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "ParamsC",
             [
                 Nonterm("contents", "parameters_c", InLine())
@@ -178,7 +177,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "parameters" : [
-        Node(
+        Rule(
             "ParamsA",
             [
                 Nonterm("contents", "parameters_a", InLine())
@@ -186,14 +185,14 @@ choices : dict[str, list[Node]] = {
         ),
 
 
-        Node(
+        Rule(
             "ParamsB",
             [
                 Nonterm("contents", "parameters_b", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "NoParam",
             []
         )
@@ -201,7 +200,7 @@ choices : dict[str, list[Node]] = {
 
 
     "parameters_a" : [
-        Node(
+        Rule(
             "ConsPosParam",
             [
                 Nonterm("head", "Param", InLine()),
@@ -210,7 +209,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SinglePosParam",
             [
                 Nonterm("contents", "Param", InLine()),
@@ -218,7 +217,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "TransPosParam",
             [
                 Nonterm("head", "Param", InLine()),
@@ -232,7 +231,7 @@ choices : dict[str, list[Node]] = {
 
     "keyword" : [
 
-        Node(
+        Rule(
             "NamedKeyword",
             [
                 Vocab("name", "identifier"),
@@ -241,7 +240,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SplatKeyword",
             [
                 Terminal("**"),
@@ -252,7 +251,7 @@ choices : dict[str, list[Node]] = {
 
     "alias" : [
 
-        Node(
+        Rule(
             "SomeAlias",
             [
                 Terminal(" as "),
@@ -260,7 +259,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoAlias",
             []
         ),
@@ -269,7 +268,7 @@ choices : dict[str, list[Node]] = {
 
     "alias_expr" : [
 
-        Node(
+        Rule(
             "SomeAliasExpr",
             [
                 Terminal(" as "),
@@ -277,7 +276,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoAliasExpr",
             []
         ),
@@ -285,7 +284,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "bases" : [
-        Node(
+        Rule(
             "SomeBases",
             [
                 Terminal("("),
@@ -294,14 +293,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoBases",
             []
         )
     ],
 
     "bases_a" : [
-        Node(
+        Rule(
             "ConsBase",
             [
                 Nonterm("head", "expr", InLine()),
@@ -310,14 +309,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleBase",
             [
                 Nonterm("contents", "expr", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "KeywordsBase",
             [
                 Nonterm("kws", "keywords", InLine())
@@ -327,7 +326,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "keywords" : [
-        Node(
+        Rule(
             "ConsKeyword",
             [
                 Nonterm("head", "keyword", InLine()),
@@ -336,7 +335,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleKeyword",
             [
                 Nonterm("contents", "keyword", InLine()),
@@ -346,7 +345,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "comparisons" : [
-        Node(
+        Rule(
             "ConsCompareRight",
             [
                 Nonterm("head", "CompareRight", InLine()),
@@ -355,7 +354,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleCompareRight",
             [
                 Nonterm("contents", "CompareRight", InLine())
@@ -365,14 +364,14 @@ choices : dict[str, list[Node]] = {
     ],
 
     "option_expr" : [
-        Node(
+        Rule(
             "SomeExpr",
             [
                 Nonterm("contents", "expr", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "NoExpr",
             []
         )
@@ -380,7 +379,7 @@ choices : dict[str, list[Node]] = {
 
 
     "comma_exprs" : [
-        Node(
+        Rule(
             "ConsExpr",
             [
                 Nonterm("head", "expr", InLine()),
@@ -389,7 +388,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleExpr",
             [
                 Nonterm("contents", "expr", InLine())
@@ -399,7 +398,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "target_exprs" : [
-        Node(
+        Rule(
             "ConsTargetExpr",
             [
                 Nonterm("head", "expr", InLine()),
@@ -408,7 +407,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleTargetExpr",
             [
                 Nonterm("contents", "expr", InLine())
@@ -418,7 +417,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "decorators" : [
-        Node(
+        Rule(
             "ConsDec",
             [
                 Terminal("@"),
@@ -427,7 +426,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoDec",
             []
         ),
@@ -435,7 +434,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "constraint_filters" : [
-        Node(
+        Rule(
             "ConsFilter",
             [
                 Terminal("if "),
@@ -444,7 +443,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleFilter",
             [
                 Terminal("if "),
@@ -452,7 +451,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NoFilter",
             []
         ),
@@ -460,7 +459,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "sequence_string" : [
-        Node(
+        Rule(
             "ConsStr",
             [
                 Vocab("head", "string"),
@@ -469,7 +468,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleStr",
             [
                 Vocab("contents", "string"),
@@ -479,7 +478,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "arguments" : [
-        Node(
+        Rule(
             "ConsArg",
             [
                 Nonterm("head", "expr", InLine()),
@@ -488,14 +487,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleArg",
             [
                 Nonterm("contents", "expr", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "KeywordsArg",
             [
                 Nonterm("kws", "keywords", InLine())
@@ -506,7 +505,7 @@ choices : dict[str, list[Node]] = {
 
     "dictionary_item" : [
 
-        Node(
+        Rule(
             "Field",
             [
                 Nonterm("key", "expr", InLine()),
@@ -515,7 +514,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "DictionarySplatFields",
             [
                 Terminal("**"),
@@ -526,7 +525,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "dictionary_contents" : [
-        Node(
+        Rule(
             "ConsDictionaryItem",
             [
                 Nonterm("head", "dictionary_item", InLine()),
@@ -535,7 +534,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleDictionaryItem",
             [
                 Nonterm("contents", "dictionary_item", InLine())
@@ -545,7 +544,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "sequence_var" : [
-        Node(
+        Rule(
             "ConsId",
             [
                 Vocab("head", "identifier"),
@@ -554,7 +553,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleId",
             [
                 Vocab("contents", "identifier")
@@ -565,7 +564,7 @@ choices : dict[str, list[Node]] = {
 
 
     "sequence_ImportName" : [
-        Node(
+        Rule(
             "ConsImportName",
             [
                 Nonterm("head", "ImportName", InLine()),
@@ -574,7 +573,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleImportName",
             [
                 Nonterm("contents", "ImportName", InLine())
@@ -584,7 +583,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "sequence_Withitem" : [
-        Node(
+        Rule(
             "ConsWithitem",
             [
                 Nonterm("head", "Withitem", InLine()),
@@ -593,7 +592,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleWithitem",
             [
                 Nonterm("contents", "Withitem", InLine())
@@ -604,7 +603,7 @@ choices : dict[str, list[Node]] = {
 
 
     "statements" : [
-        Node(
+        Rule(
             "ConsStmt",
             [
                 Nonterm("head", "stmt", InLine()),
@@ -612,7 +611,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleStmt",
             [
                 Nonterm("contents", "stmt", InLine())
@@ -622,7 +621,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "comprehension_constraints" : [
-        Node(
+        Rule(
             "ConsConstraint",
             [
                 Nonterm("head", "constraint", InLine()),
@@ -630,7 +629,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleConstraint",
             [
                 Nonterm("contents", "constraint", InLine())
@@ -640,7 +639,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "sequence_ExceptHandler" : [
-        Node(
+        Rule(
             "ConsExceptHandler",
             [
                 Nonterm("head", "ExceptHandler", InLine()),
@@ -648,7 +647,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SingleExceptHandler",
             [
                 Nonterm("contents", "ExceptHandler", InLine())
@@ -659,7 +658,7 @@ choices : dict[str, list[Node]] = {
 
     "conditions" : [
 
-        Node(
+        Rule(
             "ElifCond",
             [
                 Nonterm("contents", "ElifBlock", NewLine()),
@@ -667,14 +666,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "ElseCond",
             [
                 Nonterm("contents", "ElseBlock", NewLine())
             ]
         ),
 
-        Node(
+        Rule(
             "NoCond",
             []
         )
@@ -682,7 +681,7 @@ choices : dict[str, list[Node]] = {
     ],
 
     "function_def" : [
-        Node(
+        Rule(
             "FunctionDef",
             [ 
                 Terminal("def "),
@@ -696,7 +695,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "AsyncFunctionDef",
             [
                 Terminal("async def "),
@@ -713,7 +712,7 @@ choices : dict[str, list[Node]] = {
 
 
     "stmt" : [
-        Node(
+        Rule(
             "DecFunctionDef",
             [ 
                 Nonterm("decs", "decorators", InLine()),
@@ -721,7 +720,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "DecAsyncFunctionDef",
             [
                 Nonterm("decs", "decorators", InLine()),
@@ -729,7 +728,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "DecClassDef",
             [
                 Nonterm("decs", "decorators", InLine()),
@@ -738,7 +737,7 @@ choices : dict[str, list[Node]] = {
         ),
 
 
-        Node(
+        Rule(
             "ReturnSomething",
             [
                 Terminal("return "), 
@@ -746,14 +745,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Return",
             [
                 Terminal("return ")
             ]
         ),
 
-        Node(
+        Rule(
             "Delete",
             [
                 Terminal("del"),
@@ -761,7 +760,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Assign",
             [
                 Nonterm("targets", "target_exprs", InLine()),
@@ -770,7 +769,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "AugAssign",
             [
                 Nonterm("target", "expr", InLine()),
@@ -781,7 +780,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "TypedAssign", 
             [
                 Nonterm("target", "expr", InLine()),
@@ -792,7 +791,7 @@ choices : dict[str, list[Node]] = {
             ],
         ),
 
-        Node(
+        Rule(
             "TypedDeclare", 
             [
                 Nonterm("target", "expr", InLine()),
@@ -801,7 +800,7 @@ choices : dict[str, list[Node]] = {
             ],
         ),
 
-        Node(
+        Rule(
             "For",
             [
                 Terminal("for "),
@@ -813,7 +812,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "ForElse",
             [
                 Terminal("for "),
@@ -826,7 +825,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "AsyncFor",
             [
                 Terminal("async for "),
@@ -838,7 +837,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "AsyncForElse",
             [
                 Terminal("async for "),
@@ -851,7 +850,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "While",
             [
                 Terminal("while "),
@@ -861,7 +860,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "WhileElse",
             [
                 Terminal("while "),
@@ -872,7 +871,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "If",
             [
                 Terminal("if "),
@@ -883,7 +882,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "With",
             [
                 Terminal("with "),
@@ -893,7 +892,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "AsyncWith",
             [
                 Terminal("async with "),
@@ -903,14 +902,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Raise",
             [
                 Terminal("raise")
             ]
         ),
 
-        Node(
+        Rule(
             "RaiseExc",
             [
                 Terminal("raise"),
@@ -918,7 +917,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "RaiseFrom",
             [
                 Terminal("raise"),
@@ -929,7 +928,7 @@ choices : dict[str, list[Node]] = {
         ),
 
 
-        Node(
+        Rule(
             "Try",
             [
                 Terminal("try:"),
@@ -938,7 +937,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "TryElse",
             [
                 Terminal("try:"),
@@ -948,7 +947,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "TryFin",
             [
                 Terminal("try:"),
@@ -958,7 +957,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "TryElseFin",
             [
                 Terminal("try:"),
@@ -970,7 +969,7 @@ choices : dict[str, list[Node]] = {
         ),
 
 
-        Node(
+        Rule(
             "Assert",
             [
                 Terminal("assert "),
@@ -978,7 +977,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "AssertMsg",
             [
                 Terminal("assert "),
@@ -990,7 +989,7 @@ choices : dict[str, list[Node]] = {
 
 
 
-        Node(
+        Rule(
             "Import",
             [
                 Terminal("import "),
@@ -998,7 +997,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "ImportFrom",
             [
                 Terminal("from "),
@@ -1008,7 +1007,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "ImportWildCard",
             [
                 Terminal("from "),
@@ -1017,7 +1016,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Global",
             [
                 Terminal("global "),
@@ -1025,7 +1024,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Nonlocal",
             [
                 Terminal("nonlocal "),
@@ -1033,28 +1032,28 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Expr",
             [
                 Nonterm("contents", "expr", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "Pass",
             [
                 Terminal("pass")
             ]
         ),
 
-        Node(
+        Rule(
             "Break",
             [
                 Terminal("break")
             ]
         ),
 
-        Node(
+        Rule(
             "Continue",
             [
                 Terminal("continue")
@@ -1065,7 +1064,7 @@ choices : dict[str, list[Node]] = {
 
     "expr" : [
 
-        Node(
+        Rule(
             "BoolOp",
             [
                 Terminal("("),
@@ -1078,7 +1077,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "NamedExpr",
             [
                 Nonterm("target", "expr", InLine()),
@@ -1087,7 +1086,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "BinOp",
             [
                 Terminal("("),
@@ -1100,7 +1099,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "UnaryOp",
             [
                 Terminal("("),
@@ -1111,7 +1110,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Lambda",
             [
                 Terminal("lambda "),
@@ -1121,7 +1120,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "IfExp",
             [
                 Nonterm("body", "expr", InLine()),
@@ -1132,7 +1131,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Dictionary",
             [
                 Terminal("{"),
@@ -1141,14 +1140,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "EmptyDictionary",
             [
                 Terminal("{}")
             ]
         ),
 
-        Node(
+        Rule(
             "Set",
             [
                 Terminal("{"),
@@ -1157,7 +1156,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "ListComp",
             [
                 Terminal("["),
@@ -1167,7 +1166,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "SetComp",
             [
                 Terminal("{"),
@@ -1177,7 +1176,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "DictionaryComp",
             [
                 Terminal("{"),
@@ -1189,7 +1188,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "GeneratorExp",
             [
                 Terminal("("),
@@ -1199,7 +1198,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Await",
             [
                 Terminal("await "),
@@ -1207,14 +1206,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "YieldNothing",
             [
                 Terminal("yield")
             ]
         ),
 
-        Node(
+        Rule(
             "Yield",
             [
                 Terminal("yield "),
@@ -1222,7 +1221,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "YieldFrom",
             [
                 Terminal("yield from "),
@@ -1232,7 +1231,7 @@ choices : dict[str, list[Node]] = {
 
         # need sequences for compare to distinguish between
         # x < 4 < 3 and (x < 4) < 3
-        Node(
+        Rule(
             "Compare",
             [
                 Nonterm("left", "expr", InLine()),
@@ -1241,7 +1240,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Call",
             [
                 Nonterm("func", "expr", InLine()),
@@ -1249,7 +1248,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "CallArgs",
             [
                 Nonterm("func", "expr", InLine()),
@@ -1259,35 +1258,35 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Integer",
             [
                 Vocab("contents", "integer")
             ]
         ),
 
-        Node(
+        Rule(
             "Float",
             [
                 Vocab("contents", "float")
             ]
         ),
 
-        Node(
+        Rule(
             "ConcatString",
             [
                 Nonterm("contents", "sequence_string", InLine())
             ]
         ),
 
-        Node(
+        Rule(
             "True_",
             [
                 Terminal("True")
             ]
         ),
 
-        Node(
+        Rule(
             "False_",
             [
                 Terminal("False")
@@ -1295,21 +1294,21 @@ choices : dict[str, list[Node]] = {
         ),
 
 
-        Node(
+        Rule(
             "None_",
             [
                 Terminal("None")
             ]
         ),
 
-        Node(
+        Rule(
             "Ellip",
             [
                 Terminal("...")
             ]
         ),
 
-        Node(
+        Rule(
             "Attribute",
             [
                 Nonterm("contents", "expr", InLine()),
@@ -1318,7 +1317,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Subscript",
             [
                 Nonterm("contents", "expr", InLine()),
@@ -1328,7 +1327,7 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Starred",
             [
                 Terminal("*"),
@@ -1336,14 +1335,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "Name",
             [
                 Vocab("contents", "identifier")
             ]
         ),
 
-        Node(
+        Rule(
             "List",
             [
                 Terminal("["),
@@ -1352,14 +1351,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "EmptyList",
             [
                 Terminal("[]"),
             ]
         ),
 
-        Node(
+        Rule(
             "Tuple",
             [
                 Terminal("("),
@@ -1368,14 +1367,14 @@ choices : dict[str, list[Node]] = {
             ]
         ),
 
-        Node(
+        Rule(
             "EmptyTuple",
             [
                 Terminal("()")
             ]
         ),
 
-        Node(
+        Rule(
             "Slice",
             [
                 Nonterm("lower", "option_expr", InLine()),
@@ -1389,14 +1388,14 @@ choices : dict[str, list[Node]] = {
     ],
 
     "boolop" : [
-        Node(
+        Rule(
             "And",
             [
                 Terminal("and")
             ] 
         ),
 
-        Node(
+        Rule(
             "Or",
             [
                 Terminal("or")
@@ -1405,141 +1404,141 @@ choices : dict[str, list[Node]] = {
     ], 
 
     "operator" : [
-        Node(
+        Rule(
             "Add",
             [Terminal("+")]
         ),
 
-        Node(
+        Rule(
             "Sub",
             [Terminal("-")]
         ),
 
-        Node(
+        Rule(
             "Mult",
             [Terminal("*")]
         ),
 
-        Node(
+        Rule(
             "MatMult",
             [Terminal("@")]
         ),
 
-        Node(
+        Rule(
             "Div",
             [Terminal("/")]
         ),
 
-        Node(
+        Rule(
             "Mod",
             [Terminal("%")]
         ),
 
-        Node(
+        Rule(
             "Pow",
             [Terminal("**")]
         ),
 
-        Node(
+        Rule(
             "LShift",
             [Terminal("<<")]
         ),
 
-        Node(
+        Rule(
             "RShift",
             [Terminal(">>")]
         ),
 
-        Node(
+        Rule(
             "BitOr",
             [Terminal("|")]
         ),
 
-        Node(
+        Rule(
             "BitXor",
             [Terminal("^")]
         ),
 
-        Node(
+        Rule(
             "BitAnd",
             [Terminal("&")]
         ),
 
-        Node(
+        Rule(
             "FloorDiv",
             [Terminal("//")]
         ),
     ],
 
     "unaryop" : [
-        Node(
+        Rule(
             "Invert",
             [Terminal("~")]
         ),
 
-        Node(
+        Rule(
             "Not",
             [Terminal("not")]
         ),
 
-        Node(
+        Rule(
             "UAdd",
             [Terminal("+")]
         ),
 
-        Node(
+        Rule(
             "USub",
             [Terminal("-")]
         ),
     ],
 
     "cmpop" : [
-        Node(
+        Rule(
             "Eq",
             [Terminal("==")]
         ),
 
-        Node(
+        Rule(
             "NotEq",
             [Terminal("!=")]
         ),
 
-        Node(
+        Rule(
             "Lt",
             [Terminal("<")]
         ),
 
-        Node(
+        Rule(
             "LtE",
             [Terminal("<=")]
         ),
 
-        Node(
+        Rule(
             "Gt",
             [Terminal(">")]
         ),
 
-        Node(
+        Rule(
             "GtE",
             [Terminal(">=")]
         ),
 
-        Node(
+        Rule(
             "Is",
             [Terminal("is")]
         ),
 
-        Node(
+        Rule(
             "IsNot",
             [Terminal("is not")]
         ),
 
-        Node(
+        Rule(
             "In",
             [Terminal("in")]
         ),
 
-        Node(
+        Rule(
             "NotIn",
             [Terminal("not in")]
         ),
@@ -1547,7 +1546,7 @@ choices : dict[str, list[Node]] = {
 
     "constraint" : [
 
-        Node(
+        Rule(
             "AsyncConstraint",
             [
                 Terminal("async for "),
@@ -1558,7 +1557,7 @@ choices : dict[str, list[Node]] = {
             ] 
         ),
 
-        Node(
+        Rule(
             "Constraint",
             [
                 Terminal("for "),
@@ -1573,16 +1572,16 @@ choices : dict[str, list[Node]] = {
 }
 
 
-singles : list[Node] = [
+singles : list[Rule] = [
 
-    Node(
+    Rule(
         "Module",
         [
             Nonterm("body", "statements", InLine())
         ]
     ),
 
-    Node(
+    Rule(
         "CompareRight",
         [
             Nonterm("op", "cmpop", InLine()),
@@ -1591,7 +1590,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "ExceptHandler",
         [
             Terminal("except "),
@@ -1601,7 +1600,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "Param",
         [
             Vocab("name", "identifier"),
@@ -1610,7 +1609,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "ImportName",
         [
             Vocab("name", "module_identifier"),
@@ -1619,7 +1618,7 @@ singles : list[Node] = [
     ),
 
 
-    Node(
+    Rule(
         "Withitem",
         [
             Nonterm("contet", "expr", InLine()),
@@ -1627,7 +1626,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "ClassDef",
         [
             Terminal("class "),
@@ -1638,7 +1637,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "ElifBlock",
         [
             Terminal("elif "),
@@ -1648,7 +1647,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "ElseBlock",
         [
             Terminal("else:"),
@@ -1656,7 +1655,7 @@ singles : list[Node] = [
         ]
     ),
 
-    Node(
+    Rule(
         "FinallyBlock",
         [
             Terminal("finally:"),
@@ -1668,20 +1667,22 @@ singles : list[Node] = [
 ]
 
 # map from a node id (sequence id) to node (sequence) 
-node_map = {
-    node.name : node 
-    for node in singles
+rule_map = {
+    r.name : r 
+    for r in singles
 } | {
-    node.name : node 
-    for nodes in choices.values()
-    for node in nodes 
+    r.name : r 
+    for rs in choices.values()
+    for r in rs 
 }
 
+nonterminal_map = {
+    rule.name : [rule]
+    for rule in singles 
+} | choices
+
 # map from a nonterminal to choices of nodes (sequences)
-grammar = {
-    node.name : [schema.to_dictionary(node)]
-    for node in singles 
-} | {
-    name : [schema.to_dictionary(node) for node in nodes]
-    for name, nodes in choices.items()
+portable = {
+    name : [lib.rule.to_dictionary(rule) for rule in rules]
+    for name, rules in nonterminal_map.items()
 }

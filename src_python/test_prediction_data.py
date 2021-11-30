@@ -6,17 +6,17 @@ import os
 import pathlib
 import tree_sitter
 import json
-from gen.production_instance import InstanceHandlers, match_instance
+from gen.instance import InstanceHandlers, match_instance
 
 from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_ast_serialize import serialize_Module
-from lib import python_instance
+from gen.python_serialize import serialize_Module
+import lib.python_sequence
 from lib.file import write
 
-from lib.production_instance import instance
-from lib import production_instance as prod_inst
+from lib.instance import instance
+import lib.instance 
 
 import re
 
@@ -56,10 +56,10 @@ def test(fpath : str):
 
             prediction_instances : list[instance] = [
                 (
-                    prod_inst.make_Grammar(triple[1], triple[2])
+                    lib.instance.make_Grammar(triple[1], triple[2])
                     if triple[0] == "grammar" else
 
-                    prod_inst.make_Vocab(triple[1], triple[2])
+                    lib.instance.make_Vocab(triple[1], triple[2])
 
                 )
                 for triple in triples
@@ -76,7 +76,7 @@ def test(fpath : str):
             # print(python_instance.dump(prediction_instances))
 
 
-            concrete_code = python_instance.concretize(prediction_instances)
+            concrete_code = lib.python_sequence.concretize(prediction_instances)
             print(f"\n-------------------------\n")
             print(f"concretized:")
             print(concrete_code)

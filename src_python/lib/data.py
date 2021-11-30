@@ -6,45 +6,43 @@ import os
 import pathlib
 import tree_sitter
 import json
-from gen.production_instance import InstanceHandlers, match_instance
+from gen.instance import InstanceHandlers, match_instance
 
 from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_ast_serialize import serialize_Module
-from lib import python_instance
+from gen.python_serialize import serialize_Module
 from lib.file import write
 
-from lib.production_instance import instance
-from gen import python_ast_rename
+from lib.instance import instance
 
 base_path = pathlib.Path(__file__).parent.absolute()
 
 def generate_dir(dirname):
-    input_dirpath = os.path.join(base_path, f"../../res/{dirname}/input")
+    concrete_data_dirpath = os.path.join(base_path, f"../../res/{dirname}/concrete_data")
     vocab : dict[str, set[str]] = {}
 
-    output_dirpath = os.path.join(base_path, f"../../res/{dirname}/output")
-    write(output_dirpath, f'vocab.json', '')
+    abstract_data_dirpath = os.path.join(base_path, f"../../res/{dirname}/abstract_data")
+    write(abstract_data_dirpath, f'vocab.json', '')
 
     def generate_file(name : str):
-        nonlocal input_dirpath
+        nonlocal concrete_data_dirpath
         nonlocal vocab
 
         logging.basicConfig(level=logging.INFO)
 
-        input_path = os.path.join(input_dirpath, name)
+        concrete_data_path = os.path.join(concrete_data_dirpath, name)
 
-        output_base = name.split(".")[0]  
-        # write(output_dirpath, f'{output_base}_training.txt', '')
-        write(output_dirpath, f'{output_base}_json.txt', '')
-        write(output_dirpath, f'{output_base}_stats.txt', '')
+        abstract_data_base = name.split(".")[0]  
+        # write(abstract_data_dirpath, f'{abstract_data_base}_training.txt', '')
+        write(abstract_data_dirpath, f'{abstract_data_base}_json.txt', '')
+        write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', '')
 
         from datetime import datetime
 
         start = datetime.now()
 
-        with open(input_path, 'r') as f:
+        with open(concrete_data_path, 'r') as f:
             processed_count = 0
             rec_error_count = 0
             error_count = 0
@@ -96,10 +94,10 @@ def generate_dir(dirname):
                     def triple_from_instance(inst : instance) -> tuple[str, str, str]:
                         return match_instance(inst, InstanceHandlers[tuple[str, str, str]](
                             case_Grammar=lambda o : (
-                                ("grammar", o.nonterminal, o.sequence_id)
+                                ("grammar", o.options, o.selection)
                             ),
                             case_Vocab=lambda o : (
-                                ("vocab", o.choices_id, o.word)
+                                ("vocab", o.options, o.selection)
                             )
                         )) 
 
@@ -109,7 +107,7 @@ def generate_dir(dirname):
                     #     for i in instances
                     #     for t in [triple_from_instance(i)] 
                     # ]
-                    # write(output_dirpath, f'{output_base}_training.txt', "[" + ",".join(data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
+                    # write(abstract_data_dirpath, f'{abstract_data_base}_training.txt', "[" + ",".join(data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
 
 
                     json_data = []
@@ -118,7 +116,7 @@ def generate_dir(dirname):
                         for ti in triple:
                             json_data.append(ti)
 
-                    write(output_dirpath, f'{output_base}_json.txt', json.dumps(json_data) + '\n\n<|endoftext|>\n\n', append=True)
+                    write(abstract_data_dirpath, f'{abstract_data_base}_json.txt', json.dumps(json_data) + '\n\n<|endoftext|>\n\n', append=True)
 
                     def handle_Vocab(o):
                         if o.choices_id in vocab.keys():
@@ -195,13 +193,13 @@ def generate_dir(dirname):
             rec error count: {rec_error_count}
         """
 
-        write(output_dirpath, f'{output_base}_stats.txt', stats)
+        write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', stats)
 
 
-    for filename in os.listdir(input_dirpath):
+    for filename in os.listdir(concrete_data_dirpath):
         generate_file(filename)
 
-    write(output_dirpath, f'vocab.json', json.dumps(
+    write(abstract_data_dirpath, f'vocab.json', json.dumps(
         {
             k:list(v)
             for k,v in vocab.items()

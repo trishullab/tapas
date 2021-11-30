@@ -1,0 +1,11 @@
+#include "gen/python_ast.dl"
+#include "gen/instance.dl"
+#include "lib/sequence.dl"
+
+.init seq_split = split
+seq_split.in([$Grammar("0","0"), [$Grammar("1","1"), [$Grammar("2","2"), [$Grammar("3","3"), nil]]]]).
+//.input seq_split.in
+
+.decl seq_split_out(xs : sequence, ys : sequence)
+seq_split_out(xs, ys) :- seq_split.rel(xs, ys, zs), seq_split.in(zs).
+.output seq_split_out(IO=stdout)

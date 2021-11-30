@@ -131,7 +131,6 @@ class ReturnTypeHandlers(Generic[T]):
 # matching for type return_type
 def match_return_type(o : return_type, handlers : ReturnTypeHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -176,7 +175,6 @@ class ModuleIdHandlers(Generic[T]):
 # matching for type module_id
 def match_module_id(o : module_id, handlers : ModuleIdHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -234,7 +232,6 @@ class ExceptArgHandlers(Generic[T]):
 # matching for type except_arg
 def match_except_arg(o : except_arg, handlers : ExceptArgHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -279,7 +276,6 @@ class ParamTypeHandlers(Generic[T]):
 # matching for type param_type
 def match_param_type(o : param_type, handlers : ParamTypeHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -324,7 +320,6 @@ class ParamDefaultHandlers(Generic[T]):
 # matching for type param_default
 def match_param_default(o : param_default, handlers : ParamDefaultHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -382,7 +377,6 @@ class ParametersDHandlers(Generic[T]):
 # matching for type parameters_d
 def match_parameters_d(o : parameters_d, handlers : ParametersDHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -440,7 +434,6 @@ class ParametersCHandlers(Generic[T]):
 # matching for type parameters_c
 def match_parameters_c(o : parameters_c, handlers : ParametersCHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -498,7 +491,6 @@ class ParametersBHandlers(Generic[T]):
 # matching for type parameters_b
 def match_parameters_b(o : parameters_b, handlers : ParametersBHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -555,7 +547,6 @@ class ParametersHandlers(Generic[T]):
 # matching for type parameters
 def match_parameters(o : parameters, handlers : ParametersHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -614,7 +605,6 @@ class ParametersAHandlers(Generic[T]):
 # matching for type parameters_a
 def match_parameters_a(o : parameters_a, handlers : ParametersAHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -660,7 +650,6 @@ class KeywordHandlers(Generic[T]):
 # matching for type keyword
 def match_keyword(o : keyword, handlers : KeywordHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -705,7 +694,6 @@ class AliasHandlers(Generic[T]):
 # matching for type alias
 def match_alias(o : alias, handlers : AliasHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -750,7 +738,6 @@ class AliasExprHandlers(Generic[T]):
 # matching for type alias_expr
 def match_alias_expr(o : alias_expr, handlers : AliasExprHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -795,7 +782,6 @@ class BasesHandlers(Generic[T]):
 # matching for type bases
 def match_bases(o : bases, handlers : BasesHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -853,7 +839,6 @@ class BasesAHandlers(Generic[T]):
 # matching for type bases_a
 def match_bases_a(o : bases_a, handlers : BasesAHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -899,7 +884,6 @@ class KeywordsHandlers(Generic[T]):
 # matching for type keywords
 def match_keywords(o : keywords, handlers : KeywordsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -945,7 +929,6 @@ class ComparisonsHandlers(Generic[T]):
 # matching for type comparisons
 def match_comparisons(o : comparisons, handlers : ComparisonsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -990,7 +973,6 @@ class OptionExprHandlers(Generic[T]):
 # matching for type option_expr
 def match_option_expr(o : option_expr, handlers : OptionExprHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1036,7 +1018,6 @@ class CommaExprsHandlers(Generic[T]):
 # matching for type comma_exprs
 def match_comma_exprs(o : comma_exprs, handlers : CommaExprsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1082,7 +1063,6 @@ class TargetExprsHandlers(Generic[T]):
 # matching for type target_exprs
 def match_target_exprs(o : target_exprs, handlers : TargetExprsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1128,7 +1108,6 @@ class DecoratorsHandlers(Generic[T]):
 # matching for type decorators
 def match_decorators(o : decorators, handlers : DecoratorsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1186,7 +1165,6 @@ class ConstraintFiltersHandlers(Generic[T]):
 # matching for type constraint_filters
 def match_constraint_filters(o : constraint_filters, handlers : ConstraintFiltersHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1232,7 +1210,6 @@ class SequenceStringHandlers(Generic[T]):
 # matching for type sequence_string
 def match_sequence_string(o : sequence_string, handlers : SequenceStringHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1290,7 +1267,6 @@ class ArgumentsHandlers(Generic[T]):
 # matching for type arguments
 def match_arguments(o : arguments, handlers : ArgumentsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1336,7 +1312,6 @@ class DictionaryItemHandlers(Generic[T]):
 # matching for type dictionary_item
 def match_dictionary_item(o : dictionary_item, handlers : DictionaryItemHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1382,7 +1357,6 @@ class DictionaryContentsHandlers(Generic[T]):
 # matching for type dictionary_contents
 def match_dictionary_contents(o : dictionary_contents, handlers : DictionaryContentsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1428,7 +1402,6 @@ class SequenceVarHandlers(Generic[T]):
 # matching for type sequence_var
 def match_sequence_var(o : sequence_var, handlers : SequenceVarHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1474,7 +1447,6 @@ class SequenceImportNameHandlers(Generic[T]):
 # matching for type sequence_ImportName
 def match_sequence_ImportName(o : sequence_ImportName, handlers : SequenceImportNameHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1520,7 +1492,6 @@ class SequenceWithitemHandlers(Generic[T]):
 # matching for type sequence_Withitem
 def match_sequence_Withitem(o : sequence_Withitem, handlers : SequenceWithitemHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1566,7 +1537,6 @@ class StatementsHandlers(Generic[T]):
 # matching for type statements
 def match_statements(o : statements, handlers : StatementsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1612,7 +1582,6 @@ class ComprehensionConstraintsHandlers(Generic[T]):
 # matching for type comprehension_constraints
 def match_comprehension_constraints(o : comprehension_constraints, handlers : ComprehensionConstraintsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1658,7 +1627,6 @@ class SequenceExceptHandlerHandlers(Generic[T]):
 # matching for type sequence_ExceptHandler
 def match_sequence_ExceptHandler(o : sequence_ExceptHandler, handlers : SequenceExceptHandlerHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1716,7 +1684,6 @@ class ConditionsHandlers(Generic[T]):
 # matching for type conditions
 def match_conditions(o : conditions, handlers : ConditionsHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -1767,7 +1734,6 @@ class FunctionDefHandlers(Generic[T]):
 # matching for type function_def
 def match_function_def(o : function_def, handlers : FunctionDefHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -2269,7 +2235,6 @@ class StmtHandlers(Generic[T]):
 # matching for type stmt
 def match_stmt(o : stmt, handlers : StmtHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -2742,7 +2707,6 @@ class ExprHandlers(Generic[T]):
 # matching for type expr
 def match_expr(o : expr, handlers : ExprHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -2787,7 +2751,6 @@ class BoolopHandlers(Generic[T]):
 # matching for type boolop
 def match_boolop(o : boolop, handlers : BoolopHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -2964,7 +2927,6 @@ class OperatorHandlers(Generic[T]):
 # matching for type operator
 def match_operator(o : operator, handlers : OperatorHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -3033,7 +2995,6 @@ class UnaryopHandlers(Generic[T]):
 # matching for type unaryop
 def match_unaryop(o : unaryop, handlers : UnaryopHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -3174,7 +3135,6 @@ class CmpopHandlers(Generic[T]):
 # matching for type cmpop
 def match_cmpop(o : cmpop, handlers : CmpopHandlers[T]) -> T :
     return o._match(handlers)
-
     
 
 
@@ -3223,5 +3183,4 @@ class ConstraintHandlers(Generic[T]):
 # matching for type constraint
 def match_constraint(o : constraint, handlers : ConstraintHandlers[T]) -> T :
     return o._match(handlers)
-
     

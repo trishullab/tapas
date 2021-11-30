@@ -8,16 +8,16 @@ constructors = [
     Constructor(
         "Grammar",
         [
-            Field('nonterminal', 'str'),
-            Field('sequence_id', 'str')
+            Field('options', 'str'),
+            Field('selection', 'str')
         ]
     ),
 
     Constructor(
         "Vocab",
         [
-            Field('choices_id', 'str'),
-            Field('word', 'str')
+            Field('options', 'str'),
+            Field('selection', 'str')
         ]
     )
 ]

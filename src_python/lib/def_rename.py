@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import inflection
 import jinja2
 
-from lib import schema
+import lib.rule 
 from lib import line_format
 
 jinja_env = jinja2.Environment(trim_blocks=True)
@@ -33,15 +33,15 @@ from gen.line_format import InLine, NewLine, IndentLine
 
 
 single_str = """
-def rename_{{ node.name }}(
-    o : {{ node.name }}, 
+def rename_{{ rule.name }}(
+    o : {{ rule.name }}, 
     global_map : dict[str, str],
     nonlocal_map : dict[str, str],
     local_map : dict[str, str]
-) -> {{ node.name }}:
+) -> {{ rule.name }}:
 
-    return {{ node.name }}(
-{% for child in node.children %}
+    return {{ rule.name }}(
+{% for child in rule.children %}
 {% if is_vocab(child) %}
         o.{{ child.relation }}{% if not loop.last %}, {% endif %}
 {% else %}
@@ -58,16 +58,16 @@ def rename_{{ node.name }}(
 """
 
 
-def is_vocab(o : schema.child):
-    return isinstance(o, schema.Vocab)
+def is_vocab(o : lib.rule.item):
+    return isinstance(o, lib.rule.Vocab)
 
 def generate_single_def(
-    node : schema.Node 
+    rule : lib.rule.Rule 
 ) -> str:
     
     tmpl = jinja_env.from_string(single_str)
     code : str = tmpl.render(
-        node = node,
+        rule = rule,
         line_format_string = line_format.to_string,
         is_vocab = is_vocab
     )
@@ -89,13 +89,13 @@ def rename_{{ type_name }}(
     while stack:
         (partial_result, recursion_site) = stack.pop() 
 
-{% for node in nodes %}
-        def handle_{{ node.name }}(partial_result : {{ node.name }}): 
+{% for rule in rules %}
+        def handle_{{ rule.name }}(partial_result : {{ rule.name }}): 
             nonlocal stack
             nonlocal result
             nonlocal recursion_site
 
-{% set inductive_children = filter_inductive_children(node.children) %}
+{% set inductive_children = filter_inductive_children(rule.children) %}
 
             # update the partial result with the result at the recursion_site
             next_partial_result = partial_result 
@@ -103,8 +103,8 @@ def rename_{{ type_name }}(
                 next_partial_result = partial_result
 {% for each_site in range(0, inductive_children|length) %}
             elif recursion_site == {{ each_site }}:
-                next_partial_result = {{ node.name }}(
-{% for arg_child in node.children %}
+                next_partial_result = {{ rule.name }}(
+{% for arg_child in rule.children %}
 {% if arg_child.relation == inductive_children[each_site].relation %}
                     result{% if not loop.last %},
 {% endif %}
@@ -117,7 +117,7 @@ def rename_{{ type_name }}(
                 )
 {% endfor %}{# end recursion sites #}
 
-            # update the stack with the node at the next recursion_site 
+            # update the stack with the rule at the next recursion_site 
             # if the current recursion site is not the last
             if recursion_site + 1 >= {{ inductive_children|length }}:
                 result = next_partial_result
@@ -128,13 +128,13 @@ def rename_{{ type_name }}(
 {% endfor %} {# end recursion site conditions #}
 
 
-{% endfor %} {# end node function defs #}
+{% endfor %} {# end rule function defs #}
 
 
         match_{{ type_name }}(partial_result, {{ handlers_name }}(
-{% for node in nodes %}
-            case_{{ node.name }} = handle_{{ node.name }}{% if not loop.last %}, {% endif %} 
-{% endfor %} {# end node cases #}
+{% for rule in rules %}
+            case_{{ rule.name }} = handle_{{ rule.name }}{% if not loop.last %}, {% endif %} 
+{% endfor %} {# end rule cases #}
         ))
     return result
 
@@ -143,17 +143,17 @@ def rename_{{ type_name }}(
 
 def generate_choice_def(
     type_name : str,
-    nodes : list[schema.Node] 
+    rules : list[lib.rule.Rule] 
 ) -> str:
     handlers_name = f"{inflection.camelize(type_name)}Handlers"
 
     tmpl = jinja_env.from_string(choice_str)
     code : str = tmpl.render(
         type_name = type_name, 
-        nodes = nodes,
+        rules = rules,
         handlers_name = handlers_name,
         line_format_string = line_format.to_string,
         is_vocab = is_vocab,
-        filter_inductive_children = lambda children : [child for child in children if isinstance(child, schema.Grammar) and type_name == child.nonterminal]
+        filter_inductive_children = lambda children : [child for child in children if isinstance(child, lib.rule.Nonterm) and type_name == child.nonterminal]
     )
     return code 

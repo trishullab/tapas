@@ -1,6 +1,7 @@
 **/__pycache__
 workspace.code-workspace
 env
-res/apps
-res/py150*
+res/apps/**
+res/py150/**
+res/cubert/**
 .DS_Store

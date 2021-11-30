@@ -1,0 +1,36 @@
+#include "instance.dl"
+
+.type sequence = [hd : instance, tl : sequence]
+
+.comp split {
+    .decl in(zs : sequence)
+
+    .decl tail(zs : sequence)
+    tail(zs) :- in(zs).
+    tail(zs) :- tail([_, zs]).
+
+    .decl rel(xs : sequence, ys : sequence, zs : sequence)
+    rel(nil, ys, ys) :- tail(ys).
+    rel([hd, xs], ys, [hd, zs]) :- rel(xs, ys, zs), tail([hd, zs]). 
+}
+
+.comp join {
+    .decl in(xs : sequence, ys : sequence)
+
+    .decl tail(xs : sequence)
+    tail(xs) :- in(xs, _).
+    tail(xs) :- tail([_, xs]).
+
+    .decl rel(xs : sequence, ys : sequence, zs : sequence)
+    rel(nil, ys, ys) :- in(_, ys).
+    rel([hd, xs], ys, [hd, zs]) :- rel(xs, ys, zs), tail([hs, xs]). 
+
+}
+
+
+
+
+
+
+
+

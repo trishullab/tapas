@@ -41,9 +41,13 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
         children = children 
     )
 
+import pathlib
+import os
+
+base_path = pathlib.Path(__file__).parent.absolute()
 
 def parse(lang_name : str, source : str, encoding : str) -> GenericNode:
-    grammar = Language('build/grammars.so', lang_name)
+    grammar = Language(os.path.join(base_path, '../../build/grammars.so'), lang_name)
 
     parser = tree_sitter.Parser()
     parser.set_language(grammar)

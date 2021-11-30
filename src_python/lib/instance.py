@@ -2,11 +2,11 @@ from __future__ import annotations
 from typing import Iterator, Optional
 
 from gen.line_format import line_format, LineFormatHandlers, match_line_format
-from gen.schema import ChildHandlers
-from gen.production_instance import *
+from gen.rule import ItemHandlers
+from gen.instance import *
 
-
-from lib import schema
+from lib.rule import Rule
+import lib.rule
 
 
 from dataclasses import dataclass
@@ -27,7 +27,7 @@ def next_indent_width(prev_iw : int, line_form : line_format) -> int:
         case_IndentLine = lambda _ : prev_iw + 1 
     ))
 
-def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], indent : int = 4):
+def dump(rule_map : dict[str, Rule], instances : list[instance], indent : int = 4):
 
     @dataclass
     class Format:
@@ -40,7 +40,7 @@ def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], i
                 indent_str := (' ' * format.depth * indent),
                 relation_str := (' = .' + format.relation if (isinstance(format.relation, str)) else ''),
                 (
-                    indent_str + o.sequence_id + (' (' + o.nonterminal  + ')' if o.nonterminal != o.sequence_id else '') +
+                    indent_str + o.selection + (' (' + o.options  + ')' if o.options != o.selection else '') +
                     relation_str
                 )
             )[-1],
@@ -48,7 +48,7 @@ def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], i
                 indent_str := (' ' * format.depth * indent),
                 relation_str := (' = .' + format.relation if (isinstance(format.relation, str)) else ''),
                 (
-                    indent_str + o.word + ' (' + o.choices_id  + ')' +
+                    indent_str + o.selection + ' (' + o.options  + ')' +
                     relation_str
                 )
             )[-1]
@@ -74,14 +74,14 @@ def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], i
         def format_grammar_children(inst : Grammar):
             nonlocal stack
             nonlocal format
-            schema_node = schema_node_map[inst.sequence_id]
-            def assert_not_terminal(c : schema.child):
-                assert not isinstance(c, schema.Terminal)
+            rule = rule_map[inst.selection]
+            def assert_not_terminal(c : lib.rule.item):
+                assert not isinstance(c, lib.rule.Terminal)
                 raise Exception()
 
-            for child in reversed(schema_node.children):
-                if not isinstance(child, schema.Terminal):
-                    child_format = schema.match_child(child, ChildHandlers[Format](
+            for item in reversed(rule.content):
+                if not isinstance(item, lib.rule.Terminal):
+                    child_format = lib.rule.match_item(item, ItemHandlers[Format](
                         case_Terminal=lambda o : (
                             assert_not_terminal(o)
                         ),
@@ -108,7 +108,7 @@ def dump(schema_node_map : dict[str, schema.Node], instances : list[instance], i
 
 
 
-def concretize(schema_node_map : dict[str, schema.Node], instances : list[instance]) -> str:
+def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
 
     @dataclass
     class Format:
@@ -139,20 +139,20 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
 
             def concretize_grammar(inst : Grammar):
                 nonlocal stack
-                schema_node = schema_node_map[inst.sequence_id]
-                for i, child in enumerate(reversed(schema_node.children)):
-                    schema.match_child(child, ChildHandlers(
+                rule = rule_map[inst.selection]
+                for i, item in enumerate(reversed(rule.content)):
+                    lib.rule.match_item(item, ItemHandlers(
                         case_Terminal=lambda o : (
-                            j := len(schema_node.children) - 1 - i,
+                            j := len(rule.content) - 1 - i,
                             prefix := (
                                 (
-                                    pred := schema_node.children[j - 1],
+                                    pred := rule.content[j - 1],
                                     match_line_format(pred.format, LineFormatHandlers[str](
                                         case_InLine = lambda _ : "",
                                         case_NewLine = lambda _ : "\n<NewLine>" + ("    " * format.indent_width),
                                         case_IndentLine = lambda _ : "\n<IndentLine>" + ("    " * format.indent_width)
                                     ))
-                                    if isinstance(pred, schema.Nonterm) else ""
+                                    if isinstance(pred, lib.rule.Nonterm) else ""
                                 )[-1]
                                 if j > 0 else "" 
                             ),
@@ -172,7 +172,7 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
             
             def concretize_vocab(inst : Vocab):
                 nonlocal stack
-                stack += [inst.word]
+                stack += [inst.selection]
 
 
             match_instance(inst, InstanceHandlers(
@@ -181,3 +181,6 @@ def concretize(schema_node_map : dict[str, schema.Node], instances : list[instan
             ))
 
     return result
+
+
+

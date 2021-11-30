@@ -5,7 +5,9 @@ from dataclasses import dataclass
 import inflection
 import jinja2
 
-from lib import schema
+import lib.rule
+from lib.rule import Rule
+
 from lib import line_format
 
 jinja_env = jinja2.Environment(trim_blocks=True)
@@ -15,44 +17,44 @@ jinja_env = jinja2.Environment(trim_blocks=True)
 
 header = """
 from __future__ import annotations
-from lib import production_instance as prod_inst 
+import lib.instance
+from gen.instance import instance
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 """
 
 
 
-def is_vocab(o : schema.child):
-    return isinstance(o, schema.Vocab)
+def is_vocab(o : lib.rule.item):
+    return isinstance(o, lib.rule.Vocab)
 
 def generate_single_def(
-    node : schema.Node 
+    rule : Rule 
 ) -> str:
 
-
-    def assert_not_terminal(o : schema.child) -> str:
-        assert not isinstance(o, schema.Terminal)
+    def assert_not_terminal(o : lib.rule.item) -> str:
+        assert not isinstance(o, lib.rule.Terminal)
         return ""
 
     nl = "\n"
     code = (f"""
 
 
-def serialize_{node.name}(
-    o : {node.name}
-) -> list[prod_inst.instance]:
+def serialize_{rule.name}(
+    o : {rule.name}
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = '{node.name}',
-            sequence_id = '{node.name}'
-        )]{f' +{nl}' if node.children else ''}
+        [lib.instance.make_Grammar(
+            options = '{rule.name}',
+            selection = '{rule.name}'
+        )]{f' +{nl}' if rule.content else ''}
 {f' +{nl}'.join([
 
 
-    schema.match_child(child, schema.ChildHandlers[str](
+    lib.rule.match_item(item, lib.rule.ItemHandlers[str](
         case_Vocab = lambda o : (
-            "    " * 2 + f"[prod_inst.make_Vocab(choices_id = '{o.vocab}', word = o.{o.relation})]"
+            "    " * 2 + f"[lib.instance.make_Vocab(options = '{o.vocab}', selection = o.{o.relation})]"
         ),
         case_Nonterm = lambda o : (
             "    " * 2 + f"serialize_{o.nonterminal}(o.{o.relation})"
@@ -62,8 +64,8 @@ def serialize_{node.name}(
         )
     ))
 
-    for child in node.children
-    if not isinstance(child, schema.Terminal)
+    for item in rule.content 
+    if not isinstance(item, lib.rule.Terminal)
 ])}
 
     )
@@ -75,18 +77,18 @@ def serialize_{node.name}(
 
 def generate_choice_def(
     type_name : str,
-    nodes : list[schema.Node] 
+    rules : list[Rule] 
 ) -> str:
     handlers_name = f"{inflection.camelize(type_name)}Handlers"
     nl = "\n"
 
-    def generate_child(child : schema.child):
-        return schema.match_child(child, schema.ChildHandlers[str](
+    def generate_item(item : lib.rule.item):
+        return lib.rule.match_item(item, lib.rule.ItemHandlers[str](
             case_Vocab=lambda o : (f"""
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = '{o.vocab}',
-                        word = o.{o.relation}
+                    [lib.instance.make_Vocab(
+                        options = '{o.vocab}',
+                        selection = o.{o.relation}
                     )]
                 )
             """),
@@ -111,21 +113,21 @@ def generate_choice_def(
 
 
 
-    def generate_node_handler(node : schema.Node):
+    def generate_rule_handler(rule : Rule):
         return (f"""
 
-            def handle_{node.name}(o : {node.name}): 
+            def handle_{rule.name}(o : {rule.name}): 
                 nonlocal stack
                 assert isinstance(o, {type_name})
 
                 {nl.join([
-                    generate_child(child)
-                    for child in reversed(node.children)
+                    generate_item(child)
+                    for child in reversed(rule.content)
                 ])}
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = '{type_name}',
-                        sequence_id = '{node.name}'
+                    [lib.instance.make_Grammar(
+                        options = '{type_name}',
+                        selection = '{rule.name}'
                     )]
                 )
         """)
@@ -135,25 +137,25 @@ def generate_choice_def(
 
 def serialize_{type_name}(
     o : {type_name}
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[{type_name}, list[prod_inst.instance]]] = [o]
+    stack : list[Union[{type_name}, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, {type_name}):
 
             {nl.join([
-                generate_node_handler(node)
-                for node in nodes
+                generate_rule_handler(rule)
+                for rule in rules 
             ])}
 
 
             match_{type_name}(stack_item, {handlers_name}(
 {f",{nl}".join([
-    "    " * 4 + f"case_{node.name} = handle_{node.name}"
-    for node in nodes
+    "    " * 4 + f"case_{rule.name} = handle_{rule.name}"
+    for rule in rules 
 ])}
             ))
 

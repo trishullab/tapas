@@ -14,7 +14,6 @@ base_path = pathlib.Path(__file__).parent.absolute()
 
 def compile():
     logging.basicConfig(level=logging.INFO)
-    base_path = pathlib.Path(__file__).parent.absolute()
     read_path = os.path.join(base_path, "../../apps_data/")
 
     solution_count = 0

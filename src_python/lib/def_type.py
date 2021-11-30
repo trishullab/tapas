@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Callable
 
 import inflection
 
@@ -15,7 +16,7 @@ class Constructor:
     fields: list[Field]
 
 
-header = """
+header = ("""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -25,7 +26,7 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 T = TypeVar('T')
-"""
+""")
 
 def generate_single(
     constructor : Constructor 
@@ -101,8 +102,34 @@ class {handlers_name}(Generic[T]):
 # matching for type {type_name}
 def match_{type_name}(o : {type_name}, handlers : {handlers_name}[T]) -> T :
     return o._match(handlers)
-
     """)
     return code 
+
+
+
+
+def generate_souffle(
+    type_name : str,
+    constructors : list[Constructor],
+    type_map : Callable[[str],str] = lambda s : s 
+) -> str:
+    nl = "\n"
+    open_curl = "{"
+    close_curl = "}"
+
+    def generate_constructor(constructor : Constructor) -> str:
+        return (f"""    {constructor.name} {open_curl}{", ".join([
+            f"{field.attr} : {type_map(field.typ)}"
+            for field in constructor.fields
+        ])}{close_curl}""")
+
+    code = (
+f""".type {type_name} = 
+{f" |{nl}".join([
+    generate_constructor(constructor)
+    for constructor in constructors
+])}""")
+    return code 
+
 
 

@@ -7,9 +7,8 @@ import json
 from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_ast_serialize import serialize_Module
-from lib import python_instance
-from lib import production_instance as prod_inst 
+from gen.python_serialize import serialize_Module
+import lib.python_sequence
 
     
 
@@ -61,7 +60,7 @@ def test_string(sourceCode):
 
         # print(f"--Formatted Instance Sequence --\n{python_instance.dump(instance_list)}\n")
 
-        print(f"--Concretized--\n{python_instance.concretize(instance_list)}\n")
+        print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
         print(f"\n")
         # print(f"---Source Code---")
         # print(sourceCode)

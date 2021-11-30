@@ -22,26 +22,26 @@ class instance(ABC):
 
 @dataclass
 class Grammar(instance):
-    nonterminal : str
-    sequence_id : str
+    options : str
+    selection : str
 
     def _match(self, handlers : InstanceHandlers[T]) -> T:
         return handlers.case_Grammar(self)
 
-def make_Grammar(nonterminal : str, sequence_id : str) -> instance:
-    return Grammar(nonterminal, sequence_id)
+def make_Grammar(options : str, selection : str) -> instance:
+    return Grammar(options, selection)
         
 
 @dataclass
 class Vocab(instance):
-    choices_id : str
-    word : str
+    options : str
+    selection : str
 
     def _match(self, handlers : InstanceHandlers[T]) -> T:
         return handlers.case_Vocab(self)
 
-def make_Vocab(choices_id : str, word : str) -> instance:
-    return Vocab(choices_id, word)
+def make_Vocab(options : str, selection : str) -> instance:
+    return Vocab(options, selection)
         
 
 # case handlers for type instance
@@ -54,5 +54,4 @@ class InstanceHandlers(Generic[T]):
 # matching for type instance
 def match_instance(o : instance, handlers : InstanceHandlers[T]) -> T :
     return o._match(handlers)
-
     

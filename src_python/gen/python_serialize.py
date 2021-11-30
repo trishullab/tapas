@@ -1,6 +1,7 @@
 
 from __future__ import annotations
-from lib import production_instance as prod_inst 
+import lib.instance
+from gen.instance import instance
 from gen.python_ast import *
 from gen.line_format import InLine, NewLine, IndentLine
 
@@ -10,12 +11,12 @@ from gen.line_format import InLine, NewLine, IndentLine
 
 def serialize_Module(
     o : Module
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'Module',
-            sequence_id = 'Module'
+        [lib.instance.make_Grammar(
+            options = 'Module',
+            selection = 'Module'
         )] +
 
         serialize_statements(o.body)
@@ -28,12 +29,12 @@ def serialize_Module(
 
 def serialize_CompareRight(
     o : CompareRight
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'CompareRight',
-            sequence_id = 'CompareRight'
+        [lib.instance.make_Grammar(
+            options = 'CompareRight',
+            selection = 'CompareRight'
         )] +
 
         serialize_cmpop(o.op) +
@@ -47,12 +48,12 @@ def serialize_CompareRight(
 
 def serialize_ExceptHandler(
     o : ExceptHandler
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'ExceptHandler',
-            sequence_id = 'ExceptHandler'
+        [lib.instance.make_Grammar(
+            options = 'ExceptHandler',
+            selection = 'ExceptHandler'
         )] +
 
         serialize_except_arg(o.arg) +
@@ -66,15 +67,15 @@ def serialize_ExceptHandler(
 
 def serialize_Param(
     o : Param
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'Param',
-            sequence_id = 'Param'
+        [lib.instance.make_Grammar(
+            options = 'Param',
+            selection = 'Param'
         )] +
 
-        [prod_inst.make_Vocab(choices_id = 'identifier', word = o.name)] +
+        [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
         serialize_param_type(o.type) +
         serialize_param_default(o.default)
 
@@ -86,15 +87,15 @@ def serialize_Param(
 
 def serialize_ImportName(
     o : ImportName
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'ImportName',
-            sequence_id = 'ImportName'
+        [lib.instance.make_Grammar(
+            options = 'ImportName',
+            selection = 'ImportName'
         )] +
 
-        [prod_inst.make_Vocab(choices_id = 'module_identifier', word = o.name)] +
+        [lib.instance.make_Vocab(options = 'module_identifier', selection = o.name)] +
         serialize_alias(o.as_name)
 
     )
@@ -105,12 +106,12 @@ def serialize_ImportName(
 
 def serialize_Withitem(
     o : Withitem
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'Withitem',
-            sequence_id = 'Withitem'
+        [lib.instance.make_Grammar(
+            options = 'Withitem',
+            selection = 'Withitem'
         )] +
 
         serialize_expr(o.contet) +
@@ -124,15 +125,15 @@ def serialize_Withitem(
 
 def serialize_ClassDef(
     o : ClassDef
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'ClassDef',
-            sequence_id = 'ClassDef'
+        [lib.instance.make_Grammar(
+            options = 'ClassDef',
+            selection = 'ClassDef'
         )] +
 
-        [prod_inst.make_Vocab(choices_id = 'identifier', word = o.name)] +
+        [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
         serialize_bases(o.bs) +
         serialize_statements(o.body)
 
@@ -144,12 +145,12 @@ def serialize_ClassDef(
 
 def serialize_ElifBlock(
     o : ElifBlock
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'ElifBlock',
-            sequence_id = 'ElifBlock'
+        [lib.instance.make_Grammar(
+            options = 'ElifBlock',
+            selection = 'ElifBlock'
         )] +
 
         serialize_expr(o.test) +
@@ -163,12 +164,12 @@ def serialize_ElifBlock(
 
 def serialize_ElseBlock(
     o : ElseBlock
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'ElseBlock',
-            sequence_id = 'ElseBlock'
+        [lib.instance.make_Grammar(
+            options = 'ElseBlock',
+            selection = 'ElseBlock'
         )] +
 
         serialize_statements(o.body)
@@ -181,12 +182,12 @@ def serialize_ElseBlock(
 
 def serialize_FinallyBlock(
     o : FinallyBlock
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     return (
-        [prod_inst.make_Grammar(
-            nonterminal = 'FinallyBlock',
-            sequence_id = 'FinallyBlock'
+        [lib.instance.make_Grammar(
+            options = 'FinallyBlock',
+            selection = 'FinallyBlock'
         )] +
 
         serialize_statements(o.body)
@@ -199,11 +200,11 @@ def serialize_FinallyBlock(
 
 def serialize_return_type(
     o : return_type
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[return_type, list[prod_inst.instance]]] = [o]
+    stack : list[Union[return_type, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, return_type):
@@ -221,9 +222,9 @@ def serialize_return_type(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'return_type',
-                        sequence_id = 'SomeReturnType'
+                    [lib.instance.make_Grammar(
+                        options = 'return_type',
+                        selection = 'SomeReturnType'
                     )]
                 )
         
@@ -235,9 +236,9 @@ def serialize_return_type(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'return_type',
-                        sequence_id = 'NoReturnType'
+                    [lib.instance.make_Grammar(
+                        options = 'return_type',
+                        selection = 'NoReturnType'
                     )]
                 )
         
@@ -259,11 +260,11 @@ def serialize_return_type(
 
 def serialize_module_id(
     o : module_id
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[module_id, list[prod_inst.instance]]] = [o]
+    stack : list[Union[module_id, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, module_id):
@@ -276,16 +277,16 @@ def serialize_module_id(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'module_identifier',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'module_identifier',
+                        selection = o.contents
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'module_id',
-                        sequence_id = 'SomeModuleId'
+                    [lib.instance.make_Grammar(
+                        options = 'module_id',
+                        selection = 'SomeModuleId'
                     )]
                 )
         
@@ -297,9 +298,9 @@ def serialize_module_id(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'module_id',
-                        sequence_id = 'NoModuleId'
+                    [lib.instance.make_Grammar(
+                        options = 'module_id',
+                        selection = 'NoModuleId'
                     )]
                 )
         
@@ -321,11 +322,11 @@ def serialize_module_id(
 
 def serialize_except_arg(
     o : except_arg
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[except_arg, list[prod_inst.instance]]] = [o]
+    stack : list[Union[except_arg, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, except_arg):
@@ -343,9 +344,9 @@ def serialize_except_arg(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'except_arg',
-                        sequence_id = 'SomeExceptArg'
+                    [lib.instance.make_Grammar(
+                        options = 'except_arg',
+                        selection = 'SomeExceptArg'
                     )]
                 )
         
@@ -357,9 +358,9 @@ def serialize_except_arg(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.name
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.name
                     )]
                 )
             
@@ -371,9 +372,9 @@ def serialize_except_arg(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'except_arg',
-                        sequence_id = 'SomeExceptArgName'
+                    [lib.instance.make_Grammar(
+                        options = 'except_arg',
+                        selection = 'SomeExceptArgName'
                     )]
                 )
         
@@ -385,9 +386,9 @@ def serialize_except_arg(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'except_arg',
-                        sequence_id = 'NoExceptArg'
+                    [lib.instance.make_Grammar(
+                        options = 'except_arg',
+                        selection = 'NoExceptArg'
                     )]
                 )
         
@@ -410,11 +411,11 @@ def serialize_except_arg(
 
 def serialize_param_type(
     o : param_type
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[param_type, list[prod_inst.instance]]] = [o]
+    stack : list[Union[param_type, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, param_type):
@@ -432,9 +433,9 @@ def serialize_param_type(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'param_type',
-                        sequence_id = 'SomeParamType'
+                    [lib.instance.make_Grammar(
+                        options = 'param_type',
+                        selection = 'SomeParamType'
                     )]
                 )
         
@@ -446,9 +447,9 @@ def serialize_param_type(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'param_type',
-                        sequence_id = 'NoParamType'
+                    [lib.instance.make_Grammar(
+                        options = 'param_type',
+                        selection = 'NoParamType'
                     )]
                 )
         
@@ -470,11 +471,11 @@ def serialize_param_type(
 
 def serialize_param_default(
     o : param_default
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[param_default, list[prod_inst.instance]]] = [o]
+    stack : list[Union[param_default, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, param_default):
@@ -492,9 +493,9 @@ def serialize_param_default(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'param_default',
-                        sequence_id = 'SomeParamDefault'
+                    [lib.instance.make_Grammar(
+                        options = 'param_default',
+                        selection = 'SomeParamDefault'
                     )]
                 )
         
@@ -506,9 +507,9 @@ def serialize_param_default(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'param_default',
-                        sequence_id = 'NoParamDefault'
+                    [lib.instance.make_Grammar(
+                        options = 'param_default',
+                        selection = 'NoParamDefault'
                     )]
                 )
         
@@ -530,11 +531,11 @@ def serialize_param_default(
 
 def serialize_parameters_d(
     o : parameters_d
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[parameters_d, list[prod_inst.instance]]] = [o]
+    stack : list[Union[parameters_d, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_d):
@@ -557,9 +558,9 @@ def serialize_parameters_d(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_d',
-                        sequence_id = 'ConsKwParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_d',
+                        selection = 'ConsKwParam'
                     )]
                 )
         
@@ -575,9 +576,9 @@ def serialize_parameters_d(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_d',
-                        sequence_id = 'SingleKwParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_d',
+                        selection = 'SingleKwParam'
                     )]
                 )
         
@@ -594,9 +595,9 @@ def serialize_parameters_d(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_d',
-                        sequence_id = 'DictionarySplatParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_d',
+                        selection = 'DictionarySplatParam'
                     )]
                 )
         
@@ -619,11 +620,11 @@ def serialize_parameters_d(
 
 def serialize_parameters_c(
     o : parameters_c
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[parameters_c, list[prod_inst.instance]]] = [o]
+    stack : list[Union[parameters_c, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_c):
@@ -641,9 +642,9 @@ def serialize_parameters_c(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_c',
-                        sequence_id = 'SingleListSplatParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_c',
+                        selection = 'SingleListSplatParam'
                     )]
                 )
         
@@ -666,9 +667,9 @@ def serialize_parameters_c(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_c',
-                        sequence_id = 'TransListSplatParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_c',
+                        selection = 'TransListSplatParam'
                     )]
                 )
         
@@ -685,9 +686,9 @@ def serialize_parameters_c(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_c',
-                        sequence_id = 'ParamsD'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_c',
+                        selection = 'ParamsD'
                     )]
                 )
         
@@ -710,11 +711,11 @@ def serialize_parameters_c(
 
 def serialize_parameters_b(
     o : parameters_b
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[parameters_b, list[prod_inst.instance]]] = [o]
+    stack : list[Union[parameters_b, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_b):
@@ -737,9 +738,9 @@ def serialize_parameters_b(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_b',
-                        sequence_id = 'ConsParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_b',
+                        selection = 'ConsParam'
                     )]
                 )
         
@@ -755,9 +756,9 @@ def serialize_parameters_b(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_b',
-                        sequence_id = 'SingleParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_b',
+                        selection = 'SingleParam'
                     )]
                 )
         
@@ -773,9 +774,9 @@ def serialize_parameters_b(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_b',
-                        sequence_id = 'ParamsC'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_b',
+                        selection = 'ParamsC'
                     )]
                 )
         
@@ -798,11 +799,11 @@ def serialize_parameters_b(
 
 def serialize_parameters(
     o : parameters
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[parameters, list[prod_inst.instance]]] = [o]
+    stack : list[Union[parameters, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters):
@@ -819,9 +820,9 @@ def serialize_parameters(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters',
-                        sequence_id = 'ParamsA'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters',
+                        selection = 'ParamsA'
                     )]
                 )
         
@@ -837,9 +838,9 @@ def serialize_parameters(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters',
-                        sequence_id = 'ParamsB'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters',
+                        selection = 'ParamsB'
                     )]
                 )
         
@@ -851,9 +852,9 @@ def serialize_parameters(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters',
-                        sequence_id = 'NoParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters',
+                        selection = 'NoParam'
                     )]
                 )
         
@@ -876,11 +877,11 @@ def serialize_parameters(
 
 def serialize_parameters_a(
     o : parameters_a
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[parameters_a, list[prod_inst.instance]]] = [o]
+    stack : list[Union[parameters_a, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_a):
@@ -903,9 +904,9 @@ def serialize_parameters_a(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_a',
-                        sequence_id = 'ConsPosParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_a',
+                        selection = 'ConsPosParam'
                     )]
                 )
         
@@ -922,9 +923,9 @@ def serialize_parameters_a(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_a',
-                        sequence_id = 'SinglePosParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_a',
+                        selection = 'SinglePosParam'
                     )]
                 )
         
@@ -946,9 +947,9 @@ def serialize_parameters_a(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'parameters_a',
-                        sequence_id = 'TransPosParam'
+                    [lib.instance.make_Grammar(
+                        options = 'parameters_a',
+                        selection = 'TransPosParam'
                     )]
                 )
         
@@ -971,11 +972,11 @@ def serialize_parameters_a(
 
 def serialize_keyword(
     o : keyword
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[keyword, list[prod_inst.instance]]] = [o]
+    stack : list[Union[keyword, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, keyword):
@@ -994,16 +995,16 @@ def serialize_keyword(
 
 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.name
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.name
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'keyword',
-                        sequence_id = 'NamedKeyword'
+                    [lib.instance.make_Grammar(
+                        options = 'keyword',
+                        selection = 'NamedKeyword'
                     )]
                 )
         
@@ -1020,9 +1021,9 @@ def serialize_keyword(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'keyword',
-                        sequence_id = 'SplatKeyword'
+                    [lib.instance.make_Grammar(
+                        options = 'keyword',
+                        selection = 'SplatKeyword'
                     )]
                 )
         
@@ -1044,11 +1045,11 @@ def serialize_keyword(
 
 def serialize_alias(
     o : alias
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[alias, list[prod_inst.instance]]] = [o]
+    stack : list[Union[alias, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, alias):
@@ -1061,17 +1062,17 @@ def serialize_alias(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.contents
                     )]
                 )
             
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'alias',
-                        sequence_id = 'SomeAlias'
+                    [lib.instance.make_Grammar(
+                        options = 'alias',
+                        selection = 'SomeAlias'
                     )]
                 )
         
@@ -1083,9 +1084,9 @@ def serialize_alias(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'alias',
-                        sequence_id = 'NoAlias'
+                    [lib.instance.make_Grammar(
+                        options = 'alias',
+                        selection = 'NoAlias'
                     )]
                 )
         
@@ -1107,11 +1108,11 @@ def serialize_alias(
 
 def serialize_alias_expr(
     o : alias_expr
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[alias_expr, list[prod_inst.instance]]] = [o]
+    stack : list[Union[alias_expr, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, alias_expr):
@@ -1129,9 +1130,9 @@ def serialize_alias_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'alias_expr',
-                        sequence_id = 'SomeAliasExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'alias_expr',
+                        selection = 'SomeAliasExpr'
                     )]
                 )
         
@@ -1143,9 +1144,9 @@ def serialize_alias_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'alias_expr',
-                        sequence_id = 'NoAliasExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'alias_expr',
+                        selection = 'NoAliasExpr'
                     )]
                 )
         
@@ -1167,11 +1168,11 @@ def serialize_alias_expr(
 
 def serialize_bases(
     o : bases
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[bases, list[prod_inst.instance]]] = [o]
+    stack : list[Union[bases, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, bases):
@@ -1190,9 +1191,9 @@ def serialize_bases(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'bases',
-                        sequence_id = 'SomeBases'
+                    [lib.instance.make_Grammar(
+                        options = 'bases',
+                        selection = 'SomeBases'
                     )]
                 )
         
@@ -1204,9 +1205,9 @@ def serialize_bases(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'bases',
-                        sequence_id = 'NoBases'
+                    [lib.instance.make_Grammar(
+                        options = 'bases',
+                        selection = 'NoBases'
                     )]
                 )
         
@@ -1228,11 +1229,11 @@ def serialize_bases(
 
 def serialize_bases_a(
     o : bases_a
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[bases_a, list[prod_inst.instance]]] = [o]
+    stack : list[Union[bases_a, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, bases_a):
@@ -1255,9 +1256,9 @@ def serialize_bases_a(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'bases_a',
-                        sequence_id = 'ConsBase'
+                    [lib.instance.make_Grammar(
+                        options = 'bases_a',
+                        selection = 'ConsBase'
                     )]
                 )
         
@@ -1273,9 +1274,9 @@ def serialize_bases_a(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'bases_a',
-                        sequence_id = 'SingleBase'
+                    [lib.instance.make_Grammar(
+                        options = 'bases_a',
+                        selection = 'SingleBase'
                     )]
                 )
         
@@ -1291,9 +1292,9 @@ def serialize_bases_a(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'bases_a',
-                        sequence_id = 'KeywordsBase'
+                    [lib.instance.make_Grammar(
+                        options = 'bases_a',
+                        selection = 'KeywordsBase'
                     )]
                 )
         
@@ -1316,11 +1317,11 @@ def serialize_bases_a(
 
 def serialize_keywords(
     o : keywords
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[keywords, list[prod_inst.instance]]] = [o]
+    stack : list[Union[keywords, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, keywords):
@@ -1343,9 +1344,9 @@ def serialize_keywords(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'keywords',
-                        sequence_id = 'ConsKeyword'
+                    [lib.instance.make_Grammar(
+                        options = 'keywords',
+                        selection = 'ConsKeyword'
                     )]
                 )
         
@@ -1361,9 +1362,9 @@ def serialize_keywords(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'keywords',
-                        sequence_id = 'SingleKeyword'
+                    [lib.instance.make_Grammar(
+                        options = 'keywords',
+                        selection = 'SingleKeyword'
                     )]
                 )
         
@@ -1385,11 +1386,11 @@ def serialize_keywords(
 
 def serialize_comparisons(
     o : comparisons
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[comparisons, list[prod_inst.instance]]] = [o]
+    stack : list[Union[comparisons, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, comparisons):
@@ -1412,9 +1413,9 @@ def serialize_comparisons(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'comparisons',
-                        sequence_id = 'ConsCompareRight'
+                    [lib.instance.make_Grammar(
+                        options = 'comparisons',
+                        selection = 'ConsCompareRight'
                     )]
                 )
         
@@ -1430,9 +1431,9 @@ def serialize_comparisons(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'comparisons',
-                        sequence_id = 'SingleCompareRight'
+                    [lib.instance.make_Grammar(
+                        options = 'comparisons',
+                        selection = 'SingleCompareRight'
                     )]
                 )
         
@@ -1454,11 +1455,11 @@ def serialize_comparisons(
 
 def serialize_option_expr(
     o : option_expr
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[option_expr, list[prod_inst.instance]]] = [o]
+    stack : list[Union[option_expr, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, option_expr):
@@ -1475,9 +1476,9 @@ def serialize_option_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'option_expr',
-                        sequence_id = 'SomeExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'option_expr',
+                        selection = 'SomeExpr'
                     )]
                 )
         
@@ -1489,9 +1490,9 @@ def serialize_option_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'option_expr',
-                        sequence_id = 'NoExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'option_expr',
+                        selection = 'NoExpr'
                     )]
                 )
         
@@ -1513,11 +1514,11 @@ def serialize_option_expr(
 
 def serialize_comma_exprs(
     o : comma_exprs
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[comma_exprs, list[prod_inst.instance]]] = [o]
+    stack : list[Union[comma_exprs, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, comma_exprs):
@@ -1540,9 +1541,9 @@ def serialize_comma_exprs(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'comma_exprs',
-                        sequence_id = 'ConsExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'comma_exprs',
+                        selection = 'ConsExpr'
                     )]
                 )
         
@@ -1558,9 +1559,9 @@ def serialize_comma_exprs(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'comma_exprs',
-                        sequence_id = 'SingleExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'comma_exprs',
+                        selection = 'SingleExpr'
                     )]
                 )
         
@@ -1582,11 +1583,11 @@ def serialize_comma_exprs(
 
 def serialize_target_exprs(
     o : target_exprs
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[target_exprs, list[prod_inst.instance]]] = [o]
+    stack : list[Union[target_exprs, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, target_exprs):
@@ -1609,9 +1610,9 @@ def serialize_target_exprs(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'target_exprs',
-                        sequence_id = 'ConsTargetExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'target_exprs',
+                        selection = 'ConsTargetExpr'
                     )]
                 )
         
@@ -1627,9 +1628,9 @@ def serialize_target_exprs(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'target_exprs',
-                        sequence_id = 'SingleTargetExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'target_exprs',
+                        selection = 'SingleTargetExpr'
                     )]
                 )
         
@@ -1651,11 +1652,11 @@ def serialize_target_exprs(
 
 def serialize_decorators(
     o : decorators
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[decorators, list[prod_inst.instance]]] = [o]
+    stack : list[Union[decorators, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, decorators):
@@ -1678,9 +1679,9 @@ def serialize_decorators(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'decorators',
-                        sequence_id = 'ConsDec'
+                    [lib.instance.make_Grammar(
+                        options = 'decorators',
+                        selection = 'ConsDec'
                     )]
                 )
         
@@ -1692,9 +1693,9 @@ def serialize_decorators(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'decorators',
-                        sequence_id = 'NoDec'
+                    [lib.instance.make_Grammar(
+                        options = 'decorators',
+                        selection = 'NoDec'
                     )]
                 )
         
@@ -1716,11 +1717,11 @@ def serialize_decorators(
 
 def serialize_constraint_filters(
     o : constraint_filters
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[constraint_filters, list[prod_inst.instance]]] = [o]
+    stack : list[Union[constraint_filters, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, constraint_filters):
@@ -1743,9 +1744,9 @@ def serialize_constraint_filters(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'constraint_filters',
-                        sequence_id = 'ConsFilter'
+                    [lib.instance.make_Grammar(
+                        options = 'constraint_filters',
+                        selection = 'ConsFilter'
                     )]
                 )
         
@@ -1762,9 +1763,9 @@ def serialize_constraint_filters(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'constraint_filters',
-                        sequence_id = 'SingleFilter'
+                    [lib.instance.make_Grammar(
+                        options = 'constraint_filters',
+                        selection = 'SingleFilter'
                     )]
                 )
         
@@ -1776,9 +1777,9 @@ def serialize_constraint_filters(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'constraint_filters',
-                        sequence_id = 'NoFilter'
+                    [lib.instance.make_Grammar(
+                        options = 'constraint_filters',
+                        selection = 'NoFilter'
                     )]
                 )
         
@@ -1801,11 +1802,11 @@ def serialize_constraint_filters(
 
 def serialize_sequence_string(
     o : sequence_string
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[sequence_string, list[prod_inst.instance]]] = [o]
+    stack : list[Union[sequence_string, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_string):
@@ -1824,16 +1825,16 @@ def serialize_sequence_string(
 
 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'string',
-                        word = o.head
+                    [lib.instance.make_Vocab(
+                        options = 'string',
+                        selection = o.head
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_string',
-                        sequence_id = 'ConsStr'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_string',
+                        selection = 'ConsStr'
                     )]
                 )
         
@@ -1845,16 +1846,16 @@ def serialize_sequence_string(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'string',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'string',
+                        selection = o.contents
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_string',
-                        sequence_id = 'SingleStr'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_string',
+                        selection = 'SingleStr'
                     )]
                 )
         
@@ -1876,11 +1877,11 @@ def serialize_sequence_string(
 
 def serialize_arguments(
     o : arguments
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[arguments, list[prod_inst.instance]]] = [o]
+    stack : list[Union[arguments, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, arguments):
@@ -1903,9 +1904,9 @@ def serialize_arguments(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'arguments',
-                        sequence_id = 'ConsArg'
+                    [lib.instance.make_Grammar(
+                        options = 'arguments',
+                        selection = 'ConsArg'
                     )]
                 )
         
@@ -1921,9 +1922,9 @@ def serialize_arguments(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'arguments',
-                        sequence_id = 'SingleArg'
+                    [lib.instance.make_Grammar(
+                        options = 'arguments',
+                        selection = 'SingleArg'
                     )]
                 )
         
@@ -1939,9 +1940,9 @@ def serialize_arguments(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'arguments',
-                        sequence_id = 'KeywordsArg'
+                    [lib.instance.make_Grammar(
+                        options = 'arguments',
+                        selection = 'KeywordsArg'
                     )]
                 )
         
@@ -1964,11 +1965,11 @@ def serialize_arguments(
 
 def serialize_dictionary_item(
     o : dictionary_item
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[dictionary_item, list[prod_inst.instance]]] = [o]
+    stack : list[Union[dictionary_item, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, dictionary_item):
@@ -1991,9 +1992,9 @@ def serialize_dictionary_item(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'dictionary_item',
-                        sequence_id = 'Field'
+                    [lib.instance.make_Grammar(
+                        options = 'dictionary_item',
+                        selection = 'Field'
                     )]
                 )
         
@@ -2010,9 +2011,9 @@ def serialize_dictionary_item(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'dictionary_item',
-                        sequence_id = 'DictionarySplatFields'
+                    [lib.instance.make_Grammar(
+                        options = 'dictionary_item',
+                        selection = 'DictionarySplatFields'
                     )]
                 )
         
@@ -2034,11 +2035,11 @@ def serialize_dictionary_item(
 
 def serialize_dictionary_contents(
     o : dictionary_contents
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[dictionary_contents, list[prod_inst.instance]]] = [o]
+    stack : list[Union[dictionary_contents, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, dictionary_contents):
@@ -2061,9 +2062,9 @@ def serialize_dictionary_contents(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'dictionary_contents',
-                        sequence_id = 'ConsDictionaryItem'
+                    [lib.instance.make_Grammar(
+                        options = 'dictionary_contents',
+                        selection = 'ConsDictionaryItem'
                     )]
                 )
         
@@ -2079,9 +2080,9 @@ def serialize_dictionary_contents(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'dictionary_contents',
-                        sequence_id = 'SingleDictionaryItem'
+                    [lib.instance.make_Grammar(
+                        options = 'dictionary_contents',
+                        selection = 'SingleDictionaryItem'
                     )]
                 )
         
@@ -2103,11 +2104,11 @@ def serialize_dictionary_contents(
 
 def serialize_sequence_var(
     o : sequence_var
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[sequence_var, list[prod_inst.instance]]] = [o]
+    stack : list[Union[sequence_var, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_var):
@@ -2126,16 +2127,16 @@ def serialize_sequence_var(
 
 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.head
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.head
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_var',
-                        sequence_id = 'ConsId'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_var',
+                        selection = 'ConsId'
                     )]
                 )
         
@@ -2147,16 +2148,16 @@ def serialize_sequence_var(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.contents
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_var',
-                        sequence_id = 'SingleId'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_var',
+                        selection = 'SingleId'
                     )]
                 )
         
@@ -2178,11 +2179,11 @@ def serialize_sequence_var(
 
 def serialize_sequence_ImportName(
     o : sequence_ImportName
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[sequence_ImportName, list[prod_inst.instance]]] = [o]
+    stack : list[Union[sequence_ImportName, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_ImportName):
@@ -2205,9 +2206,9 @@ def serialize_sequence_ImportName(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_ImportName',
-                        sequence_id = 'ConsImportName'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_ImportName',
+                        selection = 'ConsImportName'
                     )]
                 )
         
@@ -2223,9 +2224,9 @@ def serialize_sequence_ImportName(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_ImportName',
-                        sequence_id = 'SingleImportName'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_ImportName',
+                        selection = 'SingleImportName'
                     )]
                 )
         
@@ -2247,11 +2248,11 @@ def serialize_sequence_ImportName(
 
 def serialize_sequence_Withitem(
     o : sequence_Withitem
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[sequence_Withitem, list[prod_inst.instance]]] = [o]
+    stack : list[Union[sequence_Withitem, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_Withitem):
@@ -2274,9 +2275,9 @@ def serialize_sequence_Withitem(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_Withitem',
-                        sequence_id = 'ConsWithitem'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_Withitem',
+                        selection = 'ConsWithitem'
                     )]
                 )
         
@@ -2292,9 +2293,9 @@ def serialize_sequence_Withitem(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_Withitem',
-                        sequence_id = 'SingleWithitem'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_Withitem',
+                        selection = 'SingleWithitem'
                     )]
                 )
         
@@ -2316,11 +2317,11 @@ def serialize_sequence_Withitem(
 
 def serialize_statements(
     o : statements
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[statements, list[prod_inst.instance]]] = [o]
+    stack : list[Union[statements, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, statements):
@@ -2342,9 +2343,9 @@ def serialize_statements(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'statements',
-                        sequence_id = 'ConsStmt'
+                    [lib.instance.make_Grammar(
+                        options = 'statements',
+                        selection = 'ConsStmt'
                     )]
                 )
         
@@ -2360,9 +2361,9 @@ def serialize_statements(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'statements',
-                        sequence_id = 'SingleStmt'
+                    [lib.instance.make_Grammar(
+                        options = 'statements',
+                        selection = 'SingleStmt'
                     )]
                 )
         
@@ -2384,11 +2385,11 @@ def serialize_statements(
 
 def serialize_comprehension_constraints(
     o : comprehension_constraints
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[comprehension_constraints, list[prod_inst.instance]]] = [o]
+    stack : list[Union[comprehension_constraints, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, comprehension_constraints):
@@ -2410,9 +2411,9 @@ def serialize_comprehension_constraints(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'comprehension_constraints',
-                        sequence_id = 'ConsConstraint'
+                    [lib.instance.make_Grammar(
+                        options = 'comprehension_constraints',
+                        selection = 'ConsConstraint'
                     )]
                 )
         
@@ -2428,9 +2429,9 @@ def serialize_comprehension_constraints(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'comprehension_constraints',
-                        sequence_id = 'SingleConstraint'
+                    [lib.instance.make_Grammar(
+                        options = 'comprehension_constraints',
+                        selection = 'SingleConstraint'
                     )]
                 )
         
@@ -2452,11 +2453,11 @@ def serialize_comprehension_constraints(
 
 def serialize_sequence_ExceptHandler(
     o : sequence_ExceptHandler
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[sequence_ExceptHandler, list[prod_inst.instance]]] = [o]
+    stack : list[Union[sequence_ExceptHandler, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_ExceptHandler):
@@ -2478,9 +2479,9 @@ def serialize_sequence_ExceptHandler(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_ExceptHandler',
-                        sequence_id = 'ConsExceptHandler'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_ExceptHandler',
+                        selection = 'ConsExceptHandler'
                     )]
                 )
         
@@ -2496,9 +2497,9 @@ def serialize_sequence_ExceptHandler(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'sequence_ExceptHandler',
-                        sequence_id = 'SingleExceptHandler'
+                    [lib.instance.make_Grammar(
+                        options = 'sequence_ExceptHandler',
+                        selection = 'SingleExceptHandler'
                     )]
                 )
         
@@ -2520,11 +2521,11 @@ def serialize_sequence_ExceptHandler(
 
 def serialize_conditions(
     o : conditions
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[conditions, list[prod_inst.instance]]] = [o]
+    stack : list[Union[conditions, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, conditions):
@@ -2546,9 +2547,9 @@ def serialize_conditions(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'conditions',
-                        sequence_id = 'ElifCond'
+                    [lib.instance.make_Grammar(
+                        options = 'conditions',
+                        selection = 'ElifCond'
                     )]
                 )
         
@@ -2564,9 +2565,9 @@ def serialize_conditions(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'conditions',
-                        sequence_id = 'ElseCond'
+                    [lib.instance.make_Grammar(
+                        options = 'conditions',
+                        selection = 'ElseCond'
                     )]
                 )
         
@@ -2578,9 +2579,9 @@ def serialize_conditions(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'conditions',
-                        sequence_id = 'NoCond'
+                    [lib.instance.make_Grammar(
+                        options = 'conditions',
+                        selection = 'NoCond'
                     )]
                 )
         
@@ -2603,11 +2604,11 @@ def serialize_conditions(
 
 def serialize_function_def(
     o : function_def
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[function_def, list[prod_inst.instance]]] = [o]
+    stack : list[Union[function_def, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, function_def):
@@ -2638,17 +2639,17 @@ def serialize_function_def(
 
 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.name
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.name
                     )]
                 )
             
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'function_def',
-                        sequence_id = 'FunctionDef'
+                    [lib.instance.make_Grammar(
+                        options = 'function_def',
+                        selection = 'FunctionDef'
                     )]
                 )
         
@@ -2678,17 +2679,17 @@ def serialize_function_def(
 
 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.name
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.name
                     )]
                 )
             
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'function_def',
-                        sequence_id = 'AsyncFunctionDef'
+                    [lib.instance.make_Grammar(
+                        options = 'function_def',
+                        selection = 'AsyncFunctionDef'
                     )]
                 )
         
@@ -2710,11 +2711,11 @@ def serialize_function_def(
 
 def serialize_stmt(
     o : stmt
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[stmt, list[prod_inst.instance]]] = [o]
+    stack : list[Union[stmt, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, stmt):
@@ -2736,9 +2737,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'DecFunctionDef'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'DecFunctionDef'
                     )]
                 )
         
@@ -2759,9 +2760,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'DecAsyncFunctionDef'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'DecAsyncFunctionDef'
                     )]
                 )
         
@@ -2782,9 +2783,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'DecClassDef'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'DecClassDef'
                     )]
                 )
         
@@ -2801,9 +2802,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'ReturnSomething'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'ReturnSomething'
                     )]
                 )
         
@@ -2815,9 +2816,9 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Return'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Return'
                     )]
                 )
         
@@ -2834,9 +2835,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Delete'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Delete'
                     )]
                 )
         
@@ -2858,9 +2859,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Assign'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Assign'
                     )]
                 )
         
@@ -2888,9 +2889,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'AugAssign'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'AugAssign'
                     )]
                 )
         
@@ -2918,9 +2919,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'TypedAssign'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'TypedAssign'
                     )]
                 )
         
@@ -2942,9 +2943,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'TypedDeclare'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'TypedDeclare'
                     )]
                 )
         
@@ -2973,9 +2974,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'For'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'For'
                     )]
                 )
         
@@ -3009,9 +3010,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'ForElse'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'ForElse'
                     )]
                 )
         
@@ -3040,9 +3041,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'AsyncFor'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'AsyncFor'
                     )]
                 )
         
@@ -3076,9 +3077,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'AsyncForElse'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'AsyncForElse'
                     )]
                 )
         
@@ -3101,9 +3102,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'While'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'While'
                     )]
                 )
         
@@ -3131,9 +3132,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'WhileElse'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'WhileElse'
                     )]
                 )
         
@@ -3161,9 +3162,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'If'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'If'
                     )]
                 )
         
@@ -3186,9 +3187,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'With'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'With'
                     )]
                 )
         
@@ -3211,9 +3212,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'AsyncWith'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'AsyncWith'
                     )]
                 )
         
@@ -3225,9 +3226,9 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Raise'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Raise'
                     )]
                 )
         
@@ -3244,9 +3245,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'RaiseExc'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'RaiseExc'
                     )]
                 )
         
@@ -3269,9 +3270,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'RaiseFrom'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'RaiseFrom'
                     )]
                 )
         
@@ -3293,9 +3294,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Try'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Try'
                     )]
                 )
         
@@ -3322,9 +3323,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'TryElse'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'TryElse'
                     )]
                 )
         
@@ -3351,9 +3352,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'TryFin'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'TryFin'
                     )]
                 )
         
@@ -3385,9 +3386,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'TryElseFin'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'TryElseFin'
                     )]
                 )
         
@@ -3404,9 +3405,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Assert'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Assert'
                     )]
                 )
         
@@ -3429,9 +3430,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'AssertMsg'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'AssertMsg'
                     )]
                 )
         
@@ -3448,9 +3449,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Import'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Import'
                     )]
                 )
         
@@ -3473,9 +3474,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'ImportFrom'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'ImportFrom'
                     )]
                 )
         
@@ -3493,9 +3494,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'ImportWildCard'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'ImportWildCard'
                     )]
                 )
         
@@ -3512,9 +3513,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Global'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Global'
                     )]
                 )
         
@@ -3531,9 +3532,9 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Nonlocal'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Nonlocal'
                     )]
                 )
         
@@ -3549,9 +3550,9 @@ def serialize_stmt(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Expr'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Expr'
                     )]
                 )
         
@@ -3563,9 +3564,9 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Pass'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Pass'
                     )]
                 )
         
@@ -3577,9 +3578,9 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Break'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Break'
                     )]
                 )
         
@@ -3591,9 +3592,9 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'stmt',
-                        sequence_id = 'Continue'
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'Continue'
                     )]
                 )
         
@@ -3650,11 +3651,11 @@ def serialize_stmt(
 
 def serialize_expr(
     o : expr
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[expr, list[prod_inst.instance]]] = [o]
+    stack : list[Union[expr, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, expr):
@@ -3685,9 +3686,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'BoolOp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'BoolOp'
                     )]
                 )
         
@@ -3709,9 +3710,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'NamedExpr'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'NamedExpr'
                     )]
                 )
         
@@ -3741,9 +3742,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'BinOp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'BinOp'
                     )]
                 )
         
@@ -3767,9 +3768,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'UnaryOp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'UnaryOp'
                     )]
                 )
         
@@ -3792,9 +3793,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Lambda'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Lambda'
                     )]
                 )
         
@@ -3822,9 +3823,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'IfExp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'IfExp'
                     )]
                 )
         
@@ -3842,9 +3843,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Dictionary'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Dictionary'
                     )]
                 )
         
@@ -3856,9 +3857,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'EmptyDictionary'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'EmptyDictionary'
                     )]
                 )
         
@@ -3876,9 +3877,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Set'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Set'
                     )]
                 )
         
@@ -3901,9 +3902,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'ListComp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'ListComp'
                     )]
                 )
         
@@ -3926,9 +3927,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'SetComp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'SetComp'
                     )]
                 )
         
@@ -3957,9 +3958,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'DictionaryComp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'DictionaryComp'
                     )]
                 )
         
@@ -3982,9 +3983,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'GeneratorExp'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'GeneratorExp'
                     )]
                 )
         
@@ -4001,9 +4002,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Await'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Await'
                     )]
                 )
         
@@ -4015,9 +4016,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'YieldNothing'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'YieldNothing'
                     )]
                 )
         
@@ -4034,9 +4035,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Yield'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Yield'
                     )]
                 )
         
@@ -4053,9 +4054,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'YieldFrom'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'YieldFrom'
                     )]
                 )
         
@@ -4077,9 +4078,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Compare'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Compare'
                     )]
                 )
         
@@ -4096,9 +4097,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Call'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Call'
                     )]
                 )
         
@@ -4121,9 +4122,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'CallArgs'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'CallArgs'
                     )]
                 )
         
@@ -4135,16 +4136,16 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'integer',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'integer',
+                        selection = o.contents
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Integer'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Integer'
                     )]
                 )
         
@@ -4156,16 +4157,16 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'float',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'float',
+                        selection = o.contents
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Float'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Float'
                     )]
                 )
         
@@ -4181,9 +4182,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'ConcatString'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'ConcatString'
                     )]
                 )
         
@@ -4195,9 +4196,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'True_'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'True_'
                     )]
                 )
         
@@ -4209,9 +4210,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'False_'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'False_'
                     )]
                 )
         
@@ -4223,9 +4224,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'None_'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'None_'
                     )]
                 )
         
@@ -4237,9 +4238,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Ellip'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Ellip'
                     )]
                 )
         
@@ -4251,9 +4252,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.name
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.name
                     )]
                 )
             
@@ -4264,9 +4265,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Attribute'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Attribute'
                     )]
                 )
         
@@ -4289,9 +4290,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Subscript'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Subscript'
                     )]
                 )
         
@@ -4308,9 +4309,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Starred'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Starred'
                     )]
                 )
         
@@ -4322,16 +4323,16 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Vocab(
-                        choices_id = 'identifier',
-                        word = o.contents
+                    [lib.instance.make_Vocab(
+                        options = 'identifier',
+                        selection = o.contents
                     )]
                 )
             
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Name'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Name'
                     )]
                 )
         
@@ -4349,9 +4350,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'List'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'List'
                     )]
                 )
         
@@ -4363,9 +4364,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'EmptyList'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'EmptyList'
                     )]
                 )
         
@@ -4383,9 +4384,9 @@ def serialize_expr(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Tuple'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Tuple'
                     )]
                 )
         
@@ -4397,9 +4398,9 @@ def serialize_expr(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'EmptyTuple'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'EmptyTuple'
                     )]
                 )
         
@@ -4427,9 +4428,9 @@ def serialize_expr(
                 )
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'expr',
-                        sequence_id = 'Slice'
+                    [lib.instance.make_Grammar(
+                        options = 'expr',
+                        selection = 'Slice'
                     )]
                 )
         
@@ -4485,11 +4486,11 @@ def serialize_expr(
 
 def serialize_boolop(
     o : boolop
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[boolop, list[prod_inst.instance]]] = [o]
+    stack : list[Union[boolop, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, boolop):
@@ -4502,9 +4503,9 @@ def serialize_boolop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'boolop',
-                        sequence_id = 'And'
+                    [lib.instance.make_Grammar(
+                        options = 'boolop',
+                        selection = 'And'
                     )]
                 )
         
@@ -4516,9 +4517,9 @@ def serialize_boolop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'boolop',
-                        sequence_id = 'Or'
+                    [lib.instance.make_Grammar(
+                        options = 'boolop',
+                        selection = 'Or'
                     )]
                 )
         
@@ -4540,11 +4541,11 @@ def serialize_boolop(
 
 def serialize_operator(
     o : operator
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[operator, list[prod_inst.instance]]] = [o]
+    stack : list[Union[operator, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, operator):
@@ -4557,9 +4558,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'Add'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'Add'
                     )]
                 )
         
@@ -4571,9 +4572,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'Sub'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'Sub'
                     )]
                 )
         
@@ -4585,9 +4586,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'Mult'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'Mult'
                     )]
                 )
         
@@ -4599,9 +4600,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'MatMult'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'MatMult'
                     )]
                 )
         
@@ -4613,9 +4614,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'Div'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'Div'
                     )]
                 )
         
@@ -4627,9 +4628,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'Mod'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'Mod'
                     )]
                 )
         
@@ -4641,9 +4642,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'Pow'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'Pow'
                     )]
                 )
         
@@ -4655,9 +4656,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'LShift'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'LShift'
                     )]
                 )
         
@@ -4669,9 +4670,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'RShift'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'RShift'
                     )]
                 )
         
@@ -4683,9 +4684,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'BitOr'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'BitOr'
                     )]
                 )
         
@@ -4697,9 +4698,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'BitXor'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'BitXor'
                     )]
                 )
         
@@ -4711,9 +4712,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'BitAnd'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'BitAnd'
                     )]
                 )
         
@@ -4725,9 +4726,9 @@ def serialize_operator(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'operator',
-                        sequence_id = 'FloorDiv'
+                    [lib.instance.make_Grammar(
+                        options = 'operator',
+                        selection = 'FloorDiv'
                     )]
                 )
         
@@ -4760,11 +4761,11 @@ def serialize_operator(
 
 def serialize_unaryop(
     o : unaryop
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[unaryop, list[prod_inst.instance]]] = [o]
+    stack : list[Union[unaryop, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, unaryop):
@@ -4777,9 +4778,9 @@ def serialize_unaryop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'unaryop',
-                        sequence_id = 'Invert'
+                    [lib.instance.make_Grammar(
+                        options = 'unaryop',
+                        selection = 'Invert'
                     )]
                 )
         
@@ -4791,9 +4792,9 @@ def serialize_unaryop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'unaryop',
-                        sequence_id = 'Not'
+                    [lib.instance.make_Grammar(
+                        options = 'unaryop',
+                        selection = 'Not'
                     )]
                 )
         
@@ -4805,9 +4806,9 @@ def serialize_unaryop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'unaryop',
-                        sequence_id = 'UAdd'
+                    [lib.instance.make_Grammar(
+                        options = 'unaryop',
+                        selection = 'UAdd'
                     )]
                 )
         
@@ -4819,9 +4820,9 @@ def serialize_unaryop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'unaryop',
-                        sequence_id = 'USub'
+                    [lib.instance.make_Grammar(
+                        options = 'unaryop',
+                        selection = 'USub'
                     )]
                 )
         
@@ -4845,11 +4846,11 @@ def serialize_unaryop(
 
 def serialize_cmpop(
     o : cmpop
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[cmpop, list[prod_inst.instance]]] = [o]
+    stack : list[Union[cmpop, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, cmpop):
@@ -4862,9 +4863,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'Eq'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'Eq'
                     )]
                 )
         
@@ -4876,9 +4877,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'NotEq'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'NotEq'
                     )]
                 )
         
@@ -4890,9 +4891,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'Lt'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'Lt'
                     )]
                 )
         
@@ -4904,9 +4905,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'LtE'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'LtE'
                     )]
                 )
         
@@ -4918,9 +4919,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'Gt'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'Gt'
                     )]
                 )
         
@@ -4932,9 +4933,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'GtE'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'GtE'
                     )]
                 )
         
@@ -4946,9 +4947,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'Is'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'Is'
                     )]
                 )
         
@@ -4960,9 +4961,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'IsNot'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'IsNot'
                     )]
                 )
         
@@ -4974,9 +4975,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'In'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'In'
                     )]
                 )
         
@@ -4988,9 +4989,9 @@ def serialize_cmpop(
 
                 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'cmpop',
-                        sequence_id = 'NotIn'
+                    [lib.instance.make_Grammar(
+                        options = 'cmpop',
+                        selection = 'NotIn'
                     )]
                 )
         
@@ -5020,11 +5021,11 @@ def serialize_cmpop(
 
 def serialize_constraint(
     o : constraint
-) -> list[prod_inst.instance]:
+) -> list[instance]:
 
     result = []
 
-    stack : list[Union[constraint, list[prod_inst.instance]]] = [o]
+    stack : list[Union[constraint, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, constraint):
@@ -5053,9 +5054,9 @@ def serialize_constraint(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'constraint',
-                        sequence_id = 'AsyncConstraint'
+                    [lib.instance.make_Grammar(
+                        options = 'constraint',
+                        selection = 'AsyncConstraint'
                     )]
                 )
         
@@ -5083,9 +5084,9 @@ def serialize_constraint(
                 
 
                 stack.append(
-                    [prod_inst.make_Grammar(
-                        nonterminal = 'constraint',
-                        sequence_id = 'Constraint'
+                    [lib.instance.make_Grammar(
+                        options = 'constraint',
+                        selection = 'Constraint'
                     )]
                 )
         
