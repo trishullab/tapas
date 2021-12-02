@@ -43,3 +43,8 @@ write(dirpath, "instance.dl", (
         def_type.generate_souffle(instance_def_type.type_name, instance_def_type.constructors, souffle_type_map)
     ])
 ))
+
+
+from lib import def_reconsitute_souffle
+
+write(dirpath, "reconstitute.dl", def_reconsitute_souffle.content)

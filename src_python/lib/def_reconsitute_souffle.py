@@ -10,7 +10,7 @@ from lib.rule import Rule
 
 from lib import line_format
 import lib.python_schema
-from src_python.gen.rule import Vocab
+from gen.rule import Vocab
 
 jinja_env = jinja2.Environment(trim_blocks=True)
 # jinja_env.globals.update(isinstance=isinstance)
@@ -55,25 +55,25 @@ def generate_souffle_rule(type_name : str, rule : Rule) -> str:
 
     return (f"""
     rel_{type_name}([$Grammar("{type_name}", "{rule.name}"), xs], ${rule.name}({rule_items_str})) :-
-        xs_0 = xs,
         {
-            ",\n".join([
-                f"the_split(xs_{i}, prefix_{i}, suffix_{i}),\n" +
-                f"rel_{type_from_item(item)}(prefix_{i}, {relation_from_item(item)}),\n" +
-                f"xs_{i + 1} = suffix_{i}"
+            f"xs_0 = xs,{nl}" + 
+            f",{nl}".join([
+                f"        the_split(prefix_{i}, suffix_{i}, xs_{i}),{nl}" +
+                f"        rel_{type_from_item(item)}(prefix_{i}, {relation_from_item(item)}),{nl}" +
+                f"        xs_{i + 1} = suffix_{i}"
                 for i, item in enumerate(abstract_items)
             ])
             if len(abstract_items) > 0 else
 
             "xs = nil"
         }
-
     """)
 
 def generate_souffle_relation(type_name : str, rules : list[Rule]) -> str:
     
     return (f"""
     .decl rel_{type_name}(xs : sequence, tree : {type_name})
+
     {nl.join([
         generate_souffle_rule(type_name, rule) 
         for rule in rules
