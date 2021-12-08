@@ -6,1698 +6,894 @@
 
     .decl in(xs : sequence)
 
-    .init the_split = split 
-    the_split.in(xs) :- in(xs).
+    .decl tail(xs : sequence)
+    tail(xs) :- in(xs).
+    tail(xs) :- tail([_, xs]).
 
-    .init seq_split = split<instance>
-    
-    .decl rel_Module(xs : sequence, tree : Module)
 
     
-    rel_Module([$Grammar("Module", "Module"), xs], $Module(body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0
+    .decl rel_Module(xs : sequence, tree : Module, suffix : sequence)
+
     
+    rel_Module([$Grammar("Module", "Module"), xs_0], $Module(body), xs_1) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0).
     
 
-    .decl rel_CompareRight(xs : sequence, tree : CompareRight)
+    .decl rel_CompareRight(xs : sequence, tree : CompareRight, suffix : sequence)
 
-    
-    rel_CompareRight([$Grammar("CompareRight", "CompareRight"), xs], $CompareRight(op, rand)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_cmpop(prefix_0, op),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, rand),
-        xs_2 = suffix_1
     
+    rel_CompareRight([$Grammar("CompareRight", "CompareRight"), xs_0], $CompareRight(op, rand), xs_2) :-
+        rel_cmpop(xs_0, op, xs_1), tail(xs_0),
+        rel_expr(xs_1, rand, xs_2), tail(xs_1).
     
 
-    .decl rel_ExceptHandler(xs : sequence, tree : ExceptHandler)
+    .decl rel_ExceptHandler(xs : sequence, tree : ExceptHandler, suffix : sequence)
 
     
-    rel_ExceptHandler([$Grammar("ExceptHandler", "ExceptHandler"), xs], $ExceptHandler(arg, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_except_arg(prefix_0, arg),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1
+    rel_ExceptHandler([$Grammar("ExceptHandler", "ExceptHandler"), xs_0], $ExceptHandler(arg, body), xs_2) :-
+        rel_except_arg(xs_0, arg, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1).
     
-    
 
-    .decl rel_Param(xs : sequence, tree : Param)
+    .decl rel_Param(xs : sequence, tree : Param, suffix : sequence)
 
     
-    rel_Param([$Grammar("Param", "Param"), xs], $Param(name, type, default)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, name),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_param_type(prefix_1, type),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_param_default(prefix_2, default),
-        xs_3 = suffix_2
+    rel_Param([$Grammar("Param", "Param"), xs_0], $Param(name, type, default), xs_3) :-
+        rel_symbol(xs_0, name, xs_1), tail(xs_0),
+        rel_param_type(xs_1, type, xs_2), tail(xs_1),
+        rel_param_default(xs_2, default, xs_3), tail(xs_2).
     
-    
 
-    .decl rel_ImportName(xs : sequence, tree : ImportName)
+    .decl rel_ImportName(xs : sequence, tree : ImportName, suffix : sequence)
 
-    
-    rel_ImportName([$Grammar("ImportName", "ImportName"), xs], $ImportName(name, as_name)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, name),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_alias(prefix_1, as_name),
-        xs_2 = suffix_1
     
+    rel_ImportName([$Grammar("ImportName", "ImportName"), xs_0], $ImportName(name, as_name), xs_2) :-
+        rel_symbol(xs_0, name, xs_1), tail(xs_0),
+        rel_alias(xs_1, as_name, xs_2), tail(xs_1).
     
 
-    .decl rel_Withitem(xs : sequence, tree : Withitem)
+    .decl rel_Withitem(xs : sequence, tree : Withitem, suffix : sequence)
 
     
-    rel_Withitem([$Grammar("Withitem", "Withitem"), xs], $Withitem(contet, target)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contet),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_alias_expr(prefix_1, target),
-        xs_2 = suffix_1
+    rel_Withitem([$Grammar("Withitem", "Withitem"), xs_0], $Withitem(contet, target), xs_2) :-
+        rel_expr(xs_0, contet, xs_1), tail(xs_0),
+        rel_alias_expr(xs_1, target, xs_2), tail(xs_1).
     
-    
 
-    .decl rel_ClassDef(xs : sequence, tree : ClassDef)
+    .decl rel_ClassDef(xs : sequence, tree : ClassDef, suffix : sequence)
 
     
-    rel_ClassDef([$Grammar("ClassDef", "ClassDef"), xs], $ClassDef(name, bs, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, name),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_bases(prefix_1, bs),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_statements(prefix_2, body),
-        xs_3 = suffix_2
+    rel_ClassDef([$Grammar("ClassDef", "ClassDef"), xs_0], $ClassDef(name, bs, body), xs_3) :-
+        rel_symbol(xs_0, name, xs_1), tail(xs_0),
+        rel_bases(xs_1, bs, xs_2), tail(xs_1),
+        rel_statements(xs_2, body, xs_3), tail(xs_2).
     
-    
 
-    .decl rel_ElifBlock(xs : sequence, tree : ElifBlock)
+    .decl rel_ElifBlock(xs : sequence, tree : ElifBlock, suffix : sequence)
 
-    
-    rel_ElifBlock([$Grammar("ElifBlock", "ElifBlock"), xs], $ElifBlock(test, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, test),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1
     
+    rel_ElifBlock([$Grammar("ElifBlock", "ElifBlock"), xs_0], $ElifBlock(test, body), xs_2) :-
+        rel_expr(xs_0, test, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1).
     
 
-    .decl rel_ElseBlock(xs : sequence, tree : ElseBlock)
+    .decl rel_ElseBlock(xs : sequence, tree : ElseBlock, suffix : sequence)
 
     
-    rel_ElseBlock([$Grammar("ElseBlock", "ElseBlock"), xs], $ElseBlock(body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0
+    rel_ElseBlock([$Grammar("ElseBlock", "ElseBlock"), xs_0], $ElseBlock(body), xs_1) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_FinallyBlock(xs : sequence, tree : FinallyBlock)
+    .decl rel_FinallyBlock(xs : sequence, tree : FinallyBlock, suffix : sequence)
 
     
-    rel_FinallyBlock([$Grammar("FinallyBlock", "FinallyBlock"), xs], $FinallyBlock(body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0
+    rel_FinallyBlock([$Grammar("FinallyBlock", "FinallyBlock"), xs_0], $FinallyBlock(body), xs_1) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_return_type(xs : sequence, tree : return_type)
+    .decl rel_return_type(xs : sequence, tree : return_type, suffix : sequence)
 
-    
-    rel_return_type([$Grammar("return_type", "SomeReturnType"), xs], $SomeReturnType(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
     
+    rel_return_type([$Grammar("return_type", "SomeReturnType"), xs_0], $SomeReturnType(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_return_type([$Grammar("return_type", "NoReturnType"), xs], $NoReturnType()) :-
-        xs = nil
+    rel_return_type([$Grammar("return_type", "NoReturnType"), xs_0], $NoReturnType(), xs_0).
+        
     
-    
 
-    .decl rel_module_id(xs : sequence, tree : module_id)
+    .decl rel_module_id(xs : sequence, tree : module_id, suffix : sequence)
 
     
-    rel_module_id([$Grammar("module_id", "SomeModuleId"), xs], $SomeModuleId(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_module_id([$Grammar("module_id", "SomeModuleId"), xs_0], $SomeModuleId(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_module_id([$Grammar("module_id", "NoModuleId"), xs], $NoModuleId()) :-
-        xs = nil
-    
+    rel_module_id([$Grammar("module_id", "NoModuleId"), xs_0], $NoModuleId(), xs_0).
+        
     
 
-    .decl rel_except_arg(xs : sequence, tree : except_arg)
+    .decl rel_except_arg(xs : sequence, tree : except_arg, suffix : sequence)
 
     
-    rel_except_arg([$Grammar("except_arg", "SomeExceptArg"), xs], $SomeExceptArg(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_except_arg([$Grammar("except_arg", "SomeExceptArg"), xs_0], $SomeExceptArg(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_except_arg([$Grammar("except_arg", "SomeExceptArgName"), xs], $SomeExceptArgName(contents, name)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_symbol(prefix_1, name),
-        xs_2 = suffix_1
-    
+    rel_except_arg([$Grammar("except_arg", "SomeExceptArgName"), xs_0], $SomeExceptArgName(contents, name), xs_2) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0),
+        rel_symbol(xs_1, name, xs_2), tail(xs_1).
 
-    rel_except_arg([$Grammar("except_arg", "NoExceptArg"), xs], $NoExceptArg()) :-
-        xs = nil
-    
+    rel_except_arg([$Grammar("except_arg", "NoExceptArg"), xs_0], $NoExceptArg(), xs_0).
+        
     
 
-    .decl rel_param_type(xs : sequence, tree : param_type)
+    .decl rel_param_type(xs : sequence, tree : param_type, suffix : sequence)
 
     
-    rel_param_type([$Grammar("param_type", "SomeParamType"), xs], $SomeParamType(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_param_type([$Grammar("param_type", "SomeParamType"), xs_0], $SomeParamType(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_param_type([$Grammar("param_type", "NoParamType"), xs], $NoParamType()) :-
-        xs = nil
+    rel_param_type([$Grammar("param_type", "NoParamType"), xs_0], $NoParamType(), xs_0).
+        
     
-    
 
-    .decl rel_param_default(xs : sequence, tree : param_default)
+    .decl rel_param_default(xs : sequence, tree : param_default, suffix : sequence)
 
-    
-    rel_param_default([$Grammar("param_default", "SomeParamDefault"), xs], $SomeParamDefault(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
     
+    rel_param_default([$Grammar("param_default", "SomeParamDefault"), xs_0], $SomeParamDefault(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_param_default([$Grammar("param_default", "NoParamDefault"), xs], $NoParamDefault()) :-
-        xs = nil
+    rel_param_default([$Grammar("param_default", "NoParamDefault"), xs_0], $NoParamDefault(), xs_0).
+        
     
-    
 
-    .decl rel_parameters_d(xs : sequence, tree : parameters_d)
+    .decl rel_parameters_d(xs : sequence, tree : parameters_d, suffix : sequence)
 
     
-    rel_parameters_d([$Grammar("parameters_d", "ConsKwParam"), xs], $ConsKwParam(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters_d(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_parameters_d([$Grammar("parameters_d", "ConsKwParam"), xs_0], $ConsKwParam(head, tail), xs_2) :-
+        rel_Param(xs_0, head, xs_1), tail(xs_0),
+        rel_parameters_d(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_parameters_d([$Grammar("parameters_d", "SingleKwParam"), xs], $SingleKwParam(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_parameters_d([$Grammar("parameters_d", "SingleKwParam"), xs_0], $SingleKwParam(contents), xs_1) :-
+        rel_Param(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_parameters_d([$Grammar("parameters_d", "DictionarySplatParam"), xs], $DictionarySplatParam(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_parameters_d([$Grammar("parameters_d", "DictionarySplatParam"), xs_0], $DictionarySplatParam(contents), xs_1) :-
+        rel_Param(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_parameters_c(xs : sequence, tree : parameters_c)
+    .decl rel_parameters_c(xs : sequence, tree : parameters_c, suffix : sequence)
 
     
-    rel_parameters_c([$Grammar("parameters_c", "SingleListSplatParam"), xs], $SingleListSplatParam(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_parameters_c([$Grammar("parameters_c", "SingleListSplatParam"), xs_0], $SingleListSplatParam(contents), xs_1) :-
+        rel_Param(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_parameters_c([$Grammar("parameters_c", "TransListSplatParam"), xs], $TransListSplatParam(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters_d(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_parameters_c([$Grammar("parameters_c", "TransListSplatParam"), xs_0], $TransListSplatParam(head, tail), xs_2) :-
+        rel_Param(xs_0, head, xs_1), tail(xs_0),
+        rel_parameters_d(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_parameters_c([$Grammar("parameters_c", "ParamsD"), xs], $ParamsD(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_parameters_d(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_parameters_c([$Grammar("parameters_c", "ParamsD"), xs_0], $ParamsD(contents), xs_1) :-
+        rel_parameters_d(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_parameters_b(xs : sequence, tree : parameters_b)
+    .decl rel_parameters_b(xs : sequence, tree : parameters_b, suffix : sequence)
 
     
-    rel_parameters_b([$Grammar("parameters_b", "ConsParam"), xs], $ConsParam(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters_b(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_parameters_b([$Grammar("parameters_b", "ConsParam"), xs_0], $ConsParam(head, tail), xs_2) :-
+        rel_Param(xs_0, head, xs_1), tail(xs_0),
+        rel_parameters_b(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_parameters_b([$Grammar("parameters_b", "SingleParam"), xs], $SingleParam(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_parameters_b([$Grammar("parameters_b", "SingleParam"), xs_0], $SingleParam(contents), xs_1) :-
+        rel_Param(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_parameters_b([$Grammar("parameters_b", "ParamsC"), xs], $ParamsC(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_parameters_c(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_parameters_b([$Grammar("parameters_b", "ParamsC"), xs_0], $ParamsC(contents), xs_1) :-
+        rel_parameters_c(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_parameters(xs : sequence, tree : parameters)
+    .decl rel_parameters(xs : sequence, tree : parameters, suffix : sequence)
 
     
-    rel_parameters([$Grammar("parameters", "ParamsA"), xs], $ParamsA(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_parameters_a(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_parameters([$Grammar("parameters", "ParamsA"), xs_0], $ParamsA(contents), xs_1) :-
+        rel_parameters_a(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_parameters([$Grammar("parameters", "ParamsB"), xs], $ParamsB(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_parameters_b(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_parameters([$Grammar("parameters", "ParamsB"), xs_0], $ParamsB(contents), xs_1) :-
+        rel_parameters_b(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_parameters([$Grammar("parameters", "NoParam"), xs], $NoParam()) :-
-        xs = nil
+    rel_parameters([$Grammar("parameters", "NoParam"), xs_0], $NoParam(), xs_0).
+        
     
-    
 
-    .decl rel_parameters_a(xs : sequence, tree : parameters_a)
+    .decl rel_parameters_a(xs : sequence, tree : parameters_a, suffix : sequence)
 
     
-    rel_parameters_a([$Grammar("parameters_a", "ConsPosParam"), xs], $ConsPosParam(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters_a(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_parameters_a([$Grammar("parameters_a", "ConsPosParam"), xs_0], $ConsPosParam(head, tail), xs_2) :-
+        rel_Param(xs_0, head, xs_1), tail(xs_0),
+        rel_parameters_a(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_parameters_a([$Grammar("parameters_a", "SinglePosParam"), xs], $SinglePosParam(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_parameters_a([$Grammar("parameters_a", "SinglePosParam"), xs_0], $SinglePosParam(contents), xs_1) :-
+        rel_Param(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_parameters_a([$Grammar("parameters_a", "TransPosParam"), xs], $TransPosParam(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Param(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters_b(prefix_1, tail),
-        xs_2 = suffix_1
+    rel_parameters_a([$Grammar("parameters_a", "TransPosParam"), xs_0], $TransPosParam(head, tail), xs_2) :-
+        rel_Param(xs_0, head, xs_1), tail(xs_0),
+        rel_parameters_b(xs_1, tail, xs_2), tail(xs_1).
     
-    
 
-    .decl rel_keyword(xs : sequence, tree : keyword)
+    .decl rel_keyword(xs : sequence, tree : keyword, suffix : sequence)
 
     
-    rel_keyword([$Grammar("keyword", "NamedKeyword"), xs], $NamedKeyword(name, contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, name),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, contents),
-        xs_2 = suffix_1
-    
+    rel_keyword([$Grammar("keyword", "NamedKeyword"), xs_0], $NamedKeyword(name, contents), xs_2) :-
+        rel_symbol(xs_0, name, xs_1), tail(xs_0),
+        rel_expr(xs_1, contents, xs_2), tail(xs_1).
 
-    rel_keyword([$Grammar("keyword", "SplatKeyword"), xs], $SplatKeyword(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_keyword([$Grammar("keyword", "SplatKeyword"), xs_0], $SplatKeyword(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
     
 
-    .decl rel_alias(xs : sequence, tree : alias)
+    .decl rel_alias(xs : sequence, tree : alias, suffix : sequence)
 
     
-    rel_alias([$Grammar("alias", "SomeAlias"), xs], $SomeAlias(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_alias([$Grammar("alias", "SomeAlias"), xs_0], $SomeAlias(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_alias([$Grammar("alias", "NoAlias"), xs], $NoAlias()) :-
-        xs = nil
+    rel_alias([$Grammar("alias", "NoAlias"), xs_0], $NoAlias(), xs_0).
+        
     
-    
 
-    .decl rel_alias_expr(xs : sequence, tree : alias_expr)
+    .decl rel_alias_expr(xs : sequence, tree : alias_expr, suffix : sequence)
 
-    
-    rel_alias_expr([$Grammar("alias_expr", "SomeAliasExpr"), xs], $SomeAliasExpr(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
     
+    rel_alias_expr([$Grammar("alias_expr", "SomeAliasExpr"), xs_0], $SomeAliasExpr(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_alias_expr([$Grammar("alias_expr", "NoAliasExpr"), xs], $NoAliasExpr()) :-
-        xs = nil
+    rel_alias_expr([$Grammar("alias_expr", "NoAliasExpr"), xs_0], $NoAliasExpr(), xs_0).
+        
     
-    
 
-    .decl rel_bases(xs : sequence, tree : bases)
+    .decl rel_bases(xs : sequence, tree : bases, suffix : sequence)
 
     
-    rel_bases([$Grammar("bases", "SomeBases"), xs], $SomeBases(bases)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_bases_a(prefix_0, bases),
-        xs_1 = suffix_0
-    
+    rel_bases([$Grammar("bases", "SomeBases"), xs_0], $SomeBases(bases), xs_1) :-
+        rel_bases_a(xs_0, bases, xs_1), tail(xs_0).
 
-    rel_bases([$Grammar("bases", "NoBases"), xs], $NoBases()) :-
-        xs = nil
-    
+    rel_bases([$Grammar("bases", "NoBases"), xs_0], $NoBases(), xs_0).
+        
     
 
-    .decl rel_bases_a(xs : sequence, tree : bases_a)
+    .decl rel_bases_a(xs : sequence, tree : bases_a, suffix : sequence)
 
     
-    rel_bases_a([$Grammar("bases_a", "ConsBase"), xs], $ConsBase(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_bases_a(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_bases_a([$Grammar("bases_a", "ConsBase"), xs_0], $ConsBase(head, tail), xs_2) :-
+        rel_expr(xs_0, head, xs_1), tail(xs_0),
+        rel_bases_a(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_bases_a([$Grammar("bases_a", "SingleBase"), xs], $SingleBase(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_bases_a([$Grammar("bases_a", "SingleBase"), xs_0], $SingleBase(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_bases_a([$Grammar("bases_a", "KeywordsBase"), xs], $KeywordsBase(kws)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_keywords(prefix_0, kws),
-        xs_1 = suffix_0
-    
+    rel_bases_a([$Grammar("bases_a", "KeywordsBase"), xs_0], $KeywordsBase(kws), xs_1) :-
+        rel_keywords(xs_0, kws, xs_1), tail(xs_0).
     
 
-    .decl rel_keywords(xs : sequence, tree : keywords)
+    .decl rel_keywords(xs : sequence, tree : keywords, suffix : sequence)
 
     
-    rel_keywords([$Grammar("keywords", "ConsKeyword"), xs], $ConsKeyword(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_keyword(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_keywords(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_keywords([$Grammar("keywords", "ConsKeyword"), xs_0], $ConsKeyword(head, tail), xs_2) :-
+        rel_keyword(xs_0, head, xs_1), tail(xs_0),
+        rel_keywords(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_keywords([$Grammar("keywords", "SingleKeyword"), xs], $SingleKeyword(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_keyword(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_keywords([$Grammar("keywords", "SingleKeyword"), xs_0], $SingleKeyword(contents), xs_1) :-
+        rel_keyword(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_comparisons(xs : sequence, tree : comparisons)
+    .decl rel_comparisons(xs : sequence, tree : comparisons, suffix : sequence)
 
-    
-    rel_comparisons([$Grammar("comparisons", "ConsCompareRight"), xs], $ConsCompareRight(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_CompareRight(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comparisons(prefix_1, tail),
-        xs_2 = suffix_1
     
+    rel_comparisons([$Grammar("comparisons", "ConsCompareRight"), xs_0], $ConsCompareRight(head, tail), xs_2) :-
+        rel_CompareRight(xs_0, head, xs_1), tail(xs_0),
+        rel_comparisons(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_comparisons([$Grammar("comparisons", "SingleCompareRight"), xs], $SingleCompareRight(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_CompareRight(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_comparisons([$Grammar("comparisons", "SingleCompareRight"), xs_0], $SingleCompareRight(contents), xs_1) :-
+        rel_CompareRight(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_option_expr(xs : sequence, tree : option_expr)
+    .decl rel_option_expr(xs : sequence, tree : option_expr, suffix : sequence)
 
     
-    rel_option_expr([$Grammar("option_expr", "SomeExpr"), xs], $SomeExpr(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_option_expr([$Grammar("option_expr", "SomeExpr"), xs_0], $SomeExpr(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_option_expr([$Grammar("option_expr", "NoExpr"), xs], $NoExpr()) :-
-        xs = nil
-    
+    rel_option_expr([$Grammar("option_expr", "NoExpr"), xs_0], $NoExpr(), xs_0).
+        
     
 
-    .decl rel_comma_exprs(xs : sequence, tree : comma_exprs)
+    .decl rel_comma_exprs(xs : sequence, tree : comma_exprs, suffix : sequence)
 
     
-    rel_comma_exprs([$Grammar("comma_exprs", "ConsExpr"), xs], $ConsExpr(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comma_exprs(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_comma_exprs([$Grammar("comma_exprs", "ConsExpr"), xs_0], $ConsExpr(head, tail), xs_2) :-
+        rel_expr(xs_0, head, xs_1), tail(xs_0),
+        rel_comma_exprs(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_comma_exprs([$Grammar("comma_exprs", "SingleExpr"), xs], $SingleExpr(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_comma_exprs([$Grammar("comma_exprs", "SingleExpr"), xs_0], $SingleExpr(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_target_exprs(xs : sequence, tree : target_exprs)
+    .decl rel_target_exprs(xs : sequence, tree : target_exprs, suffix : sequence)
 
-    
-    rel_target_exprs([$Grammar("target_exprs", "ConsTargetExpr"), xs], $ConsTargetExpr(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_target_exprs(prefix_1, tail),
-        xs_2 = suffix_1
     
+    rel_target_exprs([$Grammar("target_exprs", "ConsTargetExpr"), xs_0], $ConsTargetExpr(head, tail), xs_2) :-
+        rel_expr(xs_0, head, xs_1), tail(xs_0),
+        rel_target_exprs(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_target_exprs([$Grammar("target_exprs", "SingleTargetExpr"), xs], $SingleTargetExpr(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_target_exprs([$Grammar("target_exprs", "SingleTargetExpr"), xs_0], $SingleTargetExpr(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_decorators(xs : sequence, tree : decorators)
+    .decl rel_decorators(xs : sequence, tree : decorators, suffix : sequence)
 
     
-    rel_decorators([$Grammar("decorators", "ConsDec"), xs], $ConsDec(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_decorators(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_decorators([$Grammar("decorators", "ConsDec"), xs_0], $ConsDec(head, tail), xs_2) :-
+        rel_expr(xs_0, head, xs_1), tail(xs_0),
+        rel_decorators(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_decorators([$Grammar("decorators", "NoDec"), xs], $NoDec()) :-
-        xs = nil
-    
+    rel_decorators([$Grammar("decorators", "NoDec"), xs_0], $NoDec(), xs_0).
+        
     
 
-    .decl rel_constraint_filters(xs : sequence, tree : constraint_filters)
+    .decl rel_constraint_filters(xs : sequence, tree : constraint_filters, suffix : sequence)
 
     
-    rel_constraint_filters([$Grammar("constraint_filters", "ConsFilter"), xs], $ConsFilter(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_constraint_filters(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_constraint_filters([$Grammar("constraint_filters", "ConsFilter"), xs_0], $ConsFilter(head, tail), xs_2) :-
+        rel_expr(xs_0, head, xs_1), tail(xs_0),
+        rel_constraint_filters(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_constraint_filters([$Grammar("constraint_filters", "SingleFilter"), xs], $SingleFilter(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_constraint_filters([$Grammar("constraint_filters", "SingleFilter"), xs_0], $SingleFilter(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_constraint_filters([$Grammar("constraint_filters", "NoFilter"), xs], $NoFilter()) :-
-        xs = nil
-    
+    rel_constraint_filters([$Grammar("constraint_filters", "NoFilter"), xs_0], $NoFilter(), xs_0).
+        
     
 
-    .decl rel_sequence_string(xs : sequence, tree : sequence_string)
+    .decl rel_sequence_string(xs : sequence, tree : sequence_string, suffix : sequence)
 
     
-    rel_sequence_string([$Grammar("sequence_string", "ConsStr"), xs], $ConsStr(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_string(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_sequence_string([$Grammar("sequence_string", "ConsStr"), xs_0], $ConsStr(head, tail), xs_2) :-
+        rel_symbol(xs_0, head, xs_1), tail(xs_0),
+        rel_sequence_string(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_sequence_string([$Grammar("sequence_string", "SingleStr"), xs], $SingleStr(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_sequence_string([$Grammar("sequence_string", "SingleStr"), xs_0], $SingleStr(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_arguments(xs : sequence, tree : arguments)
+    .decl rel_arguments(xs : sequence, tree : arguments, suffix : sequence)
 
-    
-    rel_arguments([$Grammar("arguments", "ConsArg"), xs], $ConsArg(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_arguments(prefix_1, tail),
-        xs_2 = suffix_1
     
+    rel_arguments([$Grammar("arguments", "ConsArg"), xs_0], $ConsArg(head, tail), xs_2) :-
+        rel_expr(xs_0, head, xs_1), tail(xs_0),
+        rel_arguments(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_arguments([$Grammar("arguments", "SingleArg"), xs], $SingleArg(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_arguments([$Grammar("arguments", "SingleArg"), xs_0], $SingleArg(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_arguments([$Grammar("arguments", "KeywordsArg"), xs], $KeywordsArg(kws)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_keywords(prefix_0, kws),
-        xs_1 = suffix_0
+    rel_arguments([$Grammar("arguments", "KeywordsArg"), xs_0], $KeywordsArg(kws), xs_1) :-
+        rel_keywords(xs_0, kws, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_dictionary_item(xs : sequence, tree : dictionary_item)
+    .decl rel_dictionary_item(xs : sequence, tree : dictionary_item, suffix : sequence)
 
-    
-    rel_dictionary_item([$Grammar("dictionary_item", "Field"), xs], $Field(key, contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, key),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, contents),
-        xs_2 = suffix_1
     
+    rel_dictionary_item([$Grammar("dictionary_item", "Field"), xs_0], $Field(key, contents), xs_2) :-
+        rel_expr(xs_0, key, xs_1), tail(xs_0),
+        rel_expr(xs_1, contents, xs_2), tail(xs_1).
 
-    rel_dictionary_item([$Grammar("dictionary_item", "DictionarySplatFields"), xs], $DictionarySplatFields(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_dictionary_item([$Grammar("dictionary_item", "DictionarySplatFields"), xs_0], $DictionarySplatFields(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_dictionary_contents(xs : sequence, tree : dictionary_contents)
+    .decl rel_dictionary_contents(xs : sequence, tree : dictionary_contents, suffix : sequence)
 
     
-    rel_dictionary_contents([$Grammar("dictionary_contents", "ConsDictionaryItem"), xs], $ConsDictionaryItem(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_dictionary_item(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_dictionary_contents(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_dictionary_contents([$Grammar("dictionary_contents", "ConsDictionaryItem"), xs_0], $ConsDictionaryItem(head, tail), xs_2) :-
+        rel_dictionary_item(xs_0, head, xs_1), tail(xs_0),
+        rel_dictionary_contents(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_dictionary_contents([$Grammar("dictionary_contents", "SingleDictionaryItem"), xs], $SingleDictionaryItem(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_dictionary_item(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_dictionary_contents([$Grammar("dictionary_contents", "SingleDictionaryItem"), xs_0], $SingleDictionaryItem(contents), xs_1) :-
+        rel_dictionary_item(xs_0, contents, xs_1), tail(xs_0).
     
 
-    .decl rel_sequence_var(xs : sequence, tree : sequence_var)
+    .decl rel_sequence_var(xs : sequence, tree : sequence_var, suffix : sequence)
 
     
-    rel_sequence_var([$Grammar("sequence_var", "ConsId"), xs], $ConsId(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_var(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_sequence_var([$Grammar("sequence_var", "ConsId"), xs_0], $ConsId(head, tail), xs_2) :-
+        rel_symbol(xs_0, head, xs_1), tail(xs_0),
+        rel_sequence_var(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_sequence_var([$Grammar("sequence_var", "SingleId"), xs], $SingleId(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_sequence_var([$Grammar("sequence_var", "SingleId"), xs_0], $SingleId(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_sequence_ImportName(xs : sequence, tree : sequence_ImportName)
+    .decl rel_sequence_ImportName(xs : sequence, tree : sequence_ImportName, suffix : sequence)
 
-    
-    rel_sequence_ImportName([$Grammar("sequence_ImportName", "ConsImportName"), xs], $ConsImportName(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_ImportName(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ImportName(prefix_1, tail),
-        xs_2 = suffix_1
     
+    rel_sequence_ImportName([$Grammar("sequence_ImportName", "ConsImportName"), xs_0], $ConsImportName(head, tail), xs_2) :-
+        rel_ImportName(xs_0, head, xs_1), tail(xs_0),
+        rel_sequence_ImportName(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_sequence_ImportName([$Grammar("sequence_ImportName", "SingleImportName"), xs], $SingleImportName(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_ImportName(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_sequence_ImportName([$Grammar("sequence_ImportName", "SingleImportName"), xs_0], $SingleImportName(contents), xs_1) :-
+        rel_ImportName(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_sequence_Withitem(xs : sequence, tree : sequence_Withitem)
+    .decl rel_sequence_Withitem(xs : sequence, tree : sequence_Withitem, suffix : sequence)
 
     
-    rel_sequence_Withitem([$Grammar("sequence_Withitem", "ConsWithitem"), xs], $ConsWithitem(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Withitem(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_Withitem(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_sequence_Withitem([$Grammar("sequence_Withitem", "ConsWithitem"), xs_0], $ConsWithitem(head, tail), xs_2) :-
+        rel_Withitem(xs_0, head, xs_1), tail(xs_0),
+        rel_sequence_Withitem(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_sequence_Withitem([$Grammar("sequence_Withitem", "SingleWithitem"), xs], $SingleWithitem(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_Withitem(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_sequence_Withitem([$Grammar("sequence_Withitem", "SingleWithitem"), xs_0], $SingleWithitem(contents), xs_1) :-
+        rel_Withitem(xs_0, contents, xs_1), tail(xs_0).
     
 
-    .decl rel_statements(xs : sequence, tree : statements)
+    .decl rel_statements(xs : sequence, tree : statements, suffix : sequence)
 
     
-    rel_statements([$Grammar("statements", "ConsStmt"), xs], $ConsStmt(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_stmt(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_statements([$Grammar("statements", "ConsStmt"), xs_0], $ConsStmt(head, tail), xs_2) :-
+        rel_stmt(xs_0, head, xs_1), tail(xs_0),
+        rel_statements(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_statements([$Grammar("statements", "SingleStmt"), xs], $SingleStmt(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_stmt(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_statements([$Grammar("statements", "SingleStmt"), xs_0], $SingleStmt(contents), xs_1) :-
+        rel_stmt(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_comprehension_constraints(xs : sequence, tree : comprehension_constraints)
+    .decl rel_comprehension_constraints(xs : sequence, tree : comprehension_constraints, suffix : sequence)
 
-    
-    rel_comprehension_constraints([$Grammar("comprehension_constraints", "ConsConstraint"), xs], $ConsConstraint(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_constraint(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comprehension_constraints(prefix_1, tail),
-        xs_2 = suffix_1
     
+    rel_comprehension_constraints([$Grammar("comprehension_constraints", "ConsConstraint"), xs_0], $ConsConstraint(head, tail), xs_2) :-
+        rel_constraint(xs_0, head, xs_1), tail(xs_0),
+        rel_comprehension_constraints(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_comprehension_constraints([$Grammar("comprehension_constraints", "SingleConstraint"), xs], $SingleConstraint(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_constraint(prefix_0, contents),
-        xs_1 = suffix_0
+    rel_comprehension_constraints([$Grammar("comprehension_constraints", "SingleConstraint"), xs_0], $SingleConstraint(contents), xs_1) :-
+        rel_constraint(xs_0, contents, xs_1), tail(xs_0).
     
-    
 
-    .decl rel_sequence_ExceptHandler(xs : sequence, tree : sequence_ExceptHandler)
+    .decl rel_sequence_ExceptHandler(xs : sequence, tree : sequence_ExceptHandler, suffix : sequence)
 
     
-    rel_sequence_ExceptHandler([$Grammar("sequence_ExceptHandler", "ConsExceptHandler"), xs], $ConsExceptHandler(head, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_ExceptHandler(prefix_0, head),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ExceptHandler(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_sequence_ExceptHandler([$Grammar("sequence_ExceptHandler", "ConsExceptHandler"), xs_0], $ConsExceptHandler(head, tail), xs_2) :-
+        rel_ExceptHandler(xs_0, head, xs_1), tail(xs_0),
+        rel_sequence_ExceptHandler(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_sequence_ExceptHandler([$Grammar("sequence_ExceptHandler", "SingleExceptHandler"), xs], $SingleExceptHandler(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_ExceptHandler(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_sequence_ExceptHandler([$Grammar("sequence_ExceptHandler", "SingleExceptHandler"), xs_0], $SingleExceptHandler(contents), xs_1) :-
+        rel_ExceptHandler(xs_0, contents, xs_1), tail(xs_0).
     
 
-    .decl rel_conditions(xs : sequence, tree : conditions)
+    .decl rel_conditions(xs : sequence, tree : conditions, suffix : sequence)
 
     
-    rel_conditions([$Grammar("conditions", "ElifCond"), xs], $ElifCond(contents, tail)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_ElifBlock(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_conditions(prefix_1, tail),
-        xs_2 = suffix_1
-    
+    rel_conditions([$Grammar("conditions", "ElifCond"), xs_0], $ElifCond(contents, tail), xs_2) :-
+        rel_ElifBlock(xs_0, contents, xs_1), tail(xs_0),
+        rel_conditions(xs_1, tail, xs_2), tail(xs_1).
 
-    rel_conditions([$Grammar("conditions", "ElseCond"), xs], $ElseCond(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_ElseBlock(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_conditions([$Grammar("conditions", "ElseCond"), xs_0], $ElseCond(contents), xs_1) :-
+        rel_ElseBlock(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_conditions([$Grammar("conditions", "NoCond"), xs], $NoCond()) :-
-        xs = nil
-    
+    rel_conditions([$Grammar("conditions", "NoCond"), xs_0], $NoCond(), xs_0).
+        
     
 
-    .decl rel_function_def(xs : sequence, tree : function_def)
+    .decl rel_function_def(xs : sequence, tree : function_def, suffix : sequence)
 
     
-    rel_function_def([$Grammar("function_def", "FunctionDef"), xs], $FunctionDef(name, params, ret_typ, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, name),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters(prefix_1, params),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_return_type(prefix_2, ret_typ),
-        xs_3 = suffix_2,
-        the_split(prefix_3, suffix_3, xs_3),
-        rel_statements(prefix_3, body),
-        xs_4 = suffix_3
-    
+    rel_function_def([$Grammar("function_def", "FunctionDef"), xs_0], $FunctionDef(name, params, ret_typ, body), xs_4) :-
+        rel_symbol(xs_0, name, xs_1), tail(xs_0),
+        rel_parameters(xs_1, params, xs_2), tail(xs_1),
+        rel_return_type(xs_2, ret_typ, xs_3), tail(xs_2),
+        rel_statements(xs_3, body, xs_4), tail(xs_3).
 
-    rel_function_def([$Grammar("function_def", "AsyncFunctionDef"), xs], $AsyncFunctionDef(name, params, ret_typ, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, name),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_parameters(prefix_1, params),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_return_type(prefix_2, ret_typ),
-        xs_3 = suffix_2,
-        the_split(prefix_3, suffix_3, xs_3),
-        rel_statements(prefix_3, body),
-        xs_4 = suffix_3
+    rel_function_def([$Grammar("function_def", "AsyncFunctionDef"), xs_0], $AsyncFunctionDef(name, params, ret_typ, body), xs_4) :-
+        rel_symbol(xs_0, name, xs_1), tail(xs_0),
+        rel_parameters(xs_1, params, xs_2), tail(xs_1),
+        rel_return_type(xs_2, ret_typ, xs_3), tail(xs_2),
+        rel_statements(xs_3, body, xs_4), tail(xs_3).
     
-    
 
-    .decl rel_stmt(xs : sequence, tree : stmt)
+    .decl rel_stmt(xs : sequence, tree : stmt, suffix : sequence)
 
-    
-    rel_stmt([$Grammar("stmt", "DecFunctionDef"), xs], $DecFunctionDef(decs, fun_def)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_decorators(prefix_0, decs),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_function_def(prefix_1, fun_def),
-        xs_2 = suffix_1
     
+    rel_stmt([$Grammar("stmt", "DecFunctionDef"), xs_0], $DecFunctionDef(decs, fun_def), xs_2) :-
+        rel_decorators(xs_0, decs, xs_1), tail(xs_0),
+        rel_function_def(xs_1, fun_def, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "DecAsyncFunctionDef"), xs], $DecAsyncFunctionDef(decs, fun_def)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_decorators(prefix_0, decs),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_function_def(prefix_1, fun_def),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "DecAsyncFunctionDef"), xs_0], $DecAsyncFunctionDef(decs, fun_def), xs_2) :-
+        rel_decorators(xs_0, decs, xs_1), tail(xs_0),
+        rel_function_def(xs_1, fun_def, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "DecClassDef"), xs], $DecClassDef(decs, class_def)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_decorators(prefix_0, decs),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_ClassDef(prefix_1, class_def),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "DecClassDef"), xs_0], $DecClassDef(decs, class_def), xs_2) :-
+        rel_decorators(xs_0, decs, xs_1), tail(xs_0),
+        rel_ClassDef(xs_1, class_def, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "ReturnSomething"), xs], $ReturnSomething(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "ReturnSomething"), xs_0], $ReturnSomething(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "Return"), xs], $Return()) :-
-        xs = nil
-    
+    rel_stmt([$Grammar("stmt", "Return"), xs_0], $Return(), xs_0).
+        
 
-    rel_stmt([$Grammar("stmt", "Delete"), xs], $Delete(targets)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_comma_exprs(prefix_0, targets),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "Delete"), xs_0], $Delete(targets), xs_1) :-
+        rel_comma_exprs(xs_0, targets, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "Assign"), xs], $Assign(targets, contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_target_exprs(prefix_0, targets),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, contents),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "Assign"), xs_0], $Assign(targets, contents), xs_2) :-
+        rel_target_exprs(xs_0, targets, xs_1), tail(xs_0),
+        rel_expr(xs_1, contents, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "AugAssign"), xs], $AugAssign(target, op, contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_operator(prefix_1, op),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_expr(prefix_2, contents),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "AugAssign"), xs_0], $AugAssign(target, op, contents), xs_3) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_operator(xs_1, op, xs_2), tail(xs_1),
+        rel_expr(xs_2, contents, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "TypedAssign"), xs], $TypedAssign(target, type, contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, type),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_expr(prefix_2, contents),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "TypedAssign"), xs_0], $TypedAssign(target, type, contents), xs_3) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, type, xs_2), tail(xs_1),
+        rel_expr(xs_2, contents, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "TypedDeclare"), xs], $TypedDeclare(target, type)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, type),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "TypedDeclare"), xs_0], $TypedDeclare(target, type), xs_2) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, type, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "For"), xs], $For(target, iter, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, iter),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_statements(prefix_2, body),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "For"), xs_0], $For(target, iter, body), xs_3) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, iter, xs_2), tail(xs_1),
+        rel_statements(xs_2, body, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "ForElse"), xs], $ForElse(target, iter, body, orelse)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, iter),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_statements(prefix_2, body),
-        xs_3 = suffix_2,
-        the_split(prefix_3, suffix_3, xs_3),
-        rel_ElseBlock(prefix_3, orelse),
-        xs_4 = suffix_3
-    
+    rel_stmt([$Grammar("stmt", "ForElse"), xs_0], $ForElse(target, iter, body, orelse), xs_4) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, iter, xs_2), tail(xs_1),
+        rel_statements(xs_2, body, xs_3), tail(xs_2),
+        rel_ElseBlock(xs_3, orelse, xs_4), tail(xs_3).
 
-    rel_stmt([$Grammar("stmt", "AsyncFor"), xs], $AsyncFor(target, iter, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, iter),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_statements(prefix_2, body),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "AsyncFor"), xs_0], $AsyncFor(target, iter, body), xs_3) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, iter, xs_2), tail(xs_1),
+        rel_statements(xs_2, body, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "AsyncForElse"), xs], $AsyncForElse(target, iter, body, orelse)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, iter),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_statements(prefix_2, body),
-        xs_3 = suffix_2,
-        the_split(prefix_3, suffix_3, xs_3),
-        rel_ElseBlock(prefix_3, orelse),
-        xs_4 = suffix_3
-    
+    rel_stmt([$Grammar("stmt", "AsyncForElse"), xs_0], $AsyncForElse(target, iter, body, orelse), xs_4) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, iter, xs_2), tail(xs_1),
+        rel_statements(xs_2, body, xs_3), tail(xs_2),
+        rel_ElseBlock(xs_3, orelse, xs_4), tail(xs_3).
 
-    rel_stmt([$Grammar("stmt", "While"), xs], $While(test, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, test),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "While"), xs_0], $While(test, body), xs_2) :-
+        rel_expr(xs_0, test, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "WhileElse"), xs], $WhileElse(test, body, orelse)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, test),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_ElseBlock(prefix_2, orelse),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "WhileElse"), xs_0], $WhileElse(test, body, orelse), xs_3) :-
+        rel_expr(xs_0, test, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1),
+        rel_ElseBlock(xs_2, orelse, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "If"), xs], $If(test, body, orelse)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, test),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_conditions(prefix_2, orelse),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "If"), xs_0], $If(test, body, orelse), xs_3) :-
+        rel_expr(xs_0, test, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1),
+        rel_conditions(xs_2, orelse, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "With"), xs], $With(items, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_sequence_Withitem(prefix_0, items),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "With"), xs_0], $With(items, body), xs_2) :-
+        rel_sequence_Withitem(xs_0, items, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "AsyncWith"), xs], $AsyncWith(items, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_sequence_Withitem(prefix_0, items),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_statements(prefix_1, body),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "AsyncWith"), xs_0], $AsyncWith(items, body), xs_2) :-
+        rel_sequence_Withitem(xs_0, items, xs_1), tail(xs_0),
+        rel_statements(xs_1, body, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "Raise"), xs], $Raise()) :-
-        xs = nil
-    
+    rel_stmt([$Grammar("stmt", "Raise"), xs_0], $Raise(), xs_0).
+        
 
-    rel_stmt([$Grammar("stmt", "RaiseExc"), xs], $RaiseExc(exc)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, exc),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "RaiseExc"), xs_0], $RaiseExc(exc), xs_1) :-
+        rel_expr(xs_0, exc, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "RaiseFrom"), xs], $RaiseFrom(exc, caus)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, exc),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, caus),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "RaiseFrom"), xs_0], $RaiseFrom(exc, caus), xs_2) :-
+        rel_expr(xs_0, exc, xs_1), tail(xs_0),
+        rel_expr(xs_1, caus, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "Try"), xs], $Try(body, handlers)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ExceptHandler(prefix_1, handlers),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "Try"), xs_0], $Try(body, handlers), xs_2) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0),
+        rel_sequence_ExceptHandler(xs_1, handlers, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "TryElse"), xs], $TryElse(body, handlers, orelse)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ExceptHandler(prefix_1, handlers),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_ElseBlock(prefix_2, orelse),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "TryElse"), xs_0], $TryElse(body, handlers, orelse), xs_3) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0),
+        rel_sequence_ExceptHandler(xs_1, handlers, xs_2), tail(xs_1),
+        rel_ElseBlock(xs_2, orelse, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "TryFin"), xs], $TryFin(body, handlers, fin)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ExceptHandler(prefix_1, handlers),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_FinallyBlock(prefix_2, fin),
-        xs_3 = suffix_2
-    
+    rel_stmt([$Grammar("stmt", "TryFin"), xs_0], $TryFin(body, handlers, fin), xs_3) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0),
+        rel_sequence_ExceptHandler(xs_1, handlers, xs_2), tail(xs_1),
+        rel_FinallyBlock(xs_2, fin, xs_3), tail(xs_2).
 
-    rel_stmt([$Grammar("stmt", "TryElseFin"), xs], $TryElseFin(body, handlers, orelse, fin)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_statements(prefix_0, body),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ExceptHandler(prefix_1, handlers),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_ElseBlock(prefix_2, orelse),
-        xs_3 = suffix_2,
-        the_split(prefix_3, suffix_3, xs_3),
-        rel_FinallyBlock(prefix_3, fin),
-        xs_4 = suffix_3
-    
+    rel_stmt([$Grammar("stmt", "TryElseFin"), xs_0], $TryElseFin(body, handlers, orelse, fin), xs_4) :-
+        rel_statements(xs_0, body, xs_1), tail(xs_0),
+        rel_sequence_ExceptHandler(xs_1, handlers, xs_2), tail(xs_1),
+        rel_ElseBlock(xs_2, orelse, xs_3), tail(xs_2),
+        rel_FinallyBlock(xs_3, fin, xs_4), tail(xs_3).
 
-    rel_stmt([$Grammar("stmt", "Assert"), xs], $Assert(test)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, test),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "Assert"), xs_0], $Assert(test), xs_1) :-
+        rel_expr(xs_0, test, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "AssertMsg"), xs], $AssertMsg(test, msg)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, test),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, msg),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "AssertMsg"), xs_0], $AssertMsg(test, msg), xs_2) :-
+        rel_expr(xs_0, test, xs_1), tail(xs_0),
+        rel_expr(xs_1, msg, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "Import"), xs], $Import(names)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_sequence_ImportName(prefix_0, names),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "Import"), xs_0], $Import(names), xs_1) :-
+        rel_sequence_ImportName(xs_0, names, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "ImportFrom"), xs], $ImportFrom(module, names)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_module_id(prefix_0, module),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_sequence_ImportName(prefix_1, names),
-        xs_2 = suffix_1
-    
+    rel_stmt([$Grammar("stmt", "ImportFrom"), xs_0], $ImportFrom(module, names), xs_2) :-
+        rel_module_id(xs_0, module, xs_1), tail(xs_0),
+        rel_sequence_ImportName(xs_1, names, xs_2), tail(xs_1).
 
-    rel_stmt([$Grammar("stmt", "ImportWildCard"), xs], $ImportWildCard(module)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_module_id(prefix_0, module),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "ImportWildCard"), xs_0], $ImportWildCard(module), xs_1) :-
+        rel_module_id(xs_0, module, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "Global"), xs], $Global(names)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_sequence_var(prefix_0, names),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "Global"), xs_0], $Global(names), xs_1) :-
+        rel_sequence_var(xs_0, names, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "Nonlocal"), xs], $Nonlocal(names)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_sequence_var(prefix_0, names),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "Nonlocal"), xs_0], $Nonlocal(names), xs_1) :-
+        rel_sequence_var(xs_0, names, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "Expr"), xs], $Expr(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_stmt([$Grammar("stmt", "Expr"), xs_0], $Expr(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_stmt([$Grammar("stmt", "Pass"), xs], $Pass()) :-
-        xs = nil
-    
+    rel_stmt([$Grammar("stmt", "Pass"), xs_0], $Pass(), xs_0).
+        
 
-    rel_stmt([$Grammar("stmt", "Break"), xs], $Break()) :-
-        xs = nil
-    
+    rel_stmt([$Grammar("stmt", "Break"), xs_0], $Break(), xs_0).
+        
 
-    rel_stmt([$Grammar("stmt", "Continue"), xs], $Continue()) :-
-        xs = nil
-    
+    rel_stmt([$Grammar("stmt", "Continue"), xs_0], $Continue(), xs_0).
+        
     
 
-    .decl rel_expr(xs : sequence, tree : expr)
+    .decl rel_expr(xs : sequence, tree : expr, suffix : sequence)
 
     
-    rel_expr([$Grammar("expr", "BoolOp"), xs], $BoolOp(left, op, right)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, left),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_boolop(prefix_1, op),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_expr(prefix_2, right),
-        xs_3 = suffix_2
-    
+    rel_expr([$Grammar("expr", "BoolOp"), xs_0], $BoolOp(left, op, right), xs_3) :-
+        rel_expr(xs_0, left, xs_1), tail(xs_0),
+        rel_boolop(xs_1, op, xs_2), tail(xs_1),
+        rel_expr(xs_2, right, xs_3), tail(xs_2).
 
-    rel_expr([$Grammar("expr", "NamedExpr"), xs], $NamedExpr(target, contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, contents),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "NamedExpr"), xs_0], $NamedExpr(target, contents), xs_2) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, contents, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "BinOp"), xs], $BinOp(left, op, right)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, left),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_operator(prefix_1, op),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_expr(prefix_2, right),
-        xs_3 = suffix_2
-    
+    rel_expr([$Grammar("expr", "BinOp"), xs_0], $BinOp(left, op, right), xs_3) :-
+        rel_expr(xs_0, left, xs_1), tail(xs_0),
+        rel_operator(xs_1, op, xs_2), tail(xs_1),
+        rel_expr(xs_2, right, xs_3), tail(xs_2).
 
-    rel_expr([$Grammar("expr", "UnaryOp"), xs], $UnaryOp(op, right)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_unaryop(prefix_0, op),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, right),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "UnaryOp"), xs_0], $UnaryOp(op, right), xs_2) :-
+        rel_unaryop(xs_0, op, xs_1), tail(xs_0),
+        rel_expr(xs_1, right, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "Lambda"), xs], $Lambda(params, body)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_parameters(prefix_0, params),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, body),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "Lambda"), xs_0], $Lambda(params, body), xs_2) :-
+        rel_parameters(xs_0, params, xs_1), tail(xs_0),
+        rel_expr(xs_1, body, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "IfExp"), xs], $IfExp(body, test, orelse)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, body),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, test),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_expr(prefix_2, orelse),
-        xs_3 = suffix_2
-    
+    rel_expr([$Grammar("expr", "IfExp"), xs_0], $IfExp(body, test, orelse), xs_3) :-
+        rel_expr(xs_0, body, xs_1), tail(xs_0),
+        rel_expr(xs_1, test, xs_2), tail(xs_1),
+        rel_expr(xs_2, orelse, xs_3), tail(xs_2).
 
-    rel_expr([$Grammar("expr", "Dictionary"), xs], $Dictionary(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_dictionary_contents(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Dictionary"), xs_0], $Dictionary(contents), xs_1) :-
+        rel_dictionary_contents(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "EmptyDictionary"), xs], $EmptyDictionary()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "EmptyDictionary"), xs_0], $EmptyDictionary(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "Set"), xs], $Set(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_comma_exprs(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Set"), xs_0], $Set(contents), xs_1) :-
+        rel_comma_exprs(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "ListComp"), xs], $ListComp(contents, constraints)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comprehension_constraints(prefix_1, constraints),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "ListComp"), xs_0], $ListComp(contents, constraints), xs_2) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0),
+        rel_comprehension_constraints(xs_1, constraints, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "SetComp"), xs], $SetComp(contents, constraints)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comprehension_constraints(prefix_1, constraints),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "SetComp"), xs_0], $SetComp(contents, constraints), xs_2) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0),
+        rel_comprehension_constraints(xs_1, constraints, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "DictionaryComp"), xs], $DictionaryComp(key, contents, constraints)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, key),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, contents),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_comprehension_constraints(prefix_2, constraints),
-        xs_3 = suffix_2
-    
+    rel_expr([$Grammar("expr", "DictionaryComp"), xs_0], $DictionaryComp(key, contents, constraints), xs_3) :-
+        rel_expr(xs_0, key, xs_1), tail(xs_0),
+        rel_expr(xs_1, contents, xs_2), tail(xs_1),
+        rel_comprehension_constraints(xs_2, constraints, xs_3), tail(xs_2).
 
-    rel_expr([$Grammar("expr", "GeneratorExp"), xs], $GeneratorExp(contents, constraints)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comprehension_constraints(prefix_1, constraints),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "GeneratorExp"), xs_0], $GeneratorExp(contents, constraints), xs_2) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0),
+        rel_comprehension_constraints(xs_1, constraints, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "Await"), xs], $Await(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Await"), xs_0], $Await(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "YieldNothing"), xs], $YieldNothing()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "YieldNothing"), xs_0], $YieldNothing(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "Yield"), xs], $Yield(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Yield"), xs_0], $Yield(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "YieldFrom"), xs], $YieldFrom(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "YieldFrom"), xs_0], $YieldFrom(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "Compare"), xs], $Compare(left, comps)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, left),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_comparisons(prefix_1, comps),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "Compare"), xs_0], $Compare(left, comps), xs_2) :-
+        rel_expr(xs_0, left, xs_1), tail(xs_0),
+        rel_comparisons(xs_1, comps, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "Call"), xs], $Call(func)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, func),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Call"), xs_0], $Call(func), xs_1) :-
+        rel_expr(xs_0, func, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "CallArgs"), xs], $CallArgs(func, args)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, func),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_arguments(prefix_1, args),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "CallArgs"), xs_0], $CallArgs(func, args), xs_2) :-
+        rel_expr(xs_0, func, xs_1), tail(xs_0),
+        rel_arguments(xs_1, args, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "Integer"), xs], $Integer(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Integer"), xs_0], $Integer(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "Float"), xs], $Float(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Float"), xs_0], $Float(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "ConcatString"), xs], $ConcatString(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_sequence_string(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "ConcatString"), xs_0], $ConcatString(contents), xs_1) :-
+        rel_sequence_string(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "True_"), xs], $True_()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "True_"), xs_0], $True_(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "False_"), xs], $False_()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "False_"), xs_0], $False_(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "None_"), xs], $None_()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "None_"), xs_0], $None_(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "Ellip"), xs], $Ellip()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "Ellip"), xs_0], $Ellip(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "Attribute"), xs], $Attribute(contents, name)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_symbol(prefix_1, name),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "Attribute"), xs_0], $Attribute(contents, name), xs_2) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0),
+        rel_symbol(xs_1, name, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "Subscript"), xs], $Subscript(contents, slice)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, slice),
-        xs_2 = suffix_1
-    
+    rel_expr([$Grammar("expr", "Subscript"), xs_0], $Subscript(contents, slice), xs_2) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0),
+        rel_expr(xs_1, slice, xs_2), tail(xs_1).
 
-    rel_expr([$Grammar("expr", "Starred"), xs], $Starred(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Starred"), xs_0], $Starred(contents), xs_1) :-
+        rel_expr(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "Name"), xs], $Name(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_symbol(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Name"), xs_0], $Name(contents), xs_1) :-
+        rel_symbol(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "List"), xs], $List(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_comma_exprs(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "List"), xs_0], $List(contents), xs_1) :-
+        rel_comma_exprs(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "EmptyList"), xs], $EmptyList()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "EmptyList"), xs_0], $EmptyList(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "Tuple"), xs], $Tuple(contents)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_comma_exprs(prefix_0, contents),
-        xs_1 = suffix_0
-    
+    rel_expr([$Grammar("expr", "Tuple"), xs_0], $Tuple(contents), xs_1) :-
+        rel_comma_exprs(xs_0, contents, xs_1), tail(xs_0).
 
-    rel_expr([$Grammar("expr", "EmptyTuple"), xs], $EmptyTuple()) :-
-        xs = nil
-    
+    rel_expr([$Grammar("expr", "EmptyTuple"), xs_0], $EmptyTuple(), xs_0).
+        
 
-    rel_expr([$Grammar("expr", "Slice"), xs], $Slice(lower, upper, step)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_option_expr(prefix_0, lower),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_option_expr(prefix_1, upper),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_option_expr(prefix_2, step),
-        xs_3 = suffix_2
-    
+    rel_expr([$Grammar("expr", "Slice"), xs_0], $Slice(lower, upper, step), xs_3) :-
+        rel_option_expr(xs_0, lower, xs_1), tail(xs_0),
+        rel_option_expr(xs_1, upper, xs_2), tail(xs_1),
+        rel_option_expr(xs_2, step, xs_3), tail(xs_2).
     
 
-    .decl rel_boolop(xs : sequence, tree : boolop)
+    .decl rel_boolop(xs : sequence, tree : boolop, suffix : sequence)
 
     
-    rel_boolop([$Grammar("boolop", "And"), xs], $And()) :-
-        xs = nil
-    
+    rel_boolop([$Grammar("boolop", "And"), xs_0], $And(), xs_0).
+        
 
-    rel_boolop([$Grammar("boolop", "Or"), xs], $Or()) :-
-        xs = nil
+    rel_boolop([$Grammar("boolop", "Or"), xs_0], $Or(), xs_0).
+        
     
-    
 
-    .decl rel_operator(xs : sequence, tree : operator)
+    .decl rel_operator(xs : sequence, tree : operator, suffix : sequence)
 
-    
-    rel_operator([$Grammar("operator", "Add"), xs], $Add()) :-
-        xs = nil
     
+    rel_operator([$Grammar("operator", "Add"), xs_0], $Add(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "Sub"), xs], $Sub()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "Sub"), xs_0], $Sub(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "Mult"), xs], $Mult()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "Mult"), xs_0], $Mult(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "MatMult"), xs], $MatMult()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "MatMult"), xs_0], $MatMult(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "Div"), xs], $Div()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "Div"), xs_0], $Div(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "Mod"), xs], $Mod()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "Mod"), xs_0], $Mod(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "Pow"), xs], $Pow()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "Pow"), xs_0], $Pow(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "LShift"), xs], $LShift()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "LShift"), xs_0], $LShift(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "RShift"), xs], $RShift()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "RShift"), xs_0], $RShift(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "BitOr"), xs], $BitOr()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "BitOr"), xs_0], $BitOr(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "BitXor"), xs], $BitXor()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "BitXor"), xs_0], $BitXor(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "BitAnd"), xs], $BitAnd()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "BitAnd"), xs_0], $BitAnd(), xs_0).
+        
 
-    rel_operator([$Grammar("operator", "FloorDiv"), xs], $FloorDiv()) :-
-        xs = nil
-    
+    rel_operator([$Grammar("operator", "FloorDiv"), xs_0], $FloorDiv(), xs_0).
+        
     
 
-    .decl rel_unaryop(xs : sequence, tree : unaryop)
+    .decl rel_unaryop(xs : sequence, tree : unaryop, suffix : sequence)
 
     
-    rel_unaryop([$Grammar("unaryop", "Invert"), xs], $Invert()) :-
-        xs = nil
-    
+    rel_unaryop([$Grammar("unaryop", "Invert"), xs_0], $Invert(), xs_0).
+        
 
-    rel_unaryop([$Grammar("unaryop", "Not"), xs], $Not()) :-
-        xs = nil
-    
+    rel_unaryop([$Grammar("unaryop", "Not"), xs_0], $Not(), xs_0).
+        
 
-    rel_unaryop([$Grammar("unaryop", "UAdd"), xs], $UAdd()) :-
-        xs = nil
-    
+    rel_unaryop([$Grammar("unaryop", "UAdd"), xs_0], $UAdd(), xs_0).
+        
 
-    rel_unaryop([$Grammar("unaryop", "USub"), xs], $USub()) :-
-        xs = nil
+    rel_unaryop([$Grammar("unaryop", "USub"), xs_0], $USub(), xs_0).
+        
     
-    
 
-    .decl rel_cmpop(xs : sequence, tree : cmpop)
+    .decl rel_cmpop(xs : sequence, tree : cmpop, suffix : sequence)
 
     
-    rel_cmpop([$Grammar("cmpop", "Eq"), xs], $Eq()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "Eq"), xs_0], $Eq(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "NotEq"), xs], $NotEq()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "NotEq"), xs_0], $NotEq(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "Lt"), xs], $Lt()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "Lt"), xs_0], $Lt(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "LtE"), xs], $LtE()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "LtE"), xs_0], $LtE(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "Gt"), xs], $Gt()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "Gt"), xs_0], $Gt(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "GtE"), xs], $GtE()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "GtE"), xs_0], $GtE(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "Is"), xs], $Is()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "Is"), xs_0], $Is(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "IsNot"), xs], $IsNot()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "IsNot"), xs_0], $IsNot(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "In"), xs], $In()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "In"), xs_0], $In(), xs_0).
+        
 
-    rel_cmpop([$Grammar("cmpop", "NotIn"), xs], $NotIn()) :-
-        xs = nil
-    
+    rel_cmpop([$Grammar("cmpop", "NotIn"), xs_0], $NotIn(), xs_0).
+        
     
 
-    .decl rel_constraint(xs : sequence, tree : constraint)
+    .decl rel_constraint(xs : sequence, tree : constraint, suffix : sequence)
 
     
-    rel_constraint([$Grammar("constraint", "AsyncConstraint"), xs], $AsyncConstraint(target, search_space, filts)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, search_space),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_constraint_filters(prefix_2, filts),
-        xs_3 = suffix_2
-    
+    rel_constraint([$Grammar("constraint", "AsyncConstraint"), xs_0], $AsyncConstraint(target, search_space, filts), xs_3) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, search_space, xs_2), tail(xs_1),
+        rel_constraint_filters(xs_2, filts, xs_3), tail(xs_2).
 
-    rel_constraint([$Grammar("constraint", "Constraint"), xs], $Constraint(target, search_space, filts)) :-
-        xs_0 = xs,
-        the_split(prefix_0, suffix_0, xs_0),
-        rel_expr(prefix_0, target),
-        xs_1 = suffix_0,
-        the_split(prefix_1, suffix_1, xs_1),
-        rel_expr(prefix_1, search_space),
-        xs_2 = suffix_1,
-        the_split(prefix_2, suffix_2, xs_2),
-        rel_constraint_filters(prefix_2, filts),
-        xs_3 = suffix_2
-    
+    rel_constraint([$Grammar("constraint", "Constraint"), xs_0], $Constraint(target, search_space, filts), xs_3) :-
+        rel_expr(xs_0, target, xs_1), tail(xs_0),
+        rel_expr(xs_1, search_space, xs_2), tail(xs_1),
+        rel_constraint_filters(xs_2, filts, xs_3), tail(xs_2).
      
 
-    .decl rel_symbol(xs : seq.list, word : symbol)
-    rel_symbol([$Vocab(_, word), nil], word).
+    .decl rel_symbol(xs : sequence, word : symbol, suffix : sequence)
+    rel_symbol([$Vocab(_, word), xs], word, xs) :- tail(xs).
 
 }

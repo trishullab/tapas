@@ -53,26 +53,25 @@ def generate_souffle_rule(type_name : str, rule : Rule) -> str:
         else:
             raise Exception()
 
-    return (f"""
-    rel_{type_name}([$Grammar("{type_name}", "{rule.name}"), xs], ${rule.name}({rule_items_str})) :-
-        {
-            f"xs_0 = xs,{nl}" + 
-            f",{nl}".join([
-                f"        the_split(prefix_{i}, suffix_{i}, xs_{i}),{nl}" +
-                f"        rel_{type_from_item(item)}(prefix_{i}, {relation_from_item(item)}),{nl}" +
-                f"        xs_{i + 1} = suffix_{i}"
-                for i, item in enumerate(abstract_items)
-            ])
-            if len(abstract_items) > 0 else
+    if (len(abstract_items) > 0):
+        return (f"""
+    rel_{type_name}([$Grammar("{type_name}", "{rule.name}"), xs_0], ${rule.name}({rule_items_str}), xs_{len(abstract_items)}) :-
+{
+f",{nl}".join([
+    f"        rel_{type_from_item(item)}(xs_{i}, {relation_from_item(item)}, xs_{i + 1}), tail(xs_{i})"
+    for i, item in enumerate(abstract_items)
+]) + "."
+}""")
+    else:
+        return (f"""
+    rel_{type_name}([$Grammar("{type_name}", "{rule.name}"), xs_0], ${rule.name}({rule_items_str}), xs_0).
+        """)
 
-            "xs = nil"
-        }
-    """)
 
 def generate_souffle_relation(type_name : str, rules : list[Rule]) -> str:
     
     return (f"""
-    .decl rel_{type_name}(xs : sequence, tree : {type_name})
+    .decl rel_{type_name}(xs : sequence, tree : {type_name}, suffix : sequence)
 
     {nl.join([
         generate_souffle_rule(type_name, rule) 
@@ -88,17 +87,21 @@ content = (f"""
 
     .decl in(xs : sequence)
 
-    .init the_split = split 
-    the_split.in(xs) :- in(xs).
+    .decl tail(xs : sequence)
+    tail(xs) :- in(xs).
+    tail(xs) :- tail([_, xs]).
 
-    .init seq_split = split<instance>
+
     {nl.join([
         generate_souffle_relation(type_name, rules)
         for type_name, rules in lib.python_schema.nonterminal_map.items()
     ])} 
 
-    .decl rel_symbol(xs : seq.list, word : symbol)
-    rel_symbol([$Vocab(_, word), nil], word).
+    .decl rel_symbol(xs : sequence, word : symbol, suffix : sequence)
+    rel_symbol([$Vocab(_, word), xs], word, xs) :- tail(xs).
 
 }}
 """)
+
+    # .init the_split = split 
+    # the_split.in(xs) :- in(xs).
