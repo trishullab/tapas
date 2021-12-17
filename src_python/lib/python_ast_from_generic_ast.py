@@ -1300,6 +1300,17 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
             return [ Assert(test_expr) ]
 
 
+    elif (node.syntax_part == "print_statement"):
+        children = node.children
+        assert children[0].syntax_part == "print"
+        arg_nodes = [c for c in children[1:] if c.syntax_part != ","]
+        arg_exprs = [
+            from_generic_ast_to_expr(node)
+            for node in arg_nodes
+        ]
+
+        return [ Expr(CallArgs(Name("print"), to_arguments(arg_exprs, []))) ]
+
     elif (node.syntax_part == "expression_statement"):
         children = node.children
 

@@ -9,6 +9,7 @@ from lib import generic_tree
 from lib.python_ast_from_generic_ast import from_generic_ast
 from gen.python_serialize import serialize_Module
 import lib.python_sequence
+from lib.generic_tree import GenericNode
 
     
 
@@ -25,45 +26,42 @@ def test_string(sourceCode):
 
     generic_syntax_tree = generic_tree.parse('python', sourceCode, 'utf8')
 
-    # print(f"""--Generic Tree--\n{
-    #     generic_tree.dump(generic_syntax_tree, 
-    #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-    #     )
-    # }\n""")
+    print(f"""--Generic Tree--\n{
+        generic_tree.dump(generic_syntax_tree, 
+            text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+        )
+    }\n""")
 
     mod = from_generic_ast(generic_syntax_tree)
+    instance_list = serialize_Module(mod)
 
-    instance_list = [] 
 
-    try:
-        instance_list = serialize_Module(mod)
-    except RecursionError:
-        print(f"\n\n")
+    # print(f"--Instance Sequence--\n")
+    # for p in instance_list: print(p)
+    # print(f"\n")
 
-        print(f"""--Generic Tree--\n{
-            generic_tree.dump(generic_syntax_tree, 
-                text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-            )
-        }\n""")
+    # print(f"--Formatted Instance Sequence --\n{python_instance.dump(instance_list)}\n")
 
-        print(f"\n\n")
-        print(f"---Source Code---")
-        print(sourceCode)
-        print(f"-------------------------")
-        print("RECURSION ERROR")
-        return
+    print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
+    # print(f"\n")
+    # print(f"---Source Code---")
+    # print(sourceCode)
 
-    else:
-        # print(f"--Instance Sequence--\n")
-        # for p in instance_list: print(p)
-        # print(f"\n")
+    # except RecursionError:
+    #     print(f"\n\n")
 
-        # print(f"--Formatted Instance Sequence --\n{python_instance.dump(instance_list)}\n")
+    #     print(f"""--Generic Tree--\n{
+    #         generic_tree.dump(generic_syntax_tree, 
+    #             text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+    #         )
+    #     }\n""")
 
-        print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
-        print(f"\n")
-        # print(f"---Source Code---")
-        # print(sourceCode)
+    #     print(f"\n\n")
+    #     print(f"---Source Code---")
+    #     print(sourceCode)
+    #     print(f"-------------------------")
+    #     print("RECURSION ERROR")
+    #     return
 
 def test_filename(fname):
     import logging
@@ -103,7 +101,7 @@ def test_mbpp():
 
     logging.basicConfig(level=logging.INFO)
     base_path = pathlib.Path(__file__).parent.absolute()
-    dirpath = os.path.join(base_path, "../res/mbpp/input")
+    dirpath = os.path.join(base_path, "../res/mbpp/concrete_data")
     fpath = os.path.join(dirpath, "mbpp.jsonl")
 
     with open(fpath, 'r') as f:
@@ -132,5 +130,59 @@ def test_mbpp():
             count += 1
 
 
+def test_cubert():
 
-test_mbpp()
+    import logging
+    import os
+    import pathlib
+
+
+    error_count = 0
+
+    logging.basicConfig(level=logging.INFO)
+    base_path = pathlib.Path(__file__).parent.absolute()
+    dirpath = os.path.join(base_path, "../res/cubert/concrete_data")
+    fpath = os.path.join(dirpath, "cubert_583.jsonl")
+
+    with open(fpath, 'r') as f:
+        #note: example 101 originally had a typo of using equality '==' instead of assignment '='
+        count = 1
+
+        line = f.readline()
+        while line: 
+            line_obj = json.loads(line)
+
+            source_code = line_obj['code']
+            generic_syntax_tree = GenericNode("", "", []) 
+            try:
+                generic_syntax_tree = generic_tree.parse('python', source_code, 'utf8')
+                mod = from_generic_ast(generic_syntax_tree)
+                # instance_list = serialize_Module(mod)
+
+            except Exception as x:
+                error_count += 1
+                print(f"---------------------------")
+                print(f"ERROR at line {count}")
+                # print(f"ERROR SOURCE {source_code}")
+
+                print(f"""--Generic Tree--\n{
+                    generic_tree.dump(generic_syntax_tree, 
+                        text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                    )
+                }\n""")
+                print(f"ERROR at line {count}")
+
+                print("\n\n")
+                raise x
+
+            # update
+            line = f.readline()
+            count += 1
+
+        print(f"ERROR COUNT {error_count}")
+
+# test_string("""
+# print ("hello" "world")
+# """)
+
+test_cubert()
