@@ -2029,16 +2029,28 @@ def make_TryElse(body : statements, handlers : sequence_ExceptHandler, orelse : 
         
 
 @dataclass
-class TryFin(stmt):
+class TryExceptFin(stmt):
     body : statements
     handlers : sequence_ExceptHandler
     fin : FinallyBlock
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_TryExceptFin(self)
+
+def make_TryExceptFin(body : statements, handlers : sequence_ExceptHandler, fin : FinallyBlock) -> stmt:
+    return TryExceptFin(body, handlers, fin)
+        
+
+@dataclass
+class TryFin(stmt):
+    body : statements
+    fin : FinallyBlock
+
+    def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryFin(self)
 
-def make_TryFin(body : statements, handlers : sequence_ExceptHandler, fin : FinallyBlock) -> stmt:
-    return TryFin(body, handlers, fin)
+def make_TryFin(body : statements, fin : FinallyBlock) -> stmt:
+    return TryFin(body, fin)
         
 
 @dataclass
@@ -2205,6 +2217,7 @@ class StmtHandlers(Generic[T]):
     case_RaiseFrom : Callable[[RaiseFrom], T]
     case_Try : Callable[[Try], T]
     case_TryElse : Callable[[TryElse], T]
+    case_TryExceptFin : Callable[[TryExceptFin], T]
     case_TryFin : Callable[[TryFin], T]
     case_TryElseFin : Callable[[TryElseFin], T]
     case_Assert : Callable[[Assert], T]

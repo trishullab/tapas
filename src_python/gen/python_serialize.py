@@ -3316,7 +3316,7 @@ def serialize_stmt(
         
 
 
-            def handle_TryFin(o : TryFin): 
+            def handle_TryExceptFin(o : TryExceptFin): 
                 nonlocal stack
                 assert isinstance(o, stmt)
 
@@ -3328,6 +3328,30 @@ def serialize_stmt(
 
                 stack.append(
                     serialize_sequence_ExceptHandler(o.handlers)
+                )
+                
+
+                stack.append(
+                    serialize_statements(o.body)
+                )
+                
+
+                stack.append(
+                    [lib.instance.make_Grammar(
+                        options = 'stmt',
+                        selection = 'TryExceptFin'
+                    )]
+                )
+        
+
+
+            def handle_TryFin(o : TryFin): 
+                nonlocal stack
+                assert isinstance(o, stmt)
+
+                
+                stack.append(
+                    serialize_FinallyBlock(o.fin)
                 )
                 
 
@@ -3610,6 +3634,7 @@ def serialize_stmt(
                 case_RaiseFrom = handle_RaiseFrom,
                 case_Try = handle_Try,
                 case_TryElse = handle_TryElse,
+                case_TryExceptFin = handle_TryExceptFin,
                 case_TryFin = handle_TryFin,
                 case_TryElseFin = handle_TryElseFin,
                 case_Assert = handle_Assert,

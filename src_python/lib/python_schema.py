@@ -941,11 +941,20 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "TryFin",
+            "TryExceptFin",
             [
                 Terminal("try:"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
+                Nonterm("fin", "FinallyBlock", NewLine())
+            ]
+        ),
+
+        Rule(
+            "TryFin",
+            [
+                Terminal("try:"),
+                Nonterm("body", "statements", IndentLine()),
                 Nonterm("fin", "FinallyBlock", NewLine())
             ]
         ),

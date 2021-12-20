@@ -478,18 +478,17 @@ def from_generic_ast_to_ExceptHandler(node) -> ExceptHandler:
     (expr_node, name_node, block_node) = (
 
         (None, None, children[2])
-        if children[1].syntax_part == ":" 
+        if children[1].syntax_part == ":" else 
         
-        else  (children[1], None, children[3])
-        if children[2].syntax_part == ":" 
+        (children[1], None, children[3])
+        if children[2].syntax_part == ":" else 
         
-        else (children[1], children[3], children[5])
-        if (
+        (children[1], children[3], children[5]) if (
             children[2].syntax_part == "as" and 
             children[4].syntax_part == ":" 
-        ) 
+        ) else 
         
-        else (None, None, None)
+        (None, None, None)
     )
 
     assert block_node
@@ -1279,9 +1278,17 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
             return [ImportWildCard(module)]
 
         else:
+
+            import_list = (
+                children[4:-1]
+                if children[3].syntax_part == "(" else
+
+                children[3:]
+            )
+
             aliases = to_sequence_ImportName([
                 from_generic_ast_to_ImportName(n) 
-                for n in children[3:]
+                for n in import_list
                 if n.syntax_part != ","
             ])
             return [ImportFrom(module, aliases)]
@@ -1291,9 +1298,17 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
         assert children[0].syntax_part == "from"
         id = SomeModuleId(("__future__"))
         assert children[2].syntax_part == "import"
+
+        import_list = (
+            children[4:-1]
+            if children[3].syntax_part == "(" else
+
+            children[3:]
+        )
+
         names = to_sequence_ImportName([
             from_generic_ast_to_ImportName(n) 
-            for n in children[3:]
+            for n in import_list 
             if n.syntax_part != ","
         ])
         return [ImportFrom(id, names)]
@@ -1706,10 +1721,15 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
             if n.syntax_part == "except_clause"
         ]
 
-        except_handlers = to_sequence_ExceptHandler([
-            from_generic_ast_to_ExceptHandler(ec_node)
-            for ec_node in except_clause_nodes
-        ])
+        except_handlers = (
+            to_sequence_ExceptHandler([
+                from_generic_ast_to_ExceptHandler(ec_node)
+                for ec_node in except_clause_nodes
+            ])
+            if except_clause_nodes else
+
+            None
+        )
 
         else_clause_nodes = [
             n
@@ -1762,19 +1782,24 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
         )
 
 
-        if else_stmts and finally_stmts:
+        if except_handlers and else_stmts and finally_stmts:
             return [
                 TryElseFin(try_stmts, except_handlers, ElseBlock(to_statements(else_stmts)), FinallyBlock(to_statements(finally_stmts)))
             ]
 
-        elif else_stmts:
+        elif except_handlers and else_stmts:
             return [
                 TryElse(try_stmts, except_handlers, ElseBlock(to_statements(else_stmts)))
             ]
 
+        elif except_handlers and finally_stmts:
+            return [
+                TryExceptFin(try_stmts, except_handlers, FinallyBlock(to_statements(finally_stmts)))
+            ]
+
         elif finally_stmts:
             return [
-                TryFin(try_stmts, except_handlers, FinallyBlock(to_statements(finally_stmts)))
+                TryFin(try_stmts, FinallyBlock(to_statements(finally_stmts)))
             ]
 
         else:

@@ -154,26 +154,44 @@ def test_cubert():
 
             source_code = line_obj['code']
             generic_syntax_tree = GenericNode("", "", []) 
+            generic_syntax_tree = generic_tree.parse('python', source_code, 'utf8')
+
             try:
-                generic_syntax_tree = generic_tree.parse('python', source_code, 'utf8')
+                # print(f"--OOGA: {count}\n")
+                # print(f"--OOGA SOURCE------------\n{source_code}")
+                # print(f"""--OOGA Generic Tree--\n{
+                #     generic_tree.dump(generic_syntax_tree, 
+                #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                #     )
+                # }\n""")
                 mod = from_generic_ast(generic_syntax_tree)
                 # instance_list = serialize_Module(mod)
+                # print(f"--Count: {count}\n")
+                # print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
 
             except Exception as x:
+                # if (
+                #     x.args and x.args[0] == "unsupported syntax for ERROR" or 
+                #     count == 73
+                # ):
+                #     print(f"--ERROR: {count}\n")
+                #     line = f.readline()
+                #     count += 1
+                #     continue
+                # else:
                 error_count += 1
-                print(f"---------------------------")
-                print(f"ERROR at line {count}")
-                print(f"--ERROR SOURCE------------\n{source_code}")
+                # print(f"---------------------------")
+                # print(f"ERROR at line {count}")
+                # print(f"--ERROR SOURCE------------\n{source_code}")
 
-                print(f"""--ERROR Generic Tree--\n{
-                    generic_tree.dump(generic_syntax_tree, 
-                        text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                    )
-                }\n""")
-                print(f"ERROR at line {count}")
+                # print(f"""--ERROR Generic Tree--\n{
+                #     generic_tree.dump(generic_syntax_tree, 
+                #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                #     )
+                # }\n""")
+                # print(f"ERROR at line {count}")
 
-                print("\n\n")
-                raise x
+                # print("\n\n")
 
             # update
             line = f.readline()
@@ -182,7 +200,10 @@ def test_cubert():
         print(f"ERROR COUNT {error_count}")
 
 # test_string("""
-# from goo.boo import foo
+# try:
+#     pass
+# except A , x:
+#     pass
 # """)
 
 test_cubert()
