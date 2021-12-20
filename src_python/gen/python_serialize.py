@@ -292,23 +292,8 @@ def serialize_module_id(
         
 
 
-            def handle_NoModuleId(o : NoModuleId): 
-                nonlocal stack
-                assert isinstance(o, module_id)
-
-                
-                stack.append(
-                    [lib.instance.make_Grammar(
-                        options = 'module_id',
-                        selection = 'NoModuleId'
-                    )]
-                )
-        
-
-
             match_module_id(stack_item, ModuleIdHandlers(
-                case_SomeModuleId = handle_SomeModuleId,
-                case_NoModuleId = handle_NoModuleId
+                case_SomeModuleId = handle_SomeModuleId
             ))
 
         else:

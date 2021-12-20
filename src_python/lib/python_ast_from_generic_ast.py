@@ -314,10 +314,9 @@ def from_generic_ast(node : GenericNode) -> Module:
 
 
 def from_generic_ast_to_identifier(node : GenericNode) -> str:
-    node.syntax_part
     if (node.syntax_part == "dotted_name"):
         children = node.children
-        dotted_name = ".".join([
+        dotted_name = "".join([
             id.text
             for id in children
         ])
@@ -1257,9 +1256,20 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
     elif (node.syntax_part == "import_from_statement"):
         children = node.children
         assert children[0].syntax_part == "from"
+        assert_syntax = lambda node, label : node.syntax_part == label
         module = (
-            NoModuleId()
-            if children[1].syntax_part == "." else
+            (
+                rel_import_node := children[1],
+                prefix_node := rel_import_node.children[0],
+                assert_syntax(prefix_node, "import_prefix"),
+                prefix := len(prefix_node.children) * '.', 
+                (
+                    SomeModuleId(prefix + from_generic_ast_to_identifier(rel_import_node.children[1]))
+                    if len(rel_import_node.children) == 2 else
+                    SomeModuleId(prefix)
+                )
+            )[-1]
+            if children[1].syntax_part == "relative_import" else
 
             SomeModuleId(from_generic_ast_to_identifier(children[1]))
         )

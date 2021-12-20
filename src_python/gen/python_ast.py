@@ -154,22 +154,10 @@ def make_SomeModuleId(contents : str) -> module_id:
     return SomeModuleId(contents)
         
 
-@dataclass
-class NoModuleId(module_id):
-
-
-    def _match(self, handlers : ModuleIdHandlers[T]) -> T:
-        return handlers.case_NoModuleId(self)
-
-def make_NoModuleId() -> module_id:
-    return NoModuleId()
-        
-
 # case handlers for type module_id
 @dataclass
 class ModuleIdHandlers(Generic[T]):
     case_SomeModuleId : Callable[[SomeModuleId], T]
-    case_NoModuleId : Callable[[NoModuleId], T]
 
 
 # matching for type module_id

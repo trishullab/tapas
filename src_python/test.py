@@ -163,9 +163,9 @@ def test_cubert():
                 error_count += 1
                 print(f"---------------------------")
                 print(f"ERROR at line {count}")
-                # print(f"ERROR SOURCE {source_code}")
+                print(f"--ERROR SOURCE------------\n{source_code}")
 
-                print(f"""--Generic Tree--\n{
+                print(f"""--ERROR Generic Tree--\n{
                     generic_tree.dump(generic_syntax_tree, 
                         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
                     )
@@ -182,7 +182,7 @@ def test_cubert():
         print(f"ERROR COUNT {error_count}")
 
 # test_string("""
-# print ("hello" "world")
+# from goo.boo import foo
 # """)
 
 test_cubert()

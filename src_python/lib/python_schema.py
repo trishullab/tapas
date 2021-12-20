@@ -30,13 +30,6 @@ choices : dict[str, list[Rule]] = {
             [
                 Vocab("contents", "module_identifier")
             ]
-        ),
-
-        Rule(
-            "NoModuleId",
-            [
-                Terminal(".")
-            ]
         )
     ],
 
