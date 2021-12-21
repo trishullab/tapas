@@ -1802,10 +1802,12 @@ def from_generic_ast_to_stmts(node : GenericNode, decorators : decorators = NoDe
                 TryFin(try_stmts, FinallyBlock(to_statements(finally_stmts)))
             ]
 
-        else:
+        elif except_handlers:
             return [
                 Try(try_stmts, except_handlers)
             ]
+        else:
+            assert False
 
 
 
