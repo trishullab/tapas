@@ -15,6 +15,7 @@ from gen.python_serialize import serialize_Module
 from lib.file import write
 
 from lib.instance import instance
+from gen.instance import Vocab
 
 base_path = pathlib.Path(__file__).parent.absolute()
 
@@ -118,11 +119,12 @@ def generate_dir(dirname):
 
                     write(abstract_data_dirpath, f'{abstract_data_base}_json.txt', json.dumps(json_data) + '\n\n<|endoftext|>\n\n', append=True)
 
-                    def handle_Vocab(o):
-                        if o.choices_id in vocab.keys():
-                            vocab[o.choices_id].add(o.word)
+
+                    def handle_Vocab(o : Vocab):
+                        if o.options in vocab.keys():
+                            vocab[o.options].add(o.selection)
                         else:
-                            vocab[o.choices_id] = {o.word}
+                            vocab[o.options] = {o.selection}
 
                     # update vocabulary
                     for inst in instances:
@@ -155,8 +157,6 @@ def generate_dir(dirname):
 
                 except Exception as x:
                     error_count += 1
-                    # print(f"Another Exception {x}")
-
                     # print(f"\n-------------------------\n")
                     # print(f"""--Generic Tree--\n{
                     #     generic_tree.dump(tree, 
@@ -179,7 +179,7 @@ def generate_dir(dirname):
                 line = f.readline()
                 total_count += 1
 
-            
+            #endwhile
 
         end = datetime.now()
 
