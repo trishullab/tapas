@@ -25,21 +25,62 @@ class GenericNode:
 
 
 
+#
+# Recursive version:
+#
+# def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encoding : str) -> GenericNode :
+
+#     text = source_bytes[node.start_byte:node.end_byte].decode(encoding)
+
+#     children = [
+#         from_tree_sitter_node(n, source_bytes, encoding) 
+#         for n in node.children 
+#         if n.type != "comment"
+#     ]
+
+#     return GenericNode(
+#         syntax_part = node.type, 
+#         text = text,
+#         children = children 
+#     )
+
+
+# Stack version
 def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encoding : str) -> GenericNode :
 
-    text = source_bytes[node.start_byte:node.end_byte].decode(encoding)
+    def sans_comments(ns):
+        return [
+            n
+            for n in ns 
+            if n.type != "comment"
+        ]
 
-    children = [
-        from_tree_sitter_node(n, source_bytes, encoding) 
-        for n in node.children 
-        if n.type != "comment"
-    ]
+    text_0 = source_bytes[node.start_byte:node.end_byte].decode(encoding)
+    stack : list[tuple[str, str, list[GenericNode], int, list[tree_sitter.Node]]] = [(node.type, text_0, [], -1, sans_comments(node.children))]
 
-    return GenericNode(
-        syntax_part = node.type, 
-        text = text,
-        children = children 
-    )
+    result = GenericNode(syntax_part = "", text = "", children = []) # this is a dummy initialization. Value will not be used
+
+    while stack:
+        (syntax_part, text, gnodes, recursion_site, tsnodes) = stack.pop()
+
+        next_gnodes = gnodes
+        if recursion_site > -1:
+            next_gnodes = gnodes + [result]
+
+        if recursion_site + 1 == len(tsnodes):
+            result = GenericNode(
+                syntax_part = syntax_part, 
+                text = text,
+                children = next_gnodes 
+            )
+        else: 
+            stack.append((syntax_part, text, next_gnodes, recursion_site + 1, tsnodes))
+            tsnode = tsnodes[recursion_site + 1]
+            child_text = source_bytes[tsnode.start_byte:tsnode.end_byte].decode(encoding)
+            stack.append((tsnode.type, child_text, [], -1, sans_comments(tsnode.children)))
+
+    return result
+
 
 import pathlib
 import os

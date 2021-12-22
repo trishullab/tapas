@@ -82,7 +82,7 @@ def rename_{{ type_name }}(
     local_map : dict[str, str]
 ) -> {{ type_name }}:
 
-    # int (starting at 0 zero) represents which recursion site is in progress
+    # int (starting at -1 negative one) represents which recursion site is in progress
     stack : list[tuple[{{ type_name }}, int]] = [(o, -1)]
     result : {{ type_name }} = o
 

@@ -157,17 +157,17 @@ def test_cubert():
             generic_syntax_tree = generic_tree.parse('python', source_code, 'utf8')
 
             try:
-                # print(f"--OOGA: {count}\n")
-                # print(f"--OOGA SOURCE------------\n{source_code}")
-                # print(f"""--OOGA Generic Tree--\n{
-                #     generic_tree.dump(generic_syntax_tree, 
-                #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                #     )
-                # }\n""")
+                print(f"--OOGA: {count}\n")
+                print(f"--OOGA SOURCE------------\n{source_code}")
+                print(f"""--OOGA Generic Tree--\n{
+                    generic_tree.dump(generic_syntax_tree, 
+                        text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                    )
+                }\n""")
                 mod = from_generic_ast(generic_syntax_tree)
-                # instance_list = serialize_Module(mod)
-                # print(f"--Count: {count}\n")
-                # print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
+                instance_list = serialize_Module(mod)
+                print(f"--Count: {count}\n")
+                print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
 
             except Exception as x:
                 # if (
