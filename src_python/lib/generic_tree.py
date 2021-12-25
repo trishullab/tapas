@@ -56,16 +56,17 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
         ]
 
     text_0 = source_bytes[node.start_byte:node.end_byte].decode(encoding)
-    stack : list[tuple[str, str, list[GenericNode], int, list[tree_sitter.Node]]] = [(node.type, text_0, [], False, sans_comments(node.children))]
+    stack : list[tuple[str, str, list[GenericNode], list[tree_sitter.Node]]] = [(node.type, text_0, [], sans_comments(node.children))]
 
-    result = GenericNode(syntax_part = "", text = "", children = []) # this is a dummy initialization. Value will not be used
+    result = None 
 
     while stack:
-        (syntax_part, text, gnodes, child_called, tsnodes) = stack.pop()
+        (syntax_part, text, gnodes, tsnodes) = stack.pop()
 
         next_gnodes = gnodes
-        if child_called:
+        if result:
             next_gnodes = gnodes + [result]
+            result = None
 
         if len(next_gnodes) == len(tsnodes):
             result = GenericNode(
@@ -75,12 +76,13 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
             )
 
         else: 
-            stack.append((syntax_part, text, next_gnodes, True, tsnodes))
+            stack.append((syntax_part, text, next_gnodes, tsnodes))
             child_index = len(next_gnodes) 
             child_tsnode = tsnodes[child_index]
             child_text = source_bytes[child_tsnode.start_byte:child_tsnode.end_byte].decode(encoding)
-            stack.append((child_tsnode.type, child_text, [], 0, sans_comments(child_tsnode.children)))
+            stack.append((child_tsnode.type, child_text, [], sans_comments(child_tsnode.children)))
 
+    assert result
     return result 
 
 
