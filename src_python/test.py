@@ -159,11 +159,11 @@ def test_cubert():
             try:
                 print(f"--OOGA: {count}\n")
                 print(f"--OOGA SOURCE------------\n{source_code}")
-                print(f"""--OOGA Generic Tree--\n{
-                    generic_tree.dump(generic_syntax_tree, 
-                        text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                    )
-                }\n""")
+                # print(f"""--OOGA Generic Tree--\n{
+                #     generic_tree.dump(generic_syntax_tree, 
+                #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
+                #     )
+                # }\n""")
                 mod = from_generic_ast(generic_syntax_tree)
                 instance_list = serialize_Module(mod)
                 print(f"--Count: {count}\n")
