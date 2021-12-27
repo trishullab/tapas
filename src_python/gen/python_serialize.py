@@ -9,7 +9,7 @@ from gen.line_format import InLine, NewLine, IndentLine
 
 
 
-def serialize_Module(
+def from_Module(
     o : Module
 ) -> list[instance]:
 
@@ -19,7 +19,7 @@ def serialize_Module(
             selection = 'Module'
         )] +
 
-        serialize_statements(o.body)
+        from_statements(o.body)
 
     )
     
@@ -27,7 +27,7 @@ def serialize_Module(
 
 
 
-def serialize_CompareRight(
+def from_CompareRight(
     o : CompareRight
 ) -> list[instance]:
 
@@ -37,8 +37,8 @@ def serialize_CompareRight(
             selection = 'CompareRight'
         )] +
 
-        serialize_cmpop(o.op) +
-        serialize_expr(o.rand)
+        from_cmpop(o.op) +
+        from_expr(o.rand)
 
     )
     
@@ -46,7 +46,7 @@ def serialize_CompareRight(
 
 
 
-def serialize_ExceptHandler(
+def from_ExceptHandler(
     o : ExceptHandler
 ) -> list[instance]:
 
@@ -56,8 +56,8 @@ def serialize_ExceptHandler(
             selection = 'ExceptHandler'
         )] +
 
-        serialize_except_arg(o.arg) +
-        serialize_statements(o.body)
+        from_except_arg(o.arg) +
+        from_statements(o.body)
 
     )
     
@@ -65,7 +65,7 @@ def serialize_ExceptHandler(
 
 
 
-def serialize_Param(
+def from_Param(
     o : Param
 ) -> list[instance]:
 
@@ -76,8 +76,8 @@ def serialize_Param(
         )] +
 
         [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
-        serialize_param_type(o.type) +
-        serialize_param_default(o.default)
+        from_param_type(o.type) +
+        from_param_default(o.default)
 
     )
     
@@ -85,7 +85,7 @@ def serialize_Param(
 
 
 
-def serialize_ImportName(
+def from_ImportName(
     o : ImportName
 ) -> list[instance]:
 
@@ -96,7 +96,7 @@ def serialize_ImportName(
         )] +
 
         [lib.instance.make_Vocab(options = 'module_identifier', selection = o.name)] +
-        serialize_alias(o.as_name)
+        from_alias(o.as_name)
 
     )
     
@@ -104,7 +104,7 @@ def serialize_ImportName(
 
 
 
-def serialize_Withitem(
+def from_Withitem(
     o : Withitem
 ) -> list[instance]:
 
@@ -114,8 +114,8 @@ def serialize_Withitem(
             selection = 'Withitem'
         )] +
 
-        serialize_expr(o.contet) +
-        serialize_alias_expr(o.target)
+        from_expr(o.contet) +
+        from_alias_expr(o.target)
 
     )
     
@@ -123,7 +123,7 @@ def serialize_Withitem(
 
 
 
-def serialize_ClassDef(
+def from_ClassDef(
     o : ClassDef
 ) -> list[instance]:
 
@@ -134,8 +134,8 @@ def serialize_ClassDef(
         )] +
 
         [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
-        serialize_bases(o.bs) +
-        serialize_statements(o.body)
+        from_bases(o.bs) +
+        from_statements(o.body)
 
     )
     
@@ -143,7 +143,7 @@ def serialize_ClassDef(
 
 
 
-def serialize_ElifBlock(
+def from_ElifBlock(
     o : ElifBlock
 ) -> list[instance]:
 
@@ -153,8 +153,8 @@ def serialize_ElifBlock(
             selection = 'ElifBlock'
         )] +
 
-        serialize_expr(o.test) +
-        serialize_statements(o.body)
+        from_expr(o.test) +
+        from_statements(o.body)
 
     )
     
@@ -162,7 +162,7 @@ def serialize_ElifBlock(
 
 
 
-def serialize_ElseBlock(
+def from_ElseBlock(
     o : ElseBlock
 ) -> list[instance]:
 
@@ -172,7 +172,7 @@ def serialize_ElseBlock(
             selection = 'ElseBlock'
         )] +
 
-        serialize_statements(o.body)
+        from_statements(o.body)
 
     )
     
@@ -180,7 +180,7 @@ def serialize_ElseBlock(
 
 
 
-def serialize_FinallyBlock(
+def from_FinallyBlock(
     o : FinallyBlock
 ) -> list[instance]:
 
@@ -190,7 +190,7 @@ def serialize_FinallyBlock(
             selection = 'FinallyBlock'
         )] +
 
-        serialize_statements(o.body)
+        from_statements(o.body)
 
     )
     
@@ -198,7 +198,7 @@ def serialize_FinallyBlock(
 
 
 
-def serialize_return_type(
+def from_return_type(
     o : return_type
 ) -> list[instance]:
 
@@ -217,7 +217,7 @@ def serialize_return_type(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -258,7 +258,7 @@ def serialize_return_type(
 
 
 
-def serialize_module_id(
+def from_module_id(
     o : module_id
 ) -> list[instance]:
 
@@ -305,7 +305,7 @@ def serialize_module_id(
 
 
 
-def serialize_except_arg(
+def from_except_arg(
     o : except_arg
 ) -> list[instance]:
 
@@ -324,7 +324,7 @@ def serialize_except_arg(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -352,7 +352,7 @@ def serialize_except_arg(
 
 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -394,7 +394,7 @@ def serialize_except_arg(
 
 
 
-def serialize_param_type(
+def from_param_type(
     o : param_type
 ) -> list[instance]:
 
@@ -413,7 +413,7 @@ def serialize_param_type(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -454,7 +454,7 @@ def serialize_param_type(
 
 
 
-def serialize_param_default(
+def from_param_default(
     o : param_default
 ) -> list[instance]:
 
@@ -473,7 +473,7 @@ def serialize_param_default(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -514,7 +514,7 @@ def serialize_param_default(
 
 
 
-def serialize_parameters_d(
+def from_parameters_d(
     o : parameters_d
 ) -> list[instance]:
 
@@ -539,7 +539,7 @@ def serialize_parameters_d(
 
 
                 stack.append(
-                    serialize_Param(o.head)
+                    from_Param(o.head)
                 )
                 
                 stack.append(
@@ -557,7 +557,7 @@ def serialize_parameters_d(
 
                 
                 stack.append(
-                    serialize_Param(o.contents)
+                    from_Param(o.contents)
                 )
                 
                 stack.append(
@@ -575,7 +575,7 @@ def serialize_parameters_d(
 
                 
                 stack.append(
-                    serialize_Param(o.contents)
+                    from_Param(o.contents)
                 )
                 
 
@@ -603,7 +603,7 @@ def serialize_parameters_d(
 
 
 
-def serialize_parameters_c(
+def from_parameters_c(
     o : parameters_c
 ) -> list[instance]:
 
@@ -622,7 +622,7 @@ def serialize_parameters_c(
 
                 
                 stack.append(
-                    serialize_Param(o.contents)
+                    from_Param(o.contents)
                 )
                 
 
@@ -641,13 +641,13 @@ def serialize_parameters_c(
 
                 
                 stack.append(
-                    serialize_parameters_d(o.tail)
+                    from_parameters_d(o.tail)
                 )
                 
 
 
                 stack.append(
-                    serialize_Param(o.head)
+                    from_Param(o.head)
                 )
                 
 
@@ -666,7 +666,7 @@ def serialize_parameters_c(
 
                 
                 stack.append(
-                    serialize_parameters_d(o.contents)
+                    from_parameters_d(o.contents)
                 )
                 
 
@@ -694,7 +694,7 @@ def serialize_parameters_c(
 
 
 
-def serialize_parameters_b(
+def from_parameters_b(
     o : parameters_b
 ) -> list[instance]:
 
@@ -719,7 +719,7 @@ def serialize_parameters_b(
 
 
                 stack.append(
-                    serialize_Param(o.head)
+                    from_Param(o.head)
                 )
                 
                 stack.append(
@@ -737,7 +737,7 @@ def serialize_parameters_b(
 
                 
                 stack.append(
-                    serialize_Param(o.contents)
+                    from_Param(o.contents)
                 )
                 
                 stack.append(
@@ -755,7 +755,7 @@ def serialize_parameters_b(
 
                 
                 stack.append(
-                    serialize_parameters_c(o.contents)
+                    from_parameters_c(o.contents)
                 )
                 
                 stack.append(
@@ -782,7 +782,7 @@ def serialize_parameters_b(
 
 
 
-def serialize_parameters(
+def from_parameters(
     o : parameters
 ) -> list[instance]:
 
@@ -801,7 +801,7 @@ def serialize_parameters(
 
                 
                 stack.append(
-                    serialize_parameters_a(o.contents)
+                    from_parameters_a(o.contents)
                 )
                 
                 stack.append(
@@ -819,7 +819,7 @@ def serialize_parameters(
 
                 
                 stack.append(
-                    serialize_parameters_b(o.contents)
+                    from_parameters_b(o.contents)
                 )
                 
                 stack.append(
@@ -860,7 +860,7 @@ def serialize_parameters(
 
 
 
-def serialize_parameters_a(
+def from_parameters_a(
     o : parameters_a
 ) -> list[instance]:
 
@@ -885,7 +885,7 @@ def serialize_parameters_a(
 
 
                 stack.append(
-                    serialize_Param(o.head)
+                    from_Param(o.head)
                 )
                 
                 stack.append(
@@ -904,7 +904,7 @@ def serialize_parameters_a(
                 
 
                 stack.append(
-                    serialize_Param(o.contents)
+                    from_Param(o.contents)
                 )
                 
                 stack.append(
@@ -922,13 +922,13 @@ def serialize_parameters_a(
 
                 
                 stack.append(
-                    serialize_parameters_b(o.tail)
+                    from_parameters_b(o.tail)
                 )
                 
 
 
                 stack.append(
-                    serialize_Param(o.head)
+                    from_Param(o.head)
                 )
                 
                 stack.append(
@@ -955,7 +955,7 @@ def serialize_parameters_a(
 
 
 
-def serialize_keyword(
+def from_keyword(
     o : keyword
 ) -> list[instance]:
 
@@ -974,7 +974,7 @@ def serialize_keyword(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -1001,7 +1001,7 @@ def serialize_keyword(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -1028,7 +1028,7 @@ def serialize_keyword(
 
 
 
-def serialize_alias(
+def from_alias(
     o : alias
 ) -> list[instance]:
 
@@ -1091,7 +1091,7 @@ def serialize_alias(
 
 
 
-def serialize_alias_expr(
+def from_alias_expr(
     o : alias_expr
 ) -> list[instance]:
 
@@ -1110,7 +1110,7 @@ def serialize_alias_expr(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -1151,7 +1151,7 @@ def serialize_alias_expr(
 
 
 
-def serialize_bases(
+def from_bases(
     o : bases
 ) -> list[instance]:
 
@@ -1171,7 +1171,7 @@ def serialize_bases(
                 
 
                 stack.append(
-                    serialize_bases_a(o.bases)
+                    from_bases_a(o.bases)
                 )
                 
 
@@ -1212,7 +1212,7 @@ def serialize_bases(
 
 
 
-def serialize_bases_a(
+def from_bases_a(
     o : bases_a
 ) -> list[instance]:
 
@@ -1237,7 +1237,7 @@ def serialize_bases_a(
 
 
                 stack.append(
-                    serialize_expr(o.head)
+                    from_expr(o.head)
                 )
                 
                 stack.append(
@@ -1255,7 +1255,7 @@ def serialize_bases_a(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
                 stack.append(
@@ -1273,7 +1273,7 @@ def serialize_bases_a(
 
                 
                 stack.append(
-                    serialize_keywords(o.kws)
+                    from_keywords(o.kws)
                 )
                 
                 stack.append(
@@ -1300,7 +1300,7 @@ def serialize_bases_a(
 
 
 
-def serialize_keywords(
+def from_keywords(
     o : keywords
 ) -> list[instance]:
 
@@ -1325,7 +1325,7 @@ def serialize_keywords(
 
 
                 stack.append(
-                    serialize_keyword(o.head)
+                    from_keyword(o.head)
                 )
                 
                 stack.append(
@@ -1343,7 +1343,7 @@ def serialize_keywords(
 
                 
                 stack.append(
-                    serialize_keyword(o.contents)
+                    from_keyword(o.contents)
                 )
                 
                 stack.append(
@@ -1369,7 +1369,7 @@ def serialize_keywords(
 
 
 
-def serialize_comparisons(
+def from_comparisons(
     o : comparisons
 ) -> list[instance]:
 
@@ -1394,7 +1394,7 @@ def serialize_comparisons(
 
 
                 stack.append(
-                    serialize_CompareRight(o.head)
+                    from_CompareRight(o.head)
                 )
                 
                 stack.append(
@@ -1412,7 +1412,7 @@ def serialize_comparisons(
 
                 
                 stack.append(
-                    serialize_CompareRight(o.contents)
+                    from_CompareRight(o.contents)
                 )
                 
                 stack.append(
@@ -1438,7 +1438,7 @@ def serialize_comparisons(
 
 
 
-def serialize_option_expr(
+def from_option_expr(
     o : option_expr
 ) -> list[instance]:
 
@@ -1457,7 +1457,7 @@ def serialize_option_expr(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
                 stack.append(
@@ -1497,7 +1497,7 @@ def serialize_option_expr(
 
 
 
-def serialize_comma_exprs(
+def from_comma_exprs(
     o : comma_exprs
 ) -> list[instance]:
 
@@ -1522,7 +1522,7 @@ def serialize_comma_exprs(
 
 
                 stack.append(
-                    serialize_expr(o.head)
+                    from_expr(o.head)
                 )
                 
                 stack.append(
@@ -1540,7 +1540,7 @@ def serialize_comma_exprs(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
                 stack.append(
@@ -1566,7 +1566,7 @@ def serialize_comma_exprs(
 
 
 
-def serialize_target_exprs(
+def from_target_exprs(
     o : target_exprs
 ) -> list[instance]:
 
@@ -1591,7 +1591,7 @@ def serialize_target_exprs(
 
 
                 stack.append(
-                    serialize_expr(o.head)
+                    from_expr(o.head)
                 )
                 
                 stack.append(
@@ -1609,7 +1609,7 @@ def serialize_target_exprs(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
                 stack.append(
@@ -1635,7 +1635,7 @@ def serialize_target_exprs(
 
 
 
-def serialize_decorators(
+def from_decorators(
     o : decorators
 ) -> list[instance]:
 
@@ -1659,7 +1659,7 @@ def serialize_decorators(
                 
 
                 stack.append(
-                    serialize_expr(o.head)
+                    from_expr(o.head)
                 )
                 
 
@@ -1700,7 +1700,7 @@ def serialize_decorators(
 
 
 
-def serialize_constraint_filters(
+def from_constraint_filters(
     o : constraint_filters
 ) -> list[instance]:
 
@@ -1724,7 +1724,7 @@ def serialize_constraint_filters(
                 
 
                 stack.append(
-                    serialize_expr(o.head)
+                    from_expr(o.head)
                 )
                 
 
@@ -1743,7 +1743,7 @@ def serialize_constraint_filters(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -1785,7 +1785,7 @@ def serialize_constraint_filters(
 
 
 
-def serialize_sequence_string(
+def from_sequence_string(
     o : sequence_string
 ) -> list[instance]:
 
@@ -1860,7 +1860,7 @@ def serialize_sequence_string(
 
 
 
-def serialize_arguments(
+def from_arguments(
     o : arguments
 ) -> list[instance]:
 
@@ -1885,7 +1885,7 @@ def serialize_arguments(
 
 
                 stack.append(
-                    serialize_expr(o.head)
+                    from_expr(o.head)
                 )
                 
                 stack.append(
@@ -1903,7 +1903,7 @@ def serialize_arguments(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
                 stack.append(
@@ -1921,7 +1921,7 @@ def serialize_arguments(
 
                 
                 stack.append(
-                    serialize_keywords(o.kws)
+                    from_keywords(o.kws)
                 )
                 
                 stack.append(
@@ -1948,7 +1948,7 @@ def serialize_arguments(
 
 
 
-def serialize_dictionary_item(
+def from_dictionary_item(
     o : dictionary_item
 ) -> list[instance]:
 
@@ -1967,13 +1967,13 @@ def serialize_dictionary_item(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.key)
+                    from_expr(o.key)
                 )
                 
                 stack.append(
@@ -1991,7 +1991,7 @@ def serialize_dictionary_item(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -2018,7 +2018,7 @@ def serialize_dictionary_item(
 
 
 
-def serialize_dictionary_contents(
+def from_dictionary_contents(
     o : dictionary_contents
 ) -> list[instance]:
 
@@ -2043,7 +2043,7 @@ def serialize_dictionary_contents(
 
 
                 stack.append(
-                    serialize_dictionary_item(o.head)
+                    from_dictionary_item(o.head)
                 )
                 
                 stack.append(
@@ -2061,7 +2061,7 @@ def serialize_dictionary_contents(
 
                 
                 stack.append(
-                    serialize_dictionary_item(o.contents)
+                    from_dictionary_item(o.contents)
                 )
                 
                 stack.append(
@@ -2087,7 +2087,7 @@ def serialize_dictionary_contents(
 
 
 
-def serialize_sequence_var(
+def from_sequence_var(
     o : sequence_var
 ) -> list[instance]:
 
@@ -2162,7 +2162,7 @@ def serialize_sequence_var(
 
 
 
-def serialize_sequence_ImportName(
+def from_sequence_ImportName(
     o : sequence_ImportName
 ) -> list[instance]:
 
@@ -2187,7 +2187,7 @@ def serialize_sequence_ImportName(
 
 
                 stack.append(
-                    serialize_ImportName(o.head)
+                    from_ImportName(o.head)
                 )
                 
                 stack.append(
@@ -2205,7 +2205,7 @@ def serialize_sequence_ImportName(
 
                 
                 stack.append(
-                    serialize_ImportName(o.contents)
+                    from_ImportName(o.contents)
                 )
                 
                 stack.append(
@@ -2231,7 +2231,7 @@ def serialize_sequence_ImportName(
 
 
 
-def serialize_sequence_Withitem(
+def from_sequence_Withitem(
     o : sequence_Withitem
 ) -> list[instance]:
 
@@ -2256,7 +2256,7 @@ def serialize_sequence_Withitem(
 
 
                 stack.append(
-                    serialize_Withitem(o.head)
+                    from_Withitem(o.head)
                 )
                 
                 stack.append(
@@ -2274,7 +2274,7 @@ def serialize_sequence_Withitem(
 
                 
                 stack.append(
-                    serialize_Withitem(o.contents)
+                    from_Withitem(o.contents)
                 )
                 
                 stack.append(
@@ -2300,7 +2300,7 @@ def serialize_sequence_Withitem(
 
 
 
-def serialize_statements(
+def from_statements(
     o : statements
 ) -> list[instance]:
 
@@ -2324,7 +2324,7 @@ def serialize_statements(
                 
 
                 stack.append(
-                    serialize_stmt(o.head)
+                    from_stmt(o.head)
                 )
                 
                 stack.append(
@@ -2342,7 +2342,7 @@ def serialize_statements(
 
                 
                 stack.append(
-                    serialize_stmt(o.contents)
+                    from_stmt(o.contents)
                 )
                 
                 stack.append(
@@ -2368,7 +2368,7 @@ def serialize_statements(
 
 
 
-def serialize_comprehension_constraints(
+def from_comprehension_constraints(
     o : comprehension_constraints
 ) -> list[instance]:
 
@@ -2392,7 +2392,7 @@ def serialize_comprehension_constraints(
                 
 
                 stack.append(
-                    serialize_constraint(o.head)
+                    from_constraint(o.head)
                 )
                 
                 stack.append(
@@ -2410,7 +2410,7 @@ def serialize_comprehension_constraints(
 
                 
                 stack.append(
-                    serialize_constraint(o.contents)
+                    from_constraint(o.contents)
                 )
                 
                 stack.append(
@@ -2436,7 +2436,7 @@ def serialize_comprehension_constraints(
 
 
 
-def serialize_sequence_ExceptHandler(
+def from_sequence_ExceptHandler(
     o : sequence_ExceptHandler
 ) -> list[instance]:
 
@@ -2460,7 +2460,7 @@ def serialize_sequence_ExceptHandler(
                 
 
                 stack.append(
-                    serialize_ExceptHandler(o.head)
+                    from_ExceptHandler(o.head)
                 )
                 
                 stack.append(
@@ -2478,7 +2478,7 @@ def serialize_sequence_ExceptHandler(
 
                 
                 stack.append(
-                    serialize_ExceptHandler(o.contents)
+                    from_ExceptHandler(o.contents)
                 )
                 
                 stack.append(
@@ -2504,7 +2504,7 @@ def serialize_sequence_ExceptHandler(
 
 
 
-def serialize_conditions(
+def from_conditions(
     o : conditions
 ) -> list[instance]:
 
@@ -2528,7 +2528,7 @@ def serialize_conditions(
                 
 
                 stack.append(
-                    serialize_ElifBlock(o.contents)
+                    from_ElifBlock(o.contents)
                 )
                 
                 stack.append(
@@ -2546,7 +2546,7 @@ def serialize_conditions(
 
                 
                 stack.append(
-                    serialize_ElseBlock(o.contents)
+                    from_ElseBlock(o.contents)
                 )
                 
                 stack.append(
@@ -2587,7 +2587,7 @@ def serialize_conditions(
 
 
 
-def serialize_function_def(
+def from_function_def(
     o : function_def
 ) -> list[instance]:
 
@@ -2606,19 +2606,19 @@ def serialize_function_def(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_return_type(o.ret_typ)
+                    from_return_type(o.ret_typ)
                 )
                 
 
 
                 stack.append(
-                    serialize_parameters(o.params)
+                    from_parameters(o.params)
                 )
                 
 
@@ -2646,19 +2646,19 @@ def serialize_function_def(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_return_type(o.ret_typ)
+                    from_return_type(o.ret_typ)
                 )
                 
 
 
                 stack.append(
-                    serialize_parameters(o.params)
+                    from_parameters(o.params)
                 )
                 
 
@@ -2694,7 +2694,7 @@ def serialize_function_def(
 
 
 
-def serialize_stmt(
+def from_stmt(
     o : stmt
 ) -> list[instance]:
 
@@ -2713,12 +2713,12 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_function_def(o.fun_def)
+                    from_function_def(o.fun_def)
                 )
                 
 
                 stack.append(
-                    serialize_decorators(o.decs)
+                    from_decorators(o.decs)
                 )
                 
                 stack.append(
@@ -2736,12 +2736,12 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_function_def(o.fun_def)
+                    from_function_def(o.fun_def)
                 )
                 
 
                 stack.append(
-                    serialize_decorators(o.decs)
+                    from_decorators(o.decs)
                 )
                 
                 stack.append(
@@ -2759,12 +2759,12 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_ClassDef(o.class_def)
+                    from_ClassDef(o.class_def)
                 )
                 
 
                 stack.append(
-                    serialize_decorators(o.decs)
+                    from_decorators(o.decs)
                 )
                 
                 stack.append(
@@ -2782,7 +2782,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
@@ -2815,7 +2815,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_comma_exprs(o.targets)
+                    from_comma_exprs(o.targets)
                 )
                 
 
@@ -2834,13 +2834,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
 
                 stack.append(
-                    serialize_target_exprs(o.targets)
+                    from_target_exprs(o.targets)
                 )
                 
                 stack.append(
@@ -2858,19 +2858,19 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
 
                 stack.append(
-                    serialize_operator(o.op)
+                    from_operator(o.op)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
                 stack.append(
@@ -2888,19 +2888,19 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.type)
+                    from_expr(o.type)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
                 stack.append(
@@ -2918,13 +2918,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.type)
+                    from_expr(o.type)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
                 stack.append(
@@ -2942,19 +2942,19 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.iter)
+                    from_expr(o.iter)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
 
@@ -2973,24 +2973,24 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_ElseBlock(o.orelse)
+                    from_ElseBlock(o.orelse)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
-                )
-                
-
-
-                stack.append(
-                    serialize_expr(o.iter)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.iter)
+                )
+                
+
+
+                stack.append(
+                    from_expr(o.target)
                 )
                 
 
@@ -3009,19 +3009,19 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.iter)
+                    from_expr(o.iter)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
 
@@ -3040,24 +3040,24 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_ElseBlock(o.orelse)
+                    from_ElseBlock(o.orelse)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
-                )
-                
-
-
-                stack.append(
-                    serialize_expr(o.iter)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.iter)
+                )
+                
+
+
+                stack.append(
+                    from_expr(o.target)
                 )
                 
 
@@ -3076,13 +3076,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.test)
+                    from_expr(o.test)
                 )
                 
 
@@ -3101,18 +3101,18 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_ElseBlock(o.orelse)
+                    from_ElseBlock(o.orelse)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.test)
+                    from_expr(o.test)
                 )
                 
 
@@ -3131,18 +3131,18 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_conditions(o.orelse)
+                    from_conditions(o.orelse)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.test)
+                    from_expr(o.test)
                 )
                 
 
@@ -3161,13 +3161,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_sequence_Withitem(o.items)
+                    from_sequence_Withitem(o.items)
                 )
                 
 
@@ -3186,13 +3186,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
 
                 stack.append(
-                    serialize_sequence_Withitem(o.items)
+                    from_sequence_Withitem(o.items)
                 )
                 
 
@@ -3225,7 +3225,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.exc)
+                    from_expr(o.exc)
                 )
                 
 
@@ -3244,13 +3244,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.caus)
+                    from_expr(o.caus)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.exc)
+                    from_expr(o.exc)
                 )
                 
 
@@ -3269,12 +3269,12 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers)
+                    from_sequence_ExceptHandler(o.handlers)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
@@ -3293,17 +3293,17 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_ElseBlock(o.orelse)
+                    from_ElseBlock(o.orelse)
                 )
                 
 
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers)
+                    from_sequence_ExceptHandler(o.handlers)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
@@ -3322,17 +3322,17 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_FinallyBlock(o.fin)
+                    from_FinallyBlock(o.fin)
                 )
                 
 
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers)
+                    from_sequence_ExceptHandler(o.handlers)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
@@ -3351,12 +3351,12 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_FinallyBlock(o.fin)
+                    from_FinallyBlock(o.fin)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
@@ -3375,22 +3375,22 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_FinallyBlock(o.fin)
+                    from_FinallyBlock(o.fin)
                 )
                 
 
                 stack.append(
-                    serialize_ElseBlock(o.orelse)
+                    from_ElseBlock(o.orelse)
                 )
                 
 
                 stack.append(
-                    serialize_sequence_ExceptHandler(o.handlers)
+                    from_sequence_ExceptHandler(o.handlers)
                 )
                 
 
                 stack.append(
-                    serialize_statements(o.body)
+                    from_statements(o.body)
                 )
                 
 
@@ -3409,7 +3409,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.test)
+                    from_expr(o.test)
                 )
                 
 
@@ -3428,13 +3428,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.msg)
+                    from_expr(o.msg)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.test)
+                    from_expr(o.test)
                 )
                 
 
@@ -3453,7 +3453,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_sequence_ImportName(o.names)
+                    from_sequence_ImportName(o.names)
                 )
                 
 
@@ -3472,13 +3472,13 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_sequence_ImportName(o.names)
+                    from_sequence_ImportName(o.names)
                 )
                 
 
 
                 stack.append(
-                    serialize_module_id(o.module)
+                    from_module_id(o.module)
                 )
                 
 
@@ -3498,7 +3498,7 @@ def serialize_stmt(
                 
 
                 stack.append(
-                    serialize_module_id(o.module)
+                    from_module_id(o.module)
                 )
                 
 
@@ -3517,7 +3517,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_sequence_var(o.names)
+                    from_sequence_var(o.names)
                 )
                 
 
@@ -3536,7 +3536,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_sequence_var(o.names)
+                    from_sequence_var(o.names)
                 )
                 
 
@@ -3555,7 +3555,7 @@ def serialize_stmt(
 
                 
                 stack.append(
-                    serialize_expr(o.contents)
+                    from_expr(o.contents)
                 )
                 
                 stack.append(
@@ -3659,7 +3659,7 @@ def serialize_stmt(
 
 
 
-def serialize_expr(
+def from_expr(
     o : expr
 ) -> list[instance]:
 
@@ -3685,7 +3685,7 @@ def serialize_expr(
 
 
                 stack.append(
-                    serialize_boolop(o.op)
+                    from_boolop(o.op)
                 )
                 
 
@@ -3741,7 +3741,7 @@ def serialize_expr(
 
 
                 stack.append(
-                    serialize_operator(o.op)
+                    from_operator(o.op)
                 )
                 
 
@@ -3773,7 +3773,7 @@ def serialize_expr(
 
 
                 stack.append(
-                    serialize_unaryop(o.op)
+                    from_unaryop(o.op)
                 )
                 
 
@@ -3798,7 +3798,7 @@ def serialize_expr(
 
 
                 stack.append(
-                    serialize_parameters(o.params)
+                    from_parameters(o.params)
                 )
                 
 
@@ -3848,7 +3848,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_dictionary_contents(o.contents)
+                    from_dictionary_contents(o.contents)
                 )
                 
 
@@ -3882,7 +3882,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comma_exprs(o.contents)
+                    from_comma_exprs(o.contents)
                 )
                 
 
@@ -3902,7 +3902,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints)
+                    from_comprehension_constraints(o.constraints)
                 )
                 
 
@@ -3927,7 +3927,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints)
+                    from_comprehension_constraints(o.constraints)
                 )
                 
 
@@ -3952,7 +3952,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints)
+                    from_comprehension_constraints(o.constraints)
                 )
                 
 
@@ -3983,7 +3983,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comprehension_constraints(o.constraints)
+                    from_comprehension_constraints(o.constraints)
                 )
                 
 
@@ -4078,7 +4078,7 @@ def serialize_expr(
 
                 
                 stack.append(
-                    serialize_comparisons(o.comps)
+                    from_comparisons(o.comps)
                 )
                 
 
@@ -4122,7 +4122,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_arguments(o.args)
+                    from_arguments(o.args)
                 )
                 
 
@@ -4188,7 +4188,7 @@ def serialize_expr(
 
                 
                 stack.append(
-                    serialize_sequence_string(o.contents)
+                    from_sequence_string(o.contents)
                 )
                 
                 stack.append(
@@ -4355,7 +4355,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comma_exprs(o.contents)
+                    from_comma_exprs(o.contents)
                 )
                 
 
@@ -4389,7 +4389,7 @@ def serialize_expr(
                 
 
                 stack.append(
-                    serialize_comma_exprs(o.contents)
+                    from_comma_exprs(o.contents)
                 )
                 
 
@@ -4422,19 +4422,19 @@ def serialize_expr(
 
                 
                 stack.append(
-                    serialize_option_expr(o.step)
+                    from_option_expr(o.step)
                 )
                 
 
 
                 stack.append(
-                    serialize_option_expr(o.upper)
+                    from_option_expr(o.upper)
                 )
                 
 
 
                 stack.append(
-                    serialize_option_expr(o.lower)
+                    from_option_expr(o.lower)
                 )
                 
                 stack.append(
@@ -4494,7 +4494,7 @@ def serialize_expr(
 
 
 
-def serialize_boolop(
+def from_boolop(
     o : boolop
 ) -> list[instance]:
 
@@ -4549,7 +4549,7 @@ def serialize_boolop(
 
 
 
-def serialize_operator(
+def from_operator(
     o : operator
 ) -> list[instance]:
 
@@ -4769,7 +4769,7 @@ def serialize_operator(
 
 
 
-def serialize_unaryop(
+def from_unaryop(
     o : unaryop
 ) -> list[instance]:
 
@@ -4854,7 +4854,7 @@ def serialize_unaryop(
 
 
 
-def serialize_cmpop(
+def from_cmpop(
     o : cmpop
 ) -> list[instance]:
 
@@ -5029,7 +5029,7 @@ def serialize_cmpop(
 
 
 
-def serialize_constraint(
+def from_constraint(
     o : constraint
 ) -> list[instance]:
 
@@ -5048,18 +5048,18 @@ def serialize_constraint(
 
                 
                 stack.append(
-                    serialize_constraint_filters(o.filts)
+                    from_constraint_filters(o.filts)
                 )
                 
 
                 stack.append(
-                    serialize_expr(o.search_space)
+                    from_expr(o.search_space)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
 
@@ -5078,18 +5078,18 @@ def serialize_constraint(
 
                 
                 stack.append(
-                    serialize_constraint_filters(o.filts)
+                    from_constraint_filters(o.filts)
                 )
                 
 
                 stack.append(
-                    serialize_expr(o.search_space)
+                    from_expr(o.search_space)
                 )
                 
 
 
                 stack.append(
-                    serialize_expr(o.target)
+                    from_expr(o.target)
                 )
                 
 

@@ -6,10 +6,9 @@ import json
 
 from lib import generic_tree
 
-from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_serialize import serialize_Module
 import lib.python_sequence
 from lib.generic_tree import GenericNode
+from lib import python_ast
 
     
 
@@ -32,8 +31,8 @@ def test_string(sourceCode):
         )
     }\n""")
 
-    mod = from_generic_ast(generic_syntax_tree)
-    instance_list = serialize_Module(mod)
+    mod = python_ast.from_generic_ast(generic_syntax_tree)
+    instance_list = python_ast.serialize(mod)
 
 
     # print(f"--Instance Sequence--\n")
@@ -163,12 +162,11 @@ def test_cubert():
             #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
             #     )
             # }\n""")
-            mod = from_generic_ast(generic_syntax_tree)
-            instance_list = serialize_Module(mod)
+            mod = python_ast.from_generic_ast(generic_syntax_tree)
+            instance_list = python_ast.serialize(mod)
             concrete_A = lib.python_sequence.concretize(instance_list)
-            from gen import python_reconstitute
-            (mod_reconstituted, _) = python_reconstitute.to_Module([i for i in reversed(instance_list)])
-            instance_list_B = serialize_Module(mod_reconstituted)
+            mod_reconstituted = python_ast.reconstitute(instance_list)
+            instance_list_B = python_ast.serialize(mod_reconstituted)
             concrete_B = lib.python_sequence.concretize(instance_list_B)
 
             print(f"concrete_B: {concrete_B}")

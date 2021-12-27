@@ -7,7 +7,8 @@ import json
 from lib import generic_tree
 
 from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_serialize import serialize_Module
+
+from lib import python_ast
 import lib.python_sequence
 from lib.generic_tree import GenericNode
 
@@ -33,7 +34,7 @@ def test_string(sourceCode):
     }\n""")
 
     mod = from_generic_ast(generic_syntax_tree)
-    instance_list = serialize_Module(mod)
+    instance_list = python_ast.serialize(mod)
 
 
     # print(f"--Instance Sequence--\n")
@@ -165,7 +166,7 @@ def test_cubert():
                 #     )
                 # }\n""")
                 mod = from_generic_ast(generic_syntax_tree)
-                instance_list = serialize_Module(mod)
+                instance_list = python_ast.serialize(mod)
                 print(f"--Count: {count}\n")
                 print(f"--Concretized--\n{lib.python_sequence.concretize(instance_list)}\n")
 

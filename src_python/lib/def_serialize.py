@@ -40,7 +40,7 @@ def generate_single_def(
     code = (f"""
 
 
-def serialize_{rule.name}(
+def from_{rule.name}(
     o : {rule.name}
 ) -> list[instance]:
 
@@ -57,7 +57,7 @@ def serialize_{rule.name}(
             "    " * 2 + f"[lib.instance.make_Vocab(options = '{o.vocab}', selection = o.{o.relation})]"
         ),
         case_Nonterm = lambda o : (
-            "    " * 2 + f"serialize_{o.nonterminal}(o.{o.relation})"
+            "    " * 2 + f"from_{o.nonterminal}(o.{o.relation})"
         ),
         case_Terminal = lambda o : (
             assert_not_terminal(o)
@@ -102,7 +102,7 @@ def generate_choice_def(
 
                 f"""
                 stack.append(
-                    serialize_{o.nonterminal}(o.{o.relation})
+                    from_{o.nonterminal}(o.{o.relation})
                 )
                 """
             ),
@@ -135,7 +135,7 @@ def generate_choice_def(
     code = (f"""
 
 
-def serialize_{type_name}(
+def from_{type_name}(
     o : {type_name}
 ) -> list[instance]:
 

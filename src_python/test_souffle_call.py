@@ -6,8 +6,7 @@ import json
 
 from lib import generic_tree
 
-from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_serialize import serialize_Module
+from lib import python_ast
 from lib.instance import match_instance, InstanceHandlers 
 import lib.instance
 from gen.instance import instance
@@ -28,9 +27,9 @@ def test_string(sourceCode):
 
     generic_syntax_tree = generic_tree.parse('python', sourceCode, 'utf8')
 
-    mod = from_generic_ast(generic_syntax_tree)
+    mod = python_ast.from_generic_ast(generic_syntax_tree)
 
-    instance_list = serialize_Module(mod)
+    instance_list = python_ast.serialize(mod)
 
     souffle_input = lib.souffle.from_sequence(instance_list) + "\n"
     print("---------souffle input---------")
