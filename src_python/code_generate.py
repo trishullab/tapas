@@ -67,6 +67,13 @@ write(dirpath, "python_serialize.py", (
     ])
 ))
 
+from lib import def_reconstitute
+
+
+write(dirpath, "python_reconstitute.py", (
+    def_reconstitute.generate_content(python_schema.singles, python_schema.choices)
+))
+
 # write(dirpath, "python_ast_rename.py", (
 #     def_rename.header +
 #     "\n\n" +
