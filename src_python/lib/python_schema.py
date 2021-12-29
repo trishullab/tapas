@@ -13,7 +13,7 @@ choices : dict[str, list[Rule]] = {
             "SomeReturnType",
             [
                 Terminal(" -> "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -28,7 +28,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SomeModuleId",
             [
-                Vocab("contents", "module_identifier")
+                Vocab("content", "module_identifier")
             ]
         )
     ],
@@ -38,7 +38,7 @@ choices : dict[str, list[Rule]] = {
             "SomeExceptArg",
             [
                 Terminal(" "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -46,7 +46,7 @@ choices : dict[str, list[Rule]] = {
             "SomeExceptArgName",
             [
                 Terminal(" "),
-                Nonterm("contents", "expr", InLine()),
+                Nonterm("content", "expr", InLine()),
                 Terminal(" as "),
                 Vocab("name", "identifier"),
             ]
@@ -63,7 +63,7 @@ choices : dict[str, list[Rule]] = {
             "SomeParamType",
             [
                 Terminal(" : "),
-                Nonterm("contents", "expr", InLine()),
+                Nonterm("content", "expr", InLine()),
             ]
         ),
 
@@ -78,7 +78,7 @@ choices : dict[str, list[Rule]] = {
             "SomeParamDefault",
             [
                 Terminal(" = "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -101,7 +101,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleKwParam",
             [
-                Nonterm("contents", "Param", InLine())
+                Nonterm("content", "Param", InLine())
             ]
         ),
 
@@ -109,7 +109,7 @@ choices : dict[str, list[Rule]] = {
             "DictionarySplatParam",
             [
                 Terminal("**"),
-                Nonterm("contents", "Param", InLine())
+                Nonterm("content", "Param", InLine())
             ]
         )
 
@@ -120,7 +120,7 @@ choices : dict[str, list[Rule]] = {
             "SingleListSplatParam",
             [
                 Terminal("*"),
-                Nonterm("contents", "Param", InLine())
+                Nonterm("content", "Param", InLine())
             ]
         ),
 
@@ -138,7 +138,7 @@ choices : dict[str, list[Rule]] = {
             "ParamsD",
             [
                 Terminal("*, "),
-                Nonterm("contents", "parameters_d", InLine())
+                Nonterm("content", "parameters_d", InLine())
             ]
         ),
     ],
@@ -156,14 +156,14 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleParam",
             [
-                Nonterm("contents", "Param", InLine())
+                Nonterm("content", "Param", InLine())
             ]
         ),
 
         Rule(
             "ParamsC",
             [
-                Nonterm("contents", "parameters_c", InLine())
+                Nonterm("content", "parameters_c", InLine())
             ]
         ),
 
@@ -173,7 +173,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "ParamsA",
             [
-                Nonterm("contents", "parameters_a", InLine())
+                Nonterm("content", "parameters_a", InLine())
             ]
         ),
 
@@ -181,7 +181,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "ParamsB",
             [
-                Nonterm("contents", "parameters_b", InLine())
+                Nonterm("content", "parameters_b", InLine())
             ]
         ),
 
@@ -205,7 +205,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SinglePosParam",
             [
-                Nonterm("contents", "Param", InLine()),
+                Nonterm("content", "Param", InLine()),
                 Terminal(", /")
             ]
         ),
@@ -229,7 +229,7 @@ choices : dict[str, list[Rule]] = {
             [
                 Vocab("name", "identifier"),
                 Terminal(" = "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -237,7 +237,7 @@ choices : dict[str, list[Rule]] = {
             "SplatKeyword",
             [
                 Terminal("**"),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
     ],
@@ -248,7 +248,7 @@ choices : dict[str, list[Rule]] = {
             "SomeAlias",
             [
                 Terminal(" as "),
-                Vocab("contents", "identifier")
+                Vocab("content", "identifier")
             ]
         ),
 
@@ -265,7 +265,7 @@ choices : dict[str, list[Rule]] = {
             "SomeAliasExpr",
             [
                 Terminal(" as "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -305,7 +305,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleBase",
             [
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -331,7 +331,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleKeyword",
             [
-                Nonterm("contents", "keyword", InLine()),
+                Nonterm("content", "keyword", InLine()),
             ]
         ),
 
@@ -350,7 +350,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleCompareRight",
             [
-                Nonterm("contents", "CompareRight", InLine())
+                Nonterm("content", "CompareRight", InLine())
             ]
         ),
 
@@ -360,7 +360,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SomeExpr",
             [
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -384,7 +384,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleExpr",
             [
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -403,7 +403,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleTargetExpr",
             [
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -440,7 +440,7 @@ choices : dict[str, list[Rule]] = {
             "SingleFilter",
             [
                 Terminal("if "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -464,7 +464,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleStr",
             [
-                Vocab("contents", "string"),
+                Vocab("content", "string"),
             ]
         ),
 
@@ -483,7 +483,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleArg",
             [
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -503,7 +503,7 @@ choices : dict[str, list[Rule]] = {
             [
                 Nonterm("key", "expr", InLine()),
                 Terminal(" : "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -511,26 +511,26 @@ choices : dict[str, list[Rule]] = {
             "DictionarySplatFields",
             [
                 Terminal("**"),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         )
 
     ],
 
-    "dictionary_contents" : [
+    "dictionary_content" : [
         Rule(
             "ConsDictionaryItem",
             [
                 Nonterm("head", "dictionary_item", InLine()),
                 Terminal(", "),
-                Nonterm("tail", "dictionary_contents", NewLine())
+                Nonterm("tail", "dictionary_content", NewLine())
             ]
         ),
 
         Rule(
             "SingleDictionaryItem",
             [
-                Nonterm("contents", "dictionary_item", InLine())
+                Nonterm("content", "dictionary_item", InLine())
             ]
         ),
 
@@ -549,7 +549,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleId",
             [
-                Vocab("contents", "identifier")
+                Vocab("content", "identifier")
             ]
         ),
 
@@ -569,7 +569,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleImportName",
             [
-                Nonterm("contents", "ImportName", InLine())
+                Nonterm("content", "ImportName", InLine())
             ]
         ),
 
@@ -588,7 +588,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleWithitem",
             [
-                Nonterm("contents", "Withitem", InLine())
+                Nonterm("content", "Withitem", InLine())
             ]
         ),
 
@@ -607,7 +607,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleStmt",
             [
-                Nonterm("contents", "stmt", InLine())
+                Nonterm("content", "stmt", InLine())
             ]
         ),
 
@@ -625,7 +625,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleConstraint",
             [
-                Nonterm("contents", "constraint", InLine())
+                Nonterm("content", "constraint", InLine())
             ]
         ),
 
@@ -643,7 +643,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "SingleExceptHandler",
             [
-                Nonterm("contents", "ExceptHandler", InLine())
+                Nonterm("content", "ExceptHandler", InLine())
             ]
         ),
 
@@ -654,7 +654,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "ElifCond",
             [
-                Nonterm("contents", "ElifBlock", NewLine()),
+                Nonterm("content", "ElifBlock", NewLine()),
                 Nonterm("tail", "conditions", InLine())
             ]
         ),
@@ -662,7 +662,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "ElseCond",
             [
-                Nonterm("contents", "ElseBlock", NewLine())
+                Nonterm("content", "ElseBlock", NewLine())
             ]
         ),
 
@@ -734,7 +734,7 @@ choices : dict[str, list[Rule]] = {
             "ReturnSomething",
             [
                 Terminal("return "), 
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -758,7 +758,7 @@ choices : dict[str, list[Rule]] = {
             [
                 Nonterm("targets", "target_exprs", InLine()),
                 Terminal(" = "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -769,7 +769,7 @@ choices : dict[str, list[Rule]] = {
                 Terminal(" "),
                 Nonterm("op", "operator", InLine()),
                 Terminal("= "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -780,7 +780,7 @@ choices : dict[str, list[Rule]] = {
                 Terminal(" : "),
                 Nonterm("type", "expr", InLine()),
                 Terminal(" = "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ],
         ),
 
@@ -1037,7 +1037,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "Expr",
             [
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -1084,7 +1084,7 @@ choices : dict[str, list[Rule]] = {
             [
                 Nonterm("target", "expr", InLine()),
                 Terminal(" := "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -1137,7 +1137,7 @@ choices : dict[str, list[Rule]] = {
             "Dictionary",
             [
                 Terminal("{"),
-                Nonterm("contents", "dictionary_contents", IndentLine()),
+                Nonterm("content", "dictionary_content", IndentLine()),
                 Terminal("}")
             ]
         ),
@@ -1153,7 +1153,7 @@ choices : dict[str, list[Rule]] = {
             "Set",
             [
                 Terminal("{"),
-                Nonterm("contents", "comma_exprs", IndentLine()),
+                Nonterm("content", "comma_exprs", IndentLine()),
                 Terminal("}")
             ]
         ),
@@ -1162,7 +1162,7 @@ choices : dict[str, list[Rule]] = {
             "ListComp",
             [
                 Terminal("["),
-                Nonterm("contents", "expr", IndentLine()),
+                Nonterm("content", "expr", IndentLine()),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("]"),
             ]
@@ -1172,7 +1172,7 @@ choices : dict[str, list[Rule]] = {
             "SetComp",
             [
                 Terminal("{"),
-                Nonterm("contents", "expr", IndentLine()),
+                Nonterm("content", "expr", IndentLine()),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("}")
             ]
@@ -1183,8 +1183,8 @@ choices : dict[str, list[Rule]] = {
             [
                 Terminal("{"),
                 Nonterm("key", "expr", IndentLine()),
-                Terminal(": "),
-                Nonterm("contents", "expr", InLine()),
+                Terminal(" : "),
+                Nonterm("content", "expr", InLine()),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("}")
             ]
@@ -1194,7 +1194,7 @@ choices : dict[str, list[Rule]] = {
             "GeneratorExp",
             [
                 Terminal("("),
-                Nonterm("contents", "expr", IndentLine()),
+                Nonterm("content", "expr", IndentLine()),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal(")")
             ]
@@ -1204,7 +1204,7 @@ choices : dict[str, list[Rule]] = {
             "Await",
             [
                 Terminal("await "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -1219,7 +1219,7 @@ choices : dict[str, list[Rule]] = {
             "Yield",
             [
                 Terminal("yield "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -1227,7 +1227,7 @@ choices : dict[str, list[Rule]] = {
             "YieldFrom",
             [
                 Terminal("yield from "),
-                Nonterm("contents", "expr", InLine())
+                Nonterm("content", "expr", InLine())
             ]
         ),
 
@@ -1263,21 +1263,21 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "Integer",
             [
-                Vocab("contents", "integer")
+                Vocab("content", "integer")
             ]
         ),
 
         Rule(
             "Float",
             [
-                Vocab("contents", "float")
+                Vocab("content", "float")
             ]
         ),
 
         Rule(
             "ConcatString",
             [
-                Nonterm("contents", "sequence_string", InLine())
+                Nonterm("content", "sequence_string", InLine())
             ]
         ),
 
@@ -1313,7 +1313,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "Attribute",
             [
-                Nonterm("contents", "expr", InLine()),
+                Nonterm("content", "expr", InLine()),
                 Terminal("."),
                 Vocab("name", "identifier")
             ]
@@ -1322,7 +1322,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "Subscript",
             [
-                Nonterm("contents", "expr", InLine()),
+                Nonterm("content", "expr", InLine()),
                 Terminal("["),
                 Nonterm("slice", "expr", InLine()),
                 Terminal("]")
@@ -1333,14 +1333,14 @@ choices : dict[str, list[Rule]] = {
             "Starred",
             [
                 Terminal("*"),
-                Nonterm("contents", "expr", InLine()),
+                Nonterm("content", "expr", InLine()),
             ]
         ),
 
         Rule(
             "Name",
             [
-                Vocab("contents", "identifier")
+                Vocab("content", "identifier")
             ]
         ),
 
@@ -1348,7 +1348,7 @@ choices : dict[str, list[Rule]] = {
             "List",
             [
                 Terminal("["),
-                Nonterm("contents", "comma_exprs", InLine()),
+                Nonterm("content", "comma_exprs", InLine()),
                 Terminal("]")
             ]
         ),
@@ -1364,7 +1364,7 @@ choices : dict[str, list[Rule]] = {
             "Tuple",
             [
                 Terminal("("),
-                Nonterm("contents", "comma_exprs", InLine()),
+                Nonterm("content", "comma_exprs", InLine()),
                 Terminal(")")
             ]
         ),

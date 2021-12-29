@@ -10,14 +10,13 @@ from lib import generic_tree
 
 from lib import python_ast
 from lib.generic_tree import GenericNode
-from lib import python_ast_parse
 
 
 def run_concrete(concrete : str):
     mod = None
     try:
         mod = python_ast.parse(concrete)
-    except python_ast_parse.ConcreteParsingError:
+    except python_ast.ConcreteParsingError:
         pass
     else:
         assert mod

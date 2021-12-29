@@ -2197,11 +2197,11 @@ def to_dictionary_item(xs : list[instance]) -> tuple[dictionary_item, list[insta
     return result
     
 
-def to_dictionary_contents(xs : list[instance]) -> tuple[dictionary_contents, list[instance]]:
+def to_dictionary_content(xs : list[instance]) -> tuple[dictionary_content, list[instance]]:
 
     x = xs[-1]
     assert isinstance(x, Grammar)
-    assert x.options == "dictionary_contents"
+    assert x.options == "dictionary_content"
 
     initial = (x.selection, [], xs[:-1])
     stack : list[tuple[str, list[Any], list[instance]]]= [initial]
@@ -2272,7 +2272,7 @@ def to_dictionary_contents(xs : list[instance]) -> tuple[dictionary_contents, li
         
 
     assert result
-    assert isinstance(result[0], dictionary_contents)
+    assert isinstance(result[0], dictionary_content)
     return result
     
 
@@ -4456,7 +4456,7 @@ def to_expr(xs : list[instance]) -> tuple[expr, list[instance]]:
                 )
             
             elif index == 0:
-                (next_child, next_remainder) = to_dictionary_contents(next_remainder)
+                (next_child, next_remainder) = to_dictionary_content(next_remainder)
                 stack.append(("Dictionary", next_children + [next_child], next_remainder))
                 
             else:

@@ -101,13 +101,13 @@ class return_type(ABC):
 
 @dataclass
 class SomeReturnType(return_type):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ReturnTypeHandlers[T]) -> T:
         return handlers.case_SomeReturnType(self)
 
-def make_SomeReturnType(contents : expr) -> return_type:
-    return SomeReturnType(contents)
+def make_SomeReturnType(content : expr) -> return_type:
+    return SomeReturnType(content)
         
 
 @dataclass
@@ -145,13 +145,13 @@ class module_id(ABC):
 
 @dataclass
 class SomeModuleId(module_id):
-    contents : str
+    content : str
 
     def _match(self, handlers : ModuleIdHandlers[T]) -> T:
         return handlers.case_SomeModuleId(self)
 
-def make_SomeModuleId(contents : str) -> module_id:
-    return SomeModuleId(contents)
+def make_SomeModuleId(content : str) -> module_id:
+    return SomeModuleId(content)
         
 
 # case handlers for type module_id
@@ -177,25 +177,25 @@ class except_arg(ABC):
 
 @dataclass
 class SomeExceptArg(except_arg):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArg(self)
 
-def make_SomeExceptArg(contents : expr) -> except_arg:
-    return SomeExceptArg(contents)
+def make_SomeExceptArg(content : expr) -> except_arg:
+    return SomeExceptArg(content)
         
 
 @dataclass
 class SomeExceptArgName(except_arg):
-    contents : expr
+    content : expr
     name : str
 
     def _match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArgName(self)
 
-def make_SomeExceptArgName(contents : expr, name : str) -> except_arg:
-    return SomeExceptArgName(contents, name)
+def make_SomeExceptArgName(content : expr, name : str) -> except_arg:
+    return SomeExceptArgName(content, name)
         
 
 @dataclass
@@ -234,13 +234,13 @@ class param_type(ABC):
 
 @dataclass
 class SomeParamType(param_type):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ParamTypeHandlers[T]) -> T:
         return handlers.case_SomeParamType(self)
 
-def make_SomeParamType(contents : expr) -> param_type:
-    return SomeParamType(contents)
+def make_SomeParamType(content : expr) -> param_type:
+    return SomeParamType(content)
         
 
 @dataclass
@@ -278,13 +278,13 @@ class param_default(ABC):
 
 @dataclass
 class SomeParamDefault(param_default):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ParamDefaultHandlers[T]) -> T:
         return handlers.case_SomeParamDefault(self)
 
-def make_SomeParamDefault(contents : expr) -> param_default:
-    return SomeParamDefault(contents)
+def make_SomeParamDefault(content : expr) -> param_default:
+    return SomeParamDefault(content)
         
 
 @dataclass
@@ -334,24 +334,24 @@ def make_ConsKwParam(head : Param, tail : parameters_d) -> parameters_d:
 
 @dataclass
 class SingleKwParam(parameters_d):
-    contents : Param
+    content : Param
 
     def _match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_SingleKwParam(self)
 
-def make_SingleKwParam(contents : Param) -> parameters_d:
-    return SingleKwParam(contents)
+def make_SingleKwParam(content : Param) -> parameters_d:
+    return SingleKwParam(content)
         
 
 @dataclass
 class DictionarySplatParam(parameters_d):
-    contents : Param
+    content : Param
 
     def _match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_DictionarySplatParam(self)
 
-def make_DictionarySplatParam(contents : Param) -> parameters_d:
-    return DictionarySplatParam(contents)
+def make_DictionarySplatParam(content : Param) -> parameters_d:
+    return DictionarySplatParam(content)
         
 
 # case handlers for type parameters_d
@@ -379,13 +379,13 @@ class parameters_c(ABC):
 
 @dataclass
 class SingleListSplatParam(parameters_c):
-    contents : Param
+    content : Param
 
     def _match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_SingleListSplatParam(self)
 
-def make_SingleListSplatParam(contents : Param) -> parameters_c:
-    return SingleListSplatParam(contents)
+def make_SingleListSplatParam(content : Param) -> parameters_c:
+    return SingleListSplatParam(content)
         
 
 @dataclass
@@ -402,13 +402,13 @@ def make_TransListSplatParam(head : Param, tail : parameters_d) -> parameters_c:
 
 @dataclass
 class ParamsD(parameters_c):
-    contents : parameters_d
+    content : parameters_d
 
     def _match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_ParamsD(self)
 
-def make_ParamsD(contents : parameters_d) -> parameters_c:
-    return ParamsD(contents)
+def make_ParamsD(content : parameters_d) -> parameters_c:
+    return ParamsD(content)
         
 
 # case handlers for type parameters_c
@@ -448,24 +448,24 @@ def make_ConsParam(head : Param, tail : parameters_b) -> parameters_b:
 
 @dataclass
 class SingleParam(parameters_b):
-    contents : Param
+    content : Param
 
     def _match(self, handlers : ParametersBHandlers[T]) -> T:
         return handlers.case_SingleParam(self)
 
-def make_SingleParam(contents : Param) -> parameters_b:
-    return SingleParam(contents)
+def make_SingleParam(content : Param) -> parameters_b:
+    return SingleParam(content)
         
 
 @dataclass
 class ParamsC(parameters_b):
-    contents : parameters_c
+    content : parameters_c
 
     def _match(self, handlers : ParametersBHandlers[T]) -> T:
         return handlers.case_ParamsC(self)
 
-def make_ParamsC(contents : parameters_c) -> parameters_b:
-    return ParamsC(contents)
+def make_ParamsC(content : parameters_c) -> parameters_b:
+    return ParamsC(content)
         
 
 # case handlers for type parameters_b
@@ -493,24 +493,24 @@ class parameters(ABC):
 
 @dataclass
 class ParamsA(parameters):
-    contents : parameters_a
+    content : parameters_a
 
     def _match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_ParamsA(self)
 
-def make_ParamsA(contents : parameters_a) -> parameters:
-    return ParamsA(contents)
+def make_ParamsA(content : parameters_a) -> parameters:
+    return ParamsA(content)
         
 
 @dataclass
 class ParamsB(parameters):
-    contents : parameters_b
+    content : parameters_b
 
     def _match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_ParamsB(self)
 
-def make_ParamsB(contents : parameters_b) -> parameters:
-    return ParamsB(contents)
+def make_ParamsB(content : parameters_b) -> parameters:
+    return ParamsB(content)
         
 
 @dataclass
@@ -561,13 +561,13 @@ def make_ConsPosParam(head : Param, tail : parameters_a) -> parameters_a:
 
 @dataclass
 class SinglePosParam(parameters_a):
-    contents : Param
+    content : Param
 
     def _match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_SinglePosParam(self)
 
-def make_SinglePosParam(contents : Param) -> parameters_a:
-    return SinglePosParam(contents)
+def make_SinglePosParam(content : Param) -> parameters_a:
+    return SinglePosParam(content)
         
 
 @dataclass
@@ -608,24 +608,24 @@ class keyword(ABC):
 @dataclass
 class NamedKeyword(keyword):
     name : str
-    contents : expr
+    content : expr
 
     def _match(self, handlers : KeywordHandlers[T]) -> T:
         return handlers.case_NamedKeyword(self)
 
-def make_NamedKeyword(name : str, contents : expr) -> keyword:
-    return NamedKeyword(name, contents)
+def make_NamedKeyword(name : str, content : expr) -> keyword:
+    return NamedKeyword(name, content)
         
 
 @dataclass
 class SplatKeyword(keyword):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : KeywordHandlers[T]) -> T:
         return handlers.case_SplatKeyword(self)
 
-def make_SplatKeyword(contents : expr) -> keyword:
-    return SplatKeyword(contents)
+def make_SplatKeyword(content : expr) -> keyword:
+    return SplatKeyword(content)
         
 
 # case handlers for type keyword
@@ -652,13 +652,13 @@ class alias(ABC):
 
 @dataclass
 class SomeAlias(alias):
-    contents : str
+    content : str
 
     def _match(self, handlers : AliasHandlers[T]) -> T:
         return handlers.case_SomeAlias(self)
 
-def make_SomeAlias(contents : str) -> alias:
-    return SomeAlias(contents)
+def make_SomeAlias(content : str) -> alias:
+    return SomeAlias(content)
         
 
 @dataclass
@@ -696,13 +696,13 @@ class alias_expr(ABC):
 
 @dataclass
 class SomeAliasExpr(alias_expr):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : AliasExprHandlers[T]) -> T:
         return handlers.case_SomeAliasExpr(self)
 
-def make_SomeAliasExpr(contents : expr) -> alias_expr:
-    return SomeAliasExpr(contents)
+def make_SomeAliasExpr(content : expr) -> alias_expr:
+    return SomeAliasExpr(content)
         
 
 @dataclass
@@ -796,13 +796,13 @@ def make_ConsBase(head : expr, tail : bases_a) -> bases_a:
 
 @dataclass
 class SingleBase(bases_a):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : BasesAHandlers[T]) -> T:
         return handlers.case_SingleBase(self)
 
-def make_SingleBase(contents : expr) -> bases_a:
-    return SingleBase(contents)
+def make_SingleBase(content : expr) -> bases_a:
+    return SingleBase(content)
         
 
 @dataclass
@@ -853,13 +853,13 @@ def make_ConsKeyword(head : keyword, tail : keywords) -> keywords:
 
 @dataclass
 class SingleKeyword(keywords):
-    contents : keyword
+    content : keyword
 
     def _match(self, handlers : KeywordsHandlers[T]) -> T:
         return handlers.case_SingleKeyword(self)
 
-def make_SingleKeyword(contents : keyword) -> keywords:
-    return SingleKeyword(contents)
+def make_SingleKeyword(content : keyword) -> keywords:
+    return SingleKeyword(content)
         
 
 # case handlers for type keywords
@@ -898,13 +898,13 @@ def make_ConsCompareRight(head : CompareRight, tail : comparisons) -> comparison
 
 @dataclass
 class SingleCompareRight(comparisons):
-    contents : CompareRight
+    content : CompareRight
 
     def _match(self, handlers : ComparisonsHandlers[T]) -> T:
         return handlers.case_SingleCompareRight(self)
 
-def make_SingleCompareRight(contents : CompareRight) -> comparisons:
-    return SingleCompareRight(contents)
+def make_SingleCompareRight(content : CompareRight) -> comparisons:
+    return SingleCompareRight(content)
         
 
 # case handlers for type comparisons
@@ -931,13 +931,13 @@ class option_expr(ABC):
 
 @dataclass
 class SomeExpr(option_expr):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : OptionExprHandlers[T]) -> T:
         return handlers.case_SomeExpr(self)
 
-def make_SomeExpr(contents : expr) -> option_expr:
-    return SomeExpr(contents)
+def make_SomeExpr(content : expr) -> option_expr:
+    return SomeExpr(content)
         
 
 @dataclass
@@ -987,13 +987,13 @@ def make_ConsExpr(head : expr, tail : comma_exprs) -> comma_exprs:
 
 @dataclass
 class SingleExpr(comma_exprs):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : CommaExprsHandlers[T]) -> T:
         return handlers.case_SingleExpr(self)
 
-def make_SingleExpr(contents : expr) -> comma_exprs:
-    return SingleExpr(contents)
+def make_SingleExpr(content : expr) -> comma_exprs:
+    return SingleExpr(content)
         
 
 # case handlers for type comma_exprs
@@ -1032,13 +1032,13 @@ def make_ConsTargetExpr(head : expr, tail : target_exprs) -> target_exprs:
 
 @dataclass
 class SingleTargetExpr(target_exprs):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : TargetExprsHandlers[T]) -> T:
         return handlers.case_SingleTargetExpr(self)
 
-def make_SingleTargetExpr(contents : expr) -> target_exprs:
-    return SingleTargetExpr(contents)
+def make_SingleTargetExpr(content : expr) -> target_exprs:
+    return SingleTargetExpr(content)
         
 
 # case handlers for type target_exprs
@@ -1122,13 +1122,13 @@ def make_ConsFilter(head : expr, tail : constraint_filters) -> constraint_filter
 
 @dataclass
 class SingleFilter(constraint_filters):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
         return handlers.case_SingleFilter(self)
 
-def make_SingleFilter(contents : expr) -> constraint_filters:
-    return SingleFilter(contents)
+def make_SingleFilter(content : expr) -> constraint_filters:
+    return SingleFilter(content)
         
 
 @dataclass
@@ -1179,13 +1179,13 @@ def make_ConsStr(head : str, tail : sequence_string) -> sequence_string:
 
 @dataclass
 class SingleStr(sequence_string):
-    contents : str
+    content : str
 
     def _match(self, handlers : SequenceStringHandlers[T]) -> T:
         return handlers.case_SingleStr(self)
 
-def make_SingleStr(contents : str) -> sequence_string:
-    return SingleStr(contents)
+def make_SingleStr(content : str) -> sequence_string:
+    return SingleStr(content)
         
 
 # case handlers for type sequence_string
@@ -1224,13 +1224,13 @@ def make_ConsArg(head : expr, tail : arguments) -> arguments:
 
 @dataclass
 class SingleArg(arguments):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_SingleArg(self)
 
-def make_SingleArg(contents : expr) -> arguments:
-    return SingleArg(contents)
+def make_SingleArg(content : expr) -> arguments:
+    return SingleArg(content)
         
 
 @dataclass
@@ -1270,24 +1270,24 @@ class dictionary_item(ABC):
 @dataclass
 class Field(dictionary_item):
     key : expr
-    contents : expr
+    content : expr
 
     def _match(self, handlers : DictionaryItemHandlers[T]) -> T:
         return handlers.case_Field(self)
 
-def make_Field(key : expr, contents : expr) -> dictionary_item:
-    return Field(key, contents)
+def make_Field(key : expr, content : expr) -> dictionary_item:
+    return Field(key, content)
         
 
 @dataclass
 class DictionarySplatFields(dictionary_item):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : DictionaryItemHandlers[T]) -> T:
         return handlers.case_DictionarySplatFields(self)
 
-def make_DictionarySplatFields(contents : expr) -> dictionary_item:
-    return DictionarySplatFields(contents)
+def make_DictionarySplatFields(content : expr) -> dictionary_item:
+    return DictionarySplatFields(content)
         
 
 # case handlers for type dictionary_item
@@ -1303,47 +1303,47 @@ def match_dictionary_item(o : dictionary_item, handlers : DictionaryItemHandlers
     
 
 
-# type dictionary_contents
+# type dictionary_content
 @dataclass
-class dictionary_contents(ABC):
+class dictionary_content(ABC):
     @abstractmethod
-    def _match(self, handlers : DictionaryContentsHandlers[T]) -> T: pass
+    def _match(self, handlers : DictionaryContentHandlers[T]) -> T: pass
 
 
-# constructors for type dictionary_contents
+# constructors for type dictionary_content
 
 @dataclass
-class ConsDictionaryItem(dictionary_contents):
+class ConsDictionaryItem(dictionary_content):
     head : dictionary_item
-    tail : dictionary_contents
+    tail : dictionary_content
 
-    def _match(self, handlers : DictionaryContentsHandlers[T]) -> T:
+    def _match(self, handlers : DictionaryContentHandlers[T]) -> T:
         return handlers.case_ConsDictionaryItem(self)
 
-def make_ConsDictionaryItem(head : dictionary_item, tail : dictionary_contents) -> dictionary_contents:
+def make_ConsDictionaryItem(head : dictionary_item, tail : dictionary_content) -> dictionary_content:
     return ConsDictionaryItem(head, tail)
         
 
 @dataclass
-class SingleDictionaryItem(dictionary_contents):
-    contents : dictionary_item
+class SingleDictionaryItem(dictionary_content):
+    content : dictionary_item
 
-    def _match(self, handlers : DictionaryContentsHandlers[T]) -> T:
+    def _match(self, handlers : DictionaryContentHandlers[T]) -> T:
         return handlers.case_SingleDictionaryItem(self)
 
-def make_SingleDictionaryItem(contents : dictionary_item) -> dictionary_contents:
-    return SingleDictionaryItem(contents)
+def make_SingleDictionaryItem(content : dictionary_item) -> dictionary_content:
+    return SingleDictionaryItem(content)
         
 
-# case handlers for type dictionary_contents
+# case handlers for type dictionary_content
 @dataclass
-class DictionaryContentsHandlers(Generic[T]):
+class DictionaryContentHandlers(Generic[T]):
     case_ConsDictionaryItem : Callable[[ConsDictionaryItem], T]
     case_SingleDictionaryItem : Callable[[SingleDictionaryItem], T]
 
 
-# matching for type dictionary_contents
-def match_dictionary_contents(o : dictionary_contents, handlers : DictionaryContentsHandlers[T]) -> T :
+# matching for type dictionary_content
+def match_dictionary_content(o : dictionary_content, handlers : DictionaryContentHandlers[T]) -> T :
     return o._match(handlers)
     
 
@@ -1371,13 +1371,13 @@ def make_ConsId(head : str, tail : sequence_var) -> sequence_var:
 
 @dataclass
 class SingleId(sequence_var):
-    contents : str
+    content : str
 
     def _match(self, handlers : SequenceVarHandlers[T]) -> T:
         return handlers.case_SingleId(self)
 
-def make_SingleId(contents : str) -> sequence_var:
-    return SingleId(contents)
+def make_SingleId(content : str) -> sequence_var:
+    return SingleId(content)
         
 
 # case handlers for type sequence_var
@@ -1416,13 +1416,13 @@ def make_ConsImportName(head : ImportName, tail : sequence_ImportName) -> sequen
 
 @dataclass
 class SingleImportName(sequence_ImportName):
-    contents : ImportName
+    content : ImportName
 
     def _match(self, handlers : SequenceImportNameHandlers[T]) -> T:
         return handlers.case_SingleImportName(self)
 
-def make_SingleImportName(contents : ImportName) -> sequence_ImportName:
-    return SingleImportName(contents)
+def make_SingleImportName(content : ImportName) -> sequence_ImportName:
+    return SingleImportName(content)
         
 
 # case handlers for type sequence_ImportName
@@ -1461,13 +1461,13 @@ def make_ConsWithitem(head : Withitem, tail : sequence_Withitem) -> sequence_Wit
 
 @dataclass
 class SingleWithitem(sequence_Withitem):
-    contents : Withitem
+    content : Withitem
 
     def _match(self, handlers : SequenceWithitemHandlers[T]) -> T:
         return handlers.case_SingleWithitem(self)
 
-def make_SingleWithitem(contents : Withitem) -> sequence_Withitem:
-    return SingleWithitem(contents)
+def make_SingleWithitem(content : Withitem) -> sequence_Withitem:
+    return SingleWithitem(content)
         
 
 # case handlers for type sequence_Withitem
@@ -1506,13 +1506,13 @@ def make_ConsStmt(head : stmt, tail : statements) -> statements:
 
 @dataclass
 class SingleStmt(statements):
-    contents : stmt
+    content : stmt
 
     def _match(self, handlers : StatementsHandlers[T]) -> T:
         return handlers.case_SingleStmt(self)
 
-def make_SingleStmt(contents : stmt) -> statements:
-    return SingleStmt(contents)
+def make_SingleStmt(content : stmt) -> statements:
+    return SingleStmt(content)
         
 
 # case handlers for type statements
@@ -1551,13 +1551,13 @@ def make_ConsConstraint(head : constraint, tail : comprehension_constraints) -> 
 
 @dataclass
 class SingleConstraint(comprehension_constraints):
-    contents : constraint
+    content : constraint
 
     def _match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
         return handlers.case_SingleConstraint(self)
 
-def make_SingleConstraint(contents : constraint) -> comprehension_constraints:
-    return SingleConstraint(contents)
+def make_SingleConstraint(content : constraint) -> comprehension_constraints:
+    return SingleConstraint(content)
         
 
 # case handlers for type comprehension_constraints
@@ -1596,13 +1596,13 @@ def make_ConsExceptHandler(head : ExceptHandler, tail : sequence_ExceptHandler) 
 
 @dataclass
 class SingleExceptHandler(sequence_ExceptHandler):
-    contents : ExceptHandler
+    content : ExceptHandler
 
     def _match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
         return handlers.case_SingleExceptHandler(self)
 
-def make_SingleExceptHandler(contents : ExceptHandler) -> sequence_ExceptHandler:
-    return SingleExceptHandler(contents)
+def make_SingleExceptHandler(content : ExceptHandler) -> sequence_ExceptHandler:
+    return SingleExceptHandler(content)
         
 
 # case handlers for type sequence_ExceptHandler
@@ -1629,25 +1629,25 @@ class conditions(ABC):
 
 @dataclass
 class ElifCond(conditions):
-    contents : ElifBlock
+    content : ElifBlock
     tail : conditions
 
     def _match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElifCond(self)
 
-def make_ElifCond(contents : ElifBlock, tail : conditions) -> conditions:
-    return ElifCond(contents, tail)
+def make_ElifCond(content : ElifBlock, tail : conditions) -> conditions:
+    return ElifCond(content, tail)
         
 
 @dataclass
 class ElseCond(conditions):
-    contents : ElseBlock
+    content : ElseBlock
 
     def _match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElseCond(self)
 
-def make_ElseCond(contents : ElseBlock) -> conditions:
-    return ElseCond(contents)
+def make_ElseCond(content : ElseBlock) -> conditions:
+    return ElseCond(content)
         
 
 @dataclass
@@ -1772,13 +1772,13 @@ def make_DecClassDef(decs : decorators, class_def : ClassDef) -> stmt:
 
 @dataclass
 class ReturnSomething(stmt):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ReturnSomething(self)
 
-def make_ReturnSomething(contents : expr) -> stmt:
-    return ReturnSomething(contents)
+def make_ReturnSomething(content : expr) -> stmt:
+    return ReturnSomething(content)
         
 
 @dataclass
@@ -1806,39 +1806,39 @@ def make_Delete(targets : comma_exprs) -> stmt:
 @dataclass
 class Assign(stmt):
     targets : target_exprs
-    contents : expr
+    content : expr
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Assign(self)
 
-def make_Assign(targets : target_exprs, contents : expr) -> stmt:
-    return Assign(targets, contents)
+def make_Assign(targets : target_exprs, content : expr) -> stmt:
+    return Assign(targets, content)
         
 
 @dataclass
 class AugAssign(stmt):
     target : expr
     op : operator
-    contents : expr
+    content : expr
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AugAssign(self)
 
-def make_AugAssign(target : expr, op : operator, contents : expr) -> stmt:
-    return AugAssign(target, op, contents)
+def make_AugAssign(target : expr, op : operator, content : expr) -> stmt:
+    return AugAssign(target, op, content)
         
 
 @dataclass
 class TypedAssign(stmt):
     target : expr
     type : expr
-    contents : expr
+    content : expr
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TypedAssign(self)
 
-def make_TypedAssign(target : expr, type : expr, contents : expr) -> stmt:
-    return TypedAssign(target, type, contents)
+def make_TypedAssign(target : expr, type : expr, content : expr) -> stmt:
+    return TypedAssign(target, type, content)
         
 
 @dataclass
@@ -2148,13 +2148,13 @@ def make_Nonlocal(names : sequence_var) -> stmt:
 
 @dataclass
 class Expr(stmt):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Expr(self)
 
-def make_Expr(contents : expr) -> stmt:
-    return Expr(contents)
+def make_Expr(content : expr) -> stmt:
+    return Expr(content)
         
 
 @dataclass
@@ -2264,13 +2264,13 @@ def make_BoolOp(left : expr, op : boolop, right : expr) -> expr:
 @dataclass
 class NamedExpr(expr):
     target : expr
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_NamedExpr(self)
 
-def make_NamedExpr(target : expr, contents : expr) -> expr:
-    return NamedExpr(target, contents)
+def make_NamedExpr(target : expr, content : expr) -> expr:
+    return NamedExpr(target, content)
         
 
 @dataclass
@@ -2325,13 +2325,13 @@ def make_IfExp(body : expr, test : expr, orelse : expr) -> expr:
 
 @dataclass
 class Dictionary(expr):
-    contents : dictionary_contents
+    content : dictionary_content
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Dictionary(self)
 
-def make_Dictionary(contents : dictionary_contents) -> expr:
-    return Dictionary(contents)
+def make_Dictionary(content : dictionary_content) -> expr:
+    return Dictionary(content)
         
 
 @dataclass
@@ -2347,73 +2347,73 @@ def make_EmptyDictionary() -> expr:
 
 @dataclass
 class Set(expr):
-    contents : comma_exprs
+    content : comma_exprs
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Set(self)
 
-def make_Set(contents : comma_exprs) -> expr:
-    return Set(contents)
+def make_Set(content : comma_exprs) -> expr:
+    return Set(content)
         
 
 @dataclass
 class ListComp(expr):
-    contents : expr
+    content : expr
     constraints : comprehension_constraints
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ListComp(self)
 
-def make_ListComp(contents : expr, constraints : comprehension_constraints) -> expr:
-    return ListComp(contents, constraints)
+def make_ListComp(content : expr, constraints : comprehension_constraints) -> expr:
+    return ListComp(content, constraints)
         
 
 @dataclass
 class SetComp(expr):
-    contents : expr
+    content : expr
     constraints : comprehension_constraints
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_SetComp(self)
 
-def make_SetComp(contents : expr, constraints : comprehension_constraints) -> expr:
-    return SetComp(contents, constraints)
+def make_SetComp(content : expr, constraints : comprehension_constraints) -> expr:
+    return SetComp(content, constraints)
         
 
 @dataclass
 class DictionaryComp(expr):
     key : expr
-    contents : expr
+    content : expr
     constraints : comprehension_constraints
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_DictionaryComp(self)
 
-def make_DictionaryComp(key : expr, contents : expr, constraints : comprehension_constraints) -> expr:
-    return DictionaryComp(key, contents, constraints)
+def make_DictionaryComp(key : expr, content : expr, constraints : comprehension_constraints) -> expr:
+    return DictionaryComp(key, content, constraints)
         
 
 @dataclass
 class GeneratorExp(expr):
-    contents : expr
+    content : expr
     constraints : comprehension_constraints
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_GeneratorExp(self)
 
-def make_GeneratorExp(contents : expr, constraints : comprehension_constraints) -> expr:
-    return GeneratorExp(contents, constraints)
+def make_GeneratorExp(content : expr, constraints : comprehension_constraints) -> expr:
+    return GeneratorExp(content, constraints)
         
 
 @dataclass
 class Await(expr):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Await(self)
 
-def make_Await(contents : expr) -> expr:
-    return Await(contents)
+def make_Await(content : expr) -> expr:
+    return Await(content)
         
 
 @dataclass
@@ -2429,24 +2429,24 @@ def make_YieldNothing() -> expr:
 
 @dataclass
 class Yield(expr):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Yield(self)
 
-def make_Yield(contents : expr) -> expr:
-    return Yield(contents)
+def make_Yield(content : expr) -> expr:
+    return Yield(content)
         
 
 @dataclass
 class YieldFrom(expr):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_YieldFrom(self)
 
-def make_YieldFrom(contents : expr) -> expr:
-    return YieldFrom(contents)
+def make_YieldFrom(content : expr) -> expr:
+    return YieldFrom(content)
         
 
 @dataclass
@@ -2486,35 +2486,35 @@ def make_CallArgs(func : expr, args : arguments) -> expr:
 
 @dataclass
 class Integer(expr):
-    contents : str
+    content : str
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Integer(self)
 
-def make_Integer(contents : str) -> expr:
-    return Integer(contents)
+def make_Integer(content : str) -> expr:
+    return Integer(content)
         
 
 @dataclass
 class Float(expr):
-    contents : str
+    content : str
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Float(self)
 
-def make_Float(contents : str) -> expr:
-    return Float(contents)
+def make_Float(content : str) -> expr:
+    return Float(content)
         
 
 @dataclass
 class ConcatString(expr):
-    contents : sequence_string
+    content : sequence_string
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ConcatString(self)
 
-def make_ConcatString(contents : sequence_string) -> expr:
-    return ConcatString(contents)
+def make_ConcatString(content : sequence_string) -> expr:
+    return ConcatString(content)
         
 
 @dataclass
@@ -2563,59 +2563,59 @@ def make_Ellip() -> expr:
 
 @dataclass
 class Attribute(expr):
-    contents : expr
+    content : expr
     name : str
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Attribute(self)
 
-def make_Attribute(contents : expr, name : str) -> expr:
-    return Attribute(contents, name)
+def make_Attribute(content : expr, name : str) -> expr:
+    return Attribute(content, name)
         
 
 @dataclass
 class Subscript(expr):
-    contents : expr
+    content : expr
     slice : expr
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Subscript(self)
 
-def make_Subscript(contents : expr, slice : expr) -> expr:
-    return Subscript(contents, slice)
+def make_Subscript(content : expr, slice : expr) -> expr:
+    return Subscript(content, slice)
         
 
 @dataclass
 class Starred(expr):
-    contents : expr
+    content : expr
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Starred(self)
 
-def make_Starred(contents : expr) -> expr:
-    return Starred(contents)
+def make_Starred(content : expr) -> expr:
+    return Starred(content)
         
 
 @dataclass
 class Name(expr):
-    contents : str
+    content : str
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Name(self)
 
-def make_Name(contents : str) -> expr:
-    return Name(contents)
+def make_Name(content : str) -> expr:
+    return Name(content)
         
 
 @dataclass
 class List(expr):
-    contents : comma_exprs
+    content : comma_exprs
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_List(self)
 
-def make_List(contents : comma_exprs) -> expr:
-    return List(contents)
+def make_List(content : comma_exprs) -> expr:
+    return List(content)
         
 
 @dataclass
@@ -2631,13 +2631,13 @@ def make_EmptyList() -> expr:
 
 @dataclass
 class Tuple(expr):
-    contents : comma_exprs
+    content : comma_exprs
 
     def _match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Tuple(self)
 
-def make_Tuple(contents : comma_exprs) -> expr:
-    return Tuple(contents)
+def make_Tuple(content : comma_exprs) -> expr:
+    return Tuple(content)
         
 
 @dataclass

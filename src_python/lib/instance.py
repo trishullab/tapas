@@ -154,7 +154,7 @@ def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
                                     ))
                                     if isinstance(pred, lib.rule.Nonterm) else ""
                                 )[-1]
-                                if j > 0 else "" 
+                                if i == 0 else "" 
                             ),
                             stack.append(prefix + o.terminal)
                         ),

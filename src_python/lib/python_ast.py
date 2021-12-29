@@ -11,6 +11,7 @@ from lib import python_ast_parse
 from lib import python_generic_tree
 from lib import python_sequence
 
+from lib.python_ast_parse import Unsupported, ConcreteParsingError
 
 def parse_from_generic_tree(gnode : GenericNode) -> Module:
     return python_ast_parse.from_generic_tree(gnode)
@@ -37,4 +38,6 @@ def serialize_reconstitute_bidirectional(mod: Module):
 def concretize_parse_bidrectional(mod: Module):
     concrete = concretize(mod)
     mod_result = parse(concrete)
+    print(f"OOGA: {mod == mod_result}")
     assert mod == mod_result
+    print(f"OOGA POST ASSERTION")

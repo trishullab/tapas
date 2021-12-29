@@ -217,7 +217,7 @@ def from_return_type(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -279,7 +279,7 @@ def from_module_id(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'module_identifier',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -324,7 +324,7 @@ def from_except_arg(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -352,7 +352,7 @@ def from_except_arg(
 
 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -413,7 +413,7 @@ def from_param_type(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -473,7 +473,7 @@ def from_param_default(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -557,7 +557,7 @@ def from_parameters_d(
 
                 
                 stack.append(
-                    from_Param(o.contents)
+                    from_Param(o.content)
                 )
                 
                 stack.append(
@@ -575,7 +575,7 @@ def from_parameters_d(
 
                 
                 stack.append(
-                    from_Param(o.contents)
+                    from_Param(o.content)
                 )
                 
 
@@ -622,7 +622,7 @@ def from_parameters_c(
 
                 
                 stack.append(
-                    from_Param(o.contents)
+                    from_Param(o.content)
                 )
                 
 
@@ -666,7 +666,7 @@ def from_parameters_c(
 
                 
                 stack.append(
-                    from_parameters_d(o.contents)
+                    from_parameters_d(o.content)
                 )
                 
 
@@ -737,7 +737,7 @@ def from_parameters_b(
 
                 
                 stack.append(
-                    from_Param(o.contents)
+                    from_Param(o.content)
                 )
                 
                 stack.append(
@@ -755,7 +755,7 @@ def from_parameters_b(
 
                 
                 stack.append(
-                    from_parameters_c(o.contents)
+                    from_parameters_c(o.content)
                 )
                 
                 stack.append(
@@ -801,7 +801,7 @@ def from_parameters(
 
                 
                 stack.append(
-                    from_parameters_a(o.contents)
+                    from_parameters_a(o.content)
                 )
                 
                 stack.append(
@@ -819,7 +819,7 @@ def from_parameters(
 
                 
                 stack.append(
-                    from_parameters_b(o.contents)
+                    from_parameters_b(o.content)
                 )
                 
                 stack.append(
@@ -904,7 +904,7 @@ def from_parameters_a(
                 
 
                 stack.append(
-                    from_Param(o.contents)
+                    from_Param(o.content)
                 )
                 
                 stack.append(
@@ -974,7 +974,7 @@ def from_keyword(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -1001,7 +1001,7 @@ def from_keyword(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -1049,7 +1049,7 @@ def from_alias(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'identifier',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -1110,7 +1110,7 @@ def from_alias_expr(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -1255,7 +1255,7 @@ def from_bases_a(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
                 stack.append(
@@ -1343,7 +1343,7 @@ def from_keywords(
 
                 
                 stack.append(
-                    from_keyword(o.contents)
+                    from_keyword(o.content)
                 )
                 
                 stack.append(
@@ -1412,7 +1412,7 @@ def from_comparisons(
 
                 
                 stack.append(
-                    from_CompareRight(o.contents)
+                    from_CompareRight(o.content)
                 )
                 
                 stack.append(
@@ -1457,7 +1457,7 @@ def from_option_expr(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
                 stack.append(
@@ -1540,7 +1540,7 @@ def from_comma_exprs(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
                 stack.append(
@@ -1609,7 +1609,7 @@ def from_target_exprs(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
                 stack.append(
@@ -1743,7 +1743,7 @@ def from_constraint_filters(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -1833,7 +1833,7 @@ def from_sequence_string(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'string',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -1903,7 +1903,7 @@ def from_arguments(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
                 stack.append(
@@ -1967,7 +1967,7 @@ def from_dictionary_item(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -1991,7 +1991,7 @@ def from_dictionary_item(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -2018,22 +2018,22 @@ def from_dictionary_item(
 
 
 
-def from_dictionary_contents(
-    o : dictionary_contents
+def from_dictionary_content(
+    o : dictionary_content
 ) -> list[instance]:
 
     result = []
 
-    stack : list[Union[dictionary_contents, list[instance]]] = [o]
+    stack : list[Union[dictionary_content, list[instance]]] = [o]
     while stack:
         stack_item = stack.pop()
-        if isinstance(stack_item, dictionary_contents):
+        if isinstance(stack_item, dictionary_content):
 
             
 
             def handle_ConsDictionaryItem(o : ConsDictionaryItem): 
                 nonlocal stack
-                assert isinstance(o, dictionary_contents)
+                assert isinstance(o, dictionary_content)
 
                 
                 stack.append(
@@ -2048,7 +2048,7 @@ def from_dictionary_contents(
                 
                 stack.append(
                     [lib.instance.make_Grammar(
-                        options = 'dictionary_contents',
+                        options = 'dictionary_content',
                         selection = 'ConsDictionaryItem'
                     )]
                 )
@@ -2057,23 +2057,23 @@ def from_dictionary_contents(
 
             def handle_SingleDictionaryItem(o : SingleDictionaryItem): 
                 nonlocal stack
-                assert isinstance(o, dictionary_contents)
+                assert isinstance(o, dictionary_content)
 
                 
                 stack.append(
-                    from_dictionary_item(o.contents)
+                    from_dictionary_item(o.content)
                 )
                 
                 stack.append(
                     [lib.instance.make_Grammar(
-                        options = 'dictionary_contents',
+                        options = 'dictionary_content',
                         selection = 'SingleDictionaryItem'
                     )]
                 )
         
 
 
-            match_dictionary_contents(stack_item, DictionaryContentsHandlers(
+            match_dictionary_content(stack_item, DictionaryContentHandlers(
                 case_ConsDictionaryItem = handle_ConsDictionaryItem,
                 case_SingleDictionaryItem = handle_SingleDictionaryItem
             ))
@@ -2135,7 +2135,7 @@ def from_sequence_var(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'identifier',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -2205,7 +2205,7 @@ def from_sequence_ImportName(
 
                 
                 stack.append(
-                    from_ImportName(o.contents)
+                    from_ImportName(o.content)
                 )
                 
                 stack.append(
@@ -2274,7 +2274,7 @@ def from_sequence_Withitem(
 
                 
                 stack.append(
-                    from_Withitem(o.contents)
+                    from_Withitem(o.content)
                 )
                 
                 stack.append(
@@ -2342,7 +2342,7 @@ def from_statements(
 
                 
                 stack.append(
-                    from_stmt(o.contents)
+                    from_stmt(o.content)
                 )
                 
                 stack.append(
@@ -2410,7 +2410,7 @@ def from_comprehension_constraints(
 
                 
                 stack.append(
-                    from_constraint(o.contents)
+                    from_constraint(o.content)
                 )
                 
                 stack.append(
@@ -2478,7 +2478,7 @@ def from_sequence_ExceptHandler(
 
                 
                 stack.append(
-                    from_ExceptHandler(o.contents)
+                    from_ExceptHandler(o.content)
                 )
                 
                 stack.append(
@@ -2528,7 +2528,7 @@ def from_conditions(
                 
 
                 stack.append(
-                    from_ElifBlock(o.contents)
+                    from_ElifBlock(o.content)
                 )
                 
                 stack.append(
@@ -2546,7 +2546,7 @@ def from_conditions(
 
                 
                 stack.append(
-                    from_ElseBlock(o.contents)
+                    from_ElseBlock(o.content)
                 )
                 
                 stack.append(
@@ -2782,7 +2782,7 @@ def from_stmt(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -2834,7 +2834,7 @@ def from_stmt(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -2858,7 +2858,7 @@ def from_stmt(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -2888,7 +2888,7 @@ def from_stmt(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
 
@@ -3555,7 +3555,7 @@ def from_stmt(
 
                 
                 stack.append(
-                    from_expr(o.contents)
+                    from_expr(o.content)
                 )
                 
                 stack.append(
@@ -3710,7 +3710,7 @@ def from_expr(
 
                 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -3848,7 +3848,7 @@ def from_expr(
                 
 
                 stack.append(
-                    from_dictionary_contents(o.contents)
+                    from_dictionary_content(o.content)
                 )
                 
 
@@ -3882,7 +3882,7 @@ def from_expr(
                 
 
                 stack.append(
-                    from_comma_exprs(o.contents)
+                    from_comma_exprs(o.content)
                 )
                 
 
@@ -3907,7 +3907,7 @@ def from_expr(
                 
 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -3932,7 +3932,7 @@ def from_expr(
                 
 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -3957,7 +3957,7 @@ def from_expr(
                 
 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -3988,7 +3988,7 @@ def from_expr(
                 
 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -4007,7 +4007,7 @@ def from_expr(
 
                 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -4040,7 +4040,7 @@ def from_expr(
 
                 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -4059,7 +4059,7 @@ def from_expr(
 
                 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -4148,7 +4148,7 @@ def from_expr(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'integer',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -4169,7 +4169,7 @@ def from_expr(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'float',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -4188,7 +4188,7 @@ def from_expr(
 
                 
                 stack.append(
-                    from_sequence_string(o.contents)
+                    from_sequence_string(o.content)
                 )
                 
                 stack.append(
@@ -4271,7 +4271,7 @@ def from_expr(
 
 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
                 stack.append(
@@ -4296,7 +4296,7 @@ def from_expr(
 
 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
                 stack.append(
@@ -4314,7 +4314,7 @@ def from_expr(
 
                 
                 stack.append(
-                    o.contents
+                    o.content
                 )
                 
 
@@ -4335,7 +4335,7 @@ def from_expr(
                 stack.append(
                     [lib.instance.make_Vocab(
                         options = 'identifier',
-                        selection = o.contents
+                        selection = o.content
                     )]
                 )
             
@@ -4355,7 +4355,7 @@ def from_expr(
                 
 
                 stack.append(
-                    from_comma_exprs(o.contents)
+                    from_comma_exprs(o.content)
                 )
                 
 
@@ -4389,7 +4389,7 @@ def from_expr(
                 
 
                 stack.append(
-                    from_comma_exprs(o.contents)
+                    from_comma_exprs(o.content)
                 )
                 
 
