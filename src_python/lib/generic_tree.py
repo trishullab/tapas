@@ -103,7 +103,6 @@ def parse(lang_name : str, source : str, encoding : str) -> GenericNode:
     return from_tree_sitter_node(sitter_tree.root_node, source_bytes, encoding)
 
 
-
 def dump(
     node : GenericNode, 
     indent : int = 4, depth : int = 0,

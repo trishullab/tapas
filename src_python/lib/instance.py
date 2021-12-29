@@ -149,8 +149,8 @@ def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
                                     pred := rule.content[j - 1],
                                     match_line_format(pred.format, LineFormatHandlers[str](
                                         case_InLine = lambda _ : "",
-                                        case_NewLine = lambda _ : "\n<NewLine>" + ("    " * format.indent_width),
-                                        case_IndentLine = lambda _ : "\n<IndentLine>" + ("    " * format.indent_width)
+                                        case_NewLine = lambda _ : "\n" + ("    " * format.indent_width),
+                                        case_IndentLine = lambda _ : "\n" + ("    " * format.indent_width)
                                     ))
                                     if isinstance(pred, lib.rule.Nonterm) else ""
                                 )[-1]
