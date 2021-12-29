@@ -38,6 +38,4 @@ def serialize_reconstitute_bidirectional(mod: Module):
 def concretize_parse_bidrectional(mod: Module):
     concrete = concretize(mod)
     mod_result = parse(concrete)
-    print(f"OOGA: {mod == mod_result}")
     assert mod == mod_result
-    print(f"OOGA POST ASSERTION")

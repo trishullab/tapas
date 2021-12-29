@@ -45,19 +45,19 @@ def run_concrete(concrete : str):
             raise x
 
 
-        concrete_0 = python_ast.concretize(mod)
-        mod_0 = python_ast.parse(concrete_0) 
         try:
-            assert mod == mod_0
-            # assert python_ast.concretize_parse_bidrectional(mod)
+            # assert mod == mod_0
+            python_ast.concretize_parse_bidrectional(mod)
         except AssertionError as x:
+            concrete_0 = python_ast.concretize(mod)
+            mod_0 = python_ast.parse(concrete_0) 
             print(f"---concrete parse error: {mod == mod_0}---")
-            print(concrete)
-            print(f"---concrete parse error 0: {mod == mod_0}, {concrete == concrete_0}---")
+            # print(concrete)
             # print(python_sequence.dump(python_ast.serialize(mod)))
+            print(f"---concrete parse error 0: {mod == mod_0}, {concrete == concrete_0}---")
             print(concrete_0)
+            # print(python_sequence.dump(python_ast.serialize(mod_0)))
             print(f"---concrete parse error: {mod == mod_0}---")
-            print(f"x args: {x.args}")
             raise x
 
 

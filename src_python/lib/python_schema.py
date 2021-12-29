@@ -905,15 +905,15 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "RaiseExc",
             [
-                Terminal("raise"),
-                Nonterm("exc", "expr", IndentLine())
+                Terminal("raise "),
+                Nonterm("exc", "expr", InLine())
             ]
         ),
 
         Rule(
             "RaiseFrom",
             [
-                Terminal("raise"),
+                Terminal("raise "),
                 Nonterm("exc", "expr", InLine()),
                 Terminal(" from "),
                 Nonterm("caus", "expr", InLine())
