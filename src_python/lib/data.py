@@ -10,8 +10,7 @@ from gen.instance import InstanceHandlers, match_instance
 
 from lib import generic_tree
 
-from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_serialize import serialize_Module
+from lib import python_ast
 from lib.file import write
 
 from lib.instance import instance
@@ -58,10 +57,10 @@ def generate_file(dirname : str, name : str, vocab : dict):
             instances : list[instance] = []
 
             try:
-                mod = from_generic_ast(tree)
+                mod = python_ast.parse_from_generic_tree(tree)
                 # mod = python_ast_rename.rename_Module(mod, {}, {}, {})
 
-                instances = serialize_Module(mod)
+                instances = python_ast.serialize(mod)
 
                 # if total_count < 50:
 

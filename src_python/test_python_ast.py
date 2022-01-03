@@ -20,8 +20,8 @@ def run_concrete(concrete : str):
         pass
     else:
         assert mod
-        python_ast.serialize_reconstitute_bidirectional(mod)
-        python_ast.concretize_parse_bidrectional(mod)
+        python_ast.assert_serialize_reconstitute_bidirectional(mod)
+        python_ast.assert_concretize_parse_bidrectional(mod)
 
 
 from lib import utils

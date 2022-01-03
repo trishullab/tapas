@@ -30,12 +30,12 @@ def concretize(mod: Module) -> str:
     seq = serialize(mod)
     return python_sequence.concretize(seq)
 
-def serialize_reconstitute_bidirectional(mod: Module):
+def assert_serialize_reconstitute_bidirectional(mod: Module):
     seq = serialize(mod)
     mod_result = reconstitute(seq)
     assert mod == mod_result
 
-def concretize_parse_bidrectional(mod: Module):
+def assert_concretize_parse_bidrectional(mod: Module):
     concrete = concretize(mod)
     mod_result = parse(concrete)
     assert mod == mod_result

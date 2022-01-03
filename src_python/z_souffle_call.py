@@ -27,7 +27,7 @@ def test_string(sourceCode):
 
     generic_syntax_tree = generic_tree.parse('python', sourceCode, 'utf8')
 
-    mod = python_ast.from_generic_ast(generic_syntax_tree)
+    mod = python_ast.parse_from_generic_tree(generic_syntax_tree)
 
     instance_list = python_ast.serialize(mod)
 

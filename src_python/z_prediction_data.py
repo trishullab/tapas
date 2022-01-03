@@ -8,10 +8,6 @@ import tree_sitter
 import json
 from gen.instance import InstanceHandlers, match_instance
 
-from lib import generic_tree
-
-from lib.python_ast_from_generic_ast import from_generic_ast
-from gen.python_serialize import serialize_Module
 import lib.python_sequence
 from lib.file import write
 

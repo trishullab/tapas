@@ -35,7 +35,7 @@ def run_concrete(concrete : str):
     else:
         assert mod
         try:
-            python_ast.serialize_reconstitute_bidirectional(mod)
+            python_ast.assert_serialize_reconstitute_bidirectional(mod)
         except AssertionError as x:
             seq = python_ast.serialize(mod)
             hr = python_sequence.dump(seq) 
@@ -47,7 +47,7 @@ def run_concrete(concrete : str):
 
         try:
             # assert mod == mod_0
-            python_ast.concretize_parse_bidrectional(mod)
+            python_ast.assert_concretize_parse_bidrectional(mod)
         except AssertionError as x:
             concrete_0 = python_ast.concretize(mod)
             mod_0 = python_ast.parse(concrete_0) 

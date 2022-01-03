@@ -170,7 +170,7 @@ def to_comparisons(crs : list[CompareRight]) -> comparisons:
 
     return result
 
-def to_dictionary_contents(items : list[dictionary_item]) -> dictionary_contents:
+def to_dictionary_content(items : list[dictionary_item]) -> dictionary_content:
     assert items 
 
     result = SingleDictionaryItem(items[-1])
@@ -795,7 +795,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
         ]
 
         if items:
-            return Dictionary(to_dictionary_contents(items))
+            return Dictionary(to_dictionary_content(items))
         else:
             return EmptyDictionary()
 
