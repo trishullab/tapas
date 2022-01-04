@@ -28,10 +28,24 @@ import pathlib
 # logging.basicConfig(level=logging.INFO)
 
 
+def project_path(rel_path : str):
+    base_path = os.path.join(pathlib.Path(__file__).parent.absolute(), '..')
+    return os.path.join(base_path, rel_path)
 
-def path_from_relative(base : str, relative_path : str):
-    base_path = pathlib.Path(base).parent.absolute()
-    return os.path.join(base_path, relative_path)
+
+def write(dirpath : str, fname : str, code : str, append : bool = False):
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+
+    fpath = os.path.join(dirpath, f"{fname}")
+
+    with open(fpath, 'a' if append else 'w') as f:
+        # logging.info(f"Writing file: {fpath}")
+        f.write(code)
+
+# def path_from_relative(base : str, relative_path : str):
+#     base_path = pathlib.Path(base).parent.absolute()
+#     return os.path.join(base_path, relative_path)
 
 def run_file(fpath : str, func : Callable[[str], Any]):
     error_count = 0

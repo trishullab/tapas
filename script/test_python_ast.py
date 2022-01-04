@@ -24,9 +24,9 @@ def run_concrete(concrete : str):
         python_ast.assert_concretize_parse_bidrectional(mod)
 
 
-from lib import utils
+from lib import util
 import os
-dirpath = utils.path_from_relative(__file__, "../res/test/python/concrete_data")
+dirpath = util.project_path("res/test/python/concrete_data")
 
 def test_cubert():
-    return utils.run_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)
+    return util.run_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)

@@ -61,11 +61,11 @@ def run_concrete(concrete : str):
             raise x
 
 
-from lib import utils
+from lib import util
 import os
-dirpath = utils.path_from_relative(__file__, "../res/test/python/concrete_data")
+dirpath = util.project_path("res/test/python/concrete_data")
 
 def inspect_cubert():
-    return utils.run_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)
+    return util.run_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)
 
 inspect_cubert()

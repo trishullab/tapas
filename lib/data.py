@@ -11,20 +11,17 @@ from gen.instance_construct import InstanceHandlers, match_instance
 from lib import generic_tree
 
 from lib import python_ast
-from lib.file import write
+from lib.util import write, project_path
 
 from lib.instance import instance
 from gen.instance_construct import Vocab
-
-base_path = pathlib.Path(__file__).parent.absolute()
-
 
 
 
 def generate_file(dirname : str, name : str, vocab : dict):
 
-    concrete_data_dirpath = os.path.join(base_path, f"../../res/{dirname}/concrete_data")
-    abstract_data_dirpath = os.path.join(base_path, f"../../res/{dirname}/abstract_data")
+    concrete_data_dirpath = project_path(f"res/{dirname}/concrete_data")
+    abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data")
 
     logging.basicConfig(level=logging.INFO)
 
@@ -196,10 +193,10 @@ def generate_file_tuple(triple):
     generate_file(triple[0], triple[1], triple[2])
 
 def generate_dir(dirname : str):
-    concrete_data_dirpath = os.path.join(base_path, f"../../res/{dirname}/concrete_data")
+    concrete_data_dirpath = project_path(f"res/{dirname}/concrete_data")
     vocab : dict[str, set[str]] = {}
 
-    abstract_data_dirpath = os.path.join(base_path, f"../../res/{dirname}/abstract_data")
+    abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data")
     write(abstract_data_dirpath, f'vocab.json', '')
 
 

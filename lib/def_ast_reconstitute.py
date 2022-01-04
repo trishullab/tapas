@@ -2,18 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import inflection
-import jinja2
-
 import lib.rule
 from lib.rule import Rule
 
-from lib import line_format
 import lib.python_schema
-from gen.rule import Vocab
-
-jinja_env = jinja2.Environment(trim_blocks=True)
-# jinja_env.globals.update(isinstance=isinstance)
 
 nl = "\n"
 

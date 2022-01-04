@@ -43,26 +43,23 @@ def generate_code(split : str):
 
 
 import logging
-import os
-import pathlib
 import json
 
 
-from lib.file import write 
+from lib.util import write, project_path
 
 import re
 
 def write_code(split="train"):
 
     logging.basicConfig(level=logging.INFO)
-    base_path = pathlib.Path(__file__).parent.absolute()
 
     page_length = 2000
     page_count=0
     code_count = 0
     prefix = ""
 
-    write_dir = os.path.join(base_path, f'../res/py150_{split}/input/')
+    write_dir = project_path(f'res/py150_{split}/input/')
 
     write(write_dir, f'py150_{split}_{page_count}.jsonl', '')
     for code in generate_code(split):

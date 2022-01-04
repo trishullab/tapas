@@ -1,5 +1,5 @@
 from __future__ import annotations
-from gen.rule import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
+from gen.rule_construct import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
 from gen.line_format_construct import NewLine, InLine, IndentLine
 import lib.rule
 

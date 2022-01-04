@@ -2,25 +2,22 @@ from tree_sitter import Language
 
 import logging
 import os
-import pathlib
 import json
 
 
-from lib.file import write 
+from lib.util import write, project_path
 
 import re
 
-base_path = pathlib.Path(__file__).parent.absolute()
-
 def compile():
     logging.basicConfig(level=logging.INFO)
-    read_path = os.path.join(base_path, "../../apps_data/")
+    read_path = project_path("../apps_data/")
 
     solution_count = 0
     page_count = 0
     prefix = ""
 
-    write_dir = os.path.join(base_path, '../res/apps/input/')
+    write_dir = project_path('res/apps/input/')
 
     write(write_dir, f'apps_{0}.jsonl', '')
     for dirkey in os.listdir(read_path):

@@ -10,15 +10,11 @@ from lib import python_schema
 from lib import def_ast_serialize
 # from lib import def_rename
 
-from lib.file import write
-import pathlib
-import os
+from lib import util
 
+from lib.util import write
 
-base_path = pathlib.Path(__file__).parent.absolute()
-
-dirpath = os.path.join(base_path, '../src_souffle/gen')
-
+dirpath = util.project_path('src_souffle/gen')
 
 def souffle_construct_map(s):
     if s == 'str':

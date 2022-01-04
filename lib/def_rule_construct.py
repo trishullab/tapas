@@ -1,12 +1,7 @@
 from __future__ import annotations
 
-from lib.file import write
-
 from lib.def_construct import Constructor, Field
 from lib import def_construct
-import pathlib
-import os
-
 
 def generate_content():
     return (

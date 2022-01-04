@@ -8,15 +8,9 @@ import pathlib
 import json
 
 
-from lib.file import write 
+from lib.util import write, project_path
 
 
-
-import re
-
-
-
-base_path = pathlib.Path(__file__).parent.absolute()
 
 
 def fetch_code(d : dict[str,str]) -> Union[str, None]:
@@ -44,7 +38,7 @@ def fetch_code(d : dict[str,str]) -> Union[str, None]:
 
 # split = 'train', 'test', or 'validation'
 def generate_code() -> Iterable[str]: 
-    read_dir = os.path.join(base_path, "../res/cubert/url_data/")
+    read_dir = project_path("res/cubert/url_data/")
 
     for fkey in os.listdir(read_dir):
         fpath = f"{read_dir}{fkey}"

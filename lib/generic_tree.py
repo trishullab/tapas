@@ -10,7 +10,7 @@ from tree_sitter import Language
 
 import tree_sitter
 
-from lib.utils import fail
+from lib.util import fail
 
 
 T = TypeVar('T')

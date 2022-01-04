@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from lib.generic_tree import GenericNode
 from gen.python_ast_construct import *
 
-from lib import utils
+from lib import util
 
 class Unsupported(Exception):
     pass
@@ -502,8 +502,8 @@ def from_generic_tree_to_ExceptHandler(node) -> ExceptHandler:
 
     assert block_node
 
-    expr = utils.map_option(from_generic_tree_to_expr, expr_node)
-    name = utils.map_option(from_generic_tree_to_identifier, name_node)
+    expr = util.map_option(from_generic_tree_to_expr, expr_node)
+    name = util.map_option(from_generic_tree_to_identifier, name_node)
     stmts = [
         stmt
         for stmt_node in block_node.children
@@ -535,7 +535,7 @@ def from_generic_tree_to_Withitem(node) -> Withitem:
     )
 
     context_expr = from_generic_tree_to_expr(context_node)
-    pattern_expr = utils.map_option(from_generic_tree_to_expr, pattern_node)
+    pattern_expr = util.map_option(from_generic_tree_to_expr, pattern_node)
 
     target = (
         SomeAliasExpr(pattern_expr)
@@ -1237,7 +1237,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
             for n in kw_nodes
         ]
 
-        dictionary_splat_param = utils.map_option(from_generic_tree_to_Param, dictionary_splat_node)
+        dictionary_splat_param = util.map_option(from_generic_tree_to_Param, dictionary_splat_node)
 
 
         return to_parameters(pos_params, params, list_splat_param, kw_params, dictionary_splat_param)
@@ -1396,7 +1396,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                     if typ:
                         left_expr = from_generic_tree_to_expr(left)
                         typ_expr = from_generic_tree_to_expr(typ)
-                        right_expr = utils.map_option(from_generic_tree_to_expr, right)
+                        right_expr = util.map_option(from_generic_tree_to_expr, right)
                         if right_expr:
                             return [
                                 TypedAssign(left_expr, typ_expr, right_expr)
@@ -1477,8 +1477,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
             else (None, None)
         )
 
-        exc_expr = utils.map_option(from_generic_tree_to_expr, exc)
-        cause_expr = utils.map_option(from_generic_tree_to_expr, cause)
+        exc_expr = util.map_option(from_generic_tree_to_expr, exc)
+        cause_expr = util.map_option(from_generic_tree_to_expr, cause)
         if (exc_expr and cause_expr):
             return [ RaiseFrom(exc_expr, cause_expr) ]
         elif (exc_expr):
