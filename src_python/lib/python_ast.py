@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from gen import python_serialize
-
-from gen import python_reconstitute 
-from gen.python_ast import Module
-from gen.instance import instance
+from gen import python_ast_serialize
+from gen import python_ast_reconstitute 
+from gen.python_ast_construct import Module
+from gen.instance_construct import instance
 from lib import generic_tree
 from lib.generic_tree import GenericNode
 from lib import python_ast_parse
@@ -12,6 +11,7 @@ from lib import python_generic_tree
 from lib import python_sequence
 
 from lib.python_ast_parse import Unsupported, ConcreteParsingError
+
 
 def parse_from_generic_tree(gnode : GenericNode) -> Module:
     return python_ast_parse.from_generic_tree(gnode)
@@ -21,10 +21,10 @@ def parse(concrete : str) -> Module:
     return python_ast_parse.from_generic_tree(gnode)
 
 def serialize(mod : Module) -> list[instance]:
-    return python_serialize.from_Module(mod)
+    return python_ast_serialize.from_Module(mod)
 
 def reconstitute(xs : list[instance]) -> Module:
-    return python_reconstitute.to_Module([x for x in reversed(xs)])[0] 
+    return python_ast_reconstitute.to_Module([x for x in reversed(xs)])[0] 
 
 def concretize(mod: Module) -> str:
     seq = serialize(mod)

@@ -6,7 +6,7 @@ import os
 import pathlib
 import tree_sitter
 import json
-from gen.instance import InstanceHandlers, match_instance
+from gen.instance_construct import InstanceHandlers, match_instance
 
 import lib.python_sequence
 from lib.file import write

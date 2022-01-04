@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 T = TypeVar('T')
 
 
-from gen.line_format import line_format
+from gen.line_format_construct import line_format
 
 
 # type item

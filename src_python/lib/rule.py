@@ -8,8 +8,8 @@ from abc import ABC, abstractmethod
 
 import inflection
 
-from gen.rule import *
-from lib import def_type
+from gen.rule_construct import *
+from lib import def_construct
 from lib import line_format as lf
 
 
@@ -39,23 +39,23 @@ def to_dictionary(node: Rule):
 
     }
 
-def to_constructor(n : Rule) -> def_type.Constructor:
+def to_constructor(n : Rule) -> def_construct.Constructor:
 
     def fail():
         assert False 
 
-    return def_type.Constructor(
+    return def_construct.Constructor(
         n.name,
         [
-            match_item(item, ItemHandlers[def_type.Field](
+            match_item(item, ItemHandlers[def_construct.Field](
                 case_Terminal = lambda o : (
                     fail()
                 ),
                 case_Nonterm = lambda o : (
-                    def_type.Field(attr = o.relation, typ = o.nonterminal)
+                    def_construct.Field(attr = o.relation, typ = o.nonterminal)
                 ),
                 case_Vocab = lambda o : (
-                    def_type.Field(attr = o.relation, typ = 'str')
+                    def_construct.Field(attr = o.relation, typ = 'str')
                 )
             )) 
             for item in n.content

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Iterator, Optional
 
-from gen.line_format import line_format, LineFormatHandlers, match_line_format
-from gen.rule import ItemHandlers
-from gen.instance import *
+from gen.line_format_construct import line_format, LineFormatHandlers, match_line_format
+from gen.rule_construct import ItemHandlers
+from gen.instance_construct import *
 
 from lib.rule import Rule
 import lib.rule

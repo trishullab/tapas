@@ -6,7 +6,7 @@ import os
 import pathlib
 import tree_sitter
 import json
-from gen.instance import InstanceHandlers, match_instance
+from gen.instance_construct import InstanceHandlers, match_instance
 
 from lib import generic_tree
 
@@ -14,7 +14,7 @@ from lib import python_ast
 from lib.file import write
 
 from lib.instance import instance
-from gen.instance import Vocab
+from gen.instance_construct import Vocab
 
 base_path = pathlib.Path(__file__).parent.absolute()
 

@@ -1,94 +1,47 @@
 from __future__ import annotations
 
-from lib import def_type
-from lib import line_format_def_type
-from lib import instance_def_type
+from lib import def_construct
+from lib import def_line_format_construct
+from lib import def_instance_construct
 
 import lib.rule
 from lib import python_schema
 
-from lib import def_serialize
-# from lib import def_rename
+from lib import def_ast_serialize
+from lib import def_ast_reconstitute
 
 from lib.file import write
 import pathlib
 import os
+
+from lib import def_ast_construct
+from src_python.lib import def_rule_construct
 
 
 base_path = pathlib.Path(__file__).parent.absolute()
 
 dirpath = os.path.join(base_path, 'gen')
 
-write(dirpath, "line_format.py", (
-    def_type.header +
-    "\n\n" +
-    "\n\n".join([
-        def_type.generate_choice(line_format_def_type.type_name, line_format_def_type.constructors)
-    ])
-))
+write(dirpath, "line_format_construct.py",
+    def_line_format_construct.generate_content()
+)
 
-write(dirpath, "instance.py", (
-    def_type.header +
-    "\n\n" +
-    "\n\n".join([
-        def_type.generate_choice(instance_def_type.type_name, instance_def_type.constructors)
-    ])
-))
+write(dirpath, "instance_construct.py", 
+    def_instance_construct.generate_content()
+)
 
-write(dirpath, "python_ast.py", (
-    def_type.header +
-    "\n\n" +
-    "\n\n".join([
-        def_type.generate_single(lib.rule.to_constructor(rule))
-        for rule in python_schema.singles
-    ]) +
-    "\n\n" +
-    "\n\n".join([
-        def_type.generate_choice(type_name, [
-            lib.rule.to_constructor(rule)
-            for rule in rules 
-        ])
-        for type_name, rules in python_schema.choices.items()
-    ])
-))
+write(dirpath, "rule_construct.py", 
+    def_rule_construct.generate_content()
+)
 
+write(dirpath, "python_ast_construct.py",
+    def_ast_construct.generate_content(python_schema.singles, python_schema.choices)
+)
 
-write(dirpath, "python_serialize.py", (
-    def_serialize.header +
-    "\n\n" +
-    "\n\n".join([
-        def_serialize.generate_single_def(con)
-        for con in python_schema.singles
-    ]) +
-    "\n\n" +
-    "\n\n".join([
-        def_serialize.generate_choice_def(type_name,con)
-        for type_name, con in python_schema.choices.items()
-    ])
-))
+write(dirpath, "python_ast_serialize.py",
+    def_ast_serialize.generate_content(python_schema.singles, python_schema.choices)
+)
 
-from lib import def_reconstitute
-
-
-write(dirpath, "python_reconstitute.py", (
-    def_reconstitute.generate_content(python_schema.singles, python_schema.choices)
-))
-
-# write(dirpath, "python_ast_rename.py", (
-#     def_rename.header +
-#     "\n\n" +
-#     "\n\n".join([
-#         def_rename.generate_single_def(con)
-#         for con in python_schema.singles
-#     ]) +
-#     "\n\n" +
-#     "\n\n".join([
-#         def_rename.generate_choice_def(type_name,con)
-#         for type_name, con in python_schema.choices.items()
-#     ])
-# ))
-
-
-
-
-
+write(dirpath, "python_ast_reconstitute.py",
+    def_ast_reconstitute.generate_content(python_schema.singles, python_schema.choices)
+)

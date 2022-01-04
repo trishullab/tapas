@@ -9,7 +9,7 @@ from lib import generic_tree
 from lib import python_ast
 from lib.instance import match_instance, InstanceHandlers 
 import lib.instance
-from gen.instance import instance
+from gen.instance_construct import instance
 
 import pathlib
 import os

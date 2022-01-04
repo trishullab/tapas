@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 
 
 from lib.generic_tree import GenericNode
-from gen.python_ast import *
+from gen.python_ast_construct import *
 
 from lib import utils
 
@@ -1550,8 +1550,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ])
 
-        import gen.python_ast
-        def to_elif_content(elif_node : GenericNode) -> tuple[gen.python_ast.expr, statements]:
+        from gen.python_ast_construct import expr
+        def to_elif_content(elif_node : GenericNode) -> tuple[expr, statements]:
             assert (elif_node.syntax_part == "elif_clause")
             else_children = elif_node.children
             assert else_children[0].syntax_part == "elif"

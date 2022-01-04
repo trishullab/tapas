@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from lib import def_type
-from lib import line_format_def_type
-from lib import instance_def_type
+from lib import def_construct
+from lib import def_line_format_construct
+from lib import def_instance_construct
 
 import lib.rule
 from lib import python_schema
 
-from lib import def_serialize
+from lib import def_ast_serialize
 # from lib import def_rename
 
 from lib.file import write
@@ -20,7 +20,7 @@ base_path = pathlib.Path(__file__).parent.absolute()
 dirpath = os.path.join(base_path, '../src_souffle/gen')
 
 
-def souffle_type_map(s):
+def souffle_construct_map(s):
     if s == 'str':
         return 'symbol'
     else:
@@ -29,18 +29,18 @@ def souffle_type_map(s):
 
 write(dirpath, "python_ast.dl", (
     "\n\n".join([
-        def_type.generate_souffle(type_name, [
+        def_construct.generate_souffle(type_name, [
             lib.rule.to_constructor(node)
             for node in nodes 
-        ], souffle_type_map)
+        ], souffle_construct_map)
         for type_name, nodes in python_schema.nonterminal_map.items()
     ])
 ))
 
-instance_list = f"{instance_def_type.type_name}_list"
+instance_list = f"{def_instance_construct.type_name}_list"
 write(dirpath, "instance.dl", (
     "\n\n".join([
-        def_type.generate_souffle(instance_def_type.type_name, instance_def_type.constructors, souffle_type_map)
+        def_construct.generate_souffle(def_instance_construct.type_name, def_instance_construct.constructors, souffle_construct_map)
     ])
 ))
 

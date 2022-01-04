@@ -105,6 +105,22 @@ def match_{type_name}(o : {type_name}, handlers : {handlers_name}[T]) -> T :
     """)
     return code 
 
+def generate_content(singles : list[Constructor], choices : dict[str, list[Constructor]]) -> str:
+    nl = "\n"
+
+    return (f"""
+{header}
+
+{nl.join([
+    generate_choice(type_name, cons)
+    for type_name, cons in choices.items()
+])} 
+
+{nl.join([
+    generate_single(con)
+    for con in singles
+])} 
+    """)
 
 
 
