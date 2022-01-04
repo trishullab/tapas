@@ -136,9 +136,9 @@ def generate_content(singles : list[Rule], choices : dict[str, list[Rule]]) -> s
     header = """
 from __future__ import annotations
 import lib.instance
-from gen.instance import instance, Vocab, Grammar
-from gen.python_ast import *
-from gen.line_format import InLine, NewLine, IndentLine
+from gen.instance_construct import instance, Vocab, Grammar
+from gen.python_ast_construct import *
+from gen.line_format_construct import InLine, NewLine, IndentLine
     """
 
     return (f"""

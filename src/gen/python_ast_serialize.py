@@ -1,199 +1,10 @@
 
+
 from __future__ import annotations
 import lib.instance
-from gen.instance import instance
-from gen.python_ast import *
-from gen.line_format import InLine, NewLine, IndentLine
-
-
-
-
-
-def from_Module(
-    o : Module
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'Module',
-            selection = 'Module'
-        )] +
-
-        from_statements(o.body)
-
-    )
-    
-
-
-
-
-def from_CompareRight(
-    o : CompareRight
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'CompareRight',
-            selection = 'CompareRight'
-        )] +
-
-        from_cmpop(o.op) +
-        from_expr(o.rand)
-
-    )
-    
-
-
-
-
-def from_ExceptHandler(
-    o : ExceptHandler
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'ExceptHandler',
-            selection = 'ExceptHandler'
-        )] +
-
-        from_except_arg(o.arg) +
-        from_statements(o.body)
-
-    )
-    
-
-
-
-
-def from_Param(
-    o : Param
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'Param',
-            selection = 'Param'
-        )] +
-
-        [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
-        from_param_type(o.type) +
-        from_param_default(o.default)
-
-    )
-    
-
-
-
-
-def from_ImportName(
-    o : ImportName
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'ImportName',
-            selection = 'ImportName'
-        )] +
-
-        [lib.instance.make_Vocab(options = 'module_identifier', selection = o.name)] +
-        from_alias(o.as_name)
-
-    )
-    
-
-
-
-
-def from_Withitem(
-    o : Withitem
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'Withitem',
-            selection = 'Withitem'
-        )] +
-
-        from_expr(o.contet) +
-        from_alias_expr(o.target)
-
-    )
-    
-
-
-
-
-def from_ClassDef(
-    o : ClassDef
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'ClassDef',
-            selection = 'ClassDef'
-        )] +
-
-        [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
-        from_bases(o.bs) +
-        from_statements(o.body)
-
-    )
-    
-
-
-
-
-def from_ElifBlock(
-    o : ElifBlock
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'ElifBlock',
-            selection = 'ElifBlock'
-        )] +
-
-        from_expr(o.test) +
-        from_statements(o.body)
-
-    )
-    
-
-
-
-
-def from_ElseBlock(
-    o : ElseBlock
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'ElseBlock',
-            selection = 'ElseBlock'
-        )] +
-
-        from_statements(o.body)
-
-    )
-    
-
-
-
-
-def from_FinallyBlock(
-    o : FinallyBlock
-) -> list[instance]:
-
-    return (
-        [lib.instance.make_Grammar(
-            options = 'FinallyBlock',
-            selection = 'FinallyBlock'
-        )] +
-
-        from_statements(o.body)
-
-    )
-    
+from gen.instance_construct import instance
+from gen.python_ast_construct import *
+from gen.line_format_construct import InLine, NewLine, IndentLine
 
 
 
@@ -210,7 +21,6 @@ def from_return_type(
         if isinstance(stack_item, return_type):
 
             
-
             def handle_SomeReturnType(o : SomeReturnType): 
                 nonlocal stack
                 assert isinstance(o, return_type)
@@ -219,7 +29,7 @@ def from_return_type(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -227,8 +37,7 @@ def from_return_type(
                         selection = 'SomeReturnType'
                     )]
                 )
-        
-
+    
 
             def handle_NoReturnType(o : NoReturnType): 
                 nonlocal stack
@@ -241,7 +50,7 @@ def from_return_type(
                         selection = 'NoReturnType'
                     )]
                 )
-        
+    
 
 
             match_return_type(stack_item, ReturnTypeHandlers(
@@ -256,8 +65,6 @@ def from_return_type(
     
 
 
-
-
 def from_module_id(
     o : module_id
 ) -> list[instance]:
@@ -270,7 +77,6 @@ def from_module_id(
         if isinstance(stack_item, module_id):
 
             
-
             def handle_SomeModuleId(o : SomeModuleId): 
                 nonlocal stack
                 assert isinstance(o, module_id)
@@ -282,14 +88,14 @@ def from_module_id(
                         selection = o.content
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'module_id',
                         selection = 'SomeModuleId'
                     )]
                 )
-        
+    
 
 
             match_module_id(stack_item, ModuleIdHandlers(
@@ -301,8 +107,6 @@ def from_module_id(
 
     return result
     
-
-
 
 
 def from_except_arg(
@@ -317,7 +121,6 @@ def from_except_arg(
         if isinstance(stack_item, except_arg):
 
             
-
             def handle_SomeExceptArg(o : SomeExceptArg): 
                 nonlocal stack
                 assert isinstance(o, except_arg)
@@ -326,7 +129,7 @@ def from_except_arg(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -334,8 +137,7 @@ def from_except_arg(
                         selection = 'SomeExceptArg'
                     )]
                 )
-        
-
+    
 
             def handle_SomeExceptArgName(o : SomeExceptArgName): 
                 nonlocal stack
@@ -348,13 +150,13 @@ def from_except_arg(
                         selection = o.name
                     )]
                 )
-            
+        
 
 
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -362,8 +164,7 @@ def from_except_arg(
                         selection = 'SomeExceptArgName'
                     )]
                 )
-        
-
+    
 
             def handle_NoExceptArg(o : NoExceptArg): 
                 nonlocal stack
@@ -376,7 +177,7 @@ def from_except_arg(
                         selection = 'NoExceptArg'
                     )]
                 )
-        
+    
 
 
             match_except_arg(stack_item, ExceptArgHandlers(
@@ -392,8 +193,6 @@ def from_except_arg(
     
 
 
-
-
 def from_param_type(
     o : param_type
 ) -> list[instance]:
@@ -406,7 +205,6 @@ def from_param_type(
         if isinstance(stack_item, param_type):
 
             
-
             def handle_SomeParamType(o : SomeParamType): 
                 nonlocal stack
                 assert isinstance(o, param_type)
@@ -415,7 +213,7 @@ def from_param_type(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -423,8 +221,7 @@ def from_param_type(
                         selection = 'SomeParamType'
                     )]
                 )
-        
-
+    
 
             def handle_NoParamType(o : NoParamType): 
                 nonlocal stack
@@ -437,7 +234,7 @@ def from_param_type(
                         selection = 'NoParamType'
                     )]
                 )
-        
+    
 
 
             match_param_type(stack_item, ParamTypeHandlers(
@@ -452,8 +249,6 @@ def from_param_type(
     
 
 
-
-
 def from_param_default(
     o : param_default
 ) -> list[instance]:
@@ -466,7 +261,6 @@ def from_param_default(
         if isinstance(stack_item, param_default):
 
             
-
             def handle_SomeParamDefault(o : SomeParamDefault): 
                 nonlocal stack
                 assert isinstance(o, param_default)
@@ -475,7 +269,7 @@ def from_param_default(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -483,8 +277,7 @@ def from_param_default(
                         selection = 'SomeParamDefault'
                     )]
                 )
-        
-
+    
 
             def handle_NoParamDefault(o : NoParamDefault): 
                 nonlocal stack
@@ -497,7 +290,7 @@ def from_param_default(
                         selection = 'NoParamDefault'
                     )]
                 )
-        
+    
 
 
             match_param_default(stack_item, ParamDefaultHandlers(
@@ -512,8 +305,6 @@ def from_param_default(
     
 
 
-
-
 def from_parameters_d(
     o : parameters_d
 ) -> list[instance]:
@@ -526,7 +317,6 @@ def from_parameters_d(
         if isinstance(stack_item, parameters_d):
 
             
-
             def handle_ConsKwParam(o : ConsKwParam): 
                 nonlocal stack
                 assert isinstance(o, parameters_d)
@@ -535,21 +325,20 @@ def from_parameters_d(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_Param(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_d',
                         selection = 'ConsKwParam'
                     )]
                 )
-        
-
+    
 
             def handle_SingleKwParam(o : SingleKwParam): 
                 nonlocal stack
@@ -559,15 +348,14 @@ def from_parameters_d(
                 stack.append(
                     from_Param(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_d',
                         selection = 'SingleKwParam'
                     )]
                 )
-        
-
+    
 
             def handle_DictionarySplatParam(o : DictionarySplatParam): 
                 nonlocal stack
@@ -577,7 +365,7 @@ def from_parameters_d(
                 stack.append(
                     from_Param(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -585,7 +373,7 @@ def from_parameters_d(
                         selection = 'DictionarySplatParam'
                     )]
                 )
-        
+    
 
 
             match_parameters_d(stack_item, ParametersDHandlers(
@@ -601,8 +389,6 @@ def from_parameters_d(
     
 
 
-
-
 def from_parameters_c(
     o : parameters_c
 ) -> list[instance]:
@@ -615,7 +401,6 @@ def from_parameters_c(
         if isinstance(stack_item, parameters_c):
 
             
-
             def handle_SingleListSplatParam(o : SingleListSplatParam): 
                 nonlocal stack
                 assert isinstance(o, parameters_c)
@@ -624,7 +409,7 @@ def from_parameters_c(
                 stack.append(
                     from_Param(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -632,8 +417,7 @@ def from_parameters_c(
                         selection = 'SingleListSplatParam'
                     )]
                 )
-        
-
+    
 
             def handle_TransListSplatParam(o : TransListSplatParam): 
                 nonlocal stack
@@ -643,13 +427,13 @@ def from_parameters_c(
                 stack.append(
                     from_parameters_d(o.tail)
                 )
-                
+            
 
 
                 stack.append(
                     from_Param(o.head)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -657,8 +441,7 @@ def from_parameters_c(
                         selection = 'TransListSplatParam'
                     )]
                 )
-        
-
+    
 
             def handle_ParamsD(o : ParamsD): 
                 nonlocal stack
@@ -668,7 +451,7 @@ def from_parameters_c(
                 stack.append(
                     from_parameters_d(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -676,7 +459,7 @@ def from_parameters_c(
                         selection = 'ParamsD'
                     )]
                 )
-        
+    
 
 
             match_parameters_c(stack_item, ParametersCHandlers(
@@ -692,8 +475,6 @@ def from_parameters_c(
     
 
 
-
-
 def from_parameters_b(
     o : parameters_b
 ) -> list[instance]:
@@ -706,7 +487,6 @@ def from_parameters_b(
         if isinstance(stack_item, parameters_b):
 
             
-
             def handle_ConsParam(o : ConsParam): 
                 nonlocal stack
                 assert isinstance(o, parameters_b)
@@ -715,21 +495,20 @@ def from_parameters_b(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_Param(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_b',
                         selection = 'ConsParam'
                     )]
                 )
-        
-
+    
 
             def handle_SingleParam(o : SingleParam): 
                 nonlocal stack
@@ -739,15 +518,14 @@ def from_parameters_b(
                 stack.append(
                     from_Param(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_b',
                         selection = 'SingleParam'
                     )]
                 )
-        
-
+    
 
             def handle_ParamsC(o : ParamsC): 
                 nonlocal stack
@@ -757,14 +535,14 @@ def from_parameters_b(
                 stack.append(
                     from_parameters_c(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_b',
                         selection = 'ParamsC'
                     )]
                 )
-        
+    
 
 
             match_parameters_b(stack_item, ParametersBHandlers(
@@ -780,8 +558,6 @@ def from_parameters_b(
     
 
 
-
-
 def from_parameters(
     o : parameters
 ) -> list[instance]:
@@ -794,7 +570,6 @@ def from_parameters(
         if isinstance(stack_item, parameters):
 
             
-
             def handle_ParamsA(o : ParamsA): 
                 nonlocal stack
                 assert isinstance(o, parameters)
@@ -803,15 +578,14 @@ def from_parameters(
                 stack.append(
                     from_parameters_a(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters',
                         selection = 'ParamsA'
                     )]
                 )
-        
-
+    
 
             def handle_ParamsB(o : ParamsB): 
                 nonlocal stack
@@ -821,15 +595,14 @@ def from_parameters(
                 stack.append(
                     from_parameters_b(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters',
                         selection = 'ParamsB'
                     )]
                 )
-        
-
+    
 
             def handle_NoParam(o : NoParam): 
                 nonlocal stack
@@ -842,7 +615,7 @@ def from_parameters(
                         selection = 'NoParam'
                     )]
                 )
-        
+    
 
 
             match_parameters(stack_item, ParametersHandlers(
@@ -858,8 +631,6 @@ def from_parameters(
     
 
 
-
-
 def from_parameters_a(
     o : parameters_a
 ) -> list[instance]:
@@ -872,7 +643,6 @@ def from_parameters_a(
         if isinstance(stack_item, parameters_a):
 
             
-
             def handle_ConsPosParam(o : ConsPosParam): 
                 nonlocal stack
                 assert isinstance(o, parameters_a)
@@ -881,21 +651,20 @@ def from_parameters_a(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_Param(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_a',
                         selection = 'ConsPosParam'
                     )]
                 )
-        
-
+    
 
             def handle_SinglePosParam(o : SinglePosParam): 
                 nonlocal stack
@@ -906,15 +675,14 @@ def from_parameters_a(
                 stack.append(
                     from_Param(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_a',
                         selection = 'SinglePosParam'
                     )]
                 )
-        
-
+    
 
             def handle_TransPosParam(o : TransPosParam): 
                 nonlocal stack
@@ -924,20 +692,20 @@ def from_parameters_a(
                 stack.append(
                     from_parameters_b(o.tail)
                 )
-                
+            
 
 
                 stack.append(
                     from_Param(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'parameters_a',
                         selection = 'TransPosParam'
                     )]
                 )
-        
+    
 
 
             match_parameters_a(stack_item, ParametersAHandlers(
@@ -953,8 +721,6 @@ def from_parameters_a(
     
 
 
-
-
 def from_keyword(
     o : keyword
 ) -> list[instance]:
@@ -967,7 +733,6 @@ def from_keyword(
         if isinstance(stack_item, keyword):
 
             
-
             def handle_NamedKeyword(o : NamedKeyword): 
                 nonlocal stack
                 assert isinstance(o, keyword)
@@ -976,7 +741,7 @@ def from_keyword(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
 
                 stack.append(
@@ -985,15 +750,14 @@ def from_keyword(
                         selection = o.name
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'keyword',
                         selection = 'NamedKeyword'
                     )]
                 )
-        
-
+    
 
             def handle_SplatKeyword(o : SplatKeyword): 
                 nonlocal stack
@@ -1003,7 +767,7 @@ def from_keyword(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1011,7 +775,7 @@ def from_keyword(
                         selection = 'SplatKeyword'
                     )]
                 )
-        
+    
 
 
             match_keyword(stack_item, KeywordHandlers(
@@ -1026,8 +790,6 @@ def from_keyword(
     
 
 
-
-
 def from_alias(
     o : alias
 ) -> list[instance]:
@@ -1040,7 +802,6 @@ def from_alias(
         if isinstance(stack_item, alias):
 
             
-
             def handle_SomeAlias(o : SomeAlias): 
                 nonlocal stack
                 assert isinstance(o, alias)
@@ -1052,7 +813,7 @@ def from_alias(
                         selection = o.content
                     )]
                 )
-            
+        
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1060,8 +821,7 @@ def from_alias(
                         selection = 'SomeAlias'
                     )]
                 )
-        
-
+    
 
             def handle_NoAlias(o : NoAlias): 
                 nonlocal stack
@@ -1074,7 +834,7 @@ def from_alias(
                         selection = 'NoAlias'
                     )]
                 )
-        
+    
 
 
             match_alias(stack_item, AliasHandlers(
@@ -1089,8 +849,6 @@ def from_alias(
     
 
 
-
-
 def from_alias_expr(
     o : alias_expr
 ) -> list[instance]:
@@ -1103,7 +861,6 @@ def from_alias_expr(
         if isinstance(stack_item, alias_expr):
 
             
-
             def handle_SomeAliasExpr(o : SomeAliasExpr): 
                 nonlocal stack
                 assert isinstance(o, alias_expr)
@@ -1112,7 +869,7 @@ def from_alias_expr(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1120,8 +877,7 @@ def from_alias_expr(
                         selection = 'SomeAliasExpr'
                     )]
                 )
-        
-
+    
 
             def handle_NoAliasExpr(o : NoAliasExpr): 
                 nonlocal stack
@@ -1134,7 +890,7 @@ def from_alias_expr(
                         selection = 'NoAliasExpr'
                     )]
                 )
-        
+    
 
 
             match_alias_expr(stack_item, AliasExprHandlers(
@@ -1149,8 +905,6 @@ def from_alias_expr(
     
 
 
-
-
 def from_bases(
     o : bases
 ) -> list[instance]:
@@ -1163,7 +917,6 @@ def from_bases(
         if isinstance(stack_item, bases):
 
             
-
             def handle_SomeBases(o : SomeBases): 
                 nonlocal stack
                 assert isinstance(o, bases)
@@ -1173,7 +926,7 @@ def from_bases(
                 stack.append(
                     from_bases_a(o.bases)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1181,8 +934,7 @@ def from_bases(
                         selection = 'SomeBases'
                     )]
                 )
-        
-
+    
 
             def handle_NoBases(o : NoBases): 
                 nonlocal stack
@@ -1195,7 +947,7 @@ def from_bases(
                         selection = 'NoBases'
                     )]
                 )
-        
+    
 
 
             match_bases(stack_item, BasesHandlers(
@@ -1210,8 +962,6 @@ def from_bases(
     
 
 
-
-
 def from_bases_a(
     o : bases_a
 ) -> list[instance]:
@@ -1224,7 +974,6 @@ def from_bases_a(
         if isinstance(stack_item, bases_a):
 
             
-
             def handle_ConsBase(o : ConsBase): 
                 nonlocal stack
                 assert isinstance(o, bases_a)
@@ -1233,21 +982,20 @@ def from_bases_a(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'bases_a',
                         selection = 'ConsBase'
                     )]
                 )
-        
-
+    
 
             def handle_SingleBase(o : SingleBase): 
                 nonlocal stack
@@ -1257,15 +1005,14 @@ def from_bases_a(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'bases_a',
                         selection = 'SingleBase'
                     )]
                 )
-        
-
+    
 
             def handle_KeywordsBase(o : KeywordsBase): 
                 nonlocal stack
@@ -1275,14 +1022,14 @@ def from_bases_a(
                 stack.append(
                     from_keywords(o.kws)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'bases_a',
                         selection = 'KeywordsBase'
                     )]
                 )
-        
+    
 
 
             match_bases_a(stack_item, BasesAHandlers(
@@ -1298,8 +1045,6 @@ def from_bases_a(
     
 
 
-
-
 def from_keywords(
     o : keywords
 ) -> list[instance]:
@@ -1312,7 +1057,6 @@ def from_keywords(
         if isinstance(stack_item, keywords):
 
             
-
             def handle_ConsKeyword(o : ConsKeyword): 
                 nonlocal stack
                 assert isinstance(o, keywords)
@@ -1321,21 +1065,20 @@ def from_keywords(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_keyword(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'keywords',
                         selection = 'ConsKeyword'
                     )]
                 )
-        
-
+    
 
             def handle_SingleKeyword(o : SingleKeyword): 
                 nonlocal stack
@@ -1345,14 +1088,14 @@ def from_keywords(
                 stack.append(
                     from_keyword(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'keywords',
                         selection = 'SingleKeyword'
                     )]
                 )
-        
+    
 
 
             match_keywords(stack_item, KeywordsHandlers(
@@ -1367,8 +1110,6 @@ def from_keywords(
     
 
 
-
-
 def from_comparisons(
     o : comparisons
 ) -> list[instance]:
@@ -1381,7 +1122,6 @@ def from_comparisons(
         if isinstance(stack_item, comparisons):
 
             
-
             def handle_ConsCompareRight(o : ConsCompareRight): 
                 nonlocal stack
                 assert isinstance(o, comparisons)
@@ -1390,21 +1130,20 @@ def from_comparisons(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_CompareRight(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'comparisons',
                         selection = 'ConsCompareRight'
                     )]
                 )
-        
-
+    
 
             def handle_SingleCompareRight(o : SingleCompareRight): 
                 nonlocal stack
@@ -1414,14 +1153,14 @@ def from_comparisons(
                 stack.append(
                     from_CompareRight(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'comparisons',
                         selection = 'SingleCompareRight'
                     )]
                 )
-        
+    
 
 
             match_comparisons(stack_item, ComparisonsHandlers(
@@ -1436,8 +1175,6 @@ def from_comparisons(
     
 
 
-
-
 def from_option_expr(
     o : option_expr
 ) -> list[instance]:
@@ -1450,7 +1187,6 @@ def from_option_expr(
         if isinstance(stack_item, option_expr):
 
             
-
             def handle_SomeExpr(o : SomeExpr): 
                 nonlocal stack
                 assert isinstance(o, option_expr)
@@ -1459,15 +1195,14 @@ def from_option_expr(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'option_expr',
                         selection = 'SomeExpr'
                     )]
                 )
-        
-
+    
 
             def handle_NoExpr(o : NoExpr): 
                 nonlocal stack
@@ -1480,7 +1215,7 @@ def from_option_expr(
                         selection = 'NoExpr'
                     )]
                 )
-        
+    
 
 
             match_option_expr(stack_item, OptionExprHandlers(
@@ -1495,8 +1230,6 @@ def from_option_expr(
     
 
 
-
-
 def from_comma_exprs(
     o : comma_exprs
 ) -> list[instance]:
@@ -1509,7 +1242,6 @@ def from_comma_exprs(
         if isinstance(stack_item, comma_exprs):
 
             
-
             def handle_ConsExpr(o : ConsExpr): 
                 nonlocal stack
                 assert isinstance(o, comma_exprs)
@@ -1518,21 +1250,20 @@ def from_comma_exprs(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'comma_exprs',
                         selection = 'ConsExpr'
                     )]
                 )
-        
-
+    
 
             def handle_SingleExpr(o : SingleExpr): 
                 nonlocal stack
@@ -1542,14 +1273,14 @@ def from_comma_exprs(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'comma_exprs',
                         selection = 'SingleExpr'
                     )]
                 )
-        
+    
 
 
             match_comma_exprs(stack_item, CommaExprsHandlers(
@@ -1564,8 +1295,6 @@ def from_comma_exprs(
     
 
 
-
-
 def from_target_exprs(
     o : target_exprs
 ) -> list[instance]:
@@ -1578,7 +1307,6 @@ def from_target_exprs(
         if isinstance(stack_item, target_exprs):
 
             
-
             def handle_ConsTargetExpr(o : ConsTargetExpr): 
                 nonlocal stack
                 assert isinstance(o, target_exprs)
@@ -1587,21 +1315,20 @@ def from_target_exprs(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'target_exprs',
                         selection = 'ConsTargetExpr'
                     )]
                 )
-        
-
+    
 
             def handle_SingleTargetExpr(o : SingleTargetExpr): 
                 nonlocal stack
@@ -1611,14 +1338,14 @@ def from_target_exprs(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'target_exprs',
                         selection = 'SingleTargetExpr'
                     )]
                 )
-        
+    
 
 
             match_target_exprs(stack_item, TargetExprsHandlers(
@@ -1633,8 +1360,6 @@ def from_target_exprs(
     
 
 
-
-
 def from_decorators(
     o : decorators
 ) -> list[instance]:
@@ -1647,7 +1372,6 @@ def from_decorators(
         if isinstance(stack_item, decorators):
 
             
-
             def handle_ConsDec(o : ConsDec): 
                 nonlocal stack
                 assert isinstance(o, decorators)
@@ -1656,12 +1380,12 @@ def from_decorators(
                 stack.append(
                     o.tail
                 )
-                
+            
 
                 stack.append(
                     from_expr(o.head)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1669,8 +1393,7 @@ def from_decorators(
                         selection = 'ConsDec'
                     )]
                 )
-        
-
+    
 
             def handle_NoDec(o : NoDec): 
                 nonlocal stack
@@ -1683,7 +1406,7 @@ def from_decorators(
                         selection = 'NoDec'
                     )]
                 )
-        
+    
 
 
             match_decorators(stack_item, DecoratorsHandlers(
@@ -1698,8 +1421,6 @@ def from_decorators(
     
 
 
-
-
 def from_constraint_filters(
     o : constraint_filters
 ) -> list[instance]:
@@ -1712,7 +1433,6 @@ def from_constraint_filters(
         if isinstance(stack_item, constraint_filters):
 
             
-
             def handle_ConsFilter(o : ConsFilter): 
                 nonlocal stack
                 assert isinstance(o, constraint_filters)
@@ -1721,12 +1441,12 @@ def from_constraint_filters(
                 stack.append(
                     o.tail
                 )
-                
+            
 
                 stack.append(
                     from_expr(o.head)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1734,8 +1454,7 @@ def from_constraint_filters(
                         selection = 'ConsFilter'
                     )]
                 )
-        
-
+    
 
             def handle_SingleFilter(o : SingleFilter): 
                 nonlocal stack
@@ -1745,7 +1464,7 @@ def from_constraint_filters(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -1753,8 +1472,7 @@ def from_constraint_filters(
                         selection = 'SingleFilter'
                     )]
                 )
-        
-
+    
 
             def handle_NoFilter(o : NoFilter): 
                 nonlocal stack
@@ -1767,7 +1485,7 @@ def from_constraint_filters(
                         selection = 'NoFilter'
                     )]
                 )
-        
+    
 
 
             match_constraint_filters(stack_item, ConstraintFiltersHandlers(
@@ -1783,8 +1501,6 @@ def from_constraint_filters(
     
 
 
-
-
 def from_sequence_string(
     o : sequence_string
 ) -> list[instance]:
@@ -1797,7 +1513,6 @@ def from_sequence_string(
         if isinstance(stack_item, sequence_string):
 
             
-
             def handle_ConsStr(o : ConsStr): 
                 nonlocal stack
                 assert isinstance(o, sequence_string)
@@ -1806,7 +1521,7 @@ def from_sequence_string(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
@@ -1815,15 +1530,14 @@ def from_sequence_string(
                         selection = o.head
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_string',
                         selection = 'ConsStr'
                     )]
                 )
-        
-
+    
 
             def handle_SingleStr(o : SingleStr): 
                 nonlocal stack
@@ -1836,14 +1550,14 @@ def from_sequence_string(
                         selection = o.content
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_string',
                         selection = 'SingleStr'
                     )]
                 )
-        
+    
 
 
             match_sequence_string(stack_item, SequenceStringHandlers(
@@ -1858,8 +1572,6 @@ def from_sequence_string(
     
 
 
-
-
 def from_arguments(
     o : arguments
 ) -> list[instance]:
@@ -1872,7 +1584,6 @@ def from_arguments(
         if isinstance(stack_item, arguments):
 
             
-
             def handle_ConsArg(o : ConsArg): 
                 nonlocal stack
                 assert isinstance(o, arguments)
@@ -1881,21 +1592,20 @@ def from_arguments(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'arguments',
                         selection = 'ConsArg'
                     )]
                 )
-        
-
+    
 
             def handle_SingleArg(o : SingleArg): 
                 nonlocal stack
@@ -1905,15 +1615,14 @@ def from_arguments(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'arguments',
                         selection = 'SingleArg'
                     )]
                 )
-        
-
+    
 
             def handle_KeywordsArg(o : KeywordsArg): 
                 nonlocal stack
@@ -1923,14 +1632,14 @@ def from_arguments(
                 stack.append(
                     from_keywords(o.kws)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'arguments',
                         selection = 'KeywordsArg'
                     )]
                 )
-        
+    
 
 
             match_arguments(stack_item, ArgumentsHandlers(
@@ -1946,8 +1655,6 @@ def from_arguments(
     
 
 
-
-
 def from_dictionary_item(
     o : dictionary_item
 ) -> list[instance]:
@@ -1960,7 +1667,6 @@ def from_dictionary_item(
         if isinstance(stack_item, dictionary_item):
 
             
-
             def handle_Field(o : Field): 
                 nonlocal stack
                 assert isinstance(o, dictionary_item)
@@ -1969,21 +1675,20 @@ def from_dictionary_item(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.key)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'dictionary_item',
                         selection = 'Field'
                     )]
                 )
-        
-
+    
 
             def handle_DictionarySplatFields(o : DictionarySplatFields): 
                 nonlocal stack
@@ -1993,7 +1698,7 @@ def from_dictionary_item(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -2001,7 +1706,7 @@ def from_dictionary_item(
                         selection = 'DictionarySplatFields'
                     )]
                 )
-        
+    
 
 
             match_dictionary_item(stack_item, DictionaryItemHandlers(
@@ -2016,8 +1721,6 @@ def from_dictionary_item(
     
 
 
-
-
 def from_dictionary_content(
     o : dictionary_content
 ) -> list[instance]:
@@ -2030,7 +1733,6 @@ def from_dictionary_content(
         if isinstance(stack_item, dictionary_content):
 
             
-
             def handle_ConsDictionaryItem(o : ConsDictionaryItem): 
                 nonlocal stack
                 assert isinstance(o, dictionary_content)
@@ -2039,21 +1741,20 @@ def from_dictionary_content(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_dictionary_item(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'dictionary_content',
                         selection = 'ConsDictionaryItem'
                     )]
                 )
-        
-
+    
 
             def handle_SingleDictionaryItem(o : SingleDictionaryItem): 
                 nonlocal stack
@@ -2063,14 +1764,14 @@ def from_dictionary_content(
                 stack.append(
                     from_dictionary_item(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'dictionary_content',
                         selection = 'SingleDictionaryItem'
                     )]
                 )
-        
+    
 
 
             match_dictionary_content(stack_item, DictionaryContentHandlers(
@@ -2085,8 +1786,6 @@ def from_dictionary_content(
     
 
 
-
-
 def from_sequence_var(
     o : sequence_var
 ) -> list[instance]:
@@ -2099,7 +1798,6 @@ def from_sequence_var(
         if isinstance(stack_item, sequence_var):
 
             
-
             def handle_ConsId(o : ConsId): 
                 nonlocal stack
                 assert isinstance(o, sequence_var)
@@ -2108,7 +1806,7 @@ def from_sequence_var(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
@@ -2117,15 +1815,14 @@ def from_sequence_var(
                         selection = o.head
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_var',
                         selection = 'ConsId'
                     )]
                 )
-        
-
+    
 
             def handle_SingleId(o : SingleId): 
                 nonlocal stack
@@ -2138,14 +1835,14 @@ def from_sequence_var(
                         selection = o.content
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_var',
                         selection = 'SingleId'
                     )]
                 )
-        
+    
 
 
             match_sequence_var(stack_item, SequenceVarHandlers(
@@ -2160,8 +1857,6 @@ def from_sequence_var(
     
 
 
-
-
 def from_sequence_ImportName(
     o : sequence_ImportName
 ) -> list[instance]:
@@ -2174,7 +1869,6 @@ def from_sequence_ImportName(
         if isinstance(stack_item, sequence_ImportName):
 
             
-
             def handle_ConsImportName(o : ConsImportName): 
                 nonlocal stack
                 assert isinstance(o, sequence_ImportName)
@@ -2183,21 +1877,20 @@ def from_sequence_ImportName(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_ImportName(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_ImportName',
                         selection = 'ConsImportName'
                     )]
                 )
-        
-
+    
 
             def handle_SingleImportName(o : SingleImportName): 
                 nonlocal stack
@@ -2207,14 +1900,14 @@ def from_sequence_ImportName(
                 stack.append(
                     from_ImportName(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_ImportName',
                         selection = 'SingleImportName'
                     )]
                 )
-        
+    
 
 
             match_sequence_ImportName(stack_item, SequenceImportNameHandlers(
@@ -2229,8 +1922,6 @@ def from_sequence_ImportName(
     
 
 
-
-
 def from_sequence_Withitem(
     o : sequence_Withitem
 ) -> list[instance]:
@@ -2243,7 +1934,6 @@ def from_sequence_Withitem(
         if isinstance(stack_item, sequence_Withitem):
 
             
-
             def handle_ConsWithitem(o : ConsWithitem): 
                 nonlocal stack
                 assert isinstance(o, sequence_Withitem)
@@ -2252,21 +1942,20 @@ def from_sequence_Withitem(
                 stack.append(
                     o.tail
                 )
-                
+            
 
 
                 stack.append(
                     from_Withitem(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_Withitem',
                         selection = 'ConsWithitem'
                     )]
                 )
-        
-
+    
 
             def handle_SingleWithitem(o : SingleWithitem): 
                 nonlocal stack
@@ -2276,14 +1965,14 @@ def from_sequence_Withitem(
                 stack.append(
                     from_Withitem(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_Withitem',
                         selection = 'SingleWithitem'
                     )]
                 )
-        
+    
 
 
             match_sequence_Withitem(stack_item, SequenceWithitemHandlers(
@@ -2298,8 +1987,6 @@ def from_sequence_Withitem(
     
 
 
-
-
 def from_statements(
     o : statements
 ) -> list[instance]:
@@ -2312,7 +1999,6 @@ def from_statements(
         if isinstance(stack_item, statements):
 
             
-
             def handle_ConsStmt(o : ConsStmt): 
                 nonlocal stack
                 assert isinstance(o, statements)
@@ -2321,20 +2007,19 @@ def from_statements(
                 stack.append(
                     o.tail
                 )
-                
+            
 
                 stack.append(
                     from_stmt(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'statements',
                         selection = 'ConsStmt'
                     )]
                 )
-        
-
+    
 
             def handle_SingleStmt(o : SingleStmt): 
                 nonlocal stack
@@ -2344,14 +2029,14 @@ def from_statements(
                 stack.append(
                     from_stmt(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'statements',
                         selection = 'SingleStmt'
                     )]
                 )
-        
+    
 
 
             match_statements(stack_item, StatementsHandlers(
@@ -2366,8 +2051,6 @@ def from_statements(
     
 
 
-
-
 def from_comprehension_constraints(
     o : comprehension_constraints
 ) -> list[instance]:
@@ -2380,7 +2063,6 @@ def from_comprehension_constraints(
         if isinstance(stack_item, comprehension_constraints):
 
             
-
             def handle_ConsConstraint(o : ConsConstraint): 
                 nonlocal stack
                 assert isinstance(o, comprehension_constraints)
@@ -2389,20 +2071,19 @@ def from_comprehension_constraints(
                 stack.append(
                     o.tail
                 )
-                
+            
 
                 stack.append(
                     from_constraint(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'comprehension_constraints',
                         selection = 'ConsConstraint'
                     )]
                 )
-        
-
+    
 
             def handle_SingleConstraint(o : SingleConstraint): 
                 nonlocal stack
@@ -2412,14 +2093,14 @@ def from_comprehension_constraints(
                 stack.append(
                     from_constraint(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'comprehension_constraints',
                         selection = 'SingleConstraint'
                     )]
                 )
-        
+    
 
 
             match_comprehension_constraints(stack_item, ComprehensionConstraintsHandlers(
@@ -2434,8 +2115,6 @@ def from_comprehension_constraints(
     
 
 
-
-
 def from_sequence_ExceptHandler(
     o : sequence_ExceptHandler
 ) -> list[instance]:
@@ -2448,7 +2127,6 @@ def from_sequence_ExceptHandler(
         if isinstance(stack_item, sequence_ExceptHandler):
 
             
-
             def handle_ConsExceptHandler(o : ConsExceptHandler): 
                 nonlocal stack
                 assert isinstance(o, sequence_ExceptHandler)
@@ -2457,20 +2135,19 @@ def from_sequence_ExceptHandler(
                 stack.append(
                     o.tail
                 )
-                
+            
 
                 stack.append(
                     from_ExceptHandler(o.head)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_ExceptHandler',
                         selection = 'ConsExceptHandler'
                     )]
                 )
-        
-
+    
 
             def handle_SingleExceptHandler(o : SingleExceptHandler): 
                 nonlocal stack
@@ -2480,14 +2157,14 @@ def from_sequence_ExceptHandler(
                 stack.append(
                     from_ExceptHandler(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'sequence_ExceptHandler',
                         selection = 'SingleExceptHandler'
                     )]
                 )
-        
+    
 
 
             match_sequence_ExceptHandler(stack_item, SequenceExceptHandlerHandlers(
@@ -2502,8 +2179,6 @@ def from_sequence_ExceptHandler(
     
 
 
-
-
 def from_conditions(
     o : conditions
 ) -> list[instance]:
@@ -2516,7 +2191,6 @@ def from_conditions(
         if isinstance(stack_item, conditions):
 
             
-
             def handle_ElifCond(o : ElifCond): 
                 nonlocal stack
                 assert isinstance(o, conditions)
@@ -2525,20 +2199,19 @@ def from_conditions(
                 stack.append(
                     o.tail
                 )
-                
+            
 
                 stack.append(
                     from_ElifBlock(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'conditions',
                         selection = 'ElifCond'
                     )]
                 )
-        
-
+    
 
             def handle_ElseCond(o : ElseCond): 
                 nonlocal stack
@@ -2548,15 +2221,14 @@ def from_conditions(
                 stack.append(
                     from_ElseBlock(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'conditions',
                         selection = 'ElseCond'
                     )]
                 )
-        
-
+    
 
             def handle_NoCond(o : NoCond): 
                 nonlocal stack
@@ -2569,7 +2241,7 @@ def from_conditions(
                         selection = 'NoCond'
                     )]
                 )
-        
+    
 
 
             match_conditions(stack_item, ConditionsHandlers(
@@ -2585,8 +2257,6 @@ def from_conditions(
     
 
 
-
-
 def from_function_def(
     o : function_def
 ) -> list[instance]:
@@ -2599,7 +2269,6 @@ def from_function_def(
         if isinstance(stack_item, function_def):
 
             
-
             def handle_FunctionDef(o : FunctionDef): 
                 nonlocal stack
                 assert isinstance(o, function_def)
@@ -2608,19 +2277,19 @@ def from_function_def(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_return_type(o.ret_typ)
                 )
-                
+            
 
 
                 stack.append(
                     from_parameters(o.params)
                 )
-                
+            
 
 
                 stack.append(
@@ -2629,7 +2298,7 @@ def from_function_def(
                         selection = o.name
                     )]
                 )
-            
+        
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -2637,8 +2306,7 @@ def from_function_def(
                         selection = 'FunctionDef'
                     )]
                 )
-        
-
+    
 
             def handle_AsyncFunctionDef(o : AsyncFunctionDef): 
                 nonlocal stack
@@ -2648,19 +2316,19 @@ def from_function_def(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_return_type(o.ret_typ)
                 )
-                
+            
 
 
                 stack.append(
                     from_parameters(o.params)
                 )
-                
+            
 
 
                 stack.append(
@@ -2669,7 +2337,7 @@ def from_function_def(
                         selection = o.name
                     )]
                 )
-            
+        
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -2677,7 +2345,7 @@ def from_function_def(
                         selection = 'AsyncFunctionDef'
                     )]
                 )
-        
+    
 
 
             match_function_def(stack_item, FunctionDefHandlers(
@@ -2692,8 +2360,6 @@ def from_function_def(
     
 
 
-
-
 def from_stmt(
     o : stmt
 ) -> list[instance]:
@@ -2706,7 +2372,6 @@ def from_stmt(
         if isinstance(stack_item, stmt):
 
             
-
             def handle_DecFunctionDef(o : DecFunctionDef): 
                 nonlocal stack
                 assert isinstance(o, stmt)
@@ -2715,20 +2380,19 @@ def from_stmt(
                 stack.append(
                     from_function_def(o.fun_def)
                 )
-                
+            
 
                 stack.append(
                     from_decorators(o.decs)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'DecFunctionDef'
                     )]
                 )
-        
-
+    
 
             def handle_DecAsyncFunctionDef(o : DecAsyncFunctionDef): 
                 nonlocal stack
@@ -2738,20 +2402,19 @@ def from_stmt(
                 stack.append(
                     from_function_def(o.fun_def)
                 )
-                
+            
 
                 stack.append(
                     from_decorators(o.decs)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'DecAsyncFunctionDef'
                     )]
                 )
-        
-
+    
 
             def handle_DecClassDef(o : DecClassDef): 
                 nonlocal stack
@@ -2761,20 +2424,19 @@ def from_stmt(
                 stack.append(
                     from_ClassDef(o.class_def)
                 )
-                
+            
 
                 stack.append(
                     from_decorators(o.decs)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'DecClassDef'
                     )]
                 )
-        
-
+    
 
             def handle_ReturnSomething(o : ReturnSomething): 
                 nonlocal stack
@@ -2784,7 +2446,7 @@ def from_stmt(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -2792,8 +2454,7 @@ def from_stmt(
                         selection = 'ReturnSomething'
                     )]
                 )
-        
-
+    
 
             def handle_Return(o : Return): 
                 nonlocal stack
@@ -2806,8 +2467,7 @@ def from_stmt(
                         selection = 'Return'
                     )]
                 )
-        
-
+    
 
             def handle_Delete(o : Delete): 
                 nonlocal stack
@@ -2817,7 +2477,7 @@ def from_stmt(
                 stack.append(
                     from_comma_exprs(o.targets)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -2825,8 +2485,7 @@ def from_stmt(
                         selection = 'Delete'
                     )]
                 )
-        
-
+    
 
             def handle_Assign(o : Assign): 
                 nonlocal stack
@@ -2836,21 +2495,20 @@ def from_stmt(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
 
                 stack.append(
                     from_target_exprs(o.targets)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'Assign'
                     )]
                 )
-        
-
+    
 
             def handle_AugAssign(o : AugAssign): 
                 nonlocal stack
@@ -2860,27 +2518,26 @@ def from_stmt(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
 
                 stack.append(
                     from_operator(o.op)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'AugAssign'
                     )]
                 )
-        
-
+    
 
             def handle_TypedAssign(o : TypedAssign): 
                 nonlocal stack
@@ -2890,27 +2547,26 @@ def from_stmt(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.type)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'TypedAssign'
                     )]
                 )
-        
-
+    
 
             def handle_TypedDeclare(o : TypedDeclare): 
                 nonlocal stack
@@ -2920,21 +2576,20 @@ def from_stmt(
                 stack.append(
                     from_expr(o.type)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'TypedDeclare'
                     )]
                 )
-        
-
+    
 
             def handle_For(o : For): 
                 nonlocal stack
@@ -2944,19 +2599,19 @@ def from_stmt(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.iter)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -2964,8 +2619,7 @@ def from_stmt(
                         selection = 'For'
                     )]
                 )
-        
-
+    
 
             def handle_ForElse(o : ForElse): 
                 nonlocal stack
@@ -2975,24 +2629,24 @@ def from_stmt(
                 stack.append(
                     from_ElseBlock(o.orelse)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.iter)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3000,8 +2654,7 @@ def from_stmt(
                         selection = 'ForElse'
                     )]
                 )
-        
-
+    
 
             def handle_AsyncFor(o : AsyncFor): 
                 nonlocal stack
@@ -3011,19 +2664,19 @@ def from_stmt(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.iter)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3031,8 +2684,7 @@ def from_stmt(
                         selection = 'AsyncFor'
                     )]
                 )
-        
-
+    
 
             def handle_AsyncForElse(o : AsyncForElse): 
                 nonlocal stack
@@ -3042,24 +2694,24 @@ def from_stmt(
                 stack.append(
                     from_ElseBlock(o.orelse)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.iter)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3067,8 +2719,7 @@ def from_stmt(
                         selection = 'AsyncForElse'
                     )]
                 )
-        
-
+    
 
             def handle_While(o : While): 
                 nonlocal stack
@@ -3078,13 +2729,13 @@ def from_stmt(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.test)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3092,8 +2743,7 @@ def from_stmt(
                         selection = 'While'
                     )]
                 )
-        
-
+    
 
             def handle_WhileElse(o : WhileElse): 
                 nonlocal stack
@@ -3103,18 +2753,18 @@ def from_stmt(
                 stack.append(
                     from_ElseBlock(o.orelse)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.test)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3122,8 +2772,7 @@ def from_stmt(
                         selection = 'WhileElse'
                     )]
                 )
-        
-
+    
 
             def handle_If(o : If): 
                 nonlocal stack
@@ -3133,18 +2782,18 @@ def from_stmt(
                 stack.append(
                     from_conditions(o.orelse)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.test)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3152,8 +2801,7 @@ def from_stmt(
                         selection = 'If'
                     )]
                 )
-        
-
+    
 
             def handle_With(o : With): 
                 nonlocal stack
@@ -3163,13 +2811,13 @@ def from_stmt(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_sequence_Withitem(o.items)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3177,8 +2825,7 @@ def from_stmt(
                         selection = 'With'
                     )]
                 )
-        
-
+    
 
             def handle_AsyncWith(o : AsyncWith): 
                 nonlocal stack
@@ -3188,13 +2835,13 @@ def from_stmt(
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
 
                 stack.append(
                     from_sequence_Withitem(o.items)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3202,8 +2849,7 @@ def from_stmt(
                         selection = 'AsyncWith'
                     )]
                 )
-        
-
+    
 
             def handle_Raise(o : Raise): 
                 nonlocal stack
@@ -3216,8 +2862,7 @@ def from_stmt(
                         selection = 'Raise'
                     )]
                 )
-        
-
+    
 
             def handle_RaiseExc(o : RaiseExc): 
                 nonlocal stack
@@ -3227,7 +2872,7 @@ def from_stmt(
                 stack.append(
                     from_expr(o.exc)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3235,8 +2880,7 @@ def from_stmt(
                         selection = 'RaiseExc'
                     )]
                 )
-        
-
+    
 
             def handle_RaiseFrom(o : RaiseFrom): 
                 nonlocal stack
@@ -3246,13 +2890,13 @@ def from_stmt(
                 stack.append(
                     from_expr(o.caus)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.exc)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3260,8 +2904,7 @@ def from_stmt(
                         selection = 'RaiseFrom'
                     )]
                 )
-        
-
+    
 
             def handle_Try(o : Try): 
                 nonlocal stack
@@ -3271,12 +2914,12 @@ def from_stmt(
                 stack.append(
                     from_sequence_ExceptHandler(o.handlers)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3284,8 +2927,7 @@ def from_stmt(
                         selection = 'Try'
                     )]
                 )
-        
-
+    
 
             def handle_TryElse(o : TryElse): 
                 nonlocal stack
@@ -3295,17 +2937,17 @@ def from_stmt(
                 stack.append(
                     from_ElseBlock(o.orelse)
                 )
-                
+            
 
                 stack.append(
                     from_sequence_ExceptHandler(o.handlers)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3313,8 +2955,7 @@ def from_stmt(
                         selection = 'TryElse'
                     )]
                 )
-        
-
+    
 
             def handle_TryExceptFin(o : TryExceptFin): 
                 nonlocal stack
@@ -3324,17 +2965,17 @@ def from_stmt(
                 stack.append(
                     from_FinallyBlock(o.fin)
                 )
-                
+            
 
                 stack.append(
                     from_sequence_ExceptHandler(o.handlers)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3342,8 +2983,7 @@ def from_stmt(
                         selection = 'TryExceptFin'
                     )]
                 )
-        
-
+    
 
             def handle_TryFin(o : TryFin): 
                 nonlocal stack
@@ -3353,12 +2993,12 @@ def from_stmt(
                 stack.append(
                     from_FinallyBlock(o.fin)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3366,8 +3006,7 @@ def from_stmt(
                         selection = 'TryFin'
                     )]
                 )
-        
-
+    
 
             def handle_TryElseFin(o : TryElseFin): 
                 nonlocal stack
@@ -3377,22 +3016,22 @@ def from_stmt(
                 stack.append(
                     from_FinallyBlock(o.fin)
                 )
-                
+            
 
                 stack.append(
                     from_ElseBlock(o.orelse)
                 )
-                
+            
 
                 stack.append(
                     from_sequence_ExceptHandler(o.handlers)
                 )
-                
+            
 
                 stack.append(
                     from_statements(o.body)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3400,8 +3039,7 @@ def from_stmt(
                         selection = 'TryElseFin'
                     )]
                 )
-        
-
+    
 
             def handle_Assert(o : Assert): 
                 nonlocal stack
@@ -3411,7 +3049,7 @@ def from_stmt(
                 stack.append(
                     from_expr(o.test)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3419,8 +3057,7 @@ def from_stmt(
                         selection = 'Assert'
                     )]
                 )
-        
-
+    
 
             def handle_AssertMsg(o : AssertMsg): 
                 nonlocal stack
@@ -3430,13 +3067,13 @@ def from_stmt(
                 stack.append(
                     from_expr(o.msg)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.test)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3444,8 +3081,7 @@ def from_stmt(
                         selection = 'AssertMsg'
                     )]
                 )
-        
-
+    
 
             def handle_Import(o : Import): 
                 nonlocal stack
@@ -3455,7 +3091,7 @@ def from_stmt(
                 stack.append(
                     from_sequence_ImportName(o.names)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3463,8 +3099,7 @@ def from_stmt(
                         selection = 'Import'
                     )]
                 )
-        
-
+    
 
             def handle_ImportFrom(o : ImportFrom): 
                 nonlocal stack
@@ -3474,13 +3109,13 @@ def from_stmt(
                 stack.append(
                     from_sequence_ImportName(o.names)
                 )
-                
+            
 
 
                 stack.append(
                     from_module_id(o.module)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3488,8 +3123,7 @@ def from_stmt(
                         selection = 'ImportFrom'
                     )]
                 )
-        
-
+    
 
             def handle_ImportWildCard(o : ImportWildCard): 
                 nonlocal stack
@@ -3500,7 +3134,7 @@ def from_stmt(
                 stack.append(
                     from_module_id(o.module)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3508,8 +3142,7 @@ def from_stmt(
                         selection = 'ImportWildCard'
                     )]
                 )
-        
-
+    
 
             def handle_Global(o : Global): 
                 nonlocal stack
@@ -3519,7 +3152,7 @@ def from_stmt(
                 stack.append(
                     from_sequence_var(o.names)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3527,8 +3160,7 @@ def from_stmt(
                         selection = 'Global'
                     )]
                 )
-        
-
+    
 
             def handle_Nonlocal(o : Nonlocal): 
                 nonlocal stack
@@ -3538,7 +3170,7 @@ def from_stmt(
                 stack.append(
                     from_sequence_var(o.names)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3546,8 +3178,7 @@ def from_stmt(
                         selection = 'Nonlocal'
                     )]
                 )
-        
-
+    
 
             def handle_Expr(o : Expr): 
                 nonlocal stack
@@ -3557,15 +3188,14 @@ def from_stmt(
                 stack.append(
                     from_expr(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'stmt',
                         selection = 'Expr'
                     )]
                 )
-        
-
+    
 
             def handle_Pass(o : Pass): 
                 nonlocal stack
@@ -3578,8 +3208,7 @@ def from_stmt(
                         selection = 'Pass'
                     )]
                 )
-        
-
+    
 
             def handle_Break(o : Break): 
                 nonlocal stack
@@ -3592,8 +3221,7 @@ def from_stmt(
                         selection = 'Break'
                     )]
                 )
-        
-
+    
 
             def handle_Continue(o : Continue): 
                 nonlocal stack
@@ -3606,7 +3234,7 @@ def from_stmt(
                         selection = 'Continue'
                     )]
                 )
-        
+    
 
 
             match_stmt(stack_item, StmtHandlers(
@@ -3657,8 +3285,6 @@ def from_stmt(
     
 
 
-
-
 def from_expr(
     o : expr
 ) -> list[instance]:
@@ -3671,7 +3297,6 @@ def from_expr(
         if isinstance(stack_item, expr):
 
             
-
             def handle_BoolOp(o : BoolOp): 
                 nonlocal stack
                 assert isinstance(o, expr)
@@ -3681,19 +3306,19 @@ def from_expr(
                 stack.append(
                     o.right
                 )
-                
+            
 
 
                 stack.append(
                     from_boolop(o.op)
                 )
-                
+            
 
 
                 stack.append(
                     o.left
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3701,8 +3326,7 @@ def from_expr(
                         selection = 'BoolOp'
                     )]
                 )
-        
-
+    
 
             def handle_NamedExpr(o : NamedExpr): 
                 nonlocal stack
@@ -3712,21 +3336,20 @@ def from_expr(
                 stack.append(
                     o.content
                 )
-                
+            
 
 
                 stack.append(
                     o.target
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'NamedExpr'
                     )]
                 )
-        
-
+    
 
             def handle_BinOp(o : BinOp): 
                 nonlocal stack
@@ -3737,19 +3360,19 @@ def from_expr(
                 stack.append(
                     o.right
                 )
-                
+            
 
 
                 stack.append(
                     from_operator(o.op)
                 )
-                
+            
 
 
                 stack.append(
                     o.left
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3757,8 +3380,7 @@ def from_expr(
                         selection = 'BinOp'
                     )]
                 )
-        
-
+    
 
             def handle_UnaryOp(o : UnaryOp): 
                 nonlocal stack
@@ -3769,13 +3391,13 @@ def from_expr(
                 stack.append(
                     o.right
                 )
-                
+            
 
 
                 stack.append(
                     from_unaryop(o.op)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3783,8 +3405,7 @@ def from_expr(
                         selection = 'UnaryOp'
                     )]
                 )
-        
-
+    
 
             def handle_Lambda(o : Lambda): 
                 nonlocal stack
@@ -3794,13 +3415,13 @@ def from_expr(
                 stack.append(
                     o.body
                 )
-                
+            
 
 
                 stack.append(
                     from_parameters(o.params)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3808,8 +3429,7 @@ def from_expr(
                         selection = 'Lambda'
                     )]
                 )
-        
-
+    
 
             def handle_IfExp(o : IfExp): 
                 nonlocal stack
@@ -3819,27 +3439,26 @@ def from_expr(
                 stack.append(
                     o.orelse
                 )
-                
+            
 
 
                 stack.append(
                     o.test
                 )
-                
+            
 
 
                 stack.append(
                     o.body
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'IfExp'
                     )]
                 )
-        
-
+    
 
             def handle_Dictionary(o : Dictionary): 
                 nonlocal stack
@@ -3850,7 +3469,7 @@ def from_expr(
                 stack.append(
                     from_dictionary_content(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3858,8 +3477,7 @@ def from_expr(
                         selection = 'Dictionary'
                     )]
                 )
-        
-
+    
 
             def handle_EmptyDictionary(o : EmptyDictionary): 
                 nonlocal stack
@@ -3872,8 +3490,7 @@ def from_expr(
                         selection = 'EmptyDictionary'
                     )]
                 )
-        
-
+    
 
             def handle_Set(o : Set): 
                 nonlocal stack
@@ -3884,7 +3501,7 @@ def from_expr(
                 stack.append(
                     from_comma_exprs(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3892,8 +3509,7 @@ def from_expr(
                         selection = 'Set'
                     )]
                 )
-        
-
+    
 
             def handle_ListComp(o : ListComp): 
                 nonlocal stack
@@ -3904,12 +3520,12 @@ def from_expr(
                 stack.append(
                     from_comprehension_constraints(o.constraints)
                 )
-                
+            
 
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3917,8 +3533,7 @@ def from_expr(
                         selection = 'ListComp'
                     )]
                 )
-        
-
+    
 
             def handle_SetComp(o : SetComp): 
                 nonlocal stack
@@ -3929,12 +3544,12 @@ def from_expr(
                 stack.append(
                     from_comprehension_constraints(o.constraints)
                 )
-                
+            
 
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3942,8 +3557,7 @@ def from_expr(
                         selection = 'SetComp'
                     )]
                 )
-        
-
+    
 
             def handle_DictionaryComp(o : DictionaryComp): 
                 nonlocal stack
@@ -3954,18 +3568,18 @@ def from_expr(
                 stack.append(
                     from_comprehension_constraints(o.constraints)
                 )
-                
+            
 
                 stack.append(
                     o.content
                 )
-                
+            
 
 
                 stack.append(
                     o.key
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3973,8 +3587,7 @@ def from_expr(
                         selection = 'DictionaryComp'
                     )]
                 )
-        
-
+    
 
             def handle_GeneratorExp(o : GeneratorExp): 
                 nonlocal stack
@@ -3985,12 +3598,12 @@ def from_expr(
                 stack.append(
                     from_comprehension_constraints(o.constraints)
                 )
-                
+            
 
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -3998,8 +3611,7 @@ def from_expr(
                         selection = 'GeneratorExp'
                     )]
                 )
-        
-
+    
 
             def handle_Await(o : Await): 
                 nonlocal stack
@@ -4009,7 +3621,7 @@ def from_expr(
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -4017,8 +3629,7 @@ def from_expr(
                         selection = 'Await'
                     )]
                 )
-        
-
+    
 
             def handle_YieldNothing(o : YieldNothing): 
                 nonlocal stack
@@ -4031,8 +3642,7 @@ def from_expr(
                         selection = 'YieldNothing'
                     )]
                 )
-        
-
+    
 
             def handle_Yield(o : Yield): 
                 nonlocal stack
@@ -4042,7 +3652,7 @@ def from_expr(
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -4050,8 +3660,7 @@ def from_expr(
                         selection = 'Yield'
                     )]
                 )
-        
-
+    
 
             def handle_YieldFrom(o : YieldFrom): 
                 nonlocal stack
@@ -4061,7 +3670,7 @@ def from_expr(
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -4069,8 +3678,7 @@ def from_expr(
                         selection = 'YieldFrom'
                     )]
                 )
-        
-
+    
 
             def handle_Compare(o : Compare): 
                 nonlocal stack
@@ -4080,21 +3688,20 @@ def from_expr(
                 stack.append(
                     from_comparisons(o.comps)
                 )
-                
+            
 
 
                 stack.append(
                     o.left
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Compare'
                     )]
                 )
-        
-
+    
 
             def handle_Call(o : Call): 
                 nonlocal stack
@@ -4105,15 +3712,14 @@ def from_expr(
                 stack.append(
                     o.func
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Call'
                     )]
                 )
-        
-
+    
 
             def handle_CallArgs(o : CallArgs): 
                 nonlocal stack
@@ -4124,21 +3730,20 @@ def from_expr(
                 stack.append(
                     from_arguments(o.args)
                 )
-                
+            
 
 
                 stack.append(
                     o.func
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'CallArgs'
                     )]
                 )
-        
-
+    
 
             def handle_Integer(o : Integer): 
                 nonlocal stack
@@ -4151,15 +3756,14 @@ def from_expr(
                         selection = o.content
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Integer'
                     )]
                 )
-        
-
+    
 
             def handle_Float(o : Float): 
                 nonlocal stack
@@ -4172,15 +3776,14 @@ def from_expr(
                         selection = o.content
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Float'
                     )]
                 )
-        
-
+    
 
             def handle_ConcatString(o : ConcatString): 
                 nonlocal stack
@@ -4190,15 +3793,14 @@ def from_expr(
                 stack.append(
                     from_sequence_string(o.content)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'ConcatString'
                     )]
                 )
-        
-
+    
 
             def handle_True_(o : True_): 
                 nonlocal stack
@@ -4211,8 +3813,7 @@ def from_expr(
                         selection = 'True_'
                     )]
                 )
-        
-
+    
 
             def handle_False_(o : False_): 
                 nonlocal stack
@@ -4225,8 +3826,7 @@ def from_expr(
                         selection = 'False_'
                     )]
                 )
-        
-
+    
 
             def handle_None_(o : None_): 
                 nonlocal stack
@@ -4239,8 +3839,7 @@ def from_expr(
                         selection = 'None_'
                     )]
                 )
-        
-
+    
 
             def handle_Ellip(o : Ellip): 
                 nonlocal stack
@@ -4253,8 +3852,7 @@ def from_expr(
                         selection = 'Ellip'
                     )]
                 )
-        
-
+    
 
             def handle_Attribute(o : Attribute): 
                 nonlocal stack
@@ -4267,21 +3865,20 @@ def from_expr(
                         selection = o.name
                     )]
                 )
-            
+        
 
 
                 stack.append(
                     o.content
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Attribute'
                     )]
                 )
-        
-
+    
 
             def handle_Subscript(o : Subscript): 
                 nonlocal stack
@@ -4292,21 +3889,20 @@ def from_expr(
                 stack.append(
                     o.slice
                 )
-                
+            
 
 
                 stack.append(
                     o.content
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Subscript'
                     )]
                 )
-        
-
+    
 
             def handle_Starred(o : Starred): 
                 nonlocal stack
@@ -4316,7 +3912,7 @@ def from_expr(
                 stack.append(
                     o.content
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -4324,8 +3920,7 @@ def from_expr(
                         selection = 'Starred'
                     )]
                 )
-        
-
+    
 
             def handle_Name(o : Name): 
                 nonlocal stack
@@ -4338,15 +3933,14 @@ def from_expr(
                         selection = o.content
                     )]
                 )
-            
+        
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Name'
                     )]
                 )
-        
-
+    
 
             def handle_List(o : List): 
                 nonlocal stack
@@ -4357,7 +3951,7 @@ def from_expr(
                 stack.append(
                     from_comma_exprs(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -4365,8 +3959,7 @@ def from_expr(
                         selection = 'List'
                     )]
                 )
-        
-
+    
 
             def handle_EmptyList(o : EmptyList): 
                 nonlocal stack
@@ -4379,8 +3972,7 @@ def from_expr(
                         selection = 'EmptyList'
                     )]
                 )
-        
-
+    
 
             def handle_Tuple(o : Tuple): 
                 nonlocal stack
@@ -4391,7 +3983,7 @@ def from_expr(
                 stack.append(
                     from_comma_exprs(o.content)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -4399,8 +3991,7 @@ def from_expr(
                         selection = 'Tuple'
                     )]
                 )
-        
-
+    
 
             def handle_EmptyTuple(o : EmptyTuple): 
                 nonlocal stack
@@ -4413,8 +4004,7 @@ def from_expr(
                         selection = 'EmptyTuple'
                     )]
                 )
-        
-
+    
 
             def handle_Slice(o : Slice): 
                 nonlocal stack
@@ -4424,26 +4014,26 @@ def from_expr(
                 stack.append(
                     from_option_expr(o.step)
                 )
-                
+            
 
 
                 stack.append(
                     from_option_expr(o.upper)
                 )
-                
+            
 
 
                 stack.append(
                     from_option_expr(o.lower)
                 )
-                
+            
                 stack.append(
                     [lib.instance.make_Grammar(
                         options = 'expr',
                         selection = 'Slice'
                     )]
                 )
-        
+    
 
 
             match_expr(stack_item, ExprHandlers(
@@ -4492,8 +4082,6 @@ def from_expr(
     
 
 
-
-
 def from_boolop(
     o : boolop
 ) -> list[instance]:
@@ -4506,7 +4094,6 @@ def from_boolop(
         if isinstance(stack_item, boolop):
 
             
-
             def handle_And(o : And): 
                 nonlocal stack
                 assert isinstance(o, boolop)
@@ -4518,8 +4105,7 @@ def from_boolop(
                         selection = 'And'
                     )]
                 )
-        
-
+    
 
             def handle_Or(o : Or): 
                 nonlocal stack
@@ -4532,7 +4118,7 @@ def from_boolop(
                         selection = 'Or'
                     )]
                 )
-        
+    
 
 
             match_boolop(stack_item, BoolopHandlers(
@@ -4547,8 +4133,6 @@ def from_boolop(
     
 
 
-
-
 def from_operator(
     o : operator
 ) -> list[instance]:
@@ -4561,7 +4145,6 @@ def from_operator(
         if isinstance(stack_item, operator):
 
             
-
             def handle_Add(o : Add): 
                 nonlocal stack
                 assert isinstance(o, operator)
@@ -4573,8 +4156,7 @@ def from_operator(
                         selection = 'Add'
                     )]
                 )
-        
-
+    
 
             def handle_Sub(o : Sub): 
                 nonlocal stack
@@ -4587,8 +4169,7 @@ def from_operator(
                         selection = 'Sub'
                     )]
                 )
-        
-
+    
 
             def handle_Mult(o : Mult): 
                 nonlocal stack
@@ -4601,8 +4182,7 @@ def from_operator(
                         selection = 'Mult'
                     )]
                 )
-        
-
+    
 
             def handle_MatMult(o : MatMult): 
                 nonlocal stack
@@ -4615,8 +4195,7 @@ def from_operator(
                         selection = 'MatMult'
                     )]
                 )
-        
-
+    
 
             def handle_Div(o : Div): 
                 nonlocal stack
@@ -4629,8 +4208,7 @@ def from_operator(
                         selection = 'Div'
                     )]
                 )
-        
-
+    
 
             def handle_Mod(o : Mod): 
                 nonlocal stack
@@ -4643,8 +4221,7 @@ def from_operator(
                         selection = 'Mod'
                     )]
                 )
-        
-
+    
 
             def handle_Pow(o : Pow): 
                 nonlocal stack
@@ -4657,8 +4234,7 @@ def from_operator(
                         selection = 'Pow'
                     )]
                 )
-        
-
+    
 
             def handle_LShift(o : LShift): 
                 nonlocal stack
@@ -4671,8 +4247,7 @@ def from_operator(
                         selection = 'LShift'
                     )]
                 )
-        
-
+    
 
             def handle_RShift(o : RShift): 
                 nonlocal stack
@@ -4685,8 +4260,7 @@ def from_operator(
                         selection = 'RShift'
                     )]
                 )
-        
-
+    
 
             def handle_BitOr(o : BitOr): 
                 nonlocal stack
@@ -4699,8 +4273,7 @@ def from_operator(
                         selection = 'BitOr'
                     )]
                 )
-        
-
+    
 
             def handle_BitXor(o : BitXor): 
                 nonlocal stack
@@ -4713,8 +4286,7 @@ def from_operator(
                         selection = 'BitXor'
                     )]
                 )
-        
-
+    
 
             def handle_BitAnd(o : BitAnd): 
                 nonlocal stack
@@ -4727,8 +4299,7 @@ def from_operator(
                         selection = 'BitAnd'
                     )]
                 )
-        
-
+    
 
             def handle_FloorDiv(o : FloorDiv): 
                 nonlocal stack
@@ -4741,7 +4312,7 @@ def from_operator(
                         selection = 'FloorDiv'
                     )]
                 )
-        
+    
 
 
             match_operator(stack_item, OperatorHandlers(
@@ -4767,8 +4338,6 @@ def from_operator(
     
 
 
-
-
 def from_unaryop(
     o : unaryop
 ) -> list[instance]:
@@ -4781,7 +4350,6 @@ def from_unaryop(
         if isinstance(stack_item, unaryop):
 
             
-
             def handle_Invert(o : Invert): 
                 nonlocal stack
                 assert isinstance(o, unaryop)
@@ -4793,8 +4361,7 @@ def from_unaryop(
                         selection = 'Invert'
                     )]
                 )
-        
-
+    
 
             def handle_Not(o : Not): 
                 nonlocal stack
@@ -4807,8 +4374,7 @@ def from_unaryop(
                         selection = 'Not'
                     )]
                 )
-        
-
+    
 
             def handle_UAdd(o : UAdd): 
                 nonlocal stack
@@ -4821,8 +4387,7 @@ def from_unaryop(
                         selection = 'UAdd'
                     )]
                 )
-        
-
+    
 
             def handle_USub(o : USub): 
                 nonlocal stack
@@ -4835,7 +4400,7 @@ def from_unaryop(
                         selection = 'USub'
                     )]
                 )
-        
+    
 
 
             match_unaryop(stack_item, UnaryopHandlers(
@@ -4852,8 +4417,6 @@ def from_unaryop(
     
 
 
-
-
 def from_cmpop(
     o : cmpop
 ) -> list[instance]:
@@ -4866,7 +4429,6 @@ def from_cmpop(
         if isinstance(stack_item, cmpop):
 
             
-
             def handle_Eq(o : Eq): 
                 nonlocal stack
                 assert isinstance(o, cmpop)
@@ -4878,8 +4440,7 @@ def from_cmpop(
                         selection = 'Eq'
                     )]
                 )
-        
-
+    
 
             def handle_NotEq(o : NotEq): 
                 nonlocal stack
@@ -4892,8 +4453,7 @@ def from_cmpop(
                         selection = 'NotEq'
                     )]
                 )
-        
-
+    
 
             def handle_Lt(o : Lt): 
                 nonlocal stack
@@ -4906,8 +4466,7 @@ def from_cmpop(
                         selection = 'Lt'
                     )]
                 )
-        
-
+    
 
             def handle_LtE(o : LtE): 
                 nonlocal stack
@@ -4920,8 +4479,7 @@ def from_cmpop(
                         selection = 'LtE'
                     )]
                 )
-        
-
+    
 
             def handle_Gt(o : Gt): 
                 nonlocal stack
@@ -4934,8 +4492,7 @@ def from_cmpop(
                         selection = 'Gt'
                     )]
                 )
-        
-
+    
 
             def handle_GtE(o : GtE): 
                 nonlocal stack
@@ -4948,8 +4505,7 @@ def from_cmpop(
                         selection = 'GtE'
                     )]
                 )
-        
-
+    
 
             def handle_Is(o : Is): 
                 nonlocal stack
@@ -4962,8 +4518,7 @@ def from_cmpop(
                         selection = 'Is'
                     )]
                 )
-        
-
+    
 
             def handle_IsNot(o : IsNot): 
                 nonlocal stack
@@ -4976,8 +4531,7 @@ def from_cmpop(
                         selection = 'IsNot'
                     )]
                 )
-        
-
+    
 
             def handle_In(o : In): 
                 nonlocal stack
@@ -4990,8 +4544,7 @@ def from_cmpop(
                         selection = 'In'
                     )]
                 )
-        
-
+    
 
             def handle_NotIn(o : NotIn): 
                 nonlocal stack
@@ -5004,7 +4557,7 @@ def from_cmpop(
                         selection = 'NotIn'
                     )]
                 )
-        
+    
 
 
             match_cmpop(stack_item, CmpopHandlers(
@@ -5027,8 +4580,6 @@ def from_cmpop(
     
 
 
-
-
 def from_constraint(
     o : constraint
 ) -> list[instance]:
@@ -5041,7 +4592,6 @@ def from_constraint(
         if isinstance(stack_item, constraint):
 
             
-
             def handle_AsyncConstraint(o : AsyncConstraint): 
                 nonlocal stack
                 assert isinstance(o, constraint)
@@ -5050,18 +4600,18 @@ def from_constraint(
                 stack.append(
                     from_constraint_filters(o.filts)
                 )
-                
+            
 
                 stack.append(
                     from_expr(o.search_space)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -5069,8 +4619,7 @@ def from_constraint(
                         selection = 'AsyncConstraint'
                     )]
                 )
-        
-
+    
 
             def handle_Constraint(o : Constraint): 
                 nonlocal stack
@@ -5080,18 +4629,18 @@ def from_constraint(
                 stack.append(
                     from_constraint_filters(o.filts)
                 )
-                
+            
 
                 stack.append(
                     from_expr(o.search_space)
                 )
-                
+            
 
 
                 stack.append(
                     from_expr(o.target)
                 )
-                
+            
 
                 stack.append(
                     [lib.instance.make_Grammar(
@@ -5099,7 +4648,7 @@ def from_constraint(
                         selection = 'Constraint'
                     )]
                 )
-        
+    
 
 
             match_constraint(stack_item, ConstraintHandlers(
@@ -5111,4 +4660,176 @@ def from_constraint(
             result += stack_item 
 
     return result
+     
+
+
+
+def from_Module(
+    o : Module
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'Module',
+            selection = 'Module'
+        )] +
+
+        from_statements(o.body)
+
+    )
+    
+
+
+def from_CompareRight(
+    o : CompareRight
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'CompareRight',
+            selection = 'CompareRight'
+        )] +
+
+        from_cmpop(o.op) +
+        from_expr(o.rand)
+
+    )
+    
+
+
+def from_ExceptHandler(
+    o : ExceptHandler
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'ExceptHandler',
+            selection = 'ExceptHandler'
+        )] +
+
+        from_except_arg(o.arg) +
+        from_statements(o.body)
+
+    )
+    
+
+
+def from_Param(
+    o : Param
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'Param',
+            selection = 'Param'
+        )] +
+
+        [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
+        from_param_type(o.type) +
+        from_param_default(o.default)
+
+    )
+    
+
+
+def from_ImportName(
+    o : ImportName
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'ImportName',
+            selection = 'ImportName'
+        )] +
+
+        [lib.instance.make_Vocab(options = 'module_identifier', selection = o.name)] +
+        from_alias(o.as_name)
+
+    )
+    
+
+
+def from_Withitem(
+    o : Withitem
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'Withitem',
+            selection = 'Withitem'
+        )] +
+
+        from_expr(o.contet) +
+        from_alias_expr(o.target)
+
+    )
+    
+
+
+def from_ClassDef(
+    o : ClassDef
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'ClassDef',
+            selection = 'ClassDef'
+        )] +
+
+        [lib.instance.make_Vocab(options = 'identifier', selection = o.name)] +
+        from_bases(o.bs) +
+        from_statements(o.body)
+
+    )
+    
+
+
+def from_ElifBlock(
+    o : ElifBlock
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'ElifBlock',
+            selection = 'ElifBlock'
+        )] +
+
+        from_expr(o.test) +
+        from_statements(o.body)
+
+    )
+    
+
+
+def from_ElseBlock(
+    o : ElseBlock
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'ElseBlock',
+            selection = 'ElseBlock'
+        )] +
+
+        from_statements(o.body)
+
+    )
+    
+
+
+def from_FinallyBlock(
+    o : FinallyBlock
+) -> list[instance]:
+
+    return (
+        [lib.instance.make_Grammar(
+            options = 'FinallyBlock',
+            selection = 'FinallyBlock'
+        )] +
+
+        from_statements(o.body)
+
+    )
+     
+
     

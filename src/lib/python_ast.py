@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from gen import python_ast_serialize
 from gen import python_ast_reconstitute 
-from gen.python_ast_construct import Module
+from gen.python_ast_construct import * 
 from gen.instance_construct import instance
 from lib import generic_tree
 from lib.generic_tree import GenericNode

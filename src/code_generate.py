@@ -15,7 +15,7 @@ from lib.util import write, project_path
 
 
 
-dirpath = project_path('gen')
+dirpath = project_path('src/gen')
 
 write(dirpath, "line_format_construct.py",
     def_line_format_construct.generate_content()

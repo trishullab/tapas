@@ -29,7 +29,7 @@ import pathlib
 
 
 def project_path(rel_path : str):
-    base_path = os.path.join(pathlib.Path(__file__).parent.absolute(), '..')
+    base_path = os.path.join(pathlib.Path(__file__).parent.absolute(), '../..')
     return os.path.join(base_path, rel_path)
 
 

@@ -52,25 +52,25 @@ def from_{rule.name}(
 def generate_item(type_name : str, item : lib.rule.item):
     return lib.rule.match_item(item, lib.rule.ItemHandlers[str](
         case_Vocab=lambda o : (f"""
-            stack.append(
-                [lib.instance.make_Vocab(
-                    options = '{o.vocab}',
-                    selection = o.{o.relation}
-                )]
-            )
+                stack.append(
+                    [lib.instance.make_Vocab(
+                        options = '{o.vocab}',
+                        selection = o.{o.relation}
+                    )]
+                )
         """),
         case_Nonterm=lambda o : (
             f"""
-            stack.append(
-                o.{o.relation}
-            )
+                stack.append(
+                    o.{o.relation}
+                )
             """
             if o.nonterminal == type_name else 
 
             f"""
-            stack.append(
-                from_{o.nonterminal}(o.{o.relation})
-            )
+                stack.append(
+                    from_{o.nonterminal}(o.{o.relation})
+                )
             """
         ),
         case_Terminal=lambda o : (
@@ -84,21 +84,20 @@ def generate_rule_handler(type_name : str, rule : Rule):
     nl = "\n"
 
     return (f"""
+            def handle_{rule.name}(o : {rule.name}): 
+                nonlocal stack
+                assert isinstance(o, {type_name})
 
-        def handle_{rule.name}(o : {rule.name}): 
-            nonlocal stack
-            assert isinstance(o, {type_name})
-
-            {nl.join([
-                generate_item(type_name, child)
-                for child in reversed(rule.content)
-            ])}
-            stack.append(
-                [lib.instance.make_Grammar(
-                    options = '{type_name}',
-                    selection = '{rule.name}'
-                )]
-            )
+                {nl.join([
+                    generate_item(type_name, child)
+                    for child in reversed(rule.content)
+                ])}
+                stack.append(
+                    [lib.instance.make_Grammar(
+                        options = '{type_name}',
+                        selection = '{rule.name}'
+                    )]
+                )
     """)
 
 
@@ -147,9 +146,9 @@ def generate_content(singles : list[Rule], choices : dict[str, list[Rule]]) -> s
     header = """
 from __future__ import annotations
 import lib.instance
-from gen.instance import instance
-from gen.python_ast import *
-from gen.line_format import InLine, NewLine, IndentLine
+from gen.instance_construct import instance
+from gen.python_ast_construct import *
+from gen.line_format_construct import InLine, NewLine, IndentLine
 """
 
     nl = "\n"

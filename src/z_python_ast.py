@@ -1,17 +1,10 @@
-from typing import Callable, Any
-
-from tree_sitter import Language
-import tree_sitter
-import ast
-import json
-
 from lib import generic_tree
-
 from lib import python_ast
 from lib.generic_tree import GenericNode
 from lib import python_generic_tree
 from lib import python_sequence
-
+from lib import util
+import os
 
 def run_concrete(concrete : str):
     mod = None
@@ -61,8 +54,6 @@ def run_concrete(concrete : str):
             raise x
 
 
-from lib import util
-import os
 dirpath = util.project_path("res/test/python/concrete_data")
 
 def inspect_cubert():

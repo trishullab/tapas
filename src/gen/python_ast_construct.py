@@ -1,4 +1,5 @@
 
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -8,85 +9,6 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 T = TypeVar('T')
-
-
-
-# type and constructor Module
-@dataclass
-class Module:
-    body : statements
-
-
-
-# type and constructor CompareRight
-@dataclass
-class CompareRight:
-    op : cmpop
-    rand : expr
-
-
-
-# type and constructor ExceptHandler
-@dataclass
-class ExceptHandler:
-    arg : except_arg
-    body : statements
-
-
-
-# type and constructor Param
-@dataclass
-class Param:
-    name : str
-    type : param_type
-    default : param_default
-
-
-
-# type and constructor ImportName
-@dataclass
-class ImportName:
-    name : str
-    as_name : alias
-
-
-
-# type and constructor Withitem
-@dataclass
-class Withitem:
-    contet : expr
-    target : alias_expr
-
-
-
-# type and constructor ClassDef
-@dataclass
-class ClassDef:
-    name : str
-    bs : bases
-    body : statements
-
-
-
-# type and constructor ElifBlock
-@dataclass
-class ElifBlock:
-    test : expr
-    body : statements
-
-
-
-# type and constructor ElseBlock
-@dataclass
-class ElseBlock:
-    body : statements
-
-
-
-# type and constructor FinallyBlock
-@dataclass
-class FinallyBlock:
-    body : statements
 
 
 
@@ -133,7 +55,6 @@ def match_return_type(o : return_type, handlers : ReturnTypeHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type module_id
 @dataclass
 class module_id(ABC):
@@ -164,7 +85,6 @@ class ModuleIdHandlers(Generic[T]):
 def match_module_id(o : module_id, handlers : ModuleIdHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type except_arg
 @dataclass
@@ -222,7 +142,6 @@ def match_except_arg(o : except_arg, handlers : ExceptArgHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type param_type
 @dataclass
 class param_type(ABC):
@@ -266,7 +185,6 @@ def match_param_type(o : param_type, handlers : ParamTypeHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type param_default
 @dataclass
 class param_default(ABC):
@@ -309,7 +227,6 @@ class ParamDefaultHandlers(Generic[T]):
 def match_param_default(o : param_default, handlers : ParamDefaultHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type parameters_d
 @dataclass
@@ -367,7 +284,6 @@ def match_parameters_d(o : parameters_d, handlers : ParametersDHandlers[T]) -> T
     return o._match(handlers)
     
 
-
 # type parameters_c
 @dataclass
 class parameters_c(ABC):
@@ -423,7 +339,6 @@ class ParametersCHandlers(Generic[T]):
 def match_parameters_c(o : parameters_c, handlers : ParametersCHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type parameters_b
 @dataclass
@@ -481,7 +396,6 @@ def match_parameters_b(o : parameters_b, handlers : ParametersBHandlers[T]) -> T
     return o._match(handlers)
     
 
-
 # type parameters
 @dataclass
 class parameters(ABC):
@@ -536,7 +450,6 @@ class ParametersHandlers(Generic[T]):
 def match_parameters(o : parameters, handlers : ParametersHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type parameters_a
 @dataclass
@@ -595,7 +508,6 @@ def match_parameters_a(o : parameters_a, handlers : ParametersAHandlers[T]) -> T
     return o._match(handlers)
     
 
-
 # type keyword
 @dataclass
 class keyword(ABC):
@@ -640,7 +552,6 @@ def match_keyword(o : keyword, handlers : KeywordHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type alias
 @dataclass
 class alias(ABC):
@@ -683,7 +594,6 @@ class AliasHandlers(Generic[T]):
 def match_alias(o : alias, handlers : AliasHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type alias_expr
 @dataclass
@@ -728,7 +638,6 @@ def match_alias_expr(o : alias_expr, handlers : AliasExprHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type bases
 @dataclass
 class bases(ABC):
@@ -771,7 +680,6 @@ class BasesHandlers(Generic[T]):
 def match_bases(o : bases, handlers : BasesHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type bases_a
 @dataclass
@@ -829,7 +737,6 @@ def match_bases_a(o : bases_a, handlers : BasesAHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type keywords
 @dataclass
 class keywords(ABC):
@@ -873,7 +780,6 @@ class KeywordsHandlers(Generic[T]):
 def match_keywords(o : keywords, handlers : KeywordsHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type comparisons
 @dataclass
@@ -919,7 +825,6 @@ def match_comparisons(o : comparisons, handlers : ComparisonsHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type option_expr
 @dataclass
 class option_expr(ABC):
@@ -962,7 +867,6 @@ class OptionExprHandlers(Generic[T]):
 def match_option_expr(o : option_expr, handlers : OptionExprHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type comma_exprs
 @dataclass
@@ -1008,7 +912,6 @@ def match_comma_exprs(o : comma_exprs, handlers : CommaExprsHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type target_exprs
 @dataclass
 class target_exprs(ABC):
@@ -1053,7 +956,6 @@ def match_target_exprs(o : target_exprs, handlers : TargetExprsHandlers[T]) -> T
     return o._match(handlers)
     
 
-
 # type decorators
 @dataclass
 class decorators(ABC):
@@ -1097,7 +999,6 @@ class DecoratorsHandlers(Generic[T]):
 def match_decorators(o : decorators, handlers : DecoratorsHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type constraint_filters
 @dataclass
@@ -1155,7 +1056,6 @@ def match_constraint_filters(o : constraint_filters, handlers : ConstraintFilter
     return o._match(handlers)
     
 
-
 # type sequence_string
 @dataclass
 class sequence_string(ABC):
@@ -1199,7 +1099,6 @@ class SequenceStringHandlers(Generic[T]):
 def match_sequence_string(o : sequence_string, handlers : SequenceStringHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type arguments
 @dataclass
@@ -1257,7 +1156,6 @@ def match_arguments(o : arguments, handlers : ArgumentsHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type dictionary_item
 @dataclass
 class dictionary_item(ABC):
@@ -1301,7 +1199,6 @@ class DictionaryItemHandlers(Generic[T]):
 def match_dictionary_item(o : dictionary_item, handlers : DictionaryItemHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type dictionary_content
 @dataclass
@@ -1347,7 +1244,6 @@ def match_dictionary_content(o : dictionary_content, handlers : DictionaryConten
     return o._match(handlers)
     
 
-
 # type sequence_var
 @dataclass
 class sequence_var(ABC):
@@ -1391,7 +1287,6 @@ class SequenceVarHandlers(Generic[T]):
 def match_sequence_var(o : sequence_var, handlers : SequenceVarHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type sequence_ImportName
 @dataclass
@@ -1437,7 +1332,6 @@ def match_sequence_ImportName(o : sequence_ImportName, handlers : SequenceImport
     return o._match(handlers)
     
 
-
 # type sequence_Withitem
 @dataclass
 class sequence_Withitem(ABC):
@@ -1481,7 +1375,6 @@ class SequenceWithitemHandlers(Generic[T]):
 def match_sequence_Withitem(o : sequence_Withitem, handlers : SequenceWithitemHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type statements
 @dataclass
@@ -1527,7 +1420,6 @@ def match_statements(o : statements, handlers : StatementsHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type comprehension_constraints
 @dataclass
 class comprehension_constraints(ABC):
@@ -1572,7 +1464,6 @@ def match_comprehension_constraints(o : comprehension_constraints, handlers : Co
     return o._match(handlers)
     
 
-
 # type sequence_ExceptHandler
 @dataclass
 class sequence_ExceptHandler(ABC):
@@ -1616,7 +1507,6 @@ class SequenceExceptHandlerHandlers(Generic[T]):
 def match_sequence_ExceptHandler(o : sequence_ExceptHandler, handlers : SequenceExceptHandlerHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type conditions
 @dataclass
@@ -1674,7 +1564,6 @@ def match_conditions(o : conditions, handlers : ConditionsHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type function_def
 @dataclass
 class function_def(ABC):
@@ -1723,7 +1612,6 @@ class FunctionDefHandlers(Generic[T]):
 def match_function_def(o : function_def, handlers : FunctionDefHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type stmt
 @dataclass
@@ -2238,7 +2126,6 @@ def match_stmt(o : stmt, handlers : StmtHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type expr
 @dataclass
 class expr(ABC):
@@ -2710,7 +2597,6 @@ def match_expr(o : expr, handlers : ExprHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type boolop
 @dataclass
 class boolop(ABC):
@@ -2753,7 +2639,6 @@ class BoolopHandlers(Generic[T]):
 def match_boolop(o : boolop, handlers : BoolopHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type operator
 @dataclass
@@ -2930,7 +2815,6 @@ def match_operator(o : operator, handlers : OperatorHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type unaryop
 @dataclass
 class unaryop(ABC):
@@ -2997,7 +2881,6 @@ class UnaryopHandlers(Generic[T]):
 def match_unaryop(o : unaryop, handlers : UnaryopHandlers[T]) -> T :
     return o._match(handlers)
     
-
 
 # type cmpop
 @dataclass
@@ -3138,7 +3021,6 @@ def match_cmpop(o : cmpop, handlers : CmpopHandlers[T]) -> T :
     return o._match(handlers)
     
 
-
 # type constraint
 @dataclass
 class constraint(ABC):
@@ -3184,4 +3066,75 @@ class ConstraintHandlers(Generic[T]):
 # matching for type constraint
 def match_constraint(o : constraint, handlers : ConstraintHandlers[T]) -> T :
     return o._match(handlers)
+     
+
+
+# type and constructor Module
+@dataclass
+class Module:
+    body : statements
+
+
+# type and constructor CompareRight
+@dataclass
+class CompareRight:
+    op : cmpop
+    rand : expr
+
+
+# type and constructor ExceptHandler
+@dataclass
+class ExceptHandler:
+    arg : except_arg
+    body : statements
+
+
+# type and constructor Param
+@dataclass
+class Param:
+    name : str
+    type : param_type
+    default : param_default
+
+
+# type and constructor ImportName
+@dataclass
+class ImportName:
+    name : str
+    as_name : alias
+
+
+# type and constructor Withitem
+@dataclass
+class Withitem:
+    contet : expr
+    target : alias_expr
+
+
+# type and constructor ClassDef
+@dataclass
+class ClassDef:
+    name : str
+    bs : bases
+    body : statements
+
+
+# type and constructor ElifBlock
+@dataclass
+class ElifBlock:
+    test : expr
+    body : statements
+
+
+# type and constructor ElseBlock
+@dataclass
+class ElseBlock:
+    body : statements
+
+
+# type and constructor FinallyBlock
+@dataclass
+class FinallyBlock:
+    body : statements
+ 
     
