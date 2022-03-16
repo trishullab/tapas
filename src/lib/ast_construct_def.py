@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from lib import def_construct
+from lib import construct_def
 import lib.rule
 from lib.rule import Rule
 
 def generate_content(singles : list[Rule], choices : dict[str, list[Rule]]) -> str:
-    return def_construct.generate_content(
+    return construct_def.generate_content(
         [lib.rule.to_constructor(rule) for rule in singles], 
         { 
             type_name : [lib.rule.to_constructor(rule) for rule in rules]

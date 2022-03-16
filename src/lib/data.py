@@ -6,15 +6,24 @@ import os
 import pathlib
 import tree_sitter
 import json
-from gen.instance_construct import InstanceHandlers, match_instance
+from lib.abstract_token_construct_autogen import AbstractTokenHandlers, match_abstract_token, Vocab
 
 from lib import generic_tree
 
 from lib import python_ast
 from lib.util import write, project_path
+from lib.abstract_token import abstract_token 
+from lib.abstract_token_construct_autogen import Vocab
 
-from lib.instance import instance
-from gen.instance_construct import Vocab
+
+
+from lib.python_abstract_token import concretize, analyze, Client
+# from lib.abstract_token import abstract_token
+from lib.python_util import Inher, from_Inher_to_string
+from lib.python_util import Inher, from_Inher_to_dictionary
+# from typing import Union
+import lib.abstract_token
+from typing import Any, Union
 
 
 
@@ -29,7 +38,7 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
     abstract_data_base = name.split(".")[0]  
     # write(abstract_data_dirpath, f'{abstract_data_base}_training.txt', '')
-    write(abstract_data_dirpath, f'{abstract_data_base}_json.txt', '')
+    write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', '')
     write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', '')
 
     from datetime import datetime
@@ -51,13 +60,15 @@ def generate_file(dirname : str, name : str, vocab : dict):
             tree = generic_tree.parse('python', source_code, 'utf8')
 
 
-            instances : list[instance] = []
+            abstract_tokens : tuple[abstract_token, ...] = () 
 
             try:
+
                 mod = python_ast.parse_from_generic_tree(tree)
                 # mod = python_ast_rename.rename_Module(mod, {}, {}, {})
 
-                instances = python_ast.serialize(mod)
+                abstract_tokens = python_ast.serialize(mod)
+
 
                 # if total_count < 50:
 
@@ -85,8 +96,8 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
 
 
-                def triple_from_instance(inst : instance) -> tuple[str, str, str]:
-                    return match_instance(inst, InstanceHandlers[tuple[str, str, str]](
+                def triple_from_instance(inst : abstract_token) -> tuple[str, str, str]:
+                    return match_abstract_token(inst, AbstractTokenHandlers[tuple[str, str, str]](
                         case_Grammar=lambda o : (
                             ("grammar", o.options, o.selection)
                         ),
@@ -103,15 +114,30 @@ def generate_file(dirname : str, name : str, vocab : dict):
                 # ]
                 # write(abstract_data_dirpath, f'{abstract_data_base}_training.txt', "[" + ",".join(data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
 
+                # print(f"\n-------------------------\n")
+                # print(f"---Source Code---")
+                # print(source_code)
 
-                json_data = []
-                for i in instances:
-                    triple = triple_from_instance(i)
-                    for ti in triple:
-                        json_data.append(ti)
 
-                write(abstract_data_dirpath, f'{abstract_data_base}_json.txt', json.dumps(json_data) + '\n\n<|endoftext|>\n\n', append=True)
 
+                client : Client = analyze()
+                from lib.python_util import from_env_to_dictionary
+                inher : Inher = client.init_inher
+                atok = ['A', from_env_to_dictionary(inher.local_env), from_env_to_dictionary(inher.nonlocal_env), from_env_to_dictionary(inher.global_env)]
+                json_data = [atok]
+                for tok in abstract_tokens:
+                    triple = triple_from_instance(tok)
+                    json_data.append(['P', triple[0], triple[1], triple[2]])
+                    inher = client.next(tok)
+                    new_atok = ['A', from_env_to_dictionary(inher.local_env), from_env_to_dictionary(inher.nonlocal_env), from_env_to_dictionary(inher.global_env)]
+                    if (new_atok != atok):
+                        json_data.append(new_atok)
+                        atok = new_atok
+                client.close()
+
+                # print(f"generating json program: {json_data}")
+                write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', json.dumps(json_data) + '\n', append=True)
+                assert False
 
                 def handle_Vocab(o : Vocab):
                     if o.options in vocab.keys():
@@ -120,9 +146,9 @@ def generate_file(dirname : str, name : str, vocab : dict):
                         vocab[o.options] = {o.selection}
 
                 # update vocabulary
-                for inst in instances:
+                for inst in abstract_tokens:
 
-                    match_instance(inst, InstanceHandlers(
+                    match_abstract_token(inst, AbstractTokenHandlers(
                         case_Grammar=lambda o : (),
                         case_Vocab=handle_Vocab 
                     )) 
@@ -167,6 +193,11 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
 
                 # raise x
+            except:
+                pass
+                # print(f"\n-------------------------\n")
+                # print(f"---Source Code---")
+                # print(source_code)
 
             # update
             line = f.readline()

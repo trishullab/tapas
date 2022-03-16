@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from lib.def_construct import Constructor, Field
-from lib import def_construct
+from lib.construct_def import Constructor, Field
+from lib import construct_def
 
 def generate_content():
     return (
-        def_construct.header +
+        construct_def.header +
         "\n\n" +
-        "from gen.line_format_construct import line_format" +
+        "from lib.line_format_construct_autogen import line_format" +
         "\n\n" +
-        def_construct.generate_choice("item", [
+        construct_def.generate_choice("item", [
             Constructor(
                 "Terminal",
                 [
@@ -37,7 +37,7 @@ def generate_content():
 
         "\n\n" +
         "\n\n" +
-        def_construct.generate_single(
+        construct_def.generate_single(
             Constructor(
                 "Rule",
                 [

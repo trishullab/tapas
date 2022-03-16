@@ -21,18 +21,18 @@ def generate_single_procedure(
 
 def from_{rule.name}(
     o : {rule.name}
-) -> list[instance]:
+) -> tuple[abstract_token, ...]:
 
     return (
-        [lib.instance.make_Grammar(
+        tuple([lib.abstract_token.make_Grammar(
             options = '{rule.name}',
             selection = '{rule.name}'
-        )]{f' +{nl}' if rule.content else ''}
+        )]){f' +{nl}' if rule.content else ''}
 {f' +{nl}'.join([
 
     lib.rule.match_item(item, lib.rule.ItemHandlers[str](
         case_Vocab = lambda o : (
-            "    " * 2 + f"[lib.instance.make_Vocab(options = '{o.vocab}', selection = o.{o.relation})]"
+            "    " * 2 + f"tuple([lib.abstract_token.make_Vocab(options = '{o.vocab}', selection = o.{o.relation})])"
         ),
         case_Nonterm = lambda o : (
             "    " * 2 + f"from_{o.nonterminal}(o.{o.relation})"
@@ -53,25 +53,19 @@ def generate_item(type_name : str, item : lib.rule.item):
     return lib.rule.match_item(item, lib.rule.ItemHandlers[str](
         case_Vocab=lambda o : (f"""
                 stack.append(
-                    [lib.instance.make_Vocab(
+                    tuple([lib.abstract_token.make_Vocab(
                         options = '{o.vocab}',
                         selection = o.{o.relation}
-                    )]
+                    )])
                 )
         """),
         case_Nonterm=lambda o : (
             f"""
-                stack.append(
-                    o.{o.relation}
-                )
-            """
+                stack.append(o.{o.relation})"""
             if o.nonterminal == type_name else 
 
             f"""
-                stack.append(
-                    from_{o.nonterminal}(o.{o.relation})
-                )
-            """
+                stack.append(from_{o.nonterminal}(o.{o.relation}))"""
         ),
         case_Terminal=lambda o : (
             ""
@@ -85,18 +79,15 @@ def generate_rule_handler(type_name : str, rule : Rule):
 
     return (f"""
             def handle_{rule.name}(o : {rule.name}): 
-                nonlocal stack
-                assert isinstance(o, {type_name})
-
                 {nl.join([
                     generate_item(type_name, child)
                     for child in reversed(rule.content)
                 ])}
                 stack.append(
-                    [lib.instance.make_Grammar(
+                    tuple([lib.abstract_token.make_Grammar(
                         options = '{type_name}',
                         selection = '{rule.name}'
-                    )]
+                    )])
                 )
     """)
 
@@ -112,11 +103,11 @@ def generate_choice_procedure(
 
 def from_{type_name}(
     o : {type_name}
-) -> list[instance]:
+) -> tuple[abstract_token, ...]:
 
-    result = []
+    result = () 
 
-    stack : list[Union[{type_name}, list[instance]]] = [o]
+    stack : list[Union[{type_name}, tuple[abstract_token, ...]]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, {type_name}):
@@ -145,10 +136,10 @@ def generate_content(singles : list[Rule], choices : dict[str, list[Rule]]) -> s
 
     header = """
 from __future__ import annotations
-import lib.instance
-from gen.instance_construct import instance
-from gen.python_ast_construct import *
-from gen.line_format_construct import InLine, NewLine, IndentLine
+import lib.abstract_token
+from lib.abstract_token_construct_autogen import abstract_token
+from lib.python_ast_construct_autogen import *
+from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
 """
 
     nl = "\n"

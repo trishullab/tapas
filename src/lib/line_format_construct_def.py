@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from lib import def_construct
-from lib.def_construct import Constructor, Field
+from lib import construct_def
+from lib.construct_def import Constructor, Field
 
 type_name = "line_format"
 
@@ -24,7 +24,7 @@ constructors = [
 ]
 
 def generate_content():
-    return def_construct.generate_content([], {type_name : constructors})
+    return construct_def.generate_content([], {type_name : constructors})
 
 
 

@@ -5,12 +5,12 @@ from typing import Callable
 
 import inflection
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class Field:
     attr : str
     typ : str
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class Constructor:
     name: str 
     fields: list[Field]
@@ -35,7 +35,7 @@ def generate_single(
 
     code = (f"""
 # type and constructor {constructor.name}
-@dataclass
+@dataclass(frozen=True, eq=True)
 class {constructor.name}:
 {nl.join([
     f"    {field.attr} : {field.typ}" 
@@ -56,7 +56,7 @@ def generate_choice(
     def generate_constructor(constructor : Constructor) -> str:
         nonlocal handlers_name
         return (f"""
-@dataclass
+@dataclass(frozen=True, eq=True)
 class {constructor.name}({type_name}):
 {nl.join([
     f"    {field.attr} : {field.typ}"
@@ -78,7 +78,7 @@ def make_{constructor.name}({", ".join([
 
     code = (f"""
 # type {type_name}
-@dataclass
+@dataclass(frozen=True, eq=True)
 class {type_name}(ABC):
     @abstractmethod
     def _match(self, handlers : {handlers_name}[T]) -> T: pass
@@ -91,7 +91,7 @@ class {type_name}(ABC):
 ])}
 
 # case handlers for type {type_name}
-@dataclass
+@dataclass(frozen=True, eq=True)
 class {handlers_name}(Generic[T]):
 {nl.join([
     f"    case_{constructor.name} : Callable[[{constructor.name}], T]"

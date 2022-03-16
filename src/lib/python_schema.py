@@ -1,16 +1,14 @@
 from __future__ import annotations
-from gen.rule_construct import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
-from gen.line_format_construct import NewLine, InLine, IndentLine
+from lib.rule_construct_autogen import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
+from lib.line_format_construct_autogen import NewLine, InLine, IndentLine
 import lib.rule
-
-
 
 choices : dict[str, list[Rule]] = {
 
-    "return_type" : [
+    "return_annotation" : [
 
         Rule(
-            "SomeReturnType",
+            "SomeReturnAnno",
             [
                 Terminal(" -> "),
                 Nonterm("content", "expr", InLine())
@@ -18,18 +16,8 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "NoReturnType",
+            "NoReturnAnno",
             []
-        )
-    ],
-
-    "module_id" : [
-
-        Rule(
-            "SomeModuleId",
-            [
-                Vocab("content", "module_identifier")
-            ]
         )
     ],
 
@@ -58,9 +46,9 @@ choices : dict[str, list[Rule]] = {
         )
     ],
 
-    "param_type" : [
+    "param_annotation" : [
         Rule(
-            "SomeParamType",
+            "SomeParamAnno",
             [
                 Terminal(" : "),
                 Nonterm("content", "expr", InLine()),
@@ -68,7 +56,7 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "NoParamType",
+            "NoParamAnno",
             []
         ),
     ],
@@ -169,29 +157,6 @@ choices : dict[str, list[Rule]] = {
 
     ],
 
-    "parameters" : [
-        Rule(
-            "ParamsA",
-            [
-                Nonterm("content", "parameters_a", InLine())
-            ]
-        ),
-
-
-        Rule(
-            "ParamsB",
-            [
-                Nonterm("content", "parameters_b", InLine())
-            ]
-        ),
-
-        Rule(
-            "NoParam",
-            []
-        )
-    ],
-
-
     "parameters_a" : [
         Rule(
             "ConsPosParam",
@@ -221,6 +186,28 @@ choices : dict[str, list[Rule]] = {
 
     ],
 
+    "parameters" : [
+        Rule(
+            "ParamsA",
+            [
+                Nonterm("content", "parameters_a", InLine())
+            ]
+        ),
+
+
+        Rule(
+            "ParamsB",
+            [
+                Nonterm("content", "parameters_b", InLine())
+            ]
+        ),
+
+        Rule(
+            "NoParam",
+            []
+        )
+    ],
+
 
     "keyword" : [
 
@@ -242,37 +229,44 @@ choices : dict[str, list[Rule]] = {
         ),
     ],
 
-    "alias" : [
+    "import_name" : [
 
         Rule(
-            "SomeAlias",
+            "ImportNameAlias",
             [
+                Vocab("name", "identifier"),
                 Terminal(" as "),
-                Vocab("content", "identifier")
+                Vocab("alias", "identifier")
             ]
         ),
 
         Rule(
-            "NoAlias",
-            []
-        ),
+            "ImportNameOnly",
+            [
+                Vocab("name", "identifier"),
+            ]
+        )
 
     ],
 
-    "alias_expr" : [
+    "with_item" : [
 
         Rule(
-            "SomeAliasExpr",
+            "WithItemAlias",
             [
+                Nonterm("content", "expr", InLine()),
                 Terminal(" as "),
-                Nonterm("content", "expr", InLine())
+                Nonterm("alias", "expr", InLine())
             ]
         ),
 
+
         Rule(
-            "NoAliasExpr",
-            []
-        ),
+            "WithItemOnly",
+            [
+                Nonterm("content", "expr", InLine())
+            ]
+        )
 
     ],
 
@@ -536,13 +530,13 @@ choices : dict[str, list[Rule]] = {
 
     ],
 
-    "sequence_var" : [
+    "sequence_name" : [
         Rule(
             "ConsId",
             [
                 Vocab("head", "identifier"),
                 Terminal(", "),
-                Nonterm("tail", "sequence_var", InLine())
+                Nonterm("tail", "sequence_name", InLine())
             ]
         ),
 
@@ -556,39 +550,58 @@ choices : dict[str, list[Rule]] = {
     ],
 
 
-    "sequence_ImportName" : [
+    "sequence_import_name" : [
         Rule(
             "ConsImportName",
             [
-                Nonterm("head", "ImportName", InLine()),
+                Nonterm("head", "import_name", InLine()),
                 Terminal(", "),
-                Nonterm("tail", "sequence_ImportName", InLine()),
+                Nonterm("tail", "sequence_import_name", InLine()),
             ]
         ),
 
         Rule(
             "SingleImportName",
             [
-                Nonterm("content", "ImportName", InLine())
+                Nonterm("content", "import_name", InLine())
             ]
         ),
 
     ],
 
-    "sequence_Withitem" : [
+    "sequence_with_item" : [
         Rule(
-            "ConsWithitem",
+            "ConsWithItem",
             [
-                Nonterm("head", "Withitem", InLine()),
+                Nonterm("head", "with_item", InLine()),
                 Terminal(", "),
-                Nonterm("tail", "sequence_Withitem", InLine())
+                Nonterm("tail", "sequence_with_item", InLine())
             ]
         ),
 
         Rule(
-            "SingleWithitem",
+            "SingleWithItem",
             [
-                Nonterm("content", "Withitem", InLine())
+                Nonterm("content", "with_item", InLine())
+            ]
+        ),
+
+    ],
+
+    "module" : [
+        Rule(
+            "FutureMod",
+            [
+                Terminal("from __future__ import "),
+                Nonterm("names", "sequence_import_name", InLine()),
+                Nonterm("body", "statements", NewLine())
+            ]
+        ),
+
+        Rule(
+            "SimpleMod",
+            [
+                Nonterm("body", "statements", InLine())
             ]
         ),
 
@@ -682,7 +695,7 @@ choices : dict[str, list[Rule]] = {
                 Terminal("("),
                 Nonterm("params", "parameters", InLine()),
                 Terminal(")"),
-                Nonterm("ret_typ", "return_type", InLine()),
+                Nonterm("ret_anno", "return_annotation", InLine()),
                 Terminal(":"),
                 Nonterm("body", "statements", IndentLine())
             ]
@@ -696,7 +709,7 @@ choices : dict[str, list[Rule]] = {
                 Terminal("("),
                 Nonterm("params", "parameters", InLine()),
                 Terminal(")"),
-                Nonterm("ret_typ", "return_type", InLine()),
+                Nonterm("ret_anno", "return_annotation", InLine()),
                 Terminal(":"),
                 Nonterm("body", "statements", IndentLine())
             ]
@@ -708,14 +721,6 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "DecFunctionDef",
             [ 
-                Nonterm("decs", "decorators", InLine()),
-                Nonterm("fun_def", "function_def", NewLine())
-            ]
-        ),
-
-        Rule(
-            "DecAsyncFunctionDef",
-            [
                 Nonterm("decs", "decorators", InLine()),
                 Nonterm("fun_def", "function_def", NewLine())
             ]
@@ -748,7 +753,7 @@ choices : dict[str, list[Rule]] = {
         Rule(
             "Delete",
             [
-                Terminal("del"),
+                Terminal("del "),
                 Nonterm("targets", "comma_exprs", InLine())
             ]
         ),
@@ -774,22 +779,22 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "TypedAssign", 
+            "AnnoAssign", 
             [
                 Nonterm("target", "expr", InLine()),
                 Terminal(" : "),
-                Nonterm("type", "expr", InLine()),
+                Nonterm("anno", "expr", InLine()),
                 Terminal(" = "),
                 Nonterm("content", "expr", InLine())
             ],
         ),
 
         Rule(
-            "TypedDeclare", 
+            "AnnoDeclar", 
             [
                 Nonterm("target", "expr", InLine()),
                 Terminal(" : "),
-                Nonterm("type", "expr", InLine())
+                Nonterm("anno", "expr", InLine())
             ],
         ),
 
@@ -879,7 +884,7 @@ choices : dict[str, list[Rule]] = {
             "With",
             [
                 Terminal("with "),
-                Nonterm("items", "sequence_Withitem", InLine()),
+                Nonterm("items", "sequence_with_item", InLine()),
                 Terminal(":"),
                 Nonterm("body", "statements", IndentLine())
             ]
@@ -889,7 +894,7 @@ choices : dict[str, list[Rule]] = {
             "AsyncWith",
             [
                 Terminal("async with "),
-                Nonterm("items", "sequence_Withitem", InLine()),
+                Nonterm("items", "sequence_with_item", InLine()),
                 Terminal(":"),
                 Nonterm("body", "statements", IndentLine())
             ]
@@ -995,7 +1000,7 @@ choices : dict[str, list[Rule]] = {
             "Import",
             [
                 Terminal("import "),
-                Nonterm("names", "sequence_ImportName", InLine())
+                Nonterm("names", "sequence_import_name", InLine())
             ]
         ),
 
@@ -1003,9 +1008,9 @@ choices : dict[str, list[Rule]] = {
             "ImportFrom",
             [
                 Terminal("from "),
-                Nonterm("module", "module_id", InLine()),
+                Vocab("module", "identifier"),
                 Terminal(" import "),
-                Nonterm("names", "sequence_ImportName", InLine())
+                Nonterm("names", "sequence_import_name", InLine())
             ]
         ),
 
@@ -1013,7 +1018,7 @@ choices : dict[str, list[Rule]] = {
             "ImportWildCard",
             [
                 Terminal("from "),
-                Nonterm("module", "module_id", InLine()),
+                Vocab("module", "identifier"),
                 Terminal(" import *")
             ]
         ),
@@ -1022,7 +1027,7 @@ choices : dict[str, list[Rule]] = {
             "Global",
             [
                 Terminal("global "),
-                Nonterm("names", "sequence_var", InLine())
+                Nonterm("names", "sequence_name", InLine())
             ]
         ),
 
@@ -1030,7 +1035,7 @@ choices : dict[str, list[Rule]] = {
             "Nonlocal",
             [
                 Terminal("nonlocal "),
-                Nonterm("names", "sequence_var", InLine())
+                Nonterm("names", "sequence_name", InLine())
             ]
         ),
 
@@ -1080,7 +1085,7 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "NamedExpr",
+            "AssignExpr",
             [
                 Nonterm("target", "expr", InLine()),
                 Terminal(" := "),
@@ -1577,13 +1582,6 @@ choices : dict[str, list[Rule]] = {
 singles : list[Rule] = [
 
     Rule(
-        "Module",
-        [
-            Nonterm("body", "statements", InLine())
-        ]
-    ),
-
-    Rule(
         "CompareRight",
         [
             Nonterm("op", "cmpop", InLine()),
@@ -1606,25 +1604,8 @@ singles : list[Rule] = [
         "Param",
         [
             Vocab("name", "identifier"),
-            Nonterm("type", "param_type", InLine()),
+            Nonterm("anno", "param_annotation", InLine()),
             Nonterm("default", "param_default", InLine())
-        ]
-    ),
-
-    Rule(
-        "ImportName",
-        [
-            Vocab("name", "module_identifier"),
-            Nonterm("as_name", "alias", InLine())
-        ]
-    ),
-
-
-    Rule(
-        "Withitem",
-        [
-            Nonterm("contet", "expr", InLine()),
-            Nonterm("target", "alias_expr", InLine())
         ]
     ),
 

@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 
 
 from lib.generic_tree import GenericNode
-from gen.python_ast_construct import *
+from lib.python_ast_construct_autogen import *
 
 from lib import util
 
@@ -197,7 +197,7 @@ def to_statements(stmts : list[stmt]) -> statements:
 
     return result
 
-def to_sequence_ImportName(ns : list[ImportName]) -> sequence_ImportName:
+def to_sequence_import_name(ns : list[import_name]) -> sequence_import_name:
     assert ns 
 
     result = SingleImportName(ns[-1])
@@ -206,7 +206,7 @@ def to_sequence_ImportName(ns : list[ImportName]) -> sequence_ImportName:
 
     return result
 
-def to_sequence_var(ids : list[str]) -> sequence_var:
+def to_sequence_var(ids : list[str]) -> sequence_name:
     assert ids 
 
     result = SingleId(ids[-1])
@@ -225,12 +225,12 @@ def to_sequence_ExceptHandler(es : list[ExceptHandler]) -> sequence_ExceptHandle
     return result
 
 
-def to_sequence_Withitem(ws : list[Withitem]) -> sequence_Withitem:
+def to_sequence_with_item(ws : list[with_item]) -> sequence_with_item:
     assert ws 
 
-    result = SingleWithitem(ws[-1])
+    result = SingleWithItem(ws[-1])
     for w in reversed(ws[:-1]):
-        result = ConsWithitem(w, result)
+        result = ConsWithItem(w, result)
 
     return result
 
@@ -308,15 +308,48 @@ def to_arguments(ps : list[expr], ks : list[keyword]) -> arguments:
 
     return result
 
-def from_generic_tree(node : GenericNode) -> Module: 
-    children = node.children
+
+def from_generic_tree(node : GenericNode) -> module: 
     if (node.syntax_part == "module"):
-        statements = [
-            stmt
-            for stmt_node in children  
-            for stmt in from_generic_tree_to_stmts(stmt_node)
-        ]
-        return Module(to_statements(statements))
+        children = node.children
+
+        first = children[0]
+        rest = children[1:]
+
+        if (first.syntax_part == "future_import_statement"):
+            children = first.children
+            assert children[0].syntax_part == "from"
+            id = ("__future__")
+            assert children[2].syntax_part == "import"
+
+            import_list = (
+                children[4:-1]
+                if children[3].syntax_part == "(" else
+
+                children[3:]
+            )
+
+            names = to_sequence_import_name([
+                from_generic_tree_to_import_name(n) 
+                for n in import_list 
+                if n.syntax_part != ","
+            ])
+
+            statements = [
+                stmt
+                for stmt_node in rest  
+                for stmt in from_generic_tree_to_stmts(stmt_node)
+            ]
+            
+            return FutureMod(names, to_statements(statements))
+        else:
+            statements = [
+                stmt
+                for stmt_node in children  
+                for stmt in from_generic_tree_to_stmts(stmt_node)
+            ]
+            
+            return SimpleMod(to_statements(statements))
     else:
        unsupported(node) 
 
@@ -336,7 +369,7 @@ def from_generic_tree_to_identifier(node : GenericNode) -> str:
        unsupported(node) 
 
 
-def from_generic_tree_to_ImportName(node : GenericNode, alias : Optional[str] = None) -> ImportName:
+def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] = None) -> import_name:
     
     if (node.syntax_part == "dotted_name"):
         dotted_name = ".".join([
@@ -344,31 +377,27 @@ def from_generic_tree_to_ImportName(node : GenericNode, alias : Optional[str] = 
             for child in node.children
             if child.syntax_part == "identifier"
         ])
-        return ImportName(
-            (dotted_name),
-            (
-                SomeAlias((alias)) 
-                if alias else 
-                NoAlias()
-            )
+        return (
+            ImportNameAlias(dotted_name, alias) 
+            if alias else 
+            ImportNameOnly(dotted_name)
         )
+
     elif (node.syntax_part == "identifier"):
         text = node.text
-        return ImportName(
-            (text),
-            (
-                SomeAlias((alias)) 
-                if alias else 
-                NoAlias()
-            )
+        return (
+            ImportNameAlias(text, alias) 
+            if alias else 
+            ImportNameOnly(text)
         )
+
     elif (node.syntax_part == "aliased_import"):
         children = node.children
         name_node = children[0]
         assert children[1].syntax_part == "as"
         asname_node = children[2]
         asname_text = asname_node.text
-        return from_generic_tree_to_ImportName(name_node, asname_text)
+        return from_generic_tree_to_import_name(name_node, asname_text)
     else:
         unsupported(node)
 
@@ -523,7 +552,7 @@ def from_generic_tree_to_ExceptHandler(node) -> ExceptHandler:
     return  ExceptHandler(arg, to_statements(stmts))
 
 
-def from_generic_tree_to_Withitem(node) -> Withitem:
+def from_generic_tree_to_with_item(node) -> with_item:
     assert node.syntax_part == "with_item"
     children = node.children
     context_node = children[0]
@@ -537,13 +566,12 @@ def from_generic_tree_to_Withitem(node) -> Withitem:
     context_expr = from_generic_tree_to_expr(context_node)
     pattern_expr = util.map_option(from_generic_tree_to_expr, pattern_node)
 
-    target = (
-        SomeAliasExpr(pattern_expr)
+    return (
+        WithItemAlias(context_expr, pattern_expr)
         if pattern_expr else
 
-        NoAliasExpr()
+        WithItemOnly(context_expr) 
     )
-    return Withitem(context_expr, target)
 
 
 def from_nodes_to_constraint(nodes : list[GenericNode]) -> constraint:
@@ -978,7 +1006,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
         target_expr = from_generic_tree_to_expr(children[0])
         assert children[1].syntax_part == ":="
         value_expr = from_generic_tree_to_expr(children[2])
-        return NamedExpr(target_expr, value_expr)
+        return AssignExpr(target_expr, value_expr)
 
     elif node.syntax_part == "type":
         return from_generic_tree_to_expr(node.children[0])
@@ -1075,7 +1103,7 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param:
 
     if node.syntax_part == "identifier":
         id = from_generic_tree_to_identifier(node)
-        return Param(id, NoParamType(), NoParamDefault())
+        return Param(id, NoParamAnno(), NoParamDefault())
 
     elif node.syntax_part == "typed_parameter":
 
@@ -1097,13 +1125,13 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param:
         id = from_generic_tree_to_identifier(id_node)
         assert node.children[1].syntax_part == ":"
         type_anno = from_generic_tree_to_expr(node.children[2])
-        return Param(id, SomeParamType(type_anno), NoParamDefault())
+        return Param(id, SomeParamAnno(type_anno), NoParamDefault())
 
     elif node.syntax_part == "default_parameter":
         id = from_generic_tree_to_identifier(node.children[0])
         assert node.children[1].syntax_part == "="
         default_expr = from_generic_tree_to_expr(node.children[2])
-        return Param(id, NoParamType(), SomeParamDefault(default_expr))
+        return Param(id, NoParamAnno(), SomeParamDefault(default_expr))
 
     elif node.syntax_part == "typed_default_parameter":
         id = from_generic_tree_to_identifier(node.children[0])
@@ -1111,17 +1139,17 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param:
         type_anno = from_generic_tree_to_expr(node.children[2])
         assert node.children[3].syntax_part == "="
         default_expr = from_generic_tree_to_expr(node.children[4])
-        return Param(id, SomeParamType(type_anno), SomeParamDefault(default_expr))
+        return Param(id, SomeParamAnno(type_anno), SomeParamDefault(default_expr))
 
     elif node.syntax_part == "list_splat_pattern":
         assert node.children[0].syntax_part == "*"
         id = from_generic_tree_to_identifier(node.children[1])
-        return Param(id, NoParamType(), NoParamDefault())
+        return Param(id, NoParamAnno(), NoParamDefault())
 
     elif node.syntax_part == "dictionary_splat_pattern":
         assert node.children[0].syntax_part == "**"
         id = from_generic_tree_to_identifier(node.children[1])
-        return Param(id, NoParamType(), NoParamDefault())
+        return Param(id, NoParamAnno(), NoParamDefault())
 
     else:
         unsupported(node)
@@ -1254,8 +1282,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
         children = node.children
         assert children[0].syntax_part == "import"
         return [Import(
-            names = to_sequence_ImportName([
-                from_generic_tree_to_ImportName(child)
+            names = to_sequence_import_name([
+                from_generic_tree_to_import_name(child)
                 for child in children[1:]
                 if child.syntax_part != ","
             ])
@@ -1272,14 +1300,14 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                 assert_syntax(prefix_node, "import_prefix"),
                 prefix := len(prefix_node.children) * '.', 
                 (
-                    SomeModuleId(prefix + from_generic_tree_to_identifier(rel_import_node.children[1]))
+                    (prefix + from_generic_tree_to_identifier(rel_import_node.children[1]))
                     if len(rel_import_node.children) == 2 else
-                    SomeModuleId(prefix)
+                    (prefix)
                 )
             )[-1]
             if children[1].syntax_part == "relative_import" else
 
-            SomeModuleId(from_generic_tree_to_identifier(children[1]))
+            (from_generic_tree_to_identifier(children[1]))
         )
 
         assert children[2].syntax_part == "import"
@@ -1295,8 +1323,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                 children[3:]
             )
 
-            aliases = to_sequence_ImportName([
-                from_generic_tree_to_ImportName(n) 
+            aliases = to_sequence_import_name([
+                from_generic_tree_to_import_name(n) 
                 for n in import_list
                 if n.syntax_part != ","
             ])
@@ -1305,7 +1333,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
     elif (node.syntax_part == "future_import_statement"):
         children = node.children
         assert children[0].syntax_part == "from"
-        id = SomeModuleId(("__future__"))
+        id = ("__future__")
         assert children[2].syntax_part == "import"
 
         import_list = (
@@ -1315,8 +1343,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
             children[3:]
         )
 
-        names = to_sequence_ImportName([
-            from_generic_tree_to_ImportName(n) 
+        names = to_sequence_import_name([
+            from_generic_tree_to_import_name(n) 
             for n in import_list 
             if n.syntax_part != ","
         ])
@@ -1399,11 +1427,11 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                         right_expr = util.map_option(from_generic_tree_to_expr, right)
                         if right_expr:
                             return [
-                                TypedAssign(left_expr, typ_expr, right_expr)
+                                AnnoAssign(left_expr, typ_expr, right_expr)
                             ]
                         else:
                             return [
-                                TypedDeclare(left_expr, typ_expr)
+                                AnnoDeclar(left_expr, typ_expr)
                             ]
                     elif right:
                         right_expr = from_generic_tree_to_expr(right)
@@ -1550,7 +1578,6 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ])
 
-        from gen.python_ast_construct import expr
         def to_elif_content(elif_node : GenericNode) -> tuple[expr, statements]:
             assert (elif_node.syntax_part == "elif_clause")
             else_children = elif_node.children
@@ -1833,8 +1860,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
         with_clause_node = children[1]
         assert with_clause_node.syntax_part == "with_clause"
 
-        with_items = to_sequence_Withitem([
-            from_generic_tree_to_Withitem(item_node)
+        with_items = to_sequence_with_item([
+            from_generic_tree_to_with_item(item_node)
             for item_node in with_clause_node.children
         ])
 
@@ -1873,7 +1900,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
         params_node = children[2]
         param_group = from_generic_tree_to_parameters(params_node)
 
-        (return_type_node, block_node) = (
+        (return_anno_node, block_node) = (
             (children[4], children[6])
             if children[3].syntax_part == "->" and children[5].syntax_part == ":"
             
@@ -1885,11 +1912,11 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
 
         assert block_node
 
-        return_type = (
-            SomeReturnType(from_generic_tree_to_expr(return_type_node))
-            if return_type_node else
+        return_anno = (
+            SomeReturnAnno(from_generic_tree_to_expr(return_anno_node))
+            if return_anno_node else
 
-            NoReturnType()
+            NoReturnAnno()
         )
 
         body = to_statements([
@@ -1900,9 +1927,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
 
         if is_async: 
             return [
-                DecAsyncFunctionDef(
+                DecFunctionDef(
                     decorators,
-                    AsyncFunctionDef(name, param_group, return_type, body)
+                    AsyncFunctionDef(name, param_group, return_anno, body)
                 )
             ]
 
@@ -1910,7 +1937,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
             return [
                 DecFunctionDef(
                     decorators, 
-                    FunctionDef(name, param_group, return_type, body)
+                    FunctionDef(name, param_group, return_anno, body)
                 )
             ]
 

@@ -7,11 +7,9 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 from tree_sitter import Language
-
 import tree_sitter
 
-from lib.util import fail
-
+from lib import util
 
 T = TypeVar('T')
 
@@ -92,7 +90,7 @@ import os
 base_path = pathlib.Path(__file__).parent.absolute()
 
 def parse(lang_name : str, source : str, encoding : str) -> GenericNode:
-    grammar = Language(os.path.join(base_path, '../../build/grammars.so'), lang_name)
+    grammar = Language(util.project_path('build/grammars.so'), lang_name)
 
     parser = tree_sitter.Parser()
     parser.set_language(grammar)

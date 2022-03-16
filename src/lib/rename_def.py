@@ -11,17 +11,6 @@ from lib import line_format
 jinja_env = jinja2.Environment(trim_blocks=True)
 # jinja_env.globals.update(isinstance=isinstance)
 
-# When local and global keywords are seen, copy renaming entry to local renaming. 
-# When identifier is used in assignment target or expression, look up renaming in local map or create a new renaming entry
-
-# if context is class or params, add reflexive (A -> A) renaming to the local map
-
-# collect all function def identifiers to pass into local scope of all nested scopes. 
-
-# create stack machine that places target and its children as a row on stack, with flag to indicate if a child has been processed
-
-# use type inference in order to rename class field names and function parameter names
-# generate `if isinstance` condition switch for each type that is inferred, if there is more than one type inferred
 
 header = """
 from __future__ import annotations

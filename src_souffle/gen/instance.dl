@@ -1,3 +1,0 @@
-.type instance = 
-    Grammar {options : symbol, selection : symbol} |
-    Vocab {options : symbol, selection : symbol}

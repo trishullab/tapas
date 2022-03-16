@@ -29,4 +29,4 @@ import os
 dirpath = util.project_path("res/test/python/concrete_data")
 
 def test_cubert():
-    return util.run_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)
+    return util.run_jsonl_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)

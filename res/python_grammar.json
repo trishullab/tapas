@@ -1,37 +1,23 @@
 {
-    "Module": [
-        {
-            "name": "Module",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "body",
-                    "nonterminal": "statements",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
-        }
-    ],
     "CompareRight": [
         {
             "name": "CompareRight",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "op",
                     "nonterminal": "cmpop",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "rand",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -39,21 +25,26 @@
     "ExceptHandler": [
         {
             "name": "ExceptHandler",
-            "leader": "except ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "except "
+                },
                 {
                     "kind": "grammar",
                     "relation": "arg",
                     "nonterminal": "except_arg",
-                    "format": "InLine",
-                    "follower": ":"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         }
@@ -61,90 +52,23 @@
     "Param": [
         {
             "name": "Param",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
                 },
                 {
                     "kind": "grammar",
-                    "relation": "type",
-                    "nonterminal": "param_type",
-                    "format": "InLine",
-                    "follower": ""
+                    "relation": "anno",
+                    "nonterminal": "param_annotation",
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "default",
                     "nonterminal": "param_default",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
-        }
-    ],
-    "Field": [
-        {
-            "name": "Field",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "key",
-                    "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "contents",
-                    "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
-        }
-    ],
-    "ImportName": [
-        {
-            "name": "ImportName",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "vocab",
-                    "relation": "name",
-                    "choices_id": "module_identifier"
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "as_name",
-                    "nonterminal": "alias",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
-        }
-    ],
-    "Withitem": [
-        {
-            "name": "Withitem",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "contet",
-                    "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "target",
-                    "nonterminal": "alias_expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -152,26 +76,31 @@
     "ClassDef": [
         {
             "name": "ClassDef",
-            "leader": "class ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "class "
+                },
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
                 },
                 {
                     "kind": "grammar",
                     "relation": "bs",
                     "nonterminal": "bases",
-                    "format": "InLine",
-                    "follower": ":"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         }
@@ -179,21 +108,26 @@
     "ElifBlock": [
         {
             "name": "ElifBlock",
-            "leader": "elif ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "elif "
+                },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ":"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         }
@@ -201,14 +135,16 @@
     "ElseBlock": [
         {
             "name": "ElseBlock",
-            "leader": "else:",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "else:"
+                },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         }
@@ -216,178 +152,173 @@
     "FinallyBlock": [
         {
             "name": "FinallyBlock",
-            "leader": "finally:",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "finally:"
+                },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         }
     ],
-    "return_type": [
+    "return_annotation": [
         {
-            "name": "SomeReturnType",
-            "leader": " -> ",
+            "name": "SomeReturnAnno",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": " -> "
+                },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "NoReturnType",
-            "leader": "",
-            "children": []
-        }
-    ],
-    "module_id": [
-        {
-            "name": "SomeModuleId",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "module_identifier"
-                }
-            ]
-        },
-        {
-            "name": "NoModuleId",
-            "leader": ".",
+            "name": "NoReturnAnno",
             "children": []
         }
     ],
     "except_arg": [
         {
             "name": "SomeExceptArg",
-            "leader": " ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": " "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SomeExceptArgName",
-            "leader": " ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": " "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " as "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " as "
                 },
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
                 }
             ]
         },
         {
             "name": "NoExceptArg",
-            "leader": "",
             "children": []
         }
     ],
-    "param_type": [
+    "param_annotation": [
         {
-            "name": "SomeParamType",
-            "leader": " : ",
+            "name": "SomeParamAnno",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": " : "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "NoParamType",
-            "leader": "",
+            "name": "NoParamAnno",
             "children": []
         }
     ],
     "param_default": [
         {
             "name": "SomeParamDefault",
-            "leader": " = ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": " = "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "NoParamDefault",
-            "leader": "",
             "children": []
         }
     ],
     "parameters_d": [
         {
             "name": "ConsKwParam",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "parameters_d",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleKwParam",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "DictionarySplatParam",
-            "leader": "**",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "**"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -395,47 +326,56 @@
     "parameters_c": [
         {
             "name": "SingleListSplatParam",
-            "leader": "*",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "*"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "TransListSplatParam",
-            "leader": "*",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "*"
+                },
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "parameters_d",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "ParamsD",
-            "leader": "*, ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "*, "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "parameters_d",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -443,47 +383,103 @@
     "parameters_b": [
         {
             "name": "ConsParam",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "parameters_b",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleParam",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "ParamsC",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "parameters_c",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
+                }
+            ]
+        }
+    ],
+    "parameters_a": [
+        {
+            "name": "ConsPosParam",
+            "children": [
+                {
+                    "kind": "grammar",
+                    "relation": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "tail",
+                    "nonterminal": "parameters_a",
+                    "format": "InLine"
+                }
+            ]
+        },
+        {
+            "name": "SinglePosParam",
+            "children": [
+                {
+                    "kind": "grammar",
+                    "relation": "content",
+                    "nonterminal": "Param",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", /"
+                }
+            ]
+        },
+        {
+            "name": "TransPosParam",
+            "children": [
+                {
+                    "kind": "grammar",
+                    "relation": "head",
+                    "nonterminal": "Param",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", /, "
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "tail",
+                    "nonterminal": "parameters_b",
+                    "format": "InLine"
                 }
             ]
         }
@@ -491,226 +487,199 @@
     "parameters": [
         {
             "name": "ParamsA",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "parameters_a",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "ParamsB",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "parameters_b",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "NoParam",
-            "leader": "",
             "children": []
-        }
-    ],
-    "parameters_a": [
-        {
-            "name": "ConsPosParam",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "head",
-                    "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ", "
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "tail",
-                    "nonterminal": "parameters_a",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
-        },
-        {
-            "name": "SinglePosParam",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "contents",
-                    "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ", /"
-                }
-            ]
-        },
-        {
-            "name": "TransPosParam",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "head",
-                    "nonterminal": "Param",
-                    "format": "InLine",
-                    "follower": ", /, "
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "tail",
-                    "nonterminal": "parameters_b",
-                    "format": "InLine",
-                    "follower": ""
-                }
-            ]
         }
     ],
     "keyword": [
         {
             "name": "NamedKeyword",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " = "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SplatKeyword",
-            "leader": "**",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "**"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
     ],
-    "alias": [
+    "import_name": [
         {
-            "name": "SomeAlias",
-            "leader": " as ",
+            "name": "ImportNameAlias",
             "children": [
                 {
                     "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "identifier"
+                    "relation": "name",
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " as "
+                },
+                {
+                    "kind": "vocab",
+                    "relation": "alias",
+                    "vocab": "identifier"
                 }
             ]
         },
         {
-            "name": "NoAlias",
-            "leader": "",
-            "children": []
+            "name": "ImportNameOnly",
+            "children": [
+                {
+                    "kind": "vocab",
+                    "relation": "name",
+                    "vocab": "identifier"
+                }
+            ]
         }
     ],
-    "alias_expr": [
+    "with_item": [
         {
-            "name": "SomeAliasExpr",
-            "leader": " as ",
+            "name": "WithItemAlias",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " as "
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "alias",
+                    "nonterminal": "expr",
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "NoAliasExpr",
-            "leader": "",
-            "children": []
+            "name": "WithItemOnly",
+            "children": [
+                {
+                    "kind": "grammar",
+                    "relation": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine"
+                }
+            ]
         }
     ],
     "bases": [
         {
             "name": "SomeBases",
-            "leader": "(",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "("
+                },
                 {
                     "kind": "grammar",
                     "relation": "bases",
                     "nonterminal": "bases_a",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
             "name": "NoBases",
-            "leader": "",
             "children": []
         }
     ],
     "bases_a": [
         {
             "name": "ConsBase",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "bases_a",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleBase",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "KeywordsBase",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "kws",
                     "nonterminal": "keywords",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -718,34 +687,33 @@
     "keywords": [
         {
             "name": "ConsKeyword",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "keyword",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "keywords",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleKeyword",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "keyword",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -753,34 +721,33 @@
     "comparisons": [
         {
             "name": "ConsCompareRight",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "CompareRight",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "comparisons",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleCompareRight",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "CompareRight",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -788,54 +755,50 @@
     "option_expr": [
         {
             "name": "SomeExpr",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "NoExpr",
-            "leader": "",
             "children": []
         }
     ],
     "comma_exprs": [
         {
             "name": "ConsExpr",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "comma_exprs",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleExpr",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -843,34 +806,33 @@
     "target_exprs": [
         {
             "name": "ConsTargetExpr",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " = "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " = "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "target_exprs",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleTargetExpr",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -878,97 +840,100 @@
     "decorators": [
         {
             "name": "ConsDec",
-            "leader": "@",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "@"
+                },
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "decorators",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "NoDec",
-            "leader": "",
             "children": []
         }
     ],
     "constraint_filters": [
         {
             "name": "ConsFilter",
-            "leader": "if ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "if "
+                },
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "expr",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "constraint_filters",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "SingleFilter",
-            "leader": "if ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "if "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "NoFilter",
-            "leader": "",
             "children": []
         }
     ],
     "sequence_string": [
         {
             "name": "ConsStr",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
                     "relation": "head",
-                    "choices_id": "string"
+                    "vocab": "string"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "sequence_string",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleStr",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "string"
+                    "relation": "content",
+                    "vocab": "string"
                 }
             ]
         }
@@ -976,183 +941,250 @@
     "arguments": [
         {
             "name": "ConsArg",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "arguments",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleArg",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "KeywordsArg",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "kws",
                     "nonterminal": "keywords",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
     ],
-    "dictionary_contents": [
+    "dictionary_item": [
         {
-            "name": "ConsField",
-            "leader": "",
+            "name": "Field",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "head",
-                    "nonterminal": "Field",
-                    "format": "InLine",
-                    "follower": ", "
+                    "relation": "key",
+                    "nonterminal": "expr",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " : "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "tail",
-                    "nonterminal": "dictionary_contents",
-                    "format": "NewLine",
-                    "follower": ""
+                    "relation": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "SingleField",
-            "leader": "",
+            "name": "DictionarySplatFields",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "**"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
-                    "nonterminal": "Field",
-                    "format": "InLine",
-                    "follower": ""
+                    "relation": "content",
+                    "nonterminal": "expr",
+                    "format": "InLine"
                 }
             ]
         }
     ],
-    "sequence_var": [
+    "dictionary_content": [
         {
-            "name": "ConsId",
-            "leader": "",
+            "name": "ConsDictionaryItem",
             "children": [
                 {
-                    "kind": "vocab",
+                    "kind": "grammar",
                     "relation": "head",
-                    "choices_id": "identifier"
+                    "nonterminal": "dictionary_item",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
-                    "nonterminal": "sequence_var",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "dictionary_content",
+                    "format": "NewLine"
+                }
+            ]
+        },
+        {
+            "name": "SingleDictionaryItem",
+            "children": [
+                {
+                    "kind": "grammar",
+                    "relation": "content",
+                    "nonterminal": "dictionary_item",
+                    "format": "InLine"
+                }
+            ]
+        }
+    ],
+    "sequence_name": [
+        {
+            "name": "ConsId",
+            "children": [
+                {
+                    "kind": "vocab",
+                    "relation": "head",
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "tail",
+                    "nonterminal": "sequence_name",
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleId",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "identifier"
+                    "relation": "content",
+                    "vocab": "identifier"
                 }
             ]
         }
     ],
-    "sequence_ImportName": [
+    "sequence_import_name": [
         {
             "name": "ConsImportName",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
-                    "nonterminal": "ImportName",
-                    "format": "InLine",
-                    "follower": ", "
+                    "nonterminal": "import_name",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
-                    "nonterminal": "sequence_ImportName",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "sequence_import_name",
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "SingleImportName",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
-                    "nonterminal": "ImportName",
-                    "format": "InLine",
-                    "follower": ""
+                    "relation": "content",
+                    "nonterminal": "import_name",
+                    "format": "InLine"
                 }
             ]
         }
     ],
-    "sequence_Withitem": [
+    "sequence_with_item": [
         {
-            "name": "ConsWithitem",
-            "leader": "",
+            "name": "ConsWithItem",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
-                    "nonterminal": "Withitem",
-                    "format": "InLine",
-                    "follower": ", "
+                    "nonterminal": "with_item",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
-                    "nonterminal": "sequence_Withitem",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "sequence_with_item",
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "SingleWithitem",
-            "leader": "",
+            "name": "SingleWithItem",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
-                    "nonterminal": "Withitem",
-                    "format": "InLine",
-                    "follower": ""
+                    "relation": "content",
+                    "nonterminal": "with_item",
+                    "format": "InLine"
+                }
+            ]
+        }
+    ],
+    "module": [
+        {
+            "name": "FutureMod",
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "from __future__ import "
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "names",
+                    "nonterminal": "sequence_import_name",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "body",
+                    "nonterminal": "statements",
+                    "format": "NewLine"
+                }
+            ]
+        },
+        {
+            "name": "SimpleMod",
+            "children": [
+                {
+                    "kind": "grammar",
+                    "relation": "body",
+                    "nonterminal": "statements",
+                    "format": "InLine"
                 }
             ]
         }
@@ -1160,34 +1192,29 @@
     "statements": [
         {
             "name": "ConsStmt",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "stmt",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "statements",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "SingleStmt",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "stmt",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -1195,34 +1222,29 @@
     "comprehension_constraints": [
         {
             "name": "ConsConstraint",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "constraint",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "comprehension_constraints",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "SingleConstraint",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "constraint",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -1230,34 +1252,29 @@
     "sequence_ExceptHandler": [
         {
             "name": "ConsExceptHandler",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "head",
                     "nonterminal": "ExceptHandler",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "sequence_ExceptHandler",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "SingleExceptHandler",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "ExceptHandler",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -1265,105 +1282,123 @@
     "conditions": [
         {
             "name": "ElifCond",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "ElifBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "tail",
                     "nonterminal": "conditions",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "ElseCond",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "ElseBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "NoCond",
-            "leader": "",
             "children": []
         }
     ],
     "function_def": [
         {
             "name": "FunctionDef",
-            "leader": "def ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "def "
+                },
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "("
                 },
                 {
                     "kind": "grammar",
                     "relation": "params",
                     "nonterminal": "parameters",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 },
                 {
                     "kind": "grammar",
-                    "relation": "ret_typ",
-                    "nonterminal": "return_type",
-                    "format": "InLine",
-                    "follower": ":"
+                    "relation": "ret_anno",
+                    "nonterminal": "return_annotation",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         },
         {
             "name": "AsyncFunctionDef",
-            "leader": "def ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "async def "
+                },
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "("
                 },
                 {
                     "kind": "grammar",
                     "relation": "params",
                     "nonterminal": "parameters",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 },
                 {
                     "kind": "grammar",
-                    "relation": "ret_typ",
-                    "nonterminal": "return_type",
-                    "format": "InLine",
-                    "follower": ":"
+                    "relation": "ret_anno",
+                    "nonterminal": "return_annotation",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         }
@@ -1371,1239 +1406,1492 @@
     "stmt": [
         {
             "name": "DecFunctionDef",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "decs",
                     "nonterminal": "decorators",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "fun_def",
                     "nonterminal": "function_def",
-                    "format": "NewLine",
-                    "follower": ""
-                }
-            ]
-        },
-        {
-            "name": "DecAsyncFunctionDef",
-            "leader": "",
-            "children": [
-                {
-                    "kind": "grammar",
-                    "relation": "decs",
-                    "nonterminal": "decorators",
-                    "format": "InLine",
-                    "follower": ""
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "fun_def",
-                    "nonterminal": "function_def",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "DecClassDef",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "decs",
                     "nonterminal": "decorators",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "class_def",
                     "nonterminal": "ClassDef",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "ReturnSomething",
-            "leader": "return ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "return "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Return",
-            "leader": "return",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "return "
+                }
+            ]
         },
         {
             "name": "Delete",
-            "leader": "del",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "del"
+                },
                 {
                     "kind": "grammar",
                     "relation": "targets",
                     "nonterminal": "comma_exprs",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Assign",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "targets",
                     "nonterminal": "target_exprs",
-                    "format": "InLine",
-                    "follower": " = "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " = "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "AugAssign",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "op",
                     "nonterminal": "operator",
-                    "format": "InLine",
-                    "follower": "= "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "= "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "TypedAssign",
-            "leader": "",
+            "name": "AnnoAssign",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " : "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "type",
+                    "relation": "anno",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " = "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " = "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
-            "name": "TypedDeclare",
-            "leader": "",
+            "name": "AnnoDeclar",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " : "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "type",
+                    "relation": "anno",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "For",
-            "leader": "for ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "for "
+                },
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " in "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " in "
                 },
                 {
                     "kind": "grammar",
                     "relation": "iter",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         },
         {
             "name": "ForElse",
-            "leader": "for ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "for "
+                },
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " in "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " in "
                 },
                 {
                     "kind": "grammar",
                     "relation": "iter",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "ElseBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "AsyncFor",
-            "leader": "async for ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "async for "
+                },
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " in "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " in "
                 },
                 {
                     "kind": "grammar",
                     "relation": "iter",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         },
         {
             "name": "AsyncForElse",
-            "leader": "async for ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "async for "
+                },
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " in "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " in "
                 },
                 {
                     "kind": "grammar",
                     "relation": "iter",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " : "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "ElseBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "While",
-            "leader": "while ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "while "
+                },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ": "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         },
         {
             "name": "WhileElse",
-            "leader": "while ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "while "
+                },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ": "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "ElseBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "If",
-            "leader": "if ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "if "
+                },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ": "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ": "
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "conditions",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "With",
-            "leader": "with ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "with "
+                },
                 {
                     "kind": "grammar",
                     "relation": "items",
-                    "nonterminal": "sequence_Withitem",
-                    "format": "InLine",
-                    "follower": ":"
+                    "nonterminal": "sequence_with_item",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         },
         {
             "name": "AsyncWith",
-            "leader": "async with ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "async with "
+                },
                 {
                     "kind": "grammar",
                     "relation": "items",
-                    "nonterminal": "sequence_Withitem",
-                    "format": "InLine",
-                    "follower": ":"
+                    "nonterminal": "sequence_with_item",
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 }
             ]
         },
         {
             "name": "Raise",
-            "leader": "raise",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "raise"
+                }
+            ]
         },
         {
             "name": "RaiseExc",
-            "leader": "raise ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "raise "
+                },
                 {
                     "kind": "grammar",
                     "relation": "exc",
                     "nonterminal": "expr",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "RaiseFrom",
-            "leader": "raise ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "raise "
+                },
                 {
                     "kind": "grammar",
                     "relation": "exc",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " from "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " from "
                 },
                 {
                     "kind": "grammar",
                     "relation": "caus",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Try",
-            "leader": "try:",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "try:"
+                },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "TryElse",
-            "leader": "try:",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "try:"
+                },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "ElseBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
+                }
+            ]
+        },
+        {
+            "name": "TryExceptFin",
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "try:"
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "body",
+                    "nonterminal": "statements",
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "handlers",
+                    "nonterminal": "sequence_ExceptHandler",
+                    "format": "NewLine"
+                },
+                {
+                    "kind": "grammar",
+                    "relation": "fin",
+                    "nonterminal": "FinallyBlock",
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "TryFin",
-            "leader": "try:",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "try:"
+                },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
-                },
-                {
-                    "kind": "grammar",
-                    "relation": "handlers",
-                    "nonterminal": "sequence_ExceptHandler",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "fin",
                     "nonterminal": "FinallyBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "TryElseFin",
-            "leader": "try:",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "try:"
+                },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "statements",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "handlers",
                     "nonterminal": "sequence_ExceptHandler",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "ElseBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "fin",
                     "nonterminal": "FinallyBlock",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "Assert",
-            "leader": "assert ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "assert "
+                },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "AssertMsg",
-            "leader": "assert ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "assert "
+                },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ", "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ", "
                 },
                 {
                     "kind": "grammar",
                     "relation": "msg",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Import",
-            "leader": "import ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "import "
+                },
                 {
                     "kind": "grammar",
                     "relation": "names",
-                    "nonterminal": "sequence_ImportName",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "sequence_import_name",
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "ImportFrom",
-            "leader": "from ",
             "children": [
                 {
-                    "kind": "grammar",
+                    "kind": "terminal",
+                    "terminal": "from "
+                },
+                {
+                    "kind": "vocab",
                     "relation": "module",
-                    "nonterminal": "module_id",
-                    "format": "InLine",
-                    "follower": " import "
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " import "
                 },
                 {
                     "kind": "grammar",
                     "relation": "names",
-                    "nonterminal": "sequence_ImportName",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "sequence_import_name",
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "ImportWildCard",
-            "leader": "from ",
             "children": [
                 {
-                    "kind": "grammar",
+                    "kind": "terminal",
+                    "terminal": "from "
+                },
+                {
+                    "kind": "vocab",
                     "relation": "module",
-                    "nonterminal": "module_id",
-                    "format": "InLine",
-                    "follower": " import *"
+                    "vocab": "identifier"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " import *"
                 }
             ]
         },
         {
             "name": "Global",
-            "leader": "global ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "global "
+                },
                 {
                     "kind": "grammar",
                     "relation": "names",
-                    "nonterminal": "sequence_var",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "sequence_name",
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Nonlocal",
-            "leader": "nonlocal ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "nonlocal "
+                },
                 {
                     "kind": "grammar",
                     "relation": "names",
-                    "nonterminal": "sequence_var",
-                    "format": "InLine",
-                    "follower": ""
+                    "nonterminal": "sequence_name",
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Expr",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Pass",
-            "leader": "pass",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "pass"
+                }
+            ]
         },
         {
             "name": "Break",
-            "leader": "break",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "break"
+                }
+            ]
         },
         {
             "name": "Continue",
-            "leader": "continue",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "continue"
+                }
+            ]
         }
     ],
     "expr": [
         {
             "name": "BoolOp",
-            "leader": "(",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "("
+                },
                 {
                     "kind": "grammar",
                     "relation": "left",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "op",
                     "nonterminal": "boolop",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "right",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
-            "name": "NamedExpr",
-            "leader": "",
+            "name": "AssignExpr",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " := "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " := "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "BinOp",
-            "leader": "(",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "("
+                },
                 {
                     "kind": "grammar",
                     "relation": "left",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "op",
                     "nonterminal": "operator",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "right",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
             "name": "UnaryOp",
-            "leader": "(",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "("
+                },
                 {
                     "kind": "grammar",
                     "relation": "op",
                     "nonterminal": "unaryop",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "right",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
             "name": "Lambda",
-            "leader": "lambda ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "lambda "
+                },
                 {
                     "kind": "grammar",
                     "relation": "params",
                     "nonterminal": "parameters",
-                    "format": "InLine",
-                    "follower": " :"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " :"
                 },
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "IfExp",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "body",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": "if "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "if "
                 },
                 {
                     "kind": "grammar",
                     "relation": "test",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " else"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " else"
                 },
                 {
                     "kind": "grammar",
                     "relation": "orelse",
                     "nonterminal": "expr",
-                    "format": "NewLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "Dictionary",
-            "leader": "{",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "{"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
-                    "nonterminal": "dictionary_contents",
-                    "format": "IndentLine",
-                    "follower": "}"
+                    "relation": "content",
+                    "nonterminal": "dictionary_content",
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "}"
                 }
             ]
         },
         {
             "name": "EmptyDictionary",
-            "leader": "{}",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "{}"
+                }
+            ]
         },
         {
             "name": "Set",
-            "leader": "{",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "{"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "comma_exprs",
-                    "format": "IndentLine",
-                    "follower": "}"
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "}"
                 }
             ]
         },
         {
             "name": "ListComp",
-            "leader": "[",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "["
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
-                    "format": "IndentLine",
-                    "follower": "]"
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "]"
                 }
             ]
         },
         {
             "name": "SetComp",
-            "leader": "{",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "{"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
-                    "format": "IndentLine",
-                    "follower": "}"
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "}"
                 }
             ]
         },
         {
             "name": "DictionaryComp",
-            "leader": "{",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "{"
+                },
                 {
                     "kind": "grammar",
                     "relation": "key",
                     "nonterminal": "expr",
-                    "format": "IndentLine",
-                    "follower": " : "
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " : "
                 },
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
-                    "format": "IndentLine",
-                    "follower": "}"
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "}"
                 }
             ]
         },
         {
             "name": "GeneratorExp",
-            "leader": "(",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "("
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "IndentLine",
-                    "follower": ""
+                    "format": "IndentLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "constraints",
                     "nonterminal": "comprehension_constraints",
-                    "format": "IndentLine",
-                    "follower": ")"
+                    "format": "IndentLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
             "name": "Await",
-            "leader": "await ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "await "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "YieldNothing",
-            "leader": "yield",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "yield"
+                }
+            ]
         },
         {
             "name": "Yield",
-            "leader": "yield ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "yield "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "YieldFrom",
-            "leader": "yield from ",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "yield from "
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Compare",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "left",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " "
                 },
                 {
                     "kind": "grammar",
                     "relation": "comps",
                     "nonterminal": "comparisons",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Call",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "func",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": "()"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "()"
                 }
             ]
         },
         {
             "name": "CallArgs",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "func",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": "("
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "("
                 },
                 {
                     "kind": "grammar",
                     "relation": "args",
                     "nonterminal": "arguments",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
             "name": "Integer",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "integer"
+                    "relation": "content",
+                    "vocab": "integer"
                 }
             ]
         },
         {
             "name": "Float",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "float"
+                    "relation": "content",
+                    "vocab": "float"
                 }
             ]
         },
         {
             "name": "ConcatString",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "sequence_string",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "True_",
-            "leader": "True",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "True"
+                }
+            ]
         },
         {
             "name": "False_",
-            "leader": "False",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "False"
+                }
+            ]
         },
         {
             "name": "None_",
-            "leader": "None",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "None"
+                }
+            ]
         },
         {
             "name": "Ellip",
-            "leader": "...",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "..."
+                }
+            ]
         },
         {
             "name": "Attribute",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": "."
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "."
                 },
                 {
                     "kind": "vocab",
                     "relation": "name",
-                    "choices_id": "identifier"
+                    "vocab": "identifier"
                 }
             ]
         },
         {
             "name": "Subscript",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": "["
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "["
                 },
                 {
                     "kind": "grammar",
                     "relation": "slice",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": "]"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "]"
                 }
             ]
         },
         {
             "name": "Starred",
-            "leader": "*",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "*"
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         },
         {
             "name": "Name",
-            "leader": "",
             "children": [
                 {
                     "kind": "vocab",
-                    "relation": "contents",
-                    "choices_id": "identifier"
+                    "relation": "content",
+                    "vocab": "identifier"
                 }
             ]
         },
         {
             "name": "List",
-            "leader": "[",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "["
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "comma_exprs",
-                    "format": "InLine",
-                    "follower": "]"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": "]"
                 }
             ]
         },
         {
             "name": "EmptyList",
-            "leader": "[]",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "[]"
+                }
+            ]
         },
         {
             "name": "Tuple",
-            "leader": "(",
             "children": [
                 {
+                    "kind": "terminal",
+                    "terminal": "("
+                },
+                {
                     "kind": "grammar",
-                    "relation": "contents",
+                    "relation": "content",
                     "nonterminal": "comma_exprs",
-                    "format": "InLine",
-                    "follower": ")"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ")"
                 }
             ]
         },
         {
             "name": "EmptyTuple",
-            "leader": "()",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "()"
+                }
+            ]
         },
         {
             "name": "Slice",
-            "leader": "",
             "children": [
                 {
                     "kind": "grammar",
                     "relation": "lower",
                     "nonterminal": "option_expr",
-                    "format": "InLine",
-                    "follower": ":"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "upper",
                     "nonterminal": "option_expr",
-                    "format": "InLine",
-                    "follower": ":"
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": ":"
                 },
                 {
                     "kind": "grammar",
                     "relation": "step",
                     "nonterminal": "option_expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 }
             ]
         }
@@ -2611,208 +2899,332 @@
     "boolop": [
         {
             "name": "And",
-            "leader": "and",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "and"
+                }
+            ]
         },
         {
             "name": "Or",
-            "leader": "or",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "or"
+                }
+            ]
         }
     ],
     "operator": [
         {
             "name": "Add",
-            "leader": "+",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "+"
+                }
+            ]
         },
         {
             "name": "Sub",
-            "leader": "-",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "-"
+                }
+            ]
         },
         {
             "name": "Mult",
-            "leader": "*",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "*"
+                }
+            ]
         },
         {
             "name": "MatMult",
-            "leader": "@",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "@"
+                }
+            ]
         },
         {
             "name": "Div",
-            "leader": "/",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "/"
+                }
+            ]
         },
         {
             "name": "Mod",
-            "leader": "%",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "%"
+                }
+            ]
         },
         {
             "name": "Pow",
-            "leader": "**",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "**"
+                }
+            ]
         },
         {
             "name": "LShift",
-            "leader": "<<",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "<<"
+                }
+            ]
         },
         {
             "name": "RShift",
-            "leader": ">>",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": ">>"
+                }
+            ]
         },
         {
             "name": "BitOr",
-            "leader": "|",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "|"
+                }
+            ]
         },
         {
             "name": "BitXor",
-            "leader": "^",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "^"
+                }
+            ]
         },
         {
             "name": "BitAnd",
-            "leader": "&",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "&"
+                }
+            ]
         },
         {
             "name": "FloorDiv",
-            "leader": "//",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "//"
+                }
+            ]
         }
     ],
     "unaryop": [
         {
             "name": "Invert",
-            "leader": "~",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "~"
+                }
+            ]
         },
         {
             "name": "Not",
-            "leader": "not",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "not"
+                }
+            ]
         },
         {
             "name": "UAdd",
-            "leader": "+",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "+"
+                }
+            ]
         },
         {
             "name": "USub",
-            "leader": "-",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "-"
+                }
+            ]
         }
     ],
     "cmpop": [
         {
             "name": "Eq",
-            "leader": "==",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "=="
+                }
+            ]
         },
         {
             "name": "NotEq",
-            "leader": "!=",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "!="
+                }
+            ]
         },
         {
             "name": "Lt",
-            "leader": "<",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "<"
+                }
+            ]
         },
         {
             "name": "LtE",
-            "leader": "<=",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "<="
+                }
+            ]
         },
         {
             "name": "Gt",
-            "leader": ">",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": ">"
+                }
+            ]
         },
         {
             "name": "GtE",
-            "leader": ">=",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": ">="
+                }
+            ]
         },
         {
             "name": "Is",
-            "leader": "is",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "is"
+                }
+            ]
         },
         {
             "name": "IsNot",
-            "leader": "is not",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "is not"
+                }
+            ]
         },
         {
             "name": "In",
-            "leader": "in",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "in"
+                }
+            ]
         },
         {
             "name": "NotIn",
-            "leader": "not in",
-            "children": []
+            "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "not in"
+                }
+            ]
         }
     ],
     "constraint": [
         {
             "name": "AsyncConstraint",
-            "leader": "async for ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "async for "
+                },
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " in "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " in "
                 },
                 {
                     "kind": "grammar",
                     "relation": "search_space",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "filts",
                     "nonterminal": "constraint_filters",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         },
         {
             "name": "Constraint",
-            "leader": "for ",
             "children": [
+                {
+                    "kind": "terminal",
+                    "terminal": "for "
+                },
                 {
                     "kind": "grammar",
                     "relation": "target",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": " in "
+                    "format": "InLine"
+                },
+                {
+                    "kind": "terminal",
+                    "terminal": " in "
                 },
                 {
                     "kind": "grammar",
                     "relation": "search_space",
                     "nonterminal": "expr",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "InLine"
                 },
                 {
                     "kind": "grammar",
                     "relation": "filts",
                     "nonterminal": "constraint_filters",
-                    "format": "InLine",
-                    "follower": ""
+                    "format": "NewLine"
                 }
             ]
         }

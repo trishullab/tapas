@@ -1,9 +1,9 @@
 from __future__ import annotations
 from typing import Iterator, Optional
 
-from gen.line_format_construct import line_format, LineFormatHandlers, match_line_format
-from gen.rule_construct import ItemHandlers
-from gen.instance_construct import *
+from lib.line_format_construct_autogen import line_format, LineFormatHandlers, match_line_format
+from lib.rule_construct_autogen import ItemHandlers
+from lib.abstract_token_construct_autogen import *
 
 from lib.rule import Rule
 import lib.rule
@@ -11,7 +11,13 @@ import lib.rule
 
 from dataclasses import dataclass
 
-# constructors for type instance
+
+def to_string(token : abstract_token) -> str:
+    return match_abstract_token(token, AbstractTokenHandlers[str](
+        case_Grammar= lambda g : f"grammar: {g.selection} <{g.options}>",
+        case_Vocab= lambda v : f"vocab: {v.selection} <{v.options}>"
+    ))
+
 
 def is_inline(line_form : line_format) -> bool:
     return match_line_format(line_form, LineFormatHandlers[bool](
@@ -27,15 +33,15 @@ def next_indent_width(prev_iw : int, line_form : line_format) -> int:
         case_IndentLine = lambda _ : prev_iw + 1 
     ))
 
-def dump(rule_map : dict[str, Rule], instances : list[instance], indent : int = 4):
+def dump(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...], indent : int = 4):
 
     @dataclass
     class Format:
         relation : str 
         depth : int 
 
-    def dump_instance(inst : instance, format : Format) -> str:
-        return match_instance(inst, InstanceHandlers[str](
+    def dump_abstract_token(inst : abstract_token, format : Format) -> str:
+        return match_abstract_token(inst, AbstractTokenHandlers[str](
             case_Grammar=lambda o : (
                 indent_str := (' ' * format.depth * indent),
                 relation_str := (' = .' + format.relation if (isinstance(format.relation, str)) else ''),
@@ -60,7 +66,7 @@ def dump(rule_map : dict[str, Rule], instances : list[instance], indent : int = 
 
     result_strs = [] 
 
-    inst_iter = iter(instances)
+    inst_iter = iter(abstract_tokens)
 
     stack : list[Format] = [Format("", 0)]
 
@@ -97,18 +103,18 @@ def dump(rule_map : dict[str, Rule], instances : list[instance], indent : int = 
         def format_vocab_children(inst : Vocab):
             pass
 
-        match_instance(inst, InstanceHandlers(
+        match_abstract_token(inst, AbstractTokenHandlers(
             case_Grammar = format_grammar_children,
             case_Vocab = format_vocab_children 
         ))
 
-        result_strs += [dump_instance(inst, format)]
+        result_strs += [dump_abstract_token(inst, format)]
 
     return '\n'.join(result_strs)
 
 
 
-def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
+def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...]) -> str:
 
     @dataclass
     class Format:
@@ -117,13 +123,12 @@ def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
 
     result = ""
 
-    inst_iter = iter(instances)
+    inst_iter = iter(abstract_tokens)
 
-    stack : list[Union[str, Format]] = [Format(True, 0)] # str is concrete syntax, and int is indentation of the instance from the iterator 
-    instance_count = 0
+    stack : list[Union[str, Format]] = [Format(True, 0)] # str is concrete syntax, and int is indentation of the abstract_token from the iterator 
+    abstract_token_count = 0
 
     while stack:
-
 
         stack_item : Union[str, Format] = stack.pop()
         if isinstance(stack_item, str):
@@ -131,11 +136,13 @@ def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
         else: 
             assert isinstance(stack_item, Format)
             format = stack_item
-            # take an element from the iterator
 
-            inst = next(inst_iter)
-            assert inst
-            instance_count += 1
+            # take an element from the iterator
+            inst = next(inst_iter, None)
+            if not inst:
+                break
+
+            abstract_token_count += 1
 
             def concretize_grammar(inst : Grammar):
                 nonlocal stack
@@ -175,7 +182,7 @@ def concretize(rule_map : dict[str, Rule], instances : list[instance]) -> str:
                 stack += [inst.selection]
 
 
-            match_instance(inst, InstanceHandlers(
+            match_abstract_token(inst, AbstractTokenHandlers(
                 case_Grammar = concretize_grammar,
                 case_Vocab = concretize_vocab
             ))

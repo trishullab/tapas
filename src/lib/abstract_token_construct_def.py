@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from lib.def_construct import Constructor, Field
-from lib import def_construct
+from lib.construct_def import Constructor, Field
+from lib import construct_def
 
-type_name = "instance"
+type_name = "abstract_token"
 
 constructors = [
     Constructor(
@@ -25,5 +25,5 @@ constructors = [
 
 
 def generate_content():
-    return def_construct.generate_content([], {type_name : constructors})
+    return construct_def.generate_content([], {type_name : constructors})
 

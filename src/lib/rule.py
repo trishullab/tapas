@@ -8,8 +8,8 @@ from abc import ABC, abstractmethod
 
 import inflection
 
-from gen.rule_construct import *
-from lib import def_construct
+from lib.rule_construct_autogen import *
+from lib import construct_def
 from lib import line_format as lf
 
 
@@ -39,26 +39,60 @@ def to_dictionary(node: Rule):
 
     }
 
-def to_constructor(n : Rule) -> def_construct.Constructor:
+def to_constructor(n : Rule) -> construct_def.Constructor:
 
     def fail():
         assert False 
 
-    return def_construct.Constructor(
+    return construct_def.Constructor(
         n.name,
         [
-            match_item(item, ItemHandlers[def_construct.Field](
+            match_item(item, ItemHandlers[construct_def.Field](
                 case_Terminal = lambda o : (
                     fail()
                 ),
                 case_Nonterm = lambda o : (
-                    def_construct.Field(attr = o.relation, typ = o.nonterminal)
+                    construct_def.Field(attr = o.relation, typ = o.nonterminal)
                 ),
                 case_Vocab = lambda o : (
-                    def_construct.Field(attr = o.relation, typ = 'str')
+                    construct_def.Field(attr = o.relation, typ = 'str')
                 )
             )) 
             for item in n.content
             if not isinstance(item, Terminal)
         ]
     )
+
+
+def get_abstract_items(rule : Rule): 
+    return [item
+        for item in rule.content
+        if not isinstance(item, Terminal)
+    ]
+
+
+def type_from_item(item : item):
+    if isinstance(item, Nonterm):
+        return item.nonterminal
+    elif isinstance(item, Vocab):
+        return "str" 
+    else:
+        raise Exception()
+
+def relation_from_item(item : item):
+    if isinstance(item, Nonterm):
+        return item.relation
+    elif isinstance(item, Vocab):
+        return item.relation 
+    else:
+        raise Exception()
+
+
+def is_inductive(type_name : str, rules : list[Rule]) -> bool:
+    for rule in rules:
+        for item in rule.content:
+            if not isinstance(item, Terminal) and type_name == type_from_item(item):
+                return True
+    return False
+
+

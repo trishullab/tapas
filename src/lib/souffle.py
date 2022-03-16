@@ -4,15 +4,15 @@ import os
 import subprocess
 from subprocess import TimeoutExpired, PIPE, STDOUT
 
-from lib.instance import instance, match_instance, InstanceHandlers
+from lib.abstract_token import abstract_token, match_abstract_token, AbstractTokenHandlers
 
 base_path = pathlib.Path(__file__).parent.absolute()
 
 
-def from_sequence(instances : list[instance]) -> str:
+def from_sequence(instances : list[abstract_token]) -> str:
     acc = "nil" 
     for inst in reversed(instances):
-        item = match_instance(inst, InstanceHandlers[str](
+        item = match_abstract_token(inst, AbstractTokenHandlers[str](
             case_Grammar=lambda o : f'$Grammar("{o.options}","{o.selection}")',
             case_Vocab=lambda o : f'$Vocab("{o.options}","{o.selection}")'
         ))
