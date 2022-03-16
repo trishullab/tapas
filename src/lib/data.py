@@ -59,42 +59,13 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
             tree = generic_tree.parse('python', source_code, 'utf8')
 
-
             abstract_tokens : tuple[abstract_token, ...] = () 
 
             try:
 
                 mod = python_ast.parse_from_generic_tree(tree)
-                # mod = python_ast_rename.rename_Module(mod, {}, {}, {})
 
                 abstract_tokens = python_ast.serialize(mod)
-
-
-                # if total_count < 50:
-
-                    # print(f"-------------------------")
-                    # print(f"line number: {total_count + 1}")
-                    # print(f"-------------------------")
-
-                    # concrete_code = python_instance.concretize(instances)
-
-                    # print(f"-------------------------")
-                    # print(f"generic tree:")
-                    # print(generic_tree.dump(tree))
-
-                    # print(f"-------------------------")
-                    # print(f"production tree:")
-                    # print(python_instance.dump(instances))
-
-                    # print(f"-------------------------")
-                    # print(f"source:")
-                    # print(source_code)
-
-                    # print(f"-------------------------")
-                    # print(f"concretized:")
-                    # print(concrete_code)
-
-
 
                 def triple_from_instance(inst : abstract_token) -> tuple[str, str, str]:
                     return match_abstract_token(inst, AbstractTokenHandlers[tuple[str, str, str]](
@@ -106,38 +77,39 @@ def generate_file(dirname : str, name : str, vocab : dict):
                         )
                     )) 
 
-
-                # data = [
-                #     f"[{t[0]},{t[1]},{t[2]}]"
-                #     for i in instances
-                #     for t in [triple_from_instance(i)] 
-                # ]
-                # write(abstract_data_dirpath, f'{abstract_data_base}_training.txt', "[" + ",".join(data) + "]" + '\n\n<|endoftext|>\n\n', append=True)
-
-                # print(f"\n-------------------------\n")
                 # print(f"---Source Code---")
                 # print(source_code)
 
-
-
                 client : Client = analyze()
                 from lib.python_util import from_env_to_dictionary
-                inher : Inher = client.init_inher
-                atok = ['A', from_env_to_dictionary(inher.local_env), from_env_to_dictionary(inher.nonlocal_env), from_env_to_dictionary(inher.global_env)]
+                inher : Union[Inher, Exception] = client.init_inher
+                atok = ['A', 
+                    from_env_to_dictionary(inher.local_env), 
+                    from_env_to_dictionary(inher.nonlocal_env), 
+                    from_env_to_dictionary(inher.global_env)
+                ]
                 json_data = [atok]
+
                 for tok in abstract_tokens:
                     triple = triple_from_instance(tok)
                     json_data.append(['P', triple[0], triple[1], triple[2]])
+
                     inher = client.next(tok)
-                    new_atok = ['A', from_env_to_dictionary(inher.local_env), from_env_to_dictionary(inher.nonlocal_env), from_env_to_dictionary(inher.global_env)]
+                    if isinstance(inher, Exception):
+                        raise
+
+                    new_atok = ['A', 
+                        from_env_to_dictionary(inher.local_env), 
+                        from_env_to_dictionary(inher.nonlocal_env), 
+                        from_env_to_dictionary(inher.global_env)
+                    ]
                     if (new_atok != atok):
                         json_data.append(new_atok)
                         atok = new_atok
+
                 client.close()
 
-                # print(f"generating json program: {json_data}")
                 write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', json.dumps(json_data) + '\n', append=True)
-                assert False
 
                 def handle_Vocab(o : Vocab):
                     if o.options in vocab.keys():
@@ -158,46 +130,9 @@ def generate_file(dirname : str, name : str, vocab : dict):
             except RecursionError:
                 rec_error_count += 1
                 error_count += 1
-                # print(f"\n\n")
 
-                # print(f"""--Generic Tree--\n{
-                #     generic_tree.dump(tree, 
-                #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                #     )
-                # }\n""")
-
-                # print(f"\n\n")
-                # print(f"---Source Code---")
-                # print(source_code)
-                # print(f"-------------------------")
-                # print(f"recursion error line number: {count}")
-                # print("RECURSION ERROR")
-                # return
-
-            except Exception as x:
+            except Exception as ex:
                 error_count += 1
-                # print(f"\n-------------------------\n")
-                # print(f"""--Generic Tree--\n{
-                #     generic_tree.dump(tree, 
-                #         text_cond = lambda n : len(n.children) == 0 or n.syntax_part == "string"
-                #     )
-                # }\n""")
-
-
-                # print(f"\n-------------------------\n")
-                # print(f"---Source Code---")
-                # print(source_code)
-
-                # print(f"\n-------------------------\n")
-                # print(f"line number: {count}")
-
-
-                # raise x
-            except:
-                pass
-                # print(f"\n-------------------------\n")
-                # print(f"---Source Code---")
-                # print(source_code)
 
             # update
             line = f.readline()

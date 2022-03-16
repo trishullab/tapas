@@ -34,13 +34,13 @@ def concretize(instances : tuple[abstract_token, ...]):
 @dataclass
 class Client: 
     init_inher : Inher
-    next : Callable[[abstract_token], Inher]
+    next : Callable[[abstract_token], Union[Inher, Exception]]
     close : Callable[[], None]
 
 def analyze() -> Client:
 
     in_stream : Queue[abstract_token] = Queue()
-    out_stream : Queue[Inher] = Queue()
+    out_stream : Queue[Union[Exception, Inher]] = Queue()
 
     server : Server = Server(in_stream, out_stream)
     inher = Inher(
@@ -53,27 +53,30 @@ def analyze() -> Client:
 
 
     def run():
-        nonlocal inher
-        synth = server.analyze_module(inher)
-        assert isinstance(synth, LocalEnvSynth) 
+        try:
+            nonlocal inher
+            synth = server.analyze_module(inher)
+            assert isinstance(synth, LocalEnvSynth) 
 
-        inher = Inher(
-            mode = python_util.ModuleMode(),
-            local_env = m(),
-            nonlocal_env = m(), 
-            global_env = m(), 
-            module_env = m(
-               my_module = f"{synth.additions}"  
+            inher = Inher(
+                mode = python_util.ModuleMode(),
+                local_env = m(),
+                nonlocal_env = m(), 
+                global_env = m(), 
+                module_env = m(
+                my_module = f"{synth.additions}"  
+                )
             )
-        )
-        server.next(inher)
+            server.next(inher)
+        except Exception as ex:
+            out_stream.put(ex)
 
 
     thread = threading.Thread(target = run)
     thread.start()
 
-    def next(tok : abstract_token) -> Inher:
-        in_stream.put(tok)
+    def next(tok : abstract_token) -> Union[Inher, Exception]:
+        in_stream.put(tok) 
         return out_stream.get() 
 
     def close() -> None:
@@ -81,6 +84,10 @@ def analyze() -> Client:
         in_stream.put(tok)
 
 
-    client = Client(out_stream.get(), next, close)
+    attr_0 = out_stream.get()
+    assert isinstance(attr_0, Inher)   
+
+    client = Client(attr_0, next, close)
+
 
     return client 

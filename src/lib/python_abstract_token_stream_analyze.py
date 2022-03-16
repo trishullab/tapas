@@ -114,9 +114,9 @@ def local_env_synth_f(children : tuple[synth, ...]) -> LocalEnvSynth:
 
     return LocalEnvSynth(subtractions = s(), additions = declarations)
 
-class Server(BaseServer[Inher, synth]):
+class Server(BaseServer[Union[Exception, Inher], synth]):
 
-    def __init__(self, in_stream : Queue[abstract_token], out_stream : Queue[Inher]):  
+    def __init__(self, in_stream : Queue[abstract_token], out_stream : Queue[Union[Inher, Exception]]):  
         super().__init__(in_stream, out_stream)
 
     def default_synth(self, inher : Inher) -> synth:
@@ -416,6 +416,7 @@ class Server(BaseServer[Inher, synth]):
         for name in names:
             pass
             # FUTURE: load standard lib into local environment
+            # TODO: OOGA comment out below
             # assert (
             #     name in inher.local_env and 
             #     inher.local_env[name].initialized
@@ -789,7 +790,7 @@ class Server(BaseServer[Inher, synth]):
     def analyze_token_expr(self, 
         token : Grammar, 
         inher : Inher, children : tuple[synth, ...], stack_result : Optional[synth], 
-        stack : list[tuple[abstract_token, Inher, tuple[synth, ...]]]
+        stack : list[tuple[abstract_token, Union[Inher, Exception], tuple[synth, ...]]]
     ) -> Optional[synth]:
         if isinstance(inher.mode, PatternTargetMode):
             assert token.options == "expr"
@@ -818,7 +819,6 @@ class Server(BaseServer[Inher, synth]):
                 return self.analyze_token_expr_Attribute(inher, children, stack_result, stack)
                 
             else:
-                print(f"OOGA rule_name: {rule_name}")
                 raise AnalysisError()
 
         if isinstance(inher.mode, DeleteMode) or isinstance(inher.mode, DeleteSliceMode):
