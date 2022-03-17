@@ -26,6 +26,8 @@ import lib.abstract_token
 from typing import Any, Union
 
 
+class BigCodeError(Exception):
+    pass
 
 def generate_file(dirname : str, name : str, vocab : dict):
 
@@ -52,26 +54,16 @@ def generate_file(dirname : str, name : str, vocab : dict):
         total_count = 0
         line = f.readline()
         while line: 
-
-            line_obj = json.loads(line)
-
-            source_code = line_obj['code']
-
-            tree = generic_tree.parse('python', source_code, 'utf8')
-
-            print("")
-            print("--------generic tree:")
-            from lib import python_generic_tree
-            print(python_generic_tree.dump(tree))
-            print(f"-------source_code")
-            print(source_code)
-            print(f"-------total: {total_count}")
-            print(f"-------processed: {processed_count}")
-            print("")
-
-            abstract_tokens : tuple[abstract_token, ...] = () 
-
             try:
+
+                line_obj = json.loads(line)
+
+                source_code = line_obj['code']
+
+                if len(source_code) > 10 ** 6:
+                    raise BigCodeError(len(source_code))
+
+                tree = generic_tree.parse('python', source_code, 'utf8')
 
                 mod = python_ast.parse_from_generic_tree(tree)
 
@@ -140,13 +132,29 @@ def generate_file(dirname : str, name : str, vocab : dict):
                 rec_error_count += 1
                 error_count += 1
 
+            except BigCodeError as ex:
+                pass
+
             except Exception as ex:
+                print(f"")
+                print(f"ERROR index: {total_count}")
+                line_obj = json.loads(line)
+                source_code = line_obj['code']
+                print(f"ERROR source code: {source_code}")
+                print(f"ERROR code length: {len(source_code)}")
+                print(f"ERROR index: {total_count}")
+                print(f"")
                 error_count += 1
                 raise ex
 
             # update
             line = f.readline()
             total_count += 1
+            
+            print(f"")
+            print(f"total_count: {total_count}")
+            print(f"processed_count: {processed_count}")
+            print(f"")
 
         #endwhile
 

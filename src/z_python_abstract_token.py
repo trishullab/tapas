@@ -41,6 +41,7 @@ from lib.abstract_token import abstract_token
 from lib.python_util import Inher, from_Inher_to_string
 from typing import Union
 import lib.abstract_token
+from lib.util import project_path
 
 @dataclass
 class Generator:
@@ -79,11 +80,15 @@ def make_generator(code : str) -> Generator:
         print(concretize(partial_tokens))
         print("###")
 
-        iattr = client.next(token)
-        print(from_Inher_to_string(iattr))
-        print("***")
-
-        return False 
+        iattr_or_ex = client.next(token)
+        if isinstance(iattr_or_ex, Exception):
+            ex = iattr_or_ex
+            raise ex
+        else:
+            iattr = iattr_or_ex
+            print(from_Inher_to_string(iattr))
+            print("***")
+            return False 
 
     def run_all():
         done = run_next()
@@ -186,66 +191,41 @@ def make_generator(code : str) -> Generator:
 #         f.write(code)
 #     ''')
 
-# def new_gen():
-#     return make_generator(f'''
-# if (x := (z := "59293"), False)[-1]:
-#     q = (x, z) 
-# else:
-#     w = (x, z) 
-
-# import os
-
-
-# for ooga in (xs := [1, 2, 3]):
-#     l = 2
-#     print(xs)
-#     print(ooga)
-
-# print(xs)
-
-# def write(dirpath : str, fname : str, code : str, append : bool = False):
-#     if not os.path.exists(dirpath):
-#         os.makedirs(dirpath)
-
-#     fpath = os.path.join(dirpath, fname)
-
-#     with (g := open(fpath, 'a' if append else 'w')) as f:
-#         f.write(code)
-
-#     d = g
-#     e = f
-
-# (y := x, z)
-#     ''')
-
 def new_gen():
     return make_generator(f'''
-class Pair(object): 
-        def __init__(self, a, b): 
-                self.a = a 
-                self.b = b 
-def max_chain_length(arr, n): 
-        max = 0
-        mcl = [1 for i in range(n)] 
-        for i in range(1, n): 
-                for j in range(0, i): 
-                        if (arr[i].a > arr[j].b and
-                                mcl[i] < mcl[j] + 1): 
-                                mcl[i] = mcl[j] + 1
-        for i in range(n): 
-                if (max < mcl[i]): 
-                        max = mcl[i] 
-        return max
+if (x := (z := "59293"), False)[-1]:
+    q = (x, z) 
+else:
+    w = (x, z) 
+
+import os
+
+
+for ooga in (xs := [1, 2, 3]):
+    l = 2
+    print(xs)
+    print(ooga)
+
+print(xs)
+
+def write(dirpath : str, fname : str, code : str, append : bool = False):
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+
+    fpath = os.path.join(dirpath, fname)
+
+    with (g := open(fpath, 'a' if append else 'w')) as f:
+        f.write(code)
+
+    d = g
+    e = f
+
+(y := x, z)
     ''')
 
-#  for c in s:
-#     if c.isdigit():
-#         d=d+1
-#     elif c.isalpha():
-#         l=l+1
-#     else:
-#         pass
-
+# def new_gen():
+#     with open(project_path("res/cubert/concrete_data/big_weird_test.py")) as f:
+#         return make_generator(f.read())
 
 
 if __name__ == "__main__":
