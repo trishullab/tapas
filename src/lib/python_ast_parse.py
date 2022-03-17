@@ -525,6 +525,11 @@ def from_generic_tree_to_ExceptHandler(node) -> ExceptHandler:
             children[2].syntax_part == "as" and 
             children[4].syntax_part == ":" 
         ) else 
+
+        (children[1], children[3], children[5]) if (
+            children[2].syntax_part == "," and 
+            children[4].syntax_part == ":" 
+        ) else 
         
         (None, None, None)
     )

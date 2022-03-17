@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from tkinter.messagebox import NO
 from typing import Dict, TypeVar, Any, Generic, Union, Optional
 from collections.abc import Callable
 
@@ -168,7 +169,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(tl, LocalEnvSynth)
 
         for sub in tl.subtractions:
-            hd_additions = hd_additions.remove(sub)
+            if hd_additions.get(sub):
+                hd_additions = hd_additions.remove(sub)
 
         for sub in tl.subtractions:
             subtractions.add(sub)
@@ -387,8 +389,9 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         for name in content_synth.used_names:
             assert (
                 not (name in multi_target_synth.names) or (
-                    name in inher.local_env and
-                    inher.local_env[name].initialized
+                    name in inher.local_env
+                    # FUTURE: check if forward reference or initialized  
+                    # inher.local_env[name].initialized
                 )
             )
 
@@ -427,7 +430,6 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         for name in names:
             pass
             # FUTURE: load standard lib into local environment
-            # TODO: OOGA comment out below
             # assert (
             #     name in inher.local_env and 
             #     inher.local_env[name].initialized
@@ -697,8 +699,9 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
 
         contents : PMap[str, Declaration] = m()
         for name in target_synth.names:
-            assert name in inher.global_env
-            contents = contents.set(name, inher.global_env[name])
+            # FUTURE: don't do assertion here. global name might be a forward reference. must wait until end of module to make assertion
+            # Make the following assertion at the top module level to capture forward references: assert name in inher.global_env
+            contents = contents.set(name, inher.global_env[name] if inher.global_env.get(name) else Declaration(False))
         
         return LocalEnvSynth(subtractions=s(), additions=contents)
 
@@ -785,8 +788,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         elif isinstance(inher.mode, DeleteMode):
             names : PSet[str] = s()
             for c in children:
-                assert isinstance(c, DeleteSynth)
-                names = names.update(c.names)
+                if isinstance(c, DeleteSynth):
+                    names = names.update(c.names)
             return DeleteSynth(names)
 
         elif isinstance(inher.mode, DeleteSliceMode):
@@ -832,7 +835,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
             else:
                 raise AnalysisError()
 
-        if isinstance(inher.mode, DeleteMode) or isinstance(inher.mode, DeleteSliceMode):
+        if isinstance(inher.mode, DeleteMode):
             assert token.options == "expr"
             rule_name = token.selection
 
@@ -1429,7 +1432,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                 return OpenSynth(path = name)  
 
             else:
-                raise AnalysisError()
+                return NoSynth()
 
         else:
             if isinstance(inher.mode, SourceMode):
