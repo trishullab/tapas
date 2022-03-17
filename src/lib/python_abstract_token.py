@@ -17,8 +17,8 @@ from pyrsistent.typing import PMap
 import threading
 from queue import Queue
 
-from lib import python_abstract_token_stream_analyze
-from lib.python_abstract_token_stream_analyze import Server
+from lib import python_abstract_token_analyze
+from lib.python_abstract_token_analyze import Server
 from lib.python_util_construct_autogen import LocalEnvSynth
 
 

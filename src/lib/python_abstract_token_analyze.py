@@ -21,7 +21,7 @@ from pyrsistent.typing import PMap, PSet
 
 from queue import Queue
 
-from lib.python_abstract_token_stream_analyze_autogen import Server as BaseServer, AnalysisError
+from lib.python_abstract_token_analyze_autogen import Server as BaseServer, AnalysisError
 
 from lib import python_ast
 
