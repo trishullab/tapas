@@ -302,8 +302,16 @@ def foo():
 # print(f"equal?: {equal}")
 
 
-x = [1,2,3]
-i = 1
-def boo():
-    x[i] += 1 + x[i]
+# x = [1,2,3]
+# i = 1
+# def boo():
+#     x[i] += 1 + x[i]
 
+d = 1
+
+for x in (y := [1,2,3]):
+    # del d
+    pass
+
+
+print(f"hello {d}")

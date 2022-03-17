@@ -521,7 +521,6 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         source_synth = synth_children[1] 
         assert isinstance(source_synth, SourceSynth)
         body_synth = synth_children[2]
-        #TODO: check if module_synth vs add_decl_synth
         assert isinstance(body_synth, LocalEnvSynth)
 
         source_synth_additions = source_synth.declarations

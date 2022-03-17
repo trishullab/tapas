@@ -1395,6 +1395,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
             return [
                 Expr(from_generic_tree_to_expr(expr_node))
                 for expr_node in children
+                if expr_node.syntax_part != ","
             ]
         else:
             estmt_node = children[0]

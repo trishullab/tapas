@@ -191,42 +191,48 @@ def make_generator(code : str) -> Generator:
 #         f.write(code)
 #     ''')
 
-def new_gen():
-    return make_generator(f'''
-if (x := (z := "59293"), False)[-1]:
-    q = (x, z) 
-else:
-    w = (x, z) 
+# def new_gen():
+#     return make_generator(f'''
+# if (x := (z := "59293"), False)[-1]:
+#     q = (x, z) 
+# else:
+#     w = (x, z) 
 
-import os
+# import os
 
 
-for ooga in (xs := [1, 2, 3]):
-    l = 2
-    print(xs)
-    print(ooga)
+# for ooga in (xs := [1, 2, 3]):
+#     l = 2
+#     print(xs)
+#     print(ooga)
 
-print(xs)
+# print(xs)
 
-def write(dirpath : str, fname : str, code : str, append : bool = False):
-    if not os.path.exists(dirpath):
-        os.makedirs(dirpath)
+# def write(dirpath : str, fname : str, code : str, append : bool = False):
+#     if not os.path.exists(dirpath):
+#         os.makedirs(dirpath)
 
-    fpath = os.path.join(dirpath, fname)
+#     fpath = os.path.join(dirpath, fname)
 
-    with (g := open(fpath, 'a' if append else 'w')) as f:
-        f.write(code)
+#     with (g := open(fpath, 'a' if append else 'w')) as f:
+#         f.write(code)
 
-    d = g
-    e = f
+#     d = g
+#     e = f
 
-(y := x, z)
-    ''')
+# (y := x, z)
+#     ''')
 
 # def new_gen():
-#     with open(project_path("res/cubert/concrete_data/big_weird_test.py")) as f:
+#     with open(project_path("res/cubert/concrete_data/example.py")) as f:
 #         return make_generator(f.read())
 
+
+
+def new_gen():
+    return make_generator(f'''
+    print("hello"), print("bye") 
+    ''')
 
 if __name__ == "__main__":
     gen = new_gen()
