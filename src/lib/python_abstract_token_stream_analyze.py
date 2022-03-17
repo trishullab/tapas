@@ -138,12 +138,18 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
     def traverse_statements_ConsStmt_tail(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
         assert len(synth_preds) == 1
         head_synth = synth_preds[0]
-        assert isinstance(head_synth, LocalEnvSynth)
-        env = inher.local_env
-        for x in head_synth.subtractions:
-            env = env.remove(x)
 
-        return set_local_env(inher, env + head_synth.additions)
+
+
+        if isinstance(head_synth, LocalEnvSynth):
+            env = inher.local_env
+            for x in head_synth.subtractions:
+                env = env.remove(x)
+
+            return set_local_env(inher, env + head_synth.additions)
+        else:
+            assert isinstance(head_synth, NoSynth)
+            return inher
     
     def synthesize_statements_ConsStmt_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
 
@@ -151,14 +157,19 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         hd = synth_children[0]
         tl = synth_children[1]
 
-        assert isinstance(hd, LocalEnvSynth)
+        hd_additions : PMap[str, Declaration] = m()
+        subtractions : PSet[str] = s()
+        if isinstance(hd, LocalEnvSynth):
+            hd_additions = hd.additions
+            subtractions = hd.subtractions
+        else:
+            assert isinstance(hd, NoSynth)
+
         assert isinstance(tl, LocalEnvSynth)
 
-        hd_additions = hd.additions
         for sub in tl.subtractions:
             hd_additions = hd_additions.remove(sub)
 
-        subtractions = hd.subtractions
         for sub in tl.subtractions:
             subtractions.add(sub)
 
@@ -843,8 +854,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
             return target_synth
 
         else:
-            assert isinstance(inher.mode, SourceMode)
-            return super().analyze_token_expr(token, inher, children, stack_result, stack)
+            return super().analyze_token_expr(token, set_source_mode(inher), children, stack_result, stack)
 
     # expr <-- Subscript 
     def traverse_expr_Subscript_content(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:

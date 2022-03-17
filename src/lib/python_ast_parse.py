@@ -1365,13 +1365,23 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
     elif (node.syntax_part == "print_statement"):
         children = node.children
         assert children[0].syntax_part == "print"
-        arg_nodes = [c for c in children[1:] if c.syntax_part != ","]
+
+        arg_index = 1
+        arg_keywords = []
+
+        if children[1].syntax_part == "chevron":
+            arg_index = 2
+            arg_keywords = [make_NamedKeyword("file", Name("sys.stderr"))]
+        else:
+            arg_index = 1
+
+        arg_nodes = [c for c in children[arg_index:] if c.syntax_part != ","]
         arg_exprs = [
             from_generic_tree_to_expr(node)
             for node in arg_nodes
         ]
 
-        return [ Expr(CallArgs(Name("print"), to_arguments(arg_exprs, []))) ]
+        return [ Expr(CallArgs(Name("print"), to_arguments(arg_exprs, arg_keywords))) ]
 
     elif (node.syntax_part == "expression_statement"):
         children = node.children

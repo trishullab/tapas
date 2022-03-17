@@ -59,6 +59,15 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
             tree = generic_tree.parse('python', source_code, 'utf8')
 
+            print("")
+            print("generic tree:")
+            from lib import python_generic_tree
+            # print(python_generic_tree.dump(tree))
+            # print(source_code)
+            print(f"total: {total_count}")
+            print(f"processed: {processed_count}")
+            print("")
+
             abstract_tokens : tuple[abstract_token, ...] = () 
 
             try:
@@ -77,8 +86,6 @@ def generate_file(dirname : str, name : str, vocab : dict):
                         )
                     )) 
 
-                # print(f"---Source Code---")
-                # print(source_code)
 
                 client : Client = analyze()
                 from lib.python_util import from_env_to_dictionary
@@ -96,7 +103,8 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
                     inher = client.next(tok)
                     if isinstance(inher, Exception):
-                        raise
+                        ex = inher
+                        raise ex
 
                     new_atok = ['A', 
                         from_env_to_dictionary(inher.local_env), 
@@ -133,6 +141,7 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
             except Exception as ex:
                 error_count += 1
+                raise ex
 
             # update
             line = f.readline()
@@ -152,6 +161,7 @@ def generate_file(dirname : str, name : str, vocab : dict):
         rec error count: {rec_error_count}
     """
 
+    print(f"STATS: {stats}")
     write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', stats)
 
 
