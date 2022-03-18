@@ -103,8 +103,8 @@ choices = {
         Constructor(
             "SourceSynth",
             [
-                Field("declarations", "PMap[str, Declaration]"),
-                Field("used_names", "PSet[str]"),
+                Field("env_additions", "PMap[str, Declaration]"),
+                Field("env_refs", "PSet[str]"),
                 Field("tokens", "tuple[abstract_token, ...]")
             ]
         ),
@@ -112,7 +112,7 @@ choices = {
         Constructor(
             "TargetSynth",
             [
-                Field("names", "PSet[str]"),
+                Field("env_names", "PSet[str]"),
                 Field("tokens", "tuple[abstract_token, ...]")
             ]
         ),

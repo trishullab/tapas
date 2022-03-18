@@ -220,27 +220,27 @@ def make_DeleteSynth(names : PSet[str]) -> synth:
 
 @dataclass(frozen=True, eq=True)
 class SourceSynth(synth):
-    declarations : PMap[str, Declaration]
-    used_names : PSet[str]
+    env_additions : PMap[str, Declaration]
+    env_refs : PSet[str]
     tokens : tuple[abstract_token, ...]
 
     def _match(self, handlers : SynthHandlers[T]) -> T:
         return handlers.case_SourceSynth(self)
 
-def make_SourceSynth(declarations : PMap[str, Declaration], used_names : PSet[str], tokens : tuple[abstract_token, ...]) -> synth:
-    return SourceSynth(declarations, used_names, tokens)
+def make_SourceSynth(env_additions : PMap[str, Declaration], env_refs : PSet[str], tokens : tuple[abstract_token, ...]) -> synth:
+    return SourceSynth(env_additions, env_refs, tokens)
         
 
 @dataclass(frozen=True, eq=True)
 class TargetSynth(synth):
-    names : PSet[str]
+    env_names : PSet[str]
     tokens : tuple[abstract_token, ...]
 
     def _match(self, handlers : SynthHandlers[T]) -> T:
         return handlers.case_TargetSynth(self)
 
-def make_TargetSynth(names : PSet[str], tokens : tuple[abstract_token, ...]) -> synth:
-    return TargetSynth(names, tokens)
+def make_TargetSynth(env_names : PSet[str], tokens : tuple[abstract_token, ...]) -> synth:
+    return TargetSynth(env_names, tokens)
         
 
 @dataclass(frozen=True, eq=True)

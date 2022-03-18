@@ -61,7 +61,7 @@ def target_synth_f(children : tuple[synth, ...]) -> TargetSynth:
     names : PSet[str] = s() 
     for child_synth in children:
         if isinstance(child_synth, TargetSynth):
-            names = names.update(child_synth.names)
+            names = names.update(child_synth.env_names)
         else:
             pass
             # assert isinstance(child_synth, NoSynth)
@@ -75,7 +75,7 @@ def target_synth_f(children : tuple[synth, ...]) -> TargetSynth:
             # assert isinstance(child_synth, NoSynth)
 
     return TargetSynth(
-        names = names,
+        env_names = names,
         tokens = tokens 
     )
 
@@ -97,13 +97,13 @@ def source_synth_f(children : tuple[synth, ...]) -> SourceSynth:
     used_names : PSet[str] = s() 
     tokens : tuple[abstract_token, ...] = ()
     for child_synth in ss_children:
-        declarations = declarations + child_synth.declarations
-        used_names = used_names.update(child_synth.used_names)
+        declarations = declarations + child_synth.env_additions
+        used_names = used_names.update(child_synth.env_refs)
         tokens = tokens + child_synth.tokens
 
     return SourceSynth(
-        declarations = declarations,
-        used_names = used_names,
+        env_additions = declarations,
+        env_refs = used_names,
         tokens = tokens 
     )
 
@@ -207,7 +207,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(name_synth, TargetSynth)
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in name_synth.names:
+        for name in name_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(s(), declaration_map)
@@ -260,7 +260,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(name_synth, TargetSynth)
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in name_synth.names:
+        for name in name_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(s(), declaration_map)
@@ -290,7 +290,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(name_synth, TargetSynth)
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in name_synth.names:
+        for name in name_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(s(), declaration_map)
@@ -303,7 +303,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         tl_synth = children[1]
         assert isinstance(tl_synth, MultiTargetSynth)
 
-        names : PSet[str] = hd_synth.names.update(tl_synth.names)
+        names : PSet[str] = hd_synth.env_names.update(tl_synth.names)
         tokens : PSet[tuple[abstract_token, ...]] = s(hd_synth.tokens).update(tl_synth.tokens)
 
         return MultiTargetSynth(
@@ -321,7 +321,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         synth = children[0]
         if isinstance(synth, TargetSynth):
             return MultiTargetSynth(
-                names = synth.names,
+                names = synth.env_names,
                 tokens = s(synth.tokens)
             )
         else:
@@ -339,7 +339,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert len(synth_children) == 1
         content_synth = synth_children[0] 
         assert isinstance(content_synth, SourceSynth)
-        return LocalEnvSynth(s(), content_synth.declarations)
+        return LocalEnvSynth(s(), content_synth.env_additions)
 
     # stmt <-- ReturnSomething
     def traverse_stmt_ReturnSomething_content(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
@@ -386,7 +386,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(content_synth, SourceSynth)
 
         # check name compatability between target and source expressions 
-        for name in content_synth.used_names:
+        for name in content_synth.env_refs:
             assert (
                 not (name in multi_target_synth.names) or (
                     name in inher.local_env
@@ -395,7 +395,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                 )
             )
 
-        declaration_map : PMap[str, Declaration] = content_synth.declarations
+        declaration_map : PMap[str, Declaration] = content_synth.env_additions
         for name in multi_target_synth.names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
@@ -418,11 +418,11 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         names = s()
         tokens = ()
         if isinstance(target_synth, SourceSynth):
-            names = target_synth.used_names
+            names = target_synth.env_refs
             tokens = target_synth.tokens
         else:
             assert isinstance(target_synth, TargetSynth)
-            names = target_synth.names
+            names = target_synth.env_names
             tokens = target_synth.tokens
 
         # target name is being updated, so must already exist in local_decl
@@ -468,7 +468,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # create AddDeclSynth containing the unified names 
         # FUTURE: modify to include type information 
         declaration_map : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
@@ -489,7 +489,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # create AddDeclSynth containing the unified names 
         # FUTURE: modify to include type information 
         declaration_map : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=False))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
@@ -508,8 +508,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         source_synth = synth_preds[1] 
         assert isinstance(source_synth, SourceSynth)
 
-        declaration_map : PMap[str, Declaration] = source_synth.declarations 
-        for name in target_synth.names:
+        declaration_map : PMap[str, Declaration] = source_synth.env_additions 
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return set_local_env(inher, inher.local_env + declaration_map) 
@@ -523,12 +523,12 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         body_synth = synth_children[2]
         assert isinstance(body_synth, LocalEnvSynth)
 
-        source_synth_additions = source_synth.declarations
+        source_synth_additions = source_synth.env_additions
         for sub in body_synth.subtractions:
             source_synth_additions = source_synth_additions.remove(sub)
 
         declaration_map : PMap[str, Declaration] = source_synth_additions + body_synth.additions
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(subtractions=body_synth.subtractions, additions=declaration_map)
@@ -554,7 +554,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # FUTURE: add type inference and collection of type attributes
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
@@ -578,7 +578,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # FUTURE: add type inference and collection of type attributes
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
@@ -604,7 +604,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # FUTURE: add type inference and collection of type attributes
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
@@ -624,7 +624,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
 
         # FUTURE: use tail to enable path in signature of module/package
         declarations : PMap[str, Declaration] = m()
-        for name in alias_synth.names:
+        for name in alias_synth.env_names:
             declarations = declarations.set(name, Declaration(True))
 
         return LocalEnvSynth(subtractions=s(), additions=declarations)
@@ -697,7 +697,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(target_synth, TargetSynth)
 
         contents : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             # FUTURE: don't do assertion here. global name might be a forward reference. must wait until end of module to make assertion
             # Make the following assertion at the top module level to capture forward references: assert name in inher.global_env
             contents = contents.set(name, inher.global_env[name] if inher.global_env.get(name) else Declaration(False))
@@ -715,7 +715,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(target_synth, TargetSynth)
 
         contents : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             assert name in inher.nonlocal_env
             contents = contents.set(name, inher.nonlocal_env[name])
         
@@ -855,7 +855,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
             target_synth = self.analyze_str(inher)
             assert isinstance(target_synth, TargetSynth)
             tokens = tuple([token]) + target_synth.tokens
-            return TargetSynth(names = target_synth.names, tokens = tokens) 
+            return TargetSynth(env_names = target_synth.env_names, tokens = tokens) 
 
         else:
             return super().analyze_token_expr(token, set_source_mode(inher), children, stack_result, stack)
@@ -889,9 +889,9 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(expr_synth, SourceSynth)
 
         # check name compatability between target and source expressions 
-        for name in expr_synth.used_names:
+        for name in expr_synth.env_refs:
             assert (
-                not (name in target_synth.names) or (
+                not (name in target_synth.env_names) or (
                     name in inher.local_env and
                     inher.local_env[name].initialized
                 )
@@ -900,13 +900,13 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # FUTURE: check that the source and target expressions are compatible
         # using type inference
 
-        declaration_map : PMap[str, Declaration] = expr_synth.declarations
-        for name in target_synth.names:
+        declaration_map : PMap[str, Declaration] = expr_synth.env_additions
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
 
         return SourceSynth(
-            declarations = (declaration_map),
-            used_names = expr_synth.used_names,
+            env_additions = (declaration_map),
+            env_refs = expr_synth.env_refs,
             tokens = target_synth.tokens + expr_synth.tokens
         )
 
@@ -1093,7 +1093,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(target_synth, TargetSynth)
 
         declaration_map : PMap[str, Declaration] = m()
-        for name in target_synth.names:
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=True))
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
 
@@ -1176,13 +1176,13 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert len(synth_preds) == 1
         test_synth = synth_preds[0]
         assert isinstance(test_synth, SourceSynth)
-        return set_local_env(inher, inher.local_env + test_synth.declarations)
+        return set_local_env(inher, inher.local_env + test_synth.env_additions)
     
     def synthesize_stmt_While_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         assert len(synth_children) == 2
         test_synth = synth_children[0]
         assert isinstance(test_synth, SourceSynth)
-        return LocalEnvSynth(subtractions=s(), additions=test_synth.declarations)
+        return LocalEnvSynth(subtractions=s(), additions=test_synth.env_additions)
     
     # stmt <-- WhileElse
     def traverse_stmt_WhileElse_test(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
@@ -1192,19 +1192,19 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert len(synth_preds) == 1
         test_synth = synth_preds[0]
         assert isinstance(test_synth, SourceSynth)
-        return set_local_env(inher, inher.local_env + test_synth.declarations)
+        return set_local_env(inher, inher.local_env + test_synth.env_additions)
     
     def traverse_stmt_WhileElse_orelse(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
         assert len(synth_preds) == 2
         test_synth = synth_preds[0]
         assert isinstance(test_synth, SourceSynth)
-        return set_local_env(inher, inher.local_env + test_synth.declarations)
+        return set_local_env(inher, inher.local_env + test_synth.env_additions)
     
     def synthesize_stmt_WhileElse_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         assert len(synth_children) == 3
         test_synth = synth_children[0]
         assert isinstance(test_synth, SourceSynth)
-        return LocalEnvSynth(subtractions=s(), additions=test_synth.declarations)
+        return LocalEnvSynth(subtractions=s(), additions=test_synth.env_additions)
     
 
     # stmt <-- If
@@ -1215,19 +1215,19 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert len(synth_preds) == 1
         test_synth = synth_preds[0]
         assert isinstance(test_synth, SourceSynth)
-        return set_local_env(inher, inher.local_env + test_synth.declarations)
+        return set_local_env(inher, inher.local_env + test_synth.env_additions)
     
     def traverse_stmt_If_orelse(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
         assert len(synth_preds) == 2
         test_synth = synth_preds[0]
         assert isinstance(test_synth, SourceSynth)
-        return set_local_env(inher, inher.local_env + test_synth.declarations)
+        return set_local_env(inher, inher.local_env + test_synth.env_additions)
     
     def synthesize_stmt_If_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         assert len(synth_children) == 3
         test_synth = synth_children[0]
         assert isinstance(test_synth, SourceSynth)
-        return LocalEnvSynth(subtractions=s(), additions=test_synth.declarations)
+        return LocalEnvSynth(subtractions=s(), additions=test_synth.env_additions)
 
 
     # stmt <-- RaiseExc
@@ -1257,7 +1257,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         source_synth = synth_children[0]
         assert isinstance(source_synth, SourceSynth)
 
-        return LocalEnvSynth(subtractions=s(), additions=source_synth.declarations)
+        return LocalEnvSynth(subtractions=s(), additions=source_synth.env_additions)
     
     # except_arg <-- SomeExceptArgName
     def traverse_except_arg_SomeExceptArgName_content(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
@@ -1275,8 +1275,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         target_synth = synth_children[1]
         assert isinstance(target_synth, TargetSynth)
 
-        declaration_map : PMap[str, Declaration] = source_synth.declarations
-        for name in target_synth.names:
+        declaration_map : PMap[str, Declaration] = source_synth.env_additions
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=False))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
@@ -1320,9 +1320,9 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(target_synth, TargetSynth)
 
         # check name compatability between target and source expressions 
-        for name in source_synth.used_names:
+        for name in source_synth.env_refs:
             assert (
-                not (name in target_synth.names) or (
+                not (name in target_synth.env_names) or (
                     name in inher.local_env and
                     inher.local_env[name].initialized
                 )
@@ -1331,8 +1331,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         # FUTURE: check that the source and target expressions are compatible
         # using type inference
 
-        declaration_map : PMap[str, Declaration] = source_synth.declarations
-        for name in target_synth.names:
+        declaration_map : PMap[str, Declaration] = source_synth.env_additions
+        for name in target_synth.env_names:
             declaration_map = declaration_map.set(name, Declaration(initialized=False))
 
         return LocalEnvSynth(s(), declaration_map)
@@ -1345,7 +1345,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert len(synth_children) == 1
         synth = synth_children[0] 
         assert isinstance(synth, SourceSynth)
-        return LocalEnvSynth(s(), synth.declarations)
+        return LocalEnvSynth(s(), synth.env_additions)
 
     
     # stmt <-- With
@@ -1391,7 +1391,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
             ):
 
                 return TargetSynth(
-                    names = s(name),
+                    env_names = s(name),
                     tokens = tuple([token])
                 )  
 
@@ -1408,15 +1408,15 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                 # )
 
                 return SourceSynth(
-                    declarations = m(),
-                    used_names = s(name),
+                    env_additions = m(),
+                    env_refs = s(name),
                     tokens = tuple([token])
                 )  
             elif isinstance(inher.mode, AttributeMode):
                 # name is an attribute, not in local env, so not part of used_names
                 return SourceSynth(
-                    declarations = m(),
-                    used_names = s(),
+                    env_additions = m(),
+                    env_refs = s(),
                     tokens = tuple([token])
                 )  
 
@@ -1435,8 +1435,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         else:
             if isinstance(inher.mode, SourceMode):
                 return SourceSynth(
-                    declarations = m(),
-                    used_names = s(),
+                    env_additions = m(),
+                    env_refs = s(),
                     tokens = tuple([token])
                 )  
             else:
