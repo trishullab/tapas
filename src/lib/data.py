@@ -31,7 +31,16 @@ from typing import Any, Union
 class BigCodeError(Exception):
     pass
 
-def generate_file(dirname : str, name : str, vocab : dict):
+def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
+
+    processed_count = 0
+    rec_error_count = 0
+    big_code_error_count = 0
+    obsolete_error_count = 0
+    unsupported_error_count = 0
+    analysis_error_count = 0
+    error_count = 0
+    total_count = 0
 
     concrete_data_dirpath = project_path(f"res/{dirname}/concrete_data")
     abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data")
@@ -50,14 +59,6 @@ def generate_file(dirname : str, name : str, vocab : dict):
     start = datetime.now()
 
     with open(concrete_data_path, 'r') as f:
-        processed_count = 0
-        rec_error_count = 0
-        big_code_error_count = 0
-        obsolete_error_count = 0
-        unsupported_error_count = 0
-        analysis_error_count = 0
-        error_count = 0
-        total_count = 0
         line = f.readline()
         while line: 
             try:
@@ -179,26 +180,27 @@ def generate_file(dirname : str, name : str, vocab : dict):
 
     end = datetime.now()
 
-    stats = \
-    f"""
-        id: {dirname} :: {name}"
-        time: {end - start}
-        total count: {total_count}
-        processed count: {processed_count}
-        error count: {error_count}
-        rec error count: {rec_error_count}
-        big code error count: {big_code_error_count}
-        obsolete error count: {obsolete_error_count}
-        unsupported error count: {unsupported_error_count}
-        analysis error count: {analysis_error_count}
-    """
 
-    print(f"STATS: {stats}")
-    write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', stats)
+    stats = {
+        'id' : f"{dirname}//{name}",
+        'time': (end - start).total_seconds(),
+        'processed_count' : processed_count,
+        'rec_error_count' : rec_error_count,
+        'big_code_error_count' : big_code_error_count,
+        'obsolete_error_count' : obsolete_error_count,
+        'unsupported_error_count' : unsupported_error_count,
+        'analysis_error_count' : analysis_error_count,
+        'error_count' : error_count,
+        'total_count' : total_count
+    }
+    print(f"FILE STATS: {stats}")
+    write(abstract_data_dirpath, f'{abstract_data_base}_stats.json', json.dumps(stats))
+    return stats
 
 
-def generate_file_tuple(triple):
-    generate_file(triple[0], triple[1], triple[2])
+def generate_file_tuple(triple) -> dict[str, Any]:
+    stats = generate_file(triple[0], triple[1], triple[2])
+    return stats
 
 def generate_dir(dirname : str):
     concrete_data_dirpath = project_path(f"res/{dirname}/concrete_data")
@@ -210,7 +212,54 @@ def generate_dir(dirname : str):
 
     import multiprocessing
     pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    pool.map(generate_file_tuple, [(dirname, n, vocab) for n in os.listdir(concrete_data_dirpath)])
+    stats_collection = pool.map(generate_file_tuple, [(dirname, n, vocab) for n in os.listdir(concrete_data_dirpath)])
+    pool.close()
+    pool.join()
+
+
+    time = 0
+    processed_count = 0
+    rec_error_count = 0
+    big_code_error_count = 0
+    obsolete_error_count = 0
+    unsupported_error_count = 0
+    analysis_error_count = 0
+    error_count = 0
+    total_count = 0
+
+    print(f"stats_collection length: {len(stats_collection)}")
+
+    for stats in stats_collection:
+        time += stats['time']
+        processed_count += stats['processed_count']
+        rec_error_count += stats['rec_error_count']
+        big_code_error_count += stats['big_code_error_count'] 
+        obsolete_error_count += stats['obsolete_error_count'] 
+        unsupported_error_count += stats['unsupported_error_count'] 
+        analysis_error_count += stats['analysis_error_count'] 
+        error_count += stats['error_count'] 
+        total_count += stats['total_count'] 
+
+    stats = {
+        'id' : f"{dirname}",
+        'time' : time,
+        'processed_count' : processed_count,
+        'rec_error_count' : rec_error_count,
+        'big_code_error_count' : big_code_error_count,
+        'obsolete_error_count' : obsolete_error_count,
+        'unsupported_error_count' : unsupported_error_count,
+        'analysis_error_count' : analysis_error_count,
+        'error_count' : error_count,
+        'total_count' : total_count
+    }
+
+    print(f"DIR STATS: {stats}")
+    write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
+    return stats
+
+
+    
+
 
     # for filename in os.listdir(concrete_data_dirpath):
     #     generate_file(filename)
