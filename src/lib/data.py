@@ -10,15 +10,16 @@ from lib.abstract_token_construct_autogen import AbstractTokenHandlers, match_ab
 
 from lib import generic_tree
 
-from lib.python_ast_parse import Obsolete
+from lib.python_ast_parse import Obsolete, Unsupported
 from lib import python_ast
 from lib.util import write, project_path
-from lib.abstract_token import abstract_token 
+from lib.abstract_token import abstract_token
 from lib.abstract_token_construct_autogen import Vocab
 
 
 
 from lib.python_abstract_token import concretize, analyze, Client
+from lib.python_abstract_token_analyze import AnalysisError
 # from lib.abstract_token import abstract_token
 from lib.python_util import Inher, from_Inher_to_string
 from lib.python_util import Inher, from_Inher_to_dictionary
@@ -51,6 +52,10 @@ def generate_file(dirname : str, name : str, vocab : dict):
     with open(concrete_data_path, 'r') as f:
         processed_count = 0
         rec_error_count = 0
+        big_code_error_count = 0
+        obsolete_error_count = 0
+        unsupported_error_count = 0
+        analysis_error_count = 0
         error_count = 0
         total_count = 0
         line = f.readline()
@@ -98,7 +103,7 @@ def generate_file(dirname : str, name : str, vocab : dict):
                     inher = client.next(tok)
                     if isinstance(inher, Exception):
                         ex = inher
-                        raise Exception() from ex
+                        raise AnalysisError() from ex
 
                     new_atok = ['A', 
                         from_env_to_dictionary(inher.local_env), 
@@ -134,22 +139,32 @@ def generate_file(dirname : str, name : str, vocab : dict):
                 error_count += 1
 
             except BigCodeError as ex:
-                pass
+                big_code_error_count += 1
+                error_count += 1
 
             except Obsolete as ex:
-                pass
+                obsolete_error_count += 1
+                error_count += 1
+
+            except Unsupported as ex:
+                unsupported_error_count += 1
+                error_count += 1
+
+            except AnalysisError as ex:
+                analysis_error_count += 1
+                error_count += 1
 
             except Exception as ex:
-                print(f"")
-                print(f"ERROR index: {total_count}")
-                line_obj = json.loads(line)
-                source_code = line_obj['code']
-                print(f"ERROR source code:\n{source_code}")
-                print(f"ERROR code length: {len(source_code)}")
-                print(f"ERROR index: {total_count}")
-                print(f"")
+                # print(f"")
+                # print(f"ERROR index: {total_count}")
+                # line_obj = json.loads(line)
+                # source_code = line_obj['code']
+                # print(f"ERROR source code:\n{source_code}")
+                # print(f"ERROR code length: {len(source_code)}")
+                # print(f"ERROR index: {total_count}")
+                # print(f"")
+                # raise Exception() from ex
                 error_count += 1
-                raise Exception() from ex
 
             # update
             line = f.readline()
@@ -172,6 +187,10 @@ def generate_file(dirname : str, name : str, vocab : dict):
         processed count: {processed_count}
         error count: {error_count}
         rec error count: {rec_error_count}
+        big code error count: {big_code_error_count}
+        obsolete error count: {obsolete_error_count}
+        unsupported error count: {unsupported_error_count}
+        analysis error count: {analysis_error_count}
     """
 
     print(f"STATS: {stats}")
