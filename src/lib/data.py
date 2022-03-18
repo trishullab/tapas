@@ -59,6 +59,7 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
     start = datetime.now()
 
     with open(concrete_data_path, 'r') as f:
+        br = ""
         line = f.readline()
         while line: 
             try:
@@ -95,11 +96,11 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
                     from_env_to_dictionary(inher.nonlocal_env), 
                     from_env_to_dictionary(inher.global_env)
                 ]
-                json_data = [atok]
+                abstract_program_data = [atok]
 
                 for tok in abstract_tokens:
                     triple = triple_from_instance(tok)
-                    json_data.append(['P', triple[0], triple[1], triple[2]])
+                    abstract_program_data.append(['P', triple[0], triple[1], triple[2]])
 
                     inher = client.next(tok)
                     if isinstance(inher, Exception):
@@ -112,12 +113,12 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
                         from_env_to_dictionary(inher.global_env)
                     ]
                     if (new_atok != atok):
-                        json_data.append(new_atok)
+                        abstract_program_data.append(new_atok)
                         atok = new_atok
 
                 client.close()
 
-                write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', json.dumps(json_data) + '\n', append=True)
+                write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', br + json.dumps(abstract_program_data), append=True)
 
                 def handle_Vocab(o : Vocab):
                     if o.options in vocab.keys():
@@ -154,20 +155,20 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
             except AnalysisError as ex:
                 analysis_error_count += 1
                 error_count += 1
+                print(f"")
+                print(f"ERROR index: {total_count}")
+                line_obj = json.loads(line)
+                source_code = line_obj['code']
+                print(f"ERROR source code:\n{source_code}")
+                print(f"ERROR index: {total_count}")
+                print(f"")
+                raise AnalysisError() from ex
 
             except Exception as ex:
-                # print(f"")
-                # print(f"ERROR index: {total_count}")
-                # line_obj = json.loads(line)
-                # source_code = line_obj['code']
-                # print(f"ERROR source code:\n{source_code}")
-                # print(f"ERROR code length: {len(source_code)}")
-                # print(f"ERROR index: {total_count}")
-                # print(f"")
-                # raise Exception() from ex
                 error_count += 1
 
             # update
+            br = "\n"
             line = f.readline()
             total_count += 1
             
@@ -255,11 +256,6 @@ def generate_dir(dirname : str):
 
     print(f"DIR STATS: {stats}")
     write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
-    return stats
-
-
-    
-
 
     # for filename in os.listdir(concrete_data_dirpath):
     #     generate_file(filename)

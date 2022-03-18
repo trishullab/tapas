@@ -386,18 +386,18 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert isinstance(content_synth, SourceSynth)
 
         # check name compatability between target and source expressions 
-        for name in content_synth.env_refs:
+        for env_ref in content_synth.env_refs:
             assert (
-                not (name in multi_target_synth.names) or (
-                    name in inher.local_env
+                not (env_ref in multi_target_synth.names) or (
+                    env_ref in inher.local_env
                     # FUTURE: check if forward reference or initialized  
                     # inher.local_env[name].initialized
                 )
             )
 
         declaration_map : PMap[str, Declaration] = content_synth.env_additions
-        for name in multi_target_synth.names:
-            declaration_map = declaration_map.set(name, Declaration(initialized=True))
+        for env_ref in multi_target_synth.names:
+            declaration_map = declaration_map.set(env_ref, Declaration(initialized=True))
 
         return LocalEnvSynth(subtractions=s(), additions=declaration_map)
     
@@ -508,11 +508,11 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         source_synth = synth_preds[1] 
         assert isinstance(source_synth, SourceSynth)
 
-        declaration_map : PMap[str, Declaration] = source_synth.env_additions 
+        env_additions : PMap[str, Declaration] = source_synth.env_additions 
         for name in target_synth.env_names:
-            declaration_map = declaration_map.set(name, Declaration(initialized=True))
+            env_additions = env_additions.set(name, Declaration(initialized=True))
 
-        return set_local_env(inher, inher.local_env + declaration_map) 
+        return set_local_env(inher, inher.local_env + env_additions) 
     
     def synthesize_stmt_For_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         assert len(synth_children) == 3
@@ -541,7 +541,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         return set_source_mode(inher)
     
     def traverse_stmt_ForElse_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        return inher
+        return self.traverse_stmt_For_body(inher, synth_preds)
     
     def traverse_stmt_ForElse_orelse(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
         return inher
@@ -568,7 +568,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         return set_source_mode(inher)
     
     def traverse_stmt_AsyncFor_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        return inher
+        return self.traverse_stmt_For_body(inher, synth_preds)
     
     def synthesize_stmt_AsyncFor_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         assert len(synth_children) == 3
@@ -845,7 +845,6 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                 return self.analyze_token_expr_Attribute(inher, children, stack_result, stack)
                 
             else:
-                print(f"OOGA rule_name {rule_name}")
                 raise AnalysisError()
 
         elif isinstance(inher.mode, NameTargetMode):

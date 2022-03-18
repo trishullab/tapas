@@ -87,14 +87,10 @@ from lib import util
 import json
 import re
 
+from datasets import load_dataset
 fpath = util.project_path('res/mbpp/abstract_data/mbpp.jsonl')
-
-with open(fpath, 'r') as f:
-    json_list = f.read().strip().split("\n")
-
-    for json_program in json_list:
-        program_data = json.loads(json_program)
-        print(f"program data: {program_data}")
+a_p_tokens = load_dataset("json", data_files=fpath)
+print(f"OOGA {a_p_tokens}")
 
 
 
