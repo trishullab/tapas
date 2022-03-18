@@ -12,6 +12,9 @@ from lib.python_ast_construct_autogen import *
 
 from lib import util
 
+class Obsolete(Exception):
+    pass
+
 class Unsupported(Exception):
     pass
 
@@ -20,6 +23,9 @@ class ConcreteParsingError(Exception):
 
 class TreeSitterError(Exception):
     pass
+
+def obsolete(node : GenericNode):
+    raise Obsolete(node.syntax_part)
 
 def unsupported(node : GenericNode):
     if (node.syntax_part == "ERROR"):
@@ -1156,6 +1162,8 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param:
         id = from_generic_tree_to_identifier(node.children[1])
         return Param(id, NoParamAnno(), NoParamDefault())
 
+    elif node.syntax_part == "tuple_pattern":
+        obsolete(node)
     else:
         unsupported(node)
 

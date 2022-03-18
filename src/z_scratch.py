@@ -307,11 +307,29 @@ def foo():
 # def boo():
 #     x[i] += 1 + x[i]
 
-d = 1
+# d = 1
 
-for x in (y := [1,2,3]):
-    # del d
-    pass
+# for x in (y := [1,2,3]):
+#     # del d
+#     pass
 
 
-print(f"hello {d}")
+# print(f"hello {d}")
+
+
+# class B():
+#     c : str = "hello"
+
+#     def foo(self) -> int:
+#         return 1
+
+# class A():
+#     b : B = B()
+
+
+# def boo():
+#     return A()
+
+# a = A()
+# del boo().b.c
+# del a.b.foo

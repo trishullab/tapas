@@ -154,17 +154,6 @@ def make_DeleteMode() -> mode:
     return DeleteMode()
         
 
-@dataclass(frozen=True, eq=True)
-class DeleteSliceMode(mode):
-
-
-    def _match(self, handlers : ModeHandlers[T]) -> T:
-        return handlers.case_DeleteSliceMode(self)
-
-def make_DeleteSliceMode() -> mode:
-    return DeleteSliceMode()
-        
-
 # case handlers for type mode
 @dataclass(frozen=True, eq=True)
 class ModeHandlers(Generic[T]):
@@ -178,7 +167,6 @@ class ModeHandlers(Generic[T]):
     case_ImportMode : Callable[[ImportMode], T]
     case_AttributeMode : Callable[[AttributeMode], T]
     case_DeleteMode : Callable[[DeleteMode], T]
-    case_DeleteSliceMode : Callable[[DeleteSliceMode], T]
 
 
 # matching for type mode

@@ -111,15 +111,6 @@ def set_delete_mode(inher : Inher) -> Inher:
         module_env = inher.module_env 
     )
 
-def set_delete_slice_mode(inher : Inher) -> Inher:
-    return Inher(
-        mode = DeleteSliceMode(),
-        local_env = inher.local_env,
-        nonlocal_env = inher.nonlocal_env, 
-        global_env = inher.global_env,
-        module_env = inher.module_env 
-    )
-
 def set_attribute_mode(inher : Inher) -> Inher:
     return Inher(
         mode = AttributeMode(),

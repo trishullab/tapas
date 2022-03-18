@@ -10,6 +10,7 @@ from lib.abstract_token_construct_autogen import AbstractTokenHandlers, match_ab
 
 from lib import generic_tree
 
+from lib.python_ast_parse import Obsolete
 from lib import python_ast
 from lib.util import write, project_path
 from lib.abstract_token import abstract_token 
@@ -97,7 +98,7 @@ def generate_file(dirname : str, name : str, vocab : dict):
                     inher = client.next(tok)
                     if isinstance(inher, Exception):
                         ex = inher
-                        raise ex
+                        raise Exception() from ex
 
                     new_atok = ['A', 
                         from_env_to_dictionary(inher.local_env), 
@@ -135,17 +136,20 @@ def generate_file(dirname : str, name : str, vocab : dict):
             except BigCodeError as ex:
                 pass
 
+            except Obsolete as ex:
+                pass
+
             except Exception as ex:
                 print(f"")
                 print(f"ERROR index: {total_count}")
                 line_obj = json.loads(line)
                 source_code = line_obj['code']
-                print(f"ERROR source code: {source_code}")
+                print(f"ERROR source code:\n{source_code}")
                 print(f"ERROR code length: {len(source_code)}")
                 print(f"ERROR index: {total_count}")
                 print(f"")
                 error_count += 1
-                raise ex
+                raise Exception() from ex
 
             # update
             line = f.readline()

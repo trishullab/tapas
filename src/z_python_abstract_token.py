@@ -36,7 +36,7 @@ from lib import python_abstract_token
 
 from lib import python_ast
 from lib.abstract_token_construct_autogen import Vocab, abstract_token
-from lib.python_abstract_token import concretize, analyze, Client
+from lib.python_abstract_token import concretize, dump, analyze, Client
 from lib.abstract_token import abstract_token
 from lib.python_util import Inher, from_Inher_to_string
 from typing import Union
@@ -51,8 +51,12 @@ class Generator:
 
 from lib.abstract_token import Vocab
 def make_generator(code : str) -> Generator:
+    print("--------source code----------")
+    print(code)
+    print("------------------")
 
     abstract_tokens = python_ast.serialize(python_ast.parse(code))
+
 
     it = iter(abstract_tokens)
 
@@ -223,16 +227,14 @@ def make_generator(code : str) -> Generator:
 # (y := x, z)
 #     ''')
 
-# def new_gen():
-#     with open(project_path("res/cubert/concrete_data/example.py")) as f:
-#         return make_generator(f.read())
-
-
-
 def new_gen():
-    return make_generator(f'''
-    print("hello"), print("bye") 
-    ''')
+    with open(project_path("res/cubert/concrete_data/example.py")) as f:
+        return make_generator(f.read())
+
+# def new_gen():
+#     return make_generator(f'''
+#     print("hello"), print("bye") 
+#     ''')
 
 if __name__ == "__main__":
     gen = new_gen()

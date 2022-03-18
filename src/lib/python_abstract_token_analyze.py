@@ -29,9 +29,9 @@ from lib import python_ast
 from lib import python_util
 
 from lib.python_util import Declaration, Inher, from_Inher_to_string, \
-    set_delete_mode, set_delete_slice_mode, set_attribute_mode, set_local_env, set_class_mode, set_function_mode, set_pattern_target_mode, set_name_target_mode, set_source_mode, set_import_mode, set_open_mode, \
+    set_delete_mode, set_attribute_mode, set_local_env, set_class_mode, set_function_mode, set_pattern_target_mode, set_name_target_mode, set_source_mode, set_import_mode, set_open_mode, \
     synth, NoSynth, DeleteSynth, LocalEnvSynth, SourceSynth, TargetSynth, MultiTargetSynth, OpenSynth, ImportSynth, \
-    mode, DeleteMode, DeleteSliceMode, ModuleMode, ClassMode, FunctionMode, PatternTargetMode, NameTargetMode, SourceMode, OpenMode, ImportMode, AttributeMode
+    mode, DeleteMode, ModuleMode, ClassMode, FunctionMode, PatternTargetMode, NameTargetMode, SourceMode, OpenMode, ImportMode, AttributeMode
 
 # definitions operate on a mutable queue (i.e. stream) of abstract_tokens 
 
@@ -791,9 +791,6 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                     names = names.update(c.names)
             return DeleteSynth(names)
 
-        elif isinstance(inher.mode, DeleteSliceMode):
-            return DeleteSynth(s()) 
-
         else:
             assert False
 
@@ -826,7 +823,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
 
             elif rule_name == "Subscript": 
 
-                return self.analyze_token_expr_Subscript(set_source_mode(inher), children, stack_result, stack)
+                return self.analyze_token_expr_Subscript(inher, children, stack_result, stack)
 
             elif rule_name == "Attribute": 
                 return self.analyze_token_expr_Attribute(inher, children, stack_result, stack)
@@ -842,9 +839,13 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                 return self.analyze_token_expr_Name(inher, children, stack_result, stack)
 
             elif rule_name == "Subscript": 
-                return self.analyze_token_expr_Subscript(set_delete_slice_mode(inher), children, stack_result, stack)
+                return self.analyze_token_expr_Subscript(set_source_mode(inher), children, stack_result, stack)
+
+            elif rule_name == "Attribute": 
+                return self.analyze_token_expr_Attribute(inher, children, stack_result, stack)
                 
             else:
+                print(f"OOGA rule_name {rule_name}")
                 raise AnalysisError()
 
         elif isinstance(inher.mode, NameTargetMode):
@@ -853,17 +854,18 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
             assert token.selection == "Name"
             target_synth = self.analyze_str(inher)
             assert isinstance(target_synth, TargetSynth)
-            return target_synth
+            tokens = tuple([token]) + target_synth.tokens
+            return TargetSynth(names = target_synth.names, tokens = tokens) 
 
         else:
             return super().analyze_token_expr(token, set_source_mode(inher), children, stack_result, stack)
 
     # expr <-- Subscript 
     def traverse_expr_Subscript_content(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        return inher
+        return set_source_mode(inher)
     
     def traverse_expr_Subscript_slice(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        return inher
+        return set_source_mode(inher)
     
     def synthesize_expr_Subscript_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         return self.synthesize_expr_attributes(inher, synth_children)
@@ -1410,8 +1412,8 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
                     used_names = s(name),
                     tokens = tuple([token])
                 )  
-
             elif isinstance(inher.mode, AttributeMode):
+                # name is an attribute, not in local env, so not part of used_names
                 return SourceSynth(
                     declarations = m(),
                     used_names = s(),
@@ -1420,9 +1422,6 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
 
             elif isinstance(inher.mode, DeleteMode):
                 return DeleteSynth(names = s(name))  
-
-            elif isinstance(inher.mode, DeleteSliceMode):
-                return NoSynth()  
 
             elif isinstance(inher.mode, ImportMode):
                 return ImportSynth(path = name)  

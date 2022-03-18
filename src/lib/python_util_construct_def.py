@@ -74,12 +74,8 @@ choices = {
         Constructor(
             "DeleteMode",
             []
-        ),
+        )
 
-        Constructor(
-            "DeleteSliceMode",
-            []
-        ),
     ],
 
     "synth" : [
