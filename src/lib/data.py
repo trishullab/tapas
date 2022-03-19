@@ -26,12 +26,16 @@ from lib.python_util import Inher, from_Inher_to_dictionary
 # from typing import Union
 import lib.abstract_token
 from typing import Any, Union
+import multiprocessing
 
 
 class BigCodeError(Exception):
     pass
 
-def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
+
+concrete_dir_name = "concrete_data"
+
+def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> dict[str, Any]:
 
     processed_count = 0
     rec_error_count = 0
@@ -42,15 +46,15 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
     error_count = 0
     total_count = 0
 
-    concrete_data_dirpath = project_path(f"res/{dirname}/concrete_data")
-    abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data")
+    concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
 
     logging.basicConfig(level=logging.INFO)
 
     concrete_data_path = os.path.join(concrete_data_dirpath, name)
 
     abstract_data_base = name.split(".")[0]  
-    # write(abstract_data_dirpath, f'{abstract_data_base}_training.txt', '')
+
+    abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{dir_count}")
     write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', '')
     write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', '')
 
@@ -155,14 +159,14 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
             except AnalysisError as ex:
                 analysis_error_count += 1
                 error_count += 1
-                print(f"")
-                print(f"ERROR index: {total_count}")
-                line_obj = json.loads(line)
-                source_code = line_obj['code']
-                print(f"ERROR source code:\n{source_code}")
-                print(f"ERROR index: {total_count}")
-                print(f"")
-                raise AnalysisError() from ex
+                # print(f"")
+                # print(f"ERROR index: {total_count}")
+                # line_obj = json.loads(line)
+                # source_code = line_obj['code']
+                # print(f"ERROR source code:\n{source_code}")
+                # print(f"ERROR index: {total_count}")
+                # print(f"")
+                # raise AnalysisError() from ex
 
             except Exception as ex:
                 error_count += 1
@@ -199,71 +203,74 @@ def generate_file(dirname : str, name : str, vocab : dict) -> dict[str, Any]:
     return stats
 
 
-def generate_file_tuple(triple) -> dict[str, Any]:
-    stats = generate_file(triple[0], triple[1], triple[2])
+def generate_file_tuple(tup) -> dict[str, Any]:
+    stats = generate_file(tup[0], tup[1], tup[2], tup[3])
     return stats
 
 def generate_dir(dirname : str):
-    concrete_data_dirpath = project_path(f"res/{dirname}/concrete_data")
+    concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
-    abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data")
-    write(abstract_data_dirpath, f'vocab.json', '')
+    concrete_data_paths = os.listdir(concrete_data_dirpath)
+    cdpl = len(concrete_data_paths)
+    stepsize = 2 #10 ** 5
+    chunks = [concrete_data_paths[i:i + stepsize] for i in range(0, cdpl, stepsize)]
+    for i, chunk in enumerate(chunks):
 
+        abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
+        write(abstract_data_dirpath, f'vocab.json', '')
+    
+        pool = multiprocessing.Pool(multiprocessing.cpu_count())
+        stats_collection = pool.map(generate_file_tuple, [(dirname, n, vocab, i) for n in chunk])
+        pool.close()
+        pool.join()
 
-    import multiprocessing
-    pool = multiprocessing.Pool(multiprocessing.cpu_count())
-    stats_collection = pool.map(generate_file_tuple, [(dirname, n, vocab) for n in os.listdir(concrete_data_dirpath)])
-    pool.close()
-    pool.join()
+        time = 0
+        processed_count = 0
+        rec_error_count = 0
+        big_code_error_count = 0
+        obsolete_error_count = 0
+        unsupported_error_count = 0
+        analysis_error_count = 0
+        error_count = 0
+        total_count = 0
 
+        print(f"stats_collection length: {len(stats_collection)}")
 
-    time = 0
-    processed_count = 0
-    rec_error_count = 0
-    big_code_error_count = 0
-    obsolete_error_count = 0
-    unsupported_error_count = 0
-    analysis_error_count = 0
-    error_count = 0
-    total_count = 0
+        for stats in stats_collection:
+            time += stats['time']
+            processed_count += stats['processed_count']
+            rec_error_count += stats['rec_error_count']
+            big_code_error_count += stats['big_code_error_count'] 
+            obsolete_error_count += stats['obsolete_error_count'] 
+            unsupported_error_count += stats['unsupported_error_count'] 
+            analysis_error_count += stats['analysis_error_count'] 
+            error_count += stats['error_count'] 
+            total_count += stats['total_count'] 
 
-    print(f"stats_collection length: {len(stats_collection)}")
+        stats = {
+            'id' : f"{dirname}",
+            'time' : time,
+            'processed_count' : processed_count,
+            'rec_error_count' : rec_error_count,
+            'big_code_error_count' : big_code_error_count,
+            'obsolete_error_count' : obsolete_error_count,
+            'unsupported_error_count' : unsupported_error_count,
+            'analysis_error_count' : analysis_error_count,
+            'error_count' : error_count,
+            'total_count' : total_count
+        }
 
-    for stats in stats_collection:
-        time += stats['time']
-        processed_count += stats['processed_count']
-        rec_error_count += stats['rec_error_count']
-        big_code_error_count += stats['big_code_error_count'] 
-        obsolete_error_count += stats['obsolete_error_count'] 
-        unsupported_error_count += stats['unsupported_error_count'] 
-        analysis_error_count += stats['analysis_error_count'] 
-        error_count += stats['error_count'] 
-        total_count += stats['total_count'] 
+        print(f"DIR STATS: {stats}")
+        write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
 
-    stats = {
-        'id' : f"{dirname}",
-        'time' : time,
-        'processed_count' : processed_count,
-        'rec_error_count' : rec_error_count,
-        'big_code_error_count' : big_code_error_count,
-        'obsolete_error_count' : obsolete_error_count,
-        'unsupported_error_count' : unsupported_error_count,
-        'analysis_error_count' : analysis_error_count,
-        'error_count' : error_count,
-        'total_count' : total_count
-    }
+        # for filename in os.listdir(concrete_data_dirpath):
+        #     generate_file(filename)
 
-    print(f"DIR STATS: {stats}")
-    write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
-
-    # for filename in os.listdir(concrete_data_dirpath):
-    #     generate_file(filename)
-
-    write(abstract_data_dirpath, f'vocab.json', json.dumps(
-        {
-            k:list(v)
-            for k,v in vocab.items()
-        },
-        indent=4
-    ), append=True)
+        write(abstract_data_dirpath, f'vocab.json', json.dumps(
+            {
+                k:list(v)
+                for k,v in vocab.items()
+            },
+            indent=4
+        ), append=True)
