@@ -264,9 +264,6 @@ def generate_dir(dirname : str):
         print(f"DIR STATS: {stats}")
         write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
 
-        # for filename in os.listdir(concrete_data_dirpath):
-        #     generate_file(filename)
-
         write(abstract_data_dirpath, f'vocab.json', json.dumps(
             {
                 k:list(v)
