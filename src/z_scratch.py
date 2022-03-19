@@ -342,3 +342,14 @@ def foo():
 # boo(1,2,3,4)
 
 
+def boo():
+    return 4
+if boo() > 1:
+    d = 4 
+elif boo() > 2: 
+    d = 4 
+else:
+    d : int 
+
+d = d + 1
+

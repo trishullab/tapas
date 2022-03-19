@@ -55,6 +55,34 @@ from lib.python_util import Declaration, Inher, from_Inher_to_string, \
 # collect all function and class def identifiers to pass into local scope of all nested scopes. 
 
 
+def cross_join_synths(true_body_synth : LocalEnvSynth, false_body_synth : LocalEnvSynth) -> LocalEnvSynth:
+    true_body_additions : PMap[str, Declaration] = m()
+    true_body_subtractions : PSet[str] = s()
+    true_body_additions = true_body_synth.additions
+    true_body_subtractions = true_body_synth.subtractions
+
+    false_body_additions : PMap[str, Declaration] = m()
+    false_body_subtractions : PSet[str] = s()
+    false_body_additions = false_body_synth.additions
+    false_body_subtractions = false_body_synth.subtractions
+
+    subtractions : PSet[str] = s()
+    for sub in true_body_subtractions:
+        if sub in false_body_subtractions:
+            subtractions = subtractions.add(sub)
+
+    body_additions : PMap[str, Declaration] = m()
+    for target, dec in true_body_additions.items():
+        if (
+            dec.initialized and 
+            target in false_body_additions.keys() and 
+            false_body_additions[target].initialized
+        ):
+            body_additions = body_additions.set(target, dec)
+
+    return LocalEnvSynth(subtractions, body_additions)
+
+
 
 def target_synth_f(children : tuple[synth, ...]) -> TargetSynth:
     # merge targets from child synths
@@ -1157,15 +1185,6 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
     def synthesize_parameters_NoParam_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
         return local_env_synth_f(synth_children)
 
-    # ElifBlock
-    def traverse_ElifBlock_test(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        return set_source_mode(inher)
-    
-    def traverse_ElifBlock_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        return inher
-    
-    def synthesize_ElifBlock_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
-        return self.default_synth(inher)
 
     # stmt <-- While
     def traverse_stmt_While_test(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
@@ -1206,6 +1225,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         return LocalEnvSynth(subtractions=s(), additions=test_synth.env_additions)
     
 
+
     # stmt <-- If
     def traverse_stmt_If_test(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
         return set_source_mode(inher)
@@ -1226,8 +1246,69 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
         assert len(synth_children) == 3
         test_synth = synth_children[0]
         assert isinstance(test_synth, SourceSynth)
-        return LocalEnvSynth(subtractions=s(), additions=test_synth.env_additions)
 
+        # cross join additions and subtractions of if/else bodies
+        true_synth = synth_children[1]
+        assert isinstance(true_synth, LocalEnvSynth)
+        false_synth = synth_children[2]
+        assert isinstance(false_synth, LocalEnvSynth)
+        
+
+        joined_synth : LocalEnvSynth = cross_join_synths(true_synth, false_synth)
+        test_additions = test_synth.env_additions
+        for sub in joined_synth.subtractions:
+            test_additions = test_additions.remove(sub)
+        
+
+        return LocalEnvSynth(subtractions=joined_synth.subtractions, additions=test_additions + joined_synth.additions)
+
+    # conditions <-- ElifCond
+    def traverse_conditions_ElifCond_content(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
+        return inher
+    
+    def traverse_conditions_ElifCond_tail(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
+        return inher
+    
+    def synthesize_conditions_ElifCond_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
+        assert len(synth_children) == 2
+        true_synth = synth_children[0]
+        assert isinstance(true_synth, LocalEnvSynth)
+        false_synth = synth_children[1]
+        assert isinstance(false_synth, LocalEnvSynth)
+        return cross_join_synths(true_synth, false_synth)
+    
+    # conditions <-- ElseCond
+    def traverse_conditions_ElseCond_content(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
+        return inher
+    
+    def synthesize_conditions_ElseCond_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
+        assert len(synth_children) == 1
+        return synth_children[0]
+    
+    # conditions <-- NoCond
+    def synthesize_conditions_NoCond_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
+        assert len(synth_children) == 0
+        return LocalEnvSynth(s(), m()) 
+
+
+    # ElifBlock
+    def traverse_ElifBlock_test(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
+        return set_source_mode(inher)
+    
+    def traverse_ElifBlock_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
+        return inher
+    
+    def synthesize_ElifBlock_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
+        assert len(synth_children) == 2
+        return synth_children[1]
+
+    # ElseBlock
+    def traverse_ElseBlock_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
+        return inher
+    
+    def synthesize_ElseBlock_attributes(self, inher : Inher, synth_children : tuple[synth, ...]) -> synth:
+        assert len(synth_children) == 1
+        return synth_children[0]
 
     # stmt <-- RaiseExc
     def traverse_stmt_RaiseExc_exc(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:

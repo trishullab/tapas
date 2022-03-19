@@ -1247,7 +1247,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
             if list_splat_index < 0 and dictionary_splat_index >= 0
 
             else (
-                children[0:list_splat_index], 
+                children,
                 None,
                 [],
                 None
