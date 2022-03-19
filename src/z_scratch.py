@@ -333,3 +333,12 @@ def foo():
 # a = A()
 # del boo().b.c
 # del a.b.foo
+
+
+# def boo(*xs):
+#     ys: tuple = xs
+#     print(xs)
+
+# boo(1,2,3,4)
+
+

@@ -50,13 +50,28 @@ class Generator:
     run_all : Callable[[], None]
 
 from lib.abstract_token import Vocab
+from lib import python_generic_tree
+from lib import python_ast_parse
+
 def make_generator(code : str) -> Generator:
     print("--------source code----------")
     print(code)
     print("------------------")
 
-    abstract_tokens = python_ast.serialize(python_ast.parse(code))
+    gnode = python_generic_tree.parse(code)
 
+    # print("--------generic tree dump----------")
+    # print(python_generic_tree.dump(gnode))
+    # print("------------------")
+
+    mod = python_ast_parse.from_generic_tree(gnode)
+
+    abstract_tokens = python_ast.serialize(mod)
+
+    # print("--------ast dump----------")
+    # d = python_abstract_token.dump(abstract_tokens)
+    # print(d)
+    # print("------------------")
 
     it = iter(abstract_tokens)
 

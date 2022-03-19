@@ -159,14 +159,14 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
             except AnalysisError as ex:
                 analysis_error_count += 1
                 error_count += 1
-                # print(f"")
-                # print(f"ERROR index: {total_count}")
-                # line_obj = json.loads(line)
-                # source_code = line_obj['code']
-                # print(f"ERROR source code:\n{source_code}")
-                # print(f"ERROR index: {total_count}")
-                # print(f"")
-                # raise AnalysisError() from ex
+                print(f"")
+                print(f"ERROR index: {total_count}")
+                line_obj = json.loads(line)
+                source_code = line_obj['code']
+                print(f"ERROR source code:\n{source_code}")
+                print(f"ERROR index: {total_count}")
+                print(f"")
+                raise AnalysisError() from ex
 
             except Exception as ex:
                 error_count += 1

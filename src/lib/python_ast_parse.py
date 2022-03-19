@@ -1208,9 +1208,8 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 for i, n in enumerate(children)
                 if is_list_splat_node(n) 
             ),
-            None
+            -1 
         )
-
 
         dictionary_splat_index = next(
             (
@@ -1218,7 +1217,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 for i, n in enumerate(children)
                 if is_dictionary_splat_node(n)
             ),
-            None
+            -1 
         )
 
         (param_nodes, list_splat_node, kw_nodes, dictionary_splat_node) = (
@@ -1229,7 +1228,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 children[list_splat_index + 1: dictionary_splat_index], 
                 children[dictionary_splat_index]
             )
-            if (list_splat_index and dictionary_splat_index)
+            if (list_splat_index >= 0 and dictionary_splat_index >= 0)
 
             else (
                 children[0:list_splat_index], 
@@ -1237,7 +1236,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 children[list_splat_index + 1: -1], 
                 None
             )
-            if list_splat_index and not dictionary_splat_index
+            if list_splat_index >= 0 and dictionary_splat_index < 0
 
             else (
                 children[0:list_splat_index], 
@@ -1245,7 +1244,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 [],
                 children[dictionary_splat_index]
             )
-            if not list_splat_index and dictionary_splat_index
+            if list_splat_index < 0 and dictionary_splat_index >= 0
 
             else (
                 children[0:list_splat_index], 
@@ -1254,7 +1253,6 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 None
             )
         )
-
 
 
         params = [
@@ -1269,6 +1267,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
                 list_splat_node.syntax_part == "list_splat_pattern" and 
                 len(list_splat_node.children) == 0
             )
+
 
             else from_generic_tree_to_Param(list_splat_node)
         )

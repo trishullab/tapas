@@ -35,6 +35,10 @@ def concretize(mod: module) -> str:
     seq = serialize(mod)
     return python_abstract_token.concretize(seq)
 
+def dump(mod: module) -> str:
+    seq = serialize(mod)
+    return python_abstract_token.dump(seq)
+
 def assert_serialize_reconstitute_bidirectional(mod: module):
     seq = serialize(mod)
     mod_result = reconstitute(seq)
