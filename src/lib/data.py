@@ -56,7 +56,6 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
 
     abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{dir_count}")
     write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', '')
-    write(abstract_data_dirpath, f'{abstract_data_base}_stats.txt', '')
 
     from datetime import datetime
 
@@ -213,7 +212,7 @@ def generate_dir(dirname : str):
 
     concrete_data_paths = os.listdir(concrete_data_dirpath)
     cdpl = len(concrete_data_paths)
-    stepsize = 2 #10 ** 5
+    stepsize = 10 ** 5
     chunks = [concrete_data_paths[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
 
