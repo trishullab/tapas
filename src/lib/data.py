@@ -119,8 +119,6 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
                         abstract_program_data.append(new_atok)
                         atok = new_atok
 
-                client.close()
-
                 write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', br + json.dumps(abstract_program_data), append=True)
 
                 def handle_Vocab(o : Vocab):

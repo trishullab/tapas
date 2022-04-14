@@ -89,7 +89,6 @@ def make_generator(code : str) -> Generator:
         nonlocal token 
         token = next(it, None)
         if (not token):
-            client.close()
             return True
 
         partial_tokens += tuple([token])

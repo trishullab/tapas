@@ -35,7 +35,7 @@ def concretize(instances : tuple[abstract_token, ...]):
 class Client: 
     init_inher : Inher
     next : Callable[[abstract_token], Union[Inher, Exception]]
-    close : Callable[[], None]
+    # close : Callable[[], None]
 
 def analyze() -> Client:
 
@@ -67,7 +67,7 @@ def analyze() -> Client:
                 my_module = f"{synth.additions}"  
                 )
             )
-            server.next(inher)
+            out_stream.put(inher)
         except Exception as ex:
             out_stream.put(ex)
 
@@ -79,15 +79,10 @@ def analyze() -> Client:
         in_stream.put(tok) 
         return out_stream.get() 
 
-    def close() -> None:
-        tok : abstract_token = Grammar("done", "Done")
-        in_stream.put(tok)
+    inher = out_stream.get()
+    assert isinstance(inher, Inher)   
 
-
-    attr_0 = out_stream.get()
-    assert isinstance(attr_0, Inher)   
-
-    client = Client(attr_0, next, close)
+    client = Client(inher, next)
 
 
     return client 
