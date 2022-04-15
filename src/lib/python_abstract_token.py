@@ -14,7 +14,6 @@ from pyrsistent import s, m, pmap, v
 from typing import Iterator
 from pyrsistent.typing import PMap 
 
-from lib import python_abstract_token_analyze
 from lib.python_analysis_construct_autogen import LocalEnvSynth
 
 

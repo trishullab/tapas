@@ -25,9 +25,9 @@ def from_primitive(prim : list[str]) -> abstract_token:
     assert len(prim) == 4
     assert prim[0] == "P"
     if prim[1] == "grammar":
-        return Grammar(options=prim[3], selection=prim[4])
+        return Grammar(options=prim[2], selection=prim[3])
     elif prim[1] == "vocab":
-        return Vocab(options=prim[3], selection=prim[4])
+        return Vocab(options=prim[2], selection=prim[3])
     else:
         assert False
 
