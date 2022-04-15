@@ -1,17 +1,8 @@
-from __future__ import annotations
+from operator import mod
+from pyrsistent.typing import PMap, PSet
 
-from dataclasses import dataclass
-from tkinter.messagebox import NO
-from typing import Dict, TypeVar, Any, Generic, Union, Optional
-from collections.abc import Callable
-
-from abc import ABC, abstractmethod
-from _distutils_hack import override
-
-from numpy import isin
-from pkg_resources import declare_namespace
-
-T = TypeVar('T')
+from pyrsistent import m, pmap, v, PRecord, field
+from pyrsistent.typing import PMap, PSet
 
 from lib.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
 from lib.python_ast_construct_autogen import *
@@ -26,33 +17,252 @@ from lib.python_abstract_token_analyze_autogen import Server as BaseServer, Anal
 
 from lib import python_ast
 
-from lib import python_util
+from lib import python_analysis
 
-from lib.python_util import Declaration, Inher, from_Inher_to_string, \
-    set_delete_mode, set_attribute_mode, set_local_env, set_class_mode, set_function_mode, set_pattern_target_mode, set_name_target_mode, set_source_mode, set_import_mode, set_open_mode, \
-    synth, NoSynth, DeleteSynth, LocalEnvSynth, SourceSynth, TargetSynth, MultiTargetSynth, OpenSynth, ImportSynth, \
-    mode, DeleteMode, ModuleMode, ClassMode, FunctionMode, PatternTargetMode, NameTargetMode, SourceMode, OpenMode, ImportMode, AttributeMode
+from lib.python_analysis_construct_autogen import *
 
-# definitions operate on a mutable queue (i.e. stream) of abstract_tokens 
+from lib import abstract_token as ats
 
-# if assignment is used on a name in both target and source, and it's not in local scope, 
-# then either global or nonlocal keyword is required 
+import threading
+from queue import Queue
 
-# When entering a definition or lambda body, local inher flows:
-# - into global inher if it's at module level,
-# - into nonlocal inher if it's *not* at module level,
 
-# collect names from target expression 
-# traverse source expression. NOTE: This order is necessary due to incremental processing from left tree to right.
-# There are three types of context for traversing of expressions:
-# - target context, source context, statement context  
-# - source context carries names from target
-# For a source name, if it is a target name but not local, raise error - name update out of scope.
-# at assignment (statement) level, add target names to local inher
-# When nonlocal or global keywords are seen, copy names from respective inherironment to local inher. 
+@dataclass
+class Client: 
+    init_inher : Inher
+    next : Callable[[abstract_token], Inher]
+    next_prim : Callable[[list[str]], Optional[list]]
 
-# ISSUE: how to handle forward references with incremental processing?
-# collect all function and class def identifiers to pass into local scope of all nested scopes. 
+def start_analysis() -> Client:
+
+    in_stream : Queue[abstract_token] = Queue()
+    out_stream : Queue[Union[Exception, Inher]] = Queue()
+
+    server : Server = Server(in_stream, out_stream)
+    inher = Inher(
+        global_env = m(), 
+        nonlocal_env = m(), 
+        local_env = m(),
+        module_env = m(),
+        mode = python_analysis.ModuleMode() 
+    )
+
+
+    def run():
+        try:
+            nonlocal inher
+            synth = server.analyze_module(inher)
+            assert isinstance(synth, LocalEnvSynth) 
+
+            inher = Inher(
+                mode = python_analysis.ModuleMode(),
+                local_env = m(),
+                nonlocal_env = m(), 
+                global_env = m(), 
+                module_env = m(
+                my_module = f"{synth.additions}"  
+                )
+            )
+            out_stream.put(inher)
+        except Exception as ex:
+            out_stream.put(ex)
+
+    thread = threading.Thread(target = run)
+    thread.start()
+
+    #discard initial inher
+    new_inher = out_stream.get()
+    assert inher == new_inher
+
+
+    def next(tok : abstract_token) -> Inher:
+        in_stream.put(tok) 
+        result = out_stream.get() 
+        if isinstance(result, Inher):
+            return result 
+        else:
+            raise AnalysisError() from result
+
+    last_prim_inher : list = from_inher_to_primitive(inher)
+    def next_prim(ptok : list[str]) -> Optional[list]:
+        nonlocal last_prim_inher
+        inher = next(ats.from_primitive(ptok))
+        prim_inher = from_inher_to_primitive(inher)
+        if prim_inher == last_prim_inher:
+            return None
+        else:
+            last_prim_inher = prim_inher 
+            return prim_inher
+
+    assert isinstance(inher, Inher)   
+    client = Client(inher, next, next_prim)
+
+
+    return client 
+
+
+def from_inher_to_primitive(inher : Inher) -> list:
+    return ['A', 
+        from_env_to_dictionary(inher.local_env), 
+        from_env_to_dictionary(inher.nonlocal_env), 
+        from_env_to_dictionary(inher.global_env)
+    ]
+
+def from_env_to_string(pm : PMap) -> str:
+    nl = "\n"
+    return nl.join([
+        f"      {k} |-> {v}"
+        for k, v in pm.items()
+    ])
+
+def from_Inher_to_string(inher : Inher) -> str:
+
+    return (
+f"""attributes:
+  mode = {inher.mode}
+  local_env:
+{from_env_to_string(inher.local_env)}
+  nonlocal_env:
+{from_env_to_string(inher.nonlocal_env)}
+  global_env:
+{from_env_to_string(inher.global_env)}
+  module_env: 
+{from_env_to_string(inher.module_env)}"""
+    )
+
+def from_env_to_dictionary(env : PMap[str, Declaration]) -> dict:
+    return {
+        symbol : {'init' : d.initialized}
+        for symbol, d in env.items()
+    }
+
+def from_Inher_to_dictionary(inher : Inher) -> dict:
+    return {
+        'mode' : f"{inher.mode}",
+        'local_env' : from_env_to_dictionary(inher.local_env),
+        'nonlocal_env' : from_env_to_dictionary(inher.nonlocal_env),
+        'global_env' : from_env_to_dictionary(inher.global_env)
+    }
+
+def set_local_env(inher : Inher, local_env : PMap[str, Declaration]) -> Inher:
+    return Inher(
+        mode = inher.mode,
+        local_env = local_env, 
+        nonlocal_env = inher.nonlocal_env,
+        global_env = inher.global_env,
+        module_env = inher.module_env
+    )
+
+
+def set_class_mode(inher : Inher) -> Inher:
+    if isinstance(inher.mode, ModuleMode):
+        return Inher(
+            # copy local_decl into global_decl
+            global_env = inher.local_env,
+            nonlocal_env = inher.nonlocal_env, 
+            local_env = inher.local_env, 
+            module_env = inher.module_env, 
+            # update mode
+            mode = ClassMode() 
+        )
+
+    else:
+        return Inher(
+            global_env = inher.global_env,
+            # copy local_decl into nonlocal_decl
+            nonlocal_env = inher.nonlocal_env + inher.local_env, 
+            local_env = inher.local_env, 
+            module_env = inher.module_env, 
+            # update mode
+            mode = ClassMode() 
+        )
+
+def set_function_mode(inher : Inher) -> Inher:
+    if isinstance(inher.mode, ModuleMode):
+        return Inher(
+            # move local_decl into global_decl
+            global_env = inher.local_env,
+            nonlocal_env = inher.nonlocal_env, 
+            # reset local_decl
+            local_env = m(), 
+            module_env = inher.module_env,
+            # update mode
+            mode = FunctionMode() 
+        )
+
+    else:
+        return Inher(
+            global_env = inher.global_env,
+            # move local_decl into nonlocal_decl 
+            nonlocal_env = inher.nonlocal_env + inher.local_env, 
+            # reset local_decl
+            local_env = m(), 
+            module_env = inher.module_env,
+            mode = inher.mode 
+        )
+
+def set_delete_mode(inher : Inher) -> Inher:
+    return Inher(
+        mode = DeleteMode(),
+        local_env = inher.local_env,
+        nonlocal_env = inher.nonlocal_env, 
+        global_env = inher.global_env,
+        module_env = inher.module_env 
+    )
+
+def set_attribute_mode(inher : Inher) -> Inher:
+    return Inher(
+        mode = AttributeMode(),
+        local_env = inher.local_env,
+        nonlocal_env = inher.nonlocal_env, 
+        global_env = inher.global_env,
+        module_env = inher.module_env 
+    )
+
+def set_pattern_target_mode(inher : Inher) -> Inher:
+    return Inher(
+        mode = PatternTargetMode(),
+        local_env = inher.local_env,
+        nonlocal_env = inher.nonlocal_env, 
+        global_env = inher.global_env,
+        module_env = inher.module_env 
+    )
+
+def set_name_target_mode(inher : Inher) -> Inher:
+    return Inher(
+        mode = NameTargetMode(),
+        global_env = inher.global_env,
+        nonlocal_env = inher.nonlocal_env, 
+        local_env = inher.local_env,
+        module_env = inher.module_env 
+    )
+
+def set_source_mode(inher : Inher) -> Inher:
+    return Inher(
+        mode = SourceMode(),
+        local_env = inher.local_env,
+        nonlocal_env = inher.nonlocal_env, 
+        global_env = inher.global_env,
+        module_env = inher.module_env 
+    )
+
+def set_open_mode(inher : Inher) -> Inher:
+    return Inher(
+        mode = OpenMode(),
+        local_env = inher.local_env,
+        nonlocal_env = inher.nonlocal_env, 
+        global_env = inher.global_env,
+        module_env = inher.module_env
+    )
+
+def set_import_mode(inher : Inher, path : str) -> Inher:
+    return Inher(
+        mode = ImportMode(path),
+        local_env = inher.local_env,
+        nonlocal_env = inher.nonlocal_env, 
+        global_env = inher.global_env,
+        module_env = inher.module_env
+    )
 
 
 def cross_join_synths(true_body_synth : LocalEnvSynth, false_body_synth : LocalEnvSynth) -> LocalEnvSynth:
@@ -275,7 +485,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
     #     return inher
     
     def traverse_function_def_FunctionDef_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        len(synth_preds) == 3
+        assert len(synth_preds) == 3
         params_synth = synth_preds[1]
         assert isinstance(params_synth, LocalEnvSynth)
         assert len(params_synth.subtractions) == 0
@@ -305,7 +515,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
     #     return inher
 
     def traverse_function_def_AsyncFunctionDef_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        len(synth_preds) == 3
+        assert len(synth_preds) == 3
         params_synth = synth_preds[1]
         assert isinstance(params_synth, LocalEnvSynth)
         assert len(params_synth.subtractions) == 0
@@ -1367,7 +1577,7 @@ class Server(BaseServer[Union[Exception, Inher], synth]):
 
     # ExceptHandler 
     def traverse_ExceptHandler_body(self, inher : Inher, synth_preds : tuple[synth, ...]) -> Inher:
-        len(synth_preds) == 1
+        assert len(synth_preds) == 1
         arg_synth = synth_preds[0]
         assert isinstance(arg_synth, LocalEnvSynth)
 

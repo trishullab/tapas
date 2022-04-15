@@ -38,7 +38,7 @@ from lib import python_ast
 from lib.abstract_token_construct_autogen import Vocab, abstract_token
 from lib.python_abstract_token import concretize, dump, analyze, Client
 from lib.abstract_token import abstract_token
-from lib.python_util import Inher, from_Inher_to_string
+from lib.python_analysis import Inher, from_Inher_to_string
 from typing import Union
 import lib.abstract_token
 from lib.util import project_path
