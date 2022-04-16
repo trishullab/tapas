@@ -353,3 +353,12 @@ def foo():
 
 # d = d + 1
 
+
+from typing import Union
+def foo() -> Union[str, int]:
+    return 1
+
+
+x = foo()
+assert isinstance(x, int)
+x + 1
