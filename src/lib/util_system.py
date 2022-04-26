@@ -13,6 +13,30 @@ T = TypeVar('T')
 
 X = TypeVar('X')
 
+def linearize_dict(d : dict) -> list: 
+    return ['{'] + [
+        item
+        for k, v in d.items()
+        for item in [k] + (
+            linearize_dict(v) if isinstance(v, dict) else
+            linearize_list(v) if isinstance(v, list) else
+            [v]
+        )
+    ] +  ['}']
+
+def linearize_list(xs : list) -> list: 
+    return ['['] + [
+        item
+        for x in xs
+        for item in (
+            linearize_dict(x) if isinstance(x, dict) else
+            linearize_list(x) if isinstance(x, list) else
+            [x]
+        )
+    ] + [']']
+
+
+
 
 class Ref(Generic[T]): 
     def __init__(self, item : T):
