@@ -11,9 +11,14 @@ import lib.rule_system
 
 from dataclasses import dataclass
 
-
-
-
+def from_primitive(ptok : list[str]) -> abstract_token:
+    assert len(ptok) == 4
+    assert ptok[0] == "P"
+    if ptok[1] == "grammar":
+        return make_Grammar(ptok[2], ptok[3])
+    else:
+        assert ptok[1] == "vocab"
+        return make_Vocab(ptok[2], ptok[3])
 
 def to_primitive(inst : abstract_token) -> list[str]:
     return match_abstract_token(inst, AbstractTokenHandlers[list[str]](

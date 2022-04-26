@@ -86,12 +86,6 @@ def generate_file(inher_aux : pals.InherAux, dirname : str, name : str, vocab : 
                     abstract_program_data.append(ats.to_primitive(tok))
 
                     inher = client.next(tok)
-                    if isinstance(inher, pals.ArgParamMismatchError):
-                        ex = inher
-                        raise ex 
-                    elif isinstance(inher, Exception):
-                        ex = inher
-                        raise ex
 
                     new_atok = pals.from_inher_aux_to_primitive(inher)
                     if (new_atok != atok):

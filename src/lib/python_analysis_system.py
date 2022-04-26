@@ -14,6 +14,7 @@ import os
 
 from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
 from lib.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
+from lib import abstract_token_system as ats
 
 from lib import util_system as us
 
@@ -1366,7 +1367,8 @@ from queue import Queue
 
 @dataclass
 class Client: 
-    next : Callable[[abstract_token], Union[InherAux, Exception]]
+    next : Callable[[abstract_token], InherAux]
+    next_prim : Callable[[list], list | None]
 
 
 def insert_module(package : PMap[str, ModulePackage], rpath : Sequence[str], module : PMap[str, type]) -> PMap[str, ModulePackage]:
@@ -1425,11 +1427,30 @@ def spawn_analysis(inher_aux : InherAux) -> Client:
     thread = threading.Thread(target = run)
     thread.start()
 
-    def next(tok : abstract_token) -> Union[InherAux, Exception]:
+    def next(tok : abstract_token) -> InherAux:
         in_stream.put(tok) 
-        return out_stream.get() 
+        out = out_stream.get() 
+        if isinstance(out, Exception):
+            raise out
+        else:
+            return out
 
-    return Client(next) 
+
+    last_inher_prim = from_inher_aux_to_primitive(inher_aux)
+    def next_prim(ptok : list) -> list | None:
+        nonlocal last_inher_prim
+        tok = ats.from_primitive(ptok)
+        out_inher = next(tok)
+        out_inher_prim = from_inher_aux_to_primitive(out_inher)
+        if (out_inher_prim == last_inher_prim):
+            return None
+        else:
+            last_inher_prim = out_inher_prim
+            return out_inher_prim
+
+
+
+    return Client(next, next_prim) 
 
 
 
