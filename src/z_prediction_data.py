@@ -1,8 +1,6 @@
 from lib import util_system
 import json
 
-from lib.python_analysis_system import from_inher_aux_to_primitive
-
 fpath = util_system.project_path('res/mbpp/abstract_data_0/mbpp.jsonl')
 
 def linearize_dict(d : dict) -> list: 
@@ -46,7 +44,7 @@ with open(fpath, 'r') as f:
     )
     client = pals.spawn_analysis(inher_aux)
     
-    print(from_inher_aux_to_primitive(inher_aux))
+    print(pals.from_inher_aux_to_primitive(inher_aux))
     for ptok in just_the_ps:
         print(ptok)
         inher_prim = client.next_prim(ptok)
