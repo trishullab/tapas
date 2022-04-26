@@ -13,15 +13,16 @@ from lib import generic_tree
 from lib.python_ast_parse import Obsolete, Unsupported
 from lib import python_ast
 from lib.util import write, project_path
-from lib.abstract_token import abstract_token, to_primitive
+from lib.abstract_token import abstract_token
 from lib.abstract_token_construct_autogen import Vocab
 
 
 
-from lib.python_analysis import AnalysisError, start_analysis, Client
+from lib.python_abstract_token import concretize, analyze, Client
+from lib.python_abstract_token_analyze import AnalysisError
 # from lib.abstract_token import abstract_token
-from lib.python_analysis import Inher, from_Inher_to_string, from_inher_to_primitive
-from lib.python_analysis import Inher, from_Inher_to_dictionary
+from lib.python_util import Inher, from_Inher_to_string
+from lib.python_util import Inher, from_Inher_to_dictionary
 # from typing import Union
 import lib.abstract_token
 from typing import Any, Union
@@ -79,21 +80,46 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
 
                 abstract_tokens = python_ast.serialize(mod)
 
+                def triple_from_instance(inst : abstract_token) -> tuple[str, str, str]:
+                    return match_abstract_token(inst, AbstractTokenHandlers[tuple[str, str, str]](
+                        case_Grammar=lambda o : (
+                            ("grammar", o.options, o.selection)
+                        ),
+                        case_Vocab=lambda o : (
+                            ("vocab", o.options, o.selection)
+                        )
+                    )) 
 
-                client : Client = start_analysis()
-                from lib.python_analysis import from_env_to_dictionary
+
+                client : Client = analyze()
+                from lib.python_util import from_env_to_dictionary
                 inher : Union[Inher, Exception] = client.init_inher
-                atok = from_inher_to_primitive(inher)
+                atok = ['A', 
+                    from_env_to_dictionary(inher.local_env), 
+                    from_env_to_dictionary(inher.nonlocal_env), 
+                    from_env_to_dictionary(inher.global_env)
+                ]
                 abstract_program_data = [atok]
 
                 for tok in abstract_tokens:
-                    ptok = to_primitive(tok)
-                    abstract_program_data.append(ptok)
+                    triple = triple_from_instance(tok)
+                    abstract_program_data.append(['P', triple[0], triple[1], triple[2]])
 
-                    new_atok = client.next_prim(ptok)
+                    inher = client.next(tok)
+                    if isinstance(inher, Exception):
+                        ex = inher
+                        raise AnalysisError() from ex
 
-                    if (new_atok):
+                    new_atok = ['A', 
+                        from_env_to_dictionary(inher.local_env), 
+                        from_env_to_dictionary(inher.nonlocal_env), 
+                        from_env_to_dictionary(inher.global_env)
+                    ]
+                    if (new_atok != atok):
                         abstract_program_data.append(new_atok)
+                        atok = new_atok
+
+                client.close()
 
                 write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', br + json.dumps(abstract_program_data), append=True)
 

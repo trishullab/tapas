@@ -11,27 +11,6 @@ import lib.rule
 
 from dataclasses import dataclass
 
-def to_primitive(inst : abstract_token) -> list[str]:
-    return match_abstract_token(inst, AbstractTokenHandlers[list[str]](
-        case_Grammar=lambda o : (
-            ["P", "grammar", o.options, o.selection]
-        ),
-        case_Vocab=lambda o : (
-            ["P", "vocab", o.options, o.selection]
-        )
-    )) 
-
-def from_primitive(prim : list[str]) -> abstract_token:
-    assert len(prim) == 4
-    assert prim[0] == "P"
-    if prim[1] == "grammar":
-        return Grammar(options=prim[2], selection=prim[3])
-    elif prim[1] == "vocab":
-        return Vocab(options=prim[2], selection=prim[3])
-    else:
-        assert False
-
-
 
 def to_string(token : abstract_token) -> str:
     return match_abstract_token(token, AbstractTokenHandlers[str](
