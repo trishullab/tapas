@@ -5,12 +5,25 @@ from lib.line_format_construct_autogen import line_format, LineFormatHandlers, m
 from lib.rule_construct_autogen import ItemHandlers
 from lib.abstract_token_construct_autogen import *
 
-from lib.rule import Rule
-import lib.rule
+from lib.rule_system import Rule
+import lib.rule_system
 
 
 from dataclasses import dataclass
 
+
+
+
+
+def to_primitive(inst : abstract_token) -> list[str]:
+    return match_abstract_token(inst, AbstractTokenHandlers[list[str]](
+        case_Grammar=lambda o : (
+            ["P", "grammar", o.options, o.selection]
+        ),
+        case_Vocab=lambda o : (
+            ["P", "vocab", o.options, o.selection]
+        )
+    )) 
 
 def to_string(token : abstract_token) -> str:
     return match_abstract_token(token, AbstractTokenHandlers[str](
@@ -81,13 +94,13 @@ def dump(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...
             nonlocal stack
             nonlocal format
             rule = rule_map[inst.selection]
-            def assert_not_terminal(c : lib.rule.item):
-                assert not isinstance(c, lib.rule.Terminal)
+            def assert_not_terminal(c : lib.rule_system.item):
+                assert not isinstance(c, lib.rule_system.Terminal)
                 raise Exception()
 
             for item in reversed(rule.content):
-                if not isinstance(item, lib.rule.Terminal):
-                    child_format = lib.rule.match_item(item, ItemHandlers[Format](
+                if not isinstance(item, lib.rule_system.Terminal):
+                    child_format = lib.rule_system.match_item(item, ItemHandlers[Format](
                         case_Terminal=lambda o : (
                             assert_not_terminal(o)
                         ),
@@ -148,7 +161,7 @@ def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_toke
                 nonlocal stack
                 rule = rule_map[inst.selection]
                 for i, item in enumerate(reversed(rule.content)):
-                    lib.rule.match_item(item, ItemHandlers(
+                    lib.rule_system.match_item(item, ItemHandlers(
                         case_Terminal=lambda o : (
                             j := len(rule.content) - 1 - i,
                             prefix := (
@@ -159,7 +172,7 @@ def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_toke
                                         case_NewLine = lambda _ : "\n" + ("    " * format.indent_width),
                                         case_IndentLine = lambda _ : "\n" + ("    " * format.indent_width)
                                     ))
-                                    if isinstance(pred, lib.rule.Nonterm) else ""
+                                    if isinstance(pred, lib.rule_system.Nonterm) else ""
                                 )[-1]
                                 if i == 0 else "" 
                             ),

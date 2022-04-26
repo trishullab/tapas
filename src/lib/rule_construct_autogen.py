@@ -12,14 +12,20 @@ from abc import ABC, abstractmethod
 T = TypeVar('T')
 
 
+@dataclass(frozen=True, eq=True)
+class SourceFlag: 
+    pass
+
+
 from lib.line_format_construct_autogen import line_format
 
 
 # type item
 @dataclass(frozen=True, eq=True)
 class item(ABC):
-    @abstractmethod
-    def _match(self, handlers : ItemHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ItemHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type item
@@ -28,11 +34,23 @@ class item(ABC):
 class Terminal(item):
     terminal : str
 
-    def _match(self, handlers : ItemHandlers[T]) -> T:
+    def match(self, handlers : ItemHandlers[T]) -> T:
         return handlers.case_Terminal(self)
 
-def make_Terminal(terminal : str) -> item:
-    return Terminal(terminal)
+def make_Terminal(
+    terminal : str
+) -> item:
+    return Terminal(
+        terminal
+    )
+
+def update_Terminal(source_Terminal : Terminal,
+    terminal : Union[str, SourceFlag] = SourceFlag()
+) -> Terminal:
+    return Terminal(
+        source_Terminal.terminal if isinstance(terminal, SourceFlag) else terminal
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -41,11 +59,31 @@ class Nonterm(item):
     nonterminal : str
     format : line_format
 
-    def _match(self, handlers : ItemHandlers[T]) -> T:
+    def match(self, handlers : ItemHandlers[T]) -> T:
         return handlers.case_Nonterm(self)
 
-def make_Nonterm(relation : str, nonterminal : str, format : line_format) -> item:
-    return Nonterm(relation, nonterminal, format)
+def make_Nonterm(
+    relation : str, 
+    nonterminal : str, 
+    format : line_format
+) -> item:
+    return Nonterm(
+        relation,
+        nonterminal,
+        format
+    )
+
+def update_Nonterm(source_Nonterm : Nonterm,
+    relation : Union[str, SourceFlag] = SourceFlag(),
+    nonterminal : Union[str, SourceFlag] = SourceFlag(),
+    format : Union[line_format, SourceFlag] = SourceFlag()
+) -> Nonterm:
+    return Nonterm(
+        source_Nonterm.relation if isinstance(relation, SourceFlag) else relation,
+        source_Nonterm.nonterminal if isinstance(nonterminal, SourceFlag) else nonterminal,
+        source_Nonterm.format if isinstance(format, SourceFlag) else format
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -53,11 +91,27 @@ class Vocab(item):
     relation : str
     vocab : str
 
-    def _match(self, handlers : ItemHandlers[T]) -> T:
+    def match(self, handlers : ItemHandlers[T]) -> T:
         return handlers.case_Vocab(self)
 
-def make_Vocab(relation : str, vocab : str) -> item:
-    return Vocab(relation, vocab)
+def make_Vocab(
+    relation : str, 
+    vocab : str
+) -> item:
+    return Vocab(
+        relation,
+        vocab
+    )
+
+def update_Vocab(source_Vocab : Vocab,
+    relation : Union[str, SourceFlag] = SourceFlag(),
+    vocab : Union[str, SourceFlag] = SourceFlag()
+) -> Vocab:
+    return Vocab(
+        source_Vocab.relation if isinstance(relation, SourceFlag) else relation,
+        source_Vocab.vocab if isinstance(vocab, SourceFlag) else vocab
+    )
+
         
 
 # case handlers for type item
@@ -70,7 +124,7 @@ class ItemHandlers(Generic[T]):
 
 # matching for type item
 def match_item(o : item, handlers : ItemHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 
@@ -81,3 +135,22 @@ def match_item(o : item, handlers : ItemHandlers[T]) -> T :
 class Rule:
     name : str
     content : list[item]
+
+
+def make_Rule(
+    name : str,
+    content : list[item]
+) -> Rule:
+    return Rule(
+        name,
+        content)
+
+def update_Rule(source_Rule : Rule,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    content : Union[list[item], SourceFlag] = SourceFlag()
+) -> Rule:
+    return Rule(
+        source_Rule.name if isinstance(name, SourceFlag) else name, 
+        source_Rule.content if isinstance(content, SourceFlag) else content)
+
+    

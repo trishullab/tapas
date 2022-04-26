@@ -1,9 +1,9 @@
 from __future__ import annotations
 from lib.rule_construct_autogen import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
 from lib.line_format_construct_autogen import NewLine, InLine, IndentLine
-import lib.rule
+import lib.rule_system
 
-choices : dict[str, list[Rule]] = {
+choices_schema : dict[str, list[Rule]] = {
 
     "return_annotation" : [
 
@@ -133,7 +133,7 @@ choices : dict[str, list[Rule]] = {
 
     "parameters_b" : [
         Rule(
-            "ConsParam",
+            "ConsPosKeyParam",
             [
                 Nonterm("head", "Param", InLine()),
                 Terminal(", "),
@@ -142,7 +142,7 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "SingleParam",
+            "SinglePosKeyParam",
             [
                 Nonterm("content", "Param", InLine())
             ]
@@ -304,7 +304,7 @@ choices : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "KeywordsBase",
+            "KeywordBases",
             [
                 Nonterm("kws", "keywords", InLine())
             ]
@@ -772,7 +772,7 @@ choices : dict[str, list[Rule]] = {
             [
                 Nonterm("target", "expr", InLine()),
                 Terminal(" "),
-                Nonterm("op", "operator", InLine()),
+                Nonterm("op", "bin_rator", InLine()),
                 Terminal("= "),
                 Nonterm("content", "expr", InLine())
             ]
@@ -1077,7 +1077,7 @@ choices : dict[str, list[Rule]] = {
                 Terminal("("),
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
-                Nonterm("op", "boolop", InLine()),
+                Nonterm("op", "bool_rator", InLine()),
                 Terminal(" "),
                 Nonterm("right", "expr", InLine()),
                 Terminal(")")
@@ -1099,7 +1099,7 @@ choices : dict[str, list[Rule]] = {
                 Terminal("("),
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
-                Nonterm("op", "operator", InLine()),
+                Nonterm("rator", "bin_rator", InLine()),
                 Terminal(" "),
                 Nonterm("right", "expr", InLine()),
                 Terminal(")")
@@ -1110,9 +1110,9 @@ choices : dict[str, list[Rule]] = {
             "UnaryOp",
             [
                 Terminal("("),
-                Nonterm("op", "unaryop", InLine()),
+                Nonterm("rator", "unary_rator", InLine()),
                 Terminal(" "),
-                Nonterm("right", "expr", InLine()),
+                Nonterm("rand", "expr", InLine()),
                 Terminal(")")
             ]
         ),
@@ -1394,7 +1394,7 @@ choices : dict[str, list[Rule]] = {
 
     ],
 
-    "boolop" : [
+    "bool_rator" : [
         Rule(
             "And",
             [
@@ -1410,7 +1410,7 @@ choices : dict[str, list[Rule]] = {
         )
     ], 
 
-    "operator" : [
+    "bin_rator" : [
         Rule(
             "Add",
             [Terminal("+")]
@@ -1477,7 +1477,7 @@ choices : dict[str, list[Rule]] = {
         ),
     ],
 
-    "unaryop" : [
+    "unary_rator" : [
         Rule(
             "Invert",
             [Terminal("~")]
@@ -1499,7 +1499,7 @@ choices : dict[str, list[Rule]] = {
         ),
     ],
 
-    "cmpop" : [
+    "cmp_rator" : [
         Rule(
             "Eq",
             [Terminal("==")]
@@ -1579,12 +1579,12 @@ choices : dict[str, list[Rule]] = {
 }
 
 
-singles : list[Rule] = [
+singles_schema : list[Rule] = [
 
     Rule(
         "CompareRight",
         [
-            Nonterm("op", "cmpop", InLine()),
+            Nonterm("rator", "cmp_rator", InLine()),
             Terminal(" "),
             Nonterm("rand", "expr", InLine())
         ]
@@ -1650,22 +1650,22 @@ singles : list[Rule] = [
 ]
 
 # map from a node id (sequence id) to node (sequence) 
-rule_map = {
+node_schema = {
     r.name : r 
-    for r in singles
+    for r in singles_schema
 } | {
     r.name : r 
-    for rs in choices.values()
+    for rs in choices_schema.values()
     for r in rs 
 }
 
-nonterminal_map = {
+schema = {
     rule.name : [rule]
-    for rule in singles 
-} | choices
+    for rule in singles_schema 
+} | choices_schema
 
 # map from a nonterminal to choices of nodes (sequences)
-portable = {
-    name : [lib.rule.to_dictionary(rule) for rule in rules]
-    for name, rules in nonterminal_map.items()
+portable_schema = {
+    name : [lib.rule_system.to_dictionary(rule) for rule in rules]
+    for name, rules in schema.items()
 }

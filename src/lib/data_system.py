@@ -8,23 +8,17 @@ import tree_sitter
 import json
 from lib.abstract_token_construct_autogen import AbstractTokenHandlers, match_abstract_token, Vocab
 
-from lib import generic_tree
+from lib import generic_tree_system, python_abstract_token_system
 
 from lib.python_ast_parse import Obsolete, Unsupported
-from lib import python_ast
-from lib.util import write, project_path
-from lib.abstract_token import abstract_token
-from lib.abstract_token_construct_autogen import Vocab
+from lib import python_ast_system
+from lib.util_system import write, project_path
 
 
-
-from lib.python_abstract_token import concretize, analyze, Client
-from lib.python_abstract_token_analyze import AnalysisError
-# from lib.abstract_token import abstract_token
-from lib.python_util import Inher, from_Inher_to_string
-from lib.python_util import Inher, from_Inher_to_dictionary
-# from typing import Union
-import lib.abstract_token
+from lib.python_analysis_system import AnalysisError
+from lib import abstract_token_system as ats
+from lib.abstract_token_system import Vocab
+from lib import python_analysis_system as pals 
 from typing import Any, Union
 import multiprocessing
 
@@ -35,14 +29,16 @@ class BigCodeError(Exception):
 
 concrete_dir_name = "concrete_data"
 
-def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> dict[str, Any]:
+def generate_file(inher_aux : pals.InherAux, dirname : str, name : str, vocab : dict, dir_count : int) -> dict[str, Any]:
 
     processed_count = 0
     rec_error_count = 0
     big_code_error_count = 0
     obsolete_error_count = 0
     unsupported_error_count = 0
+    arg_param_mismatch_error_count = 0
     analysis_error_count = 0
+    assertion_error_count = 0
     error_count = 0
     total_count = 0
 
@@ -65,6 +61,7 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
         br = ""
         line = f.readline()
         while line: 
+            partial_program = []
             try:
 
                 line_obj = json.loads(line)
@@ -74,52 +71,32 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
                 if len(source_code) > 10 ** 6:
                     raise BigCodeError(len(source_code))
 
-                tree = generic_tree.parse('python', source_code, 'utf8')
+                tree = generic_tree_system.parse('python', source_code, 'utf8')
 
-                mod = python_ast.parse_from_generic_tree(tree)
+                mod = python_ast_system.parse_from_generic_tree(tree)
 
-                abstract_tokens = python_ast.serialize(mod)
+                abstract_tokens = python_ast_system.serialize(mod)
 
-                def triple_from_instance(inst : abstract_token) -> tuple[str, str, str]:
-                    return match_abstract_token(inst, AbstractTokenHandlers[tuple[str, str, str]](
-                        case_Grammar=lambda o : (
-                            ("grammar", o.options, o.selection)
-                        ),
-                        case_Vocab=lambda o : (
-                            ("vocab", o.options, o.selection)
-                        )
-                    )) 
-
-
-                client : Client = analyze()
-                from lib.python_util import from_env_to_dictionary
-                inher : Union[Inher, Exception] = client.init_inher
-                atok = ['A', 
-                    from_env_to_dictionary(inher.local_env), 
-                    from_env_to_dictionary(inher.nonlocal_env), 
-                    from_env_to_dictionary(inher.global_env)
-                ]
+                atok = pals.from_inher_aux_to_primitive(inher_aux)
+                client : pals.Client = pals.spawn_analysis(inher_aux)
                 abstract_program_data = [atok]
 
                 for tok in abstract_tokens:
-                    triple = triple_from_instance(tok)
-                    abstract_program_data.append(['P', triple[0], triple[1], triple[2]])
+                    partial_program.append(tok)
+                    abstract_program_data.append(ats.to_primitive(tok))
 
                     inher = client.next(tok)
-                    if isinstance(inher, Exception):
+                    if isinstance(inher, pals.ArgParamMismatchError):
                         ex = inher
-                        raise AnalysisError() from ex
+                        raise ex 
+                    elif isinstance(inher, Exception):
+                        ex = inher
+                        raise ex
 
-                    new_atok = ['A', 
-                        from_env_to_dictionary(inher.local_env), 
-                        from_env_to_dictionary(inher.nonlocal_env), 
-                        from_env_to_dictionary(inher.global_env)
-                    ]
+                    new_atok = pals.from_inher_aux_to_primitive(inher)
                     if (new_atok != atok):
                         abstract_program_data.append(new_atok)
                         atok = new_atok
-
-                client.close()
 
                 write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', br + json.dumps(abstract_program_data), append=True)
 
@@ -155,19 +132,40 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
                 unsupported_error_count += 1
                 error_count += 1
 
+            except pals.ArgParamMismatchError as ex:
+                arg_param_mismatch_error_count += 1
+                error_count += 1
             except AnalysisError as ex:
                 analysis_error_count += 1
                 error_count += 1
                 # print(f"")
-                # print(f"ERROR index: {total_count}")
+                # print(f"** ERROR index: {total_count}")
                 # line_obj = json.loads(line)
                 # source_code = line_obj['code']
-                # print(f"ERROR source code:\n{source_code}")
-                # print(f"ERROR index: {total_count}")
+                # print(f"** ERROR source code:\n{source_code}")
+                # print(f"** ERROR index: {total_count}")
+                # print("** partial_program **")
+                # print(python_abstract_token_system.concretize(tuple(partial_program)))
+                # print("*********************")
                 # print(f"")
-                # raise AnalysisError() from ex
+                # raise ex
+            except AssertionError as ex:
+                assertion_error_count += 1
+                error_count += 1
+                print(f"")
+                print(f"** ERROR index: {total_count}")
+                line_obj = json.loads(line)
+                source_code = line_obj['code']
+                print(f"** ERROR source code:\n{source_code}")
+                print(f"** ERROR index: {total_count}")
+                print("** partial_program **")
+                print(python_abstract_token_system.concretize(tuple(partial_program)))
+                print("*********************")
+                print(f"")
+                raise ex
 
             except Exception as ex:
+                raise ex
                 error_count += 1
 
             # update
@@ -193,7 +191,9 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
         'big_code_error_count' : big_code_error_count,
         'obsolete_error_count' : obsolete_error_count,
         'unsupported_error_count' : unsupported_error_count,
+        'arg_param_mismatch_error_count' : arg_param_mismatch_error_count,
         'analysis_error_count' : analysis_error_count,
+        'assertion_error_count' :  assertion_error_count,
         'error_count' : error_count,
         'total_count' : total_count
     }
@@ -203,24 +203,24 @@ def generate_file(dirname : str, name : str, vocab : dict, dir_count : int) -> d
 
 
 def generate_file_tuple(tup) -> dict[str, Any]:
-    stats = generate_file(tup[0], tup[1], tup[2], tup[3])
+    stats = generate_file(tup[0], tup[1], tup[2], tup[3], tup[4])
     return stats
 
-def generate_dir(dirname : str):
+def generate_dir(inher_aux : pals.InherAux, dirname : str):
     concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
-    concrete_data_paths = os.listdir(concrete_data_dirpath)
-    cdpl = len(concrete_data_paths)
+    concrete_data_file_names = os.listdir(concrete_data_dirpath)
+    cdpl = len(concrete_data_file_names)
     stepsize = 10 ** 5
-    chunks = [concrete_data_paths[i:i + stepsize] for i in range(0, cdpl, stepsize)]
+    chunks = [concrete_data_file_names[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
 
         abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
         write(abstract_data_dirpath, f'vocab.json', '')
     
         pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        stats_collection = pool.map(generate_file_tuple, [(dirname, n, vocab, i) for n in chunk])
+        stats_collection = pool.map(generate_file_tuple, [(inher_aux, dirname, n, vocab, i) for n in chunk])
         pool.close()
         pool.join()
 
@@ -230,7 +230,9 @@ def generate_dir(dirname : str):
         big_code_error_count = 0
         obsolete_error_count = 0
         unsupported_error_count = 0
+        arg_param_mismatch_error_count = 0
         analysis_error_count = 0
+        assertion_error_count = 0
         error_count = 0
         total_count = 0
 
@@ -243,7 +245,9 @@ def generate_dir(dirname : str):
             big_code_error_count += stats['big_code_error_count'] 
             obsolete_error_count += stats['obsolete_error_count'] 
             unsupported_error_count += stats['unsupported_error_count'] 
+            arg_param_mismatch_error_count += stats['arg_param_mismatch_error_count'] 
             analysis_error_count += stats['analysis_error_count'] 
+            assertion_error_count += stats['assertion_error_count'] 
             error_count += stats['error_count'] 
             total_count += stats['total_count'] 
 

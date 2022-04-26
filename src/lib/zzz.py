@@ -1,3 +1,9 @@
+from lib import zzz
+
+
+from builtins import type
+zzz.write
+
 if (x := (z := "59293"), False)[-1]:
     print (f"True {x, z}")
 else:

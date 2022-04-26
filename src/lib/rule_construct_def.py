@@ -11,26 +11,23 @@ def generate_content():
         "\n\n" +
         construct_def.generate_choice("item", [
             Constructor(
-                "Terminal",
-                [
-                    Field('terminal', 'str')
+                "Terminal", [], [
+                    Field('terminal', 'str', "")
                 ]
             ),
 
             Constructor(
-                "Nonterm",
-                [
-                    Field('relation', 'str'),
-                    Field('nonterminal', 'str'),
-                    Field('format', 'line_format'),
+                "Nonterm", [], [
+                    Field('relation', 'str', ""),
+                    Field('nonterminal', 'str', ""),
+                    Field('format', 'line_format', ""),
                 ]
             ),
 
             Constructor(
-                "Vocab",
-                [
-                    Field('relation', 'str'),
-                    Field('vocab', 'str'),
+                "Vocab", [], [
+                    Field('relation', 'str', ""),
+                    Field('vocab', 'str', ""),
                 ]
             )
         ]) +
@@ -39,10 +36,9 @@ def generate_content():
         "\n\n" +
         construct_def.generate_single(
             Constructor(
-                "Rule",
-                [
-                    Field('name', 'str'), 
-                    Field('content', 'list[item]')
+                "Rule", [], [
+                    Field('name', 'str', ""), 
+                    Field('content', 'list[item]', "")
                 ]
             )
         )

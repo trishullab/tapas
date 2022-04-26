@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from lib.util import write_code
+from lib.util_system import write_code
 
 from lib import line_format_construct_def
 from lib import abstract_token_construct_def

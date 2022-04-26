@@ -2,6 +2,7 @@
 # CHANGES MAY BE LOST
 
 
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,12 +14,20 @@ from abc import ABC, abstractmethod
 T = TypeVar('T')
 
 
+@dataclass(frozen=True, eq=True)
+class SourceFlag: 
+    pass
+
+
+
+
 
 # type line_format
 @dataclass(frozen=True, eq=True)
 class line_format(ABC):
-    @abstractmethod
-    def _match(self, handlers : LineFormatHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : LineFormatHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type line_format
@@ -27,33 +36,57 @@ class line_format(ABC):
 class InLine(line_format):
 
 
-    def _match(self, handlers : LineFormatHandlers[T]) -> T:
+    def match(self, handlers : LineFormatHandlers[T]) -> T:
         return handlers.case_InLine(self)
 
-def make_InLine() -> line_format:
-    return InLine()
+def make_InLine(
+) -> line_format:
+    return InLine(
+    )
+
+def update_InLine(source_InLine : InLine
+) -> InLine:
+    return InLine(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NewLine(line_format):
 
 
-    def _match(self, handlers : LineFormatHandlers[T]) -> T:
+    def match(self, handlers : LineFormatHandlers[T]) -> T:
         return handlers.case_NewLine(self)
 
-def make_NewLine() -> line_format:
-    return NewLine()
+def make_NewLine(
+) -> line_format:
+    return NewLine(
+    )
+
+def update_NewLine(source_NewLine : NewLine
+) -> NewLine:
+    return NewLine(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class IndentLine(line_format):
 
 
-    def _match(self, handlers : LineFormatHandlers[T]) -> T:
+    def match(self, handlers : LineFormatHandlers[T]) -> T:
         return handlers.case_IndentLine(self)
 
-def make_IndentLine() -> line_format:
-    return IndentLine()
+def make_IndentLine(
+) -> line_format:
+    return IndentLine(
+    )
+
+def update_IndentLine(source_IndentLine : IndentLine
+) -> IndentLine:
+    return IndentLine(
+    )
+
         
 
 # case handlers for type line_format
@@ -66,7 +99,7 @@ class LineFormatHandlers(Generic[T]):
 
 # matching for type line_format
 def match_line_format(o : line_format, handlers : LineFormatHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
      
 
  

@@ -7,10 +7,10 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 
-from lib.generic_tree import GenericNode
+from lib.generic_tree_system import GenericNode
 from lib.python_ast_construct_autogen import *
 
-from lib import util
+from lib import util_system
 
 class Obsolete(Exception):
     pass
@@ -47,7 +47,7 @@ def to_sequence_base(bases : list[expr], keywords : list[keyword]):
 
     (result, bases) = (
 
-        (KeywordsBase(to_keywords(keywords)), bases)
+        (KeywordBases(to_keywords(keywords)), bases)
         if keywords else
 
         (SingleBase(bases[-1]), bases[:-1])
@@ -132,11 +132,11 @@ def to_parameters_b(
         )
         if (list_splat_param or kw_params or dictionary_splat_param) else
 
-        (SingleParam(params[-1]), params[:-1])
+        (SinglePosKeyParam(params[-1]), params[:-1])
     )
 
     for p in reversed(params):
-        result = ConsParam(p, result)
+        result = ConsPosKeyParam(p, result)
 
     return result
 
@@ -425,7 +425,7 @@ def from_generic_tree_to_boolop(node):
     else:
         unsupported(node)
 
-def from_generic_tree_to_operator(node : GenericNode) -> operator: 
+def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator: 
 
     if node.syntax_part in {"+=", "+"}:
        return Add() 
@@ -470,49 +470,49 @@ def from_generic_tree_to_operator(node : GenericNode) -> operator:
         unsupported(node)
 
 
-def split_ops_and_rands(
+def split_rators_and_rands(
     nodes : list[GenericNode], 
-    ops : list[cmpop] = [], 
+    rators : list[cmp_rator] = [], 
     rands : list[expr] = []
-) -> tuple[list[cmpop], list[expr]]:
+) -> tuple[list[cmp_rator], list[expr]]:
 
     if len(nodes) == 0:
-        return (ops, rands)
+        return (rators, rands)
     else:
         head = nodes[-1]
         if head.syntax_part == '<':
-            return split_ops_and_rands(nodes[:-1], ops + [Lt()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [Lt()], rands)
         if head.syntax_part == '<=':
-            return split_ops_and_rands(nodes[:-1], ops + [LtE()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [LtE()], rands)
         if head.syntax_part == '==':
-            return split_ops_and_rands(nodes[:-1], ops + [Eq()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [Eq()], rands)
         if head.syntax_part == '!=':
-            return split_ops_and_rands(nodes[:-1], ops + [NotEq()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [NotEq()], rands)
         if head.syntax_part == '>=':
-            return split_ops_and_rands(nodes[:-1], ops + [GtE()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [GtE()], rands)
         if head.syntax_part == '>':
-            return split_ops_and_rands(nodes[:-1], ops + [Gt()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [Gt()], rands)
         if head.syntax_part == '<>':
-            return split_ops_and_rands(nodes[:-1], ops + [NotEq()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [NotEq()], rands)
         if head.syntax_part == 'in':
-            return split_ops_and_rands(nodes[:-1], ops + [In()], rands)
+            return split_rators_and_rands(nodes[:-1], rators + [In()], rands)
         if head.syntax_part == 'not':
             next_head = nodes[-2]
             if next_head.syntax_part == "in":
-                return split_ops_and_rands(nodes[:-2], ops + [NotIn()], rands)
+                return split_rators_and_rands(nodes[:-2], rators + [NotIn()], rands)
             else:
-                return split_ops_and_rands(nodes[:-1], ops + [In()], rands)
+                return split_rators_and_rands(nodes[:-1], rators + [In()], rands)
         if head.syntax_part == 'is':
             next_head = nodes[-2]
             if next_head.syntax_part == "not":
-                return split_ops_and_rands(nodes[:-2], ops + [Is()], rands)
+                return split_rators_and_rands(nodes[:-2], rators + [Is()], rands)
             else:
-                return split_ops_and_rands(nodes[:-1], ops + [IsNot()], rands)
+                return split_rators_and_rands(nodes[:-1], rators + [IsNot()], rands)
 
         else:
             rand = from_generic_tree_to_expr(head)
             tail = nodes[:-1]
-            return split_ops_and_rands(tail, ops, rands + [rand])
+            return split_rators_and_rands(tail, rators, rands + [rand])
 
 
 def from_generic_tree_to_ExceptHandler(node) -> ExceptHandler:
@@ -542,8 +542,8 @@ def from_generic_tree_to_ExceptHandler(node) -> ExceptHandler:
 
     assert block_node
 
-    expr = util.map_option(from_generic_tree_to_expr, expr_node)
-    name = util.map_option(from_generic_tree_to_identifier, name_node)
+    expr = util_system.map_option(from_generic_tree_to_expr, expr_node)
+    name = util_system.map_option(from_generic_tree_to_identifier, name_node)
     stmts = [
         stmt
         for stmt_node in block_node.children
@@ -575,7 +575,7 @@ def from_generic_tree_to_with_item(node) -> with_item:
     )
 
     context_expr = from_generic_tree_to_expr(context_node)
-    pattern_expr = util.map_option(from_generic_tree_to_expr, pattern_node)
+    pattern_expr = util_system.map_option(from_generic_tree_to_expr, pattern_node)
 
     return (
         WithItemAlias(context_expr, pattern_expr)
@@ -674,7 +674,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
         right_node = children[2]
 
         left_expr = from_generic_tree_to_expr(left_node)
-        op = from_generic_tree_to_operator(op_node)
+        op = from_generic_tree_to_bin_rator(op_node)
         right_expr = from_generic_tree_to_expr(right_node)
 
         return BinOp(left_expr, op, right_expr)
@@ -963,11 +963,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
 
     elif node.syntax_part == "comparison_operator":
         left = from_generic_tree_to_expr(node.children[0])
-        (ops, rands) = split_ops_and_rands([n for n in reversed(node.children[1:])])
-        assert len(ops) == len(rands)
+        (rators, rands) = split_rators_and_rands([n for n in reversed(node.children[1:])])
+        assert len(rators) == len(rands)
         comp_rights = [
-            CompareRight(ops[i], rands[i])
-            for i, _ in enumerate(ops)
+            CompareRight(rators[i], rands[i])
+            for i, _ in enumerate(rators)
         ]
         return Compare(left, to_comparisons(comp_rights))
 
@@ -1169,7 +1169,16 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param:
 
 
 def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
-    if node.syntax_part == "parameters" or node.syntax_part == "lambda_parameters":
+
+    if node.syntax_part == "lambda_parameters":
+        lambda_params = [
+            from_generic_tree_to_Param(param_node)
+            for param_node in node.children
+        ]
+
+        return to_parameters([], lambda_params, None, [], None)
+
+    elif node.syntax_part == "parameters":
 
         children = [
             child
@@ -1220,7 +1229,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
             -1 
         )
 
-        (param_nodes, list_splat_node, kw_nodes, dictionary_splat_node) = (
+        (pos_kw_param_nodes, list_splat_node, kw_nodes, dictionary_splat_node) = (
 
             (
                 children[0:list_splat_index], 
@@ -1255,9 +1264,9 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
         )
 
 
-        params = [
+        pos_kw_params = [
             from_generic_tree_to_Param(n)
-            for n in param_nodes
+            for n in pos_kw_param_nodes
         ]
 
 
@@ -1277,10 +1286,10 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
             for n in kw_nodes
         ]
 
-        dictionary_splat_param = util.map_option(from_generic_tree_to_Param, dictionary_splat_node)
+        dictionary_splat_param = util_system.map_option(from_generic_tree_to_Param, dictionary_splat_node)
 
 
-        return to_parameters(pos_params, params, list_splat_param, kw_params, dictionary_splat_param)
+        return to_parameters(pos_params, pos_kw_params, list_splat_param, kw_params, dictionary_splat_param)
 
 
     else:
@@ -1447,7 +1456,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                     if typ:
                         left_expr = from_generic_tree_to_expr(left)
                         typ_expr = from_generic_tree_to_expr(typ)
-                        right_expr = util.map_option(from_generic_tree_to_expr, right)
+                        right_expr = util_system.map_option(from_generic_tree_to_expr, right)
                         if right_expr:
                             return [
                                 AnnoAssign(left_expr, typ_expr, right_expr)
@@ -1477,7 +1486,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                 right = estmt_children[2]
 
                 left_expr = from_generic_tree_to_expr(left)
-                oper = from_generic_tree_to_operator(op)
+                oper = from_generic_tree_to_bin_rator(op)
                 right_expr = from_generic_tree_to_expr(right)
                 return [
                     AugAssign(left_expr, oper, right_expr)
@@ -1528,8 +1537,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
             else (None, None)
         )
 
-        exc_expr = util.map_option(from_generic_tree_to_expr, exc)
-        cause_expr = util.map_option(from_generic_tree_to_expr, cause)
+        exc_expr = util_system.map_option(from_generic_tree_to_expr, exc)
+        cause_expr = util_system.map_option(from_generic_tree_to_expr, cause)
         if (exc_expr and cause_expr):
             return [ RaiseFrom(exc_expr, cause_expr) ]
         elif (exc_expr):

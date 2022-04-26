@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, TypeVar, Any, Generic, Union, Optional
+from typing import Dict, TypeVar, Any, Generic, Union, Optional, Iterable
 from collections.abc import Callable
 
 from abc import ABC, abstractmethod
 import json
 
+from pyrsistent import PMap, PSet, pset
+
 T = TypeVar('T')
 
 X = TypeVar('X')
+
 
 class Ref(Generic[T]): 
     def __init__(self, item : T):
@@ -24,6 +27,23 @@ def map_option(f : Callable[[T], X], o : Optional[T]) -> Optional[X]:
 def match_d(k : T, d : dict[T, Callable[[], Any]], error_msg):
     return d.get(k, lambda: fail(error_msg))()
 
+def exists(it : Iterable[T], f : Callable[[T], bool]) -> bool:
+    for item in it:
+        if f(item):
+            return True
+    return False
+
+def every(it : Iterable[T], f : Callable[[T], bool]) -> bool:
+    return not exists(it, lambda t : not f(t))
+
+
+def merge_psets(sets : Iterable[PSet[T]]) -> PSet[T]:
+    ts : PSet[T] = pset() 
+    for x in sets:
+        ts = ts.update(x)
+    return ts
+
+
 import os
 import pathlib
 # import logging
@@ -32,7 +52,7 @@ import pathlib
 
 def project_path(rel_path : str):
     base_path = os.path.join(pathlib.Path(__file__).parent.absolute(), '../..')
-    return os.path.join(base_path, rel_path)
+    return os.path.abspath(os.path.join(base_path, rel_path))
 
 
 def write(dirpath : str, fname : str, code : str, append : bool = False):

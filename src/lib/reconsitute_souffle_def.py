@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import lib.rule
-from lib.rule import Rule
+import lib.rule_system
+from lib.rule_system import Rule
 
-import lib.python_schema
+import lib.python_schema_system
 
 nl = "\n"
 
@@ -14,18 +14,18 @@ def generate_souffle_rule(type_name : str, rule : Rule) -> str:
         raise Exception()
 
 
-    def relation_from_item(item : lib.rule.item) -> str:
-        if isinstance(item, lib.rule.Nonterm):
+    def relation_from_item(item : lib.rule_system.item) -> str:
+        if isinstance(item, lib.rule_system.Nonterm):
             return item.relation
 
-        elif isinstance(item, lib.rule.Vocab):
+        elif isinstance(item, lib.rule_system.Vocab):
             return item.relation
         else:
             raise Exception()
 
     abstract_items = [item
         for item in rule.content
-        if not isinstance(item, lib.rule.Terminal)
+        if not isinstance(item, lib.rule_system.Terminal)
     ]
 
     rule_items_str = ", ".join([
@@ -35,10 +35,10 @@ def generate_souffle_rule(type_name : str, rule : Rule) -> str:
 
 
 
-    def type_from_item(item : lib.rule.item):
-        if isinstance(item, lib.rule.Nonterm):
+    def type_from_item(item : lib.rule_system.item):
+        if isinstance(item, lib.rule_system.Nonterm):
             return item.nonterminal
-        elif isinstance(item, lib.rule.Vocab):
+        elif isinstance(item, lib.rule_system.Vocab):
             return "symbol" 
         else:
             raise Exception()
@@ -84,7 +84,7 @@ content = (f"""
 
     {nl.join([
         generate_souffle_relation(type_name, rules)
-        for type_name, rules in lib.python_schema.nonterminal_map.items()
+        for type_name, rules in lib.python_schema_system.schema.items()
     ])} 
 
     .decl rel_symbol(xs : sequence, word : symbol, suffix : sequence)

@@ -3,10 +3,13 @@
 
 
 from __future__ import annotations
-import lib.abstract_token
-from lib.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
-from lib.python_ast_construct_autogen import *
+from lib import abstract_token_system as ats
+from lib.abstract_token_system import abstract_token, Vocab, Grammar
 from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
+    
+
+
+from lib.python_ast_system import *
     
 
 # definitions operate on reversed lists of abstract tokens, starting from the right, going left. 
@@ -575,7 +578,7 @@ def to_parameters_b(xs : tuple[abstract_token, ...]) -> tuple[parameters_b, tupl
         if False:
             pass
         
-        elif rule_name == "ConsParam": 
+        elif rule_name == "ConsPosKeyParam": 
             children = children
             remainder = remainder
             if stack_result:
@@ -591,7 +594,7 @@ def to_parameters_b(xs : tuple[abstract_token, ...]) -> tuple[parameters_b, tupl
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    ConsParam(children[0], children[1]),
+                    ConsPosKeyParam(children[0], children[1]),
                     remainder
                 )
             
@@ -604,7 +607,7 @@ def to_parameters_b(xs : tuple[abstract_token, ...]) -> tuple[parameters_b, tupl
                 stack.append((remainder[-1], [], remainder[:-1]))
         
 
-        elif rule_name == "SingleParam": 
+        elif rule_name == "SinglePosKeyParam": 
             children = children
             remainder = remainder
             if stack_result:
@@ -620,7 +623,7 @@ def to_parameters_b(xs : tuple[abstract_token, ...]) -> tuple[parameters_b, tupl
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    SingleParam(children[0]),
+                    SinglePosKeyParam(children[0]),
                     remainder
                 )
             
@@ -1278,7 +1281,7 @@ def to_bases_a(xs : tuple[abstract_token, ...]) -> tuple[bases_a, tuple[abstract
                 stack.append((remainder[-1], [], remainder[:-1]))
         
 
-        elif rule_name == "KeywordsBase": 
+        elif rule_name == "KeywordBases": 
             children = children
             remainder = remainder
             if stack_result:
@@ -1294,7 +1297,7 @@ def to_bases_a(xs : tuple[abstract_token, ...]) -> tuple[bases_a, tuple[abstract
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    KeywordsBase(children[0]),
+                    KeywordBases(children[0]),
                     remainder
                 )
             
@@ -3209,7 +3212,7 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
                 
 
             elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_operator(remainder)
+                (child, remainder) = to_bin_rator(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
@@ -4277,7 +4280,7 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
                 )
             
             elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_boolop(remainder)
+                (child, remainder) = to_bool_rator(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child
@@ -4331,7 +4334,7 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
                 )
             
             elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_operator(remainder)
+                (child, remainder) = to_bin_rator(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child
@@ -4360,7 +4363,7 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_unaryop(remainder)
+                (child, remainder) = to_unary_rator(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child
@@ -5251,7 +5254,7 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
     return stack_result
     
 
-def to_boolop(xs : tuple[abstract_token, ...]) -> tuple[boolop, tuple[abstract_token, ...]]:
+def to_bool_rator(xs : tuple[abstract_token, ...]) -> tuple[bool_rator, tuple[abstract_token, ...]]:
 
     initial = (xs[-1], [], xs[:-1])
     stack : list[tuple[abstract_token, list[Any], tuple[abstract_token, ...]]] = [initial]
@@ -5260,7 +5263,7 @@ def to_boolop(xs : tuple[abstract_token, ...]) -> tuple[boolop, tuple[abstract_t
     while stack:
         (x, children, remainder) = stack.pop()
         assert isinstance(x, Grammar)
-        assert x.options == "boolop"
+        assert x.options == "bool_rator"
         rule_name = x.selection
 
         if False:
@@ -5317,11 +5320,11 @@ def to_boolop(xs : tuple[abstract_token, ...]) -> tuple[boolop, tuple[abstract_t
         
 
     assert stack_result
-    assert isinstance(stack_result[0], boolop)
+    assert isinstance(stack_result[0], bool_rator)
     return stack_result
     
 
-def to_operator(xs : tuple[abstract_token, ...]) -> tuple[operator, tuple[abstract_token, ...]]:
+def to_bin_rator(xs : tuple[abstract_token, ...]) -> tuple[bin_rator, tuple[abstract_token, ...]]:
 
     initial = (xs[-1], [], xs[:-1])
     stack : list[tuple[abstract_token, list[Any], tuple[abstract_token, ...]]] = [initial]
@@ -5330,7 +5333,7 @@ def to_operator(xs : tuple[abstract_token, ...]) -> tuple[operator, tuple[abstra
     while stack:
         (x, children, remainder) = stack.pop()
         assert isinstance(x, Grammar)
-        assert x.options == "operator"
+        assert x.options == "bin_rator"
         rule_name = x.selection
 
         if False:
@@ -5662,11 +5665,11 @@ def to_operator(xs : tuple[abstract_token, ...]) -> tuple[operator, tuple[abstra
         
 
     assert stack_result
-    assert isinstance(stack_result[0], operator)
+    assert isinstance(stack_result[0], bin_rator)
     return stack_result
     
 
-def to_unaryop(xs : tuple[abstract_token, ...]) -> tuple[unaryop, tuple[abstract_token, ...]]:
+def to_unary_rator(xs : tuple[abstract_token, ...]) -> tuple[unary_rator, tuple[abstract_token, ...]]:
 
     initial = (xs[-1], [], xs[:-1])
     stack : list[tuple[abstract_token, list[Any], tuple[abstract_token, ...]]] = [initial]
@@ -5675,7 +5678,7 @@ def to_unaryop(xs : tuple[abstract_token, ...]) -> tuple[unaryop, tuple[abstract
     while stack:
         (x, children, remainder) = stack.pop()
         assert isinstance(x, Grammar)
-        assert x.options == "unaryop"
+        assert x.options == "unary_rator"
         rule_name = x.selection
 
         if False:
@@ -5782,11 +5785,11 @@ def to_unaryop(xs : tuple[abstract_token, ...]) -> tuple[unaryop, tuple[abstract
         
 
     assert stack_result
-    assert isinstance(stack_result[0], unaryop)
+    assert isinstance(stack_result[0], unary_rator)
     return stack_result
     
 
-def to_cmpop(xs : tuple[abstract_token, ...]) -> tuple[cmpop, tuple[abstract_token, ...]]:
+def to_cmp_rator(xs : tuple[abstract_token, ...]) -> tuple[cmp_rator, tuple[abstract_token, ...]]:
 
     initial = (xs[-1], [], xs[:-1])
     stack : list[tuple[abstract_token, list[Any], tuple[abstract_token, ...]]] = [initial]
@@ -5795,7 +5798,7 @@ def to_cmpop(xs : tuple[abstract_token, ...]) -> tuple[cmpop, tuple[abstract_tok
     while stack:
         (x, children, remainder) = stack.pop()
         assert isinstance(x, Grammar)
-        assert x.options == "cmpop"
+        assert x.options == "cmp_rator"
         rule_name = x.selection
 
         if False:
@@ -6052,7 +6055,7 @@ def to_cmpop(xs : tuple[abstract_token, ...]) -> tuple[cmpop, tuple[abstract_tok
         
 
     assert stack_result
-    assert isinstance(stack_result[0], cmpop)
+    assert isinstance(stack_result[0], cmp_rator)
     return stack_result
     
 
@@ -6162,9 +6165,9 @@ def to_CompareRight(xs : tuple[abstract_token, ...]) -> tuple[CompareRight, tupl
     assert x.options == "CompareRight"
     assert x.selection == "CompareRight"
 
-    (op, xs) = to_cmpop(xs)
+    (rator, xs) = to_cmp_rator(xs)
     (rand, xs) = to_expr(xs)
-    return (CompareRight(op, rand), xs)
+    return (CompareRight(rator, rand), xs)
     
 
 def to_ExceptHandler(xs : tuple[abstract_token, ...]) -> tuple[ExceptHandler, tuple[abstract_token, ...]]:

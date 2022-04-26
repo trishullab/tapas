@@ -7,23 +7,21 @@ type_name = "abstract_token"
 
 constructors = [
     Constructor(
-        "Grammar",
-        [
-            Field('options', 'str'),
-            Field('selection', 'str')
+        "Grammar", [], [
+            Field('options', 'str', ""),
+            Field('selection', 'str', "")
         ]
     ),
 
     Constructor(
-        "Vocab",
-        [
-            Field('options', 'str'),
-            Field('selection', 'str')
+        "Vocab", [], [
+            Field('options', 'str', ""),
+            Field('selection', 'str', "")
         ]
     )
 ]
 
 
 def generate_content():
-    return construct_def.generate_content([], {type_name : constructors})
+    return construct_def.generate_content("", [], {type_name : constructors})
 

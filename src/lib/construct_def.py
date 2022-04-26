@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from email.mime import base
+from email.policy import default
 from typing import Callable
 
 import inflection
@@ -9,13 +11,16 @@ import inflection
 class Field:
     attr : str
     typ : str
+    default : str
 
 @dataclass(frozen=True, eq=True)
 class Constructor:
     name: str 
+    bases : list[str]
     fields: list[Field]
 
 
+nl = "\n"
 header = ("""
 from __future__ import annotations
 
@@ -26,22 +31,57 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 T = TypeVar('T')
+
+
+@dataclass(frozen=True, eq=True)
+class SourceFlag: 
+    pass
 """)
 
 def generate_single(
     constructor : Constructor 
 ) -> str:
-    nl = "\n" 
+
+    bases_str = (
+        '(' + ', '.join([
+            base
+            for  base in constructor.bases
+        ]) + ')'
+        if len(constructor.bases) > 0 else
+        ""
+    )
 
     code = (f"""
 # type and constructor {constructor.name}
 @dataclass(frozen=True, eq=True)
-class {constructor.name}:
+class {constructor.name}{bases_str}:
 {nl.join([
-    f"    {field.attr} : {field.typ}" 
+    f"    {field.attr} : {field.typ}"
     for field in constructor.fields 
+]) if len(constructor.fields) > 0 else "    pass"}
+
+
+def make_{constructor.name}({",".join([f'''
+    {field.attr} : {field.typ}''' + (f" = {field.default}" if field.default else "")
+    for field in constructor.fields
 ])}
-""")
+) -> {constructor.name}:
+    return {constructor.name}({",".join([f'''
+        {field.attr}'''
+        for field in constructor.fields
+    ])})
+
+def update_{constructor.name}(source_{constructor.name} : {constructor.name}{''.join([
+    f",{nl}    {field.attr} : Union[{field.typ}, SourceFlag] = SourceFlag()"
+    for field in constructor.fields
+])}
+) -> {constructor.name}:
+    return {constructor.name}({f", ".join([f'''
+        source_{constructor.name}.{field.attr} if isinstance({field.attr}, SourceFlag) else {field.attr}'''
+        for field in constructor.fields
+    ])})
+
+    """)
     return code 
 
 
@@ -51,37 +91,56 @@ def generate_choice(
     constructors : list[Constructor] 
 ) -> str:
     handlers_name = f"{inflection.camelize(type_name)}Handlers"
-    nl = "\n"
+
 
     def generate_constructor(constructor : Constructor) -> str:
         nonlocal handlers_name
+        bases_str = ''.join([
+            f', {base}'
+            for  base in constructor.bases
+        ])
         return (f"""
 @dataclass(frozen=True, eq=True)
-class {constructor.name}({type_name}):
+class {constructor.name}({type_name}{bases_str}):
 {nl.join([
     f"    {field.attr} : {field.typ}"
     for field in constructor.fields
 ])}
 
-    def _match(self, handlers : {handlers_name}[T]) -> T:
+    def match(self, handlers : {handlers_name}[T]) -> T:
         return handlers.case_{constructor.name}(self)
 
-def make_{constructor.name}({", ".join([
-    f"{field.attr} : {field.typ}"
+def make_{constructor.name}({", ".join([f'''
+    {field.attr} : {field.typ}''' + (f" = {field.default}" if field.default else "")
     for field in constructor.fields
-])}) -> {type_name}:
-    return {constructor.name}({f", ".join([
-        field.attr
+])}
+) -> {type_name}:
+    return {constructor.name}({",".join([f'''
+        {field.attr}'''
         for field in constructor.fields
-    ])})
+    ])}
+    )
+
+def update_{constructor.name}(source_{constructor.name} : {constructor.name}{''.join([
+    f",{nl}    {field.attr} : Union[{field.typ}, SourceFlag] = SourceFlag()"
+    for field in constructor.fields
+])}
+) -> {constructor.name}:
+    return {constructor.name}({f",".join([f'''
+        source_{constructor.name}.{field.attr} if isinstance({field.attr}, SourceFlag) else {field.attr}'''
+        for field in constructor.fields
+    ])}
+    )
+
         """)
 
     code = (f"""
 # type {type_name}
 @dataclass(frozen=True, eq=True)
 class {type_name}(ABC):
-    @abstractmethod
-    def _match(self, handlers : {handlers_name}[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : {handlers_name}[T]) -> T:
+        raise Exception()
 
 
 # constructors for type {type_name}
@@ -101,15 +160,17 @@ class {handlers_name}(Generic[T]):
 
 # matching for type {type_name}
 def match_{type_name}(o : {type_name}, handlers : {handlers_name}[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     """)
     return code 
 
-def generate_content(singles : list[Constructor], choices : dict[str, list[Constructor]]) -> str:
-    nl = "\n"
+def generate_content(content_header : str, singles : list[Constructor], choices : dict[str, list[Constructor]]) -> str:
 
     return (f"""
+
 {header}
+
+{content_header}
 
 {nl.join([
     generate_choice(type_name, cons)
@@ -121,31 +182,3 @@ def generate_content(singles : list[Constructor], choices : dict[str, list[Const
     for con in singles
 ])} 
     """)
-
-
-
-def generate_souffle(
-    type_name : str,
-    constructors : list[Constructor],
-    type_map : Callable[[str],str] = lambda s : s 
-) -> str:
-    nl = "\n"
-    open_curl = "{"
-    close_curl = "}"
-
-    def generate_constructor(constructor : Constructor) -> str:
-        return (f"""    {constructor.name} {open_curl}{", ".join([
-            f"{field.attr} : {type_map(field.typ)}"
-            for field in constructor.fields
-        ])}{close_curl}""")
-
-    code = (
-f""".type {type_name} = 
-{f" |{nl}".join([
-    generate_constructor(constructor)
-    for constructor in constructors
-])}""")
-    return code 
-
-
-

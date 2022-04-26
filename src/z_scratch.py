@@ -353,3 +353,280 @@ def foo():
 
 # d = d + 1
 
+
+# from typing import Dict, TypeVar, Any, Generic, Union, Optional
+# from collections.abc import Callable
+
+# from abc import ABC, abstractmethod
+
+# T = TypeVar('T')
+
+# def boo(x : T) -> T :  
+#     return x
+    
+    
+
+
+# from __future__ import annotations
+
+# from dataclasses import dataclass
+# from typing import TypeVar, Any, Generic, Union, Optional
+# from collections.abc import Callable
+
+# from abc import ABC, abstractmethod
+
+# from tree_sitter import Language
+# import tree_sitter
+
+# from lib import util_system
+
+# from typing import TypeVar, Any, Generic, Union, Optional
+# I = TypeVar('I')
+# S = TypeVar('S')
+
+# class A(ABC, Generic[I]): 
+
+#     @abstractmethod
+#     def foo() -> I:
+#         pass
+
+
+
+
+# x = A.foo()
+
+# class B(A[int]):
+
+#     @abstractmethod
+#     def foo() -> int:
+#         return 1
+
+
+# from typing import Union
+
+# class A:
+#     pass
+
+# class B:
+#     pass
+
+# U = Union[A, B] 
+# C = B
+# x = C()
+# isinstance(x, C)
+
+
+# print(f'ooga {(x := 4) < (y := 5) < x - y}')
+
+# with open("", 'a') as f:
+#     # logging.info(f"Writing file: {fpath}")
+#     f.write("")
+#     def oogabooga():
+#         return 1
+
+#     oogabooga()
+
+# oogabooga()
+
+from pyrsistent import m, pmap, v
+from typing import Coroutine, Iterator
+from pyrsistent.typing import PMap 
+
+
+for k, v in pmap({"hello" : "world", "alpha" : "beta", "good" : "bye"}).items():
+    print(f"{k} |-> {v}")
+
+
+# def foo(x : int = 4, *, y : int, z : int = 5, **zs : str) -> str:
+    # return f"{y} ::: {zs}"
+# def foo(x : int = 4,  *, y : int, z : int = 5) -> str:
+#     return f"{y}"
+
+# x = foo(y = 4)
+# print(f"x {x}")
+
+# def boo(x : int, /, y : int, z : int = 5) -> str:
+#     return f"{y} ::: {x}"
+
+# from typing import Callable
+
+# class X:
+#     pass
+
+# rype = type
+# Y : type = X
+# Thingy = Callable
+
+# def f(g : Thingy[[int, int, int], str]):
+#     print(g(1, 2, 3))
+
+# f(boo)
+
+
+# import asyncio
+# from typing import Awaitable
+
+# async def foo(q : asyncio.Queue[str]):
+#     x : Awaitable[str] = q.get()
+
+# Coroutine
+
+# xs = [1,2,3]
+
+# y : tuple[int, int, int, int, int, int] = *xs
+
+
+# def foo(x : int) -> int:
+#     return 2 * x
+
+# from typing import Any, Union
+
+# def boo(x : object):
+#     return foo(x)
+
+# foo("hello")
+
+# boo("hello")
+
+
+
+# class Koo:
+
+#     @staticmethod
+#     def ooga(x : int):
+#         pass
+
+#     @classmethod
+#     def booga(cls):
+#         pass
+
+#     def cooga(self):
+#         pass
+
+
+# x = Koo()
+
+# x.cooga()
+
+# Koo.cooga(Koo())
+
+# Koo.booga()
+
+# Koo.ooga(1)
+
+# from typing import Dict, TypeVar, Any, Generic, Union, Optional
+# from collections.abc import Callable
+
+# from abc import ABC, abstractmethod
+
+# T = TypeVar('T')
+# R = TypeVar('R')
+
+
+# class A:
+#     @classmethod
+#     def uno(cls) -> int:
+#         return 1
+
+#     @classmethod
+#     def dos(cls) -> int:
+#         return cls.uno() + cls.uno() 
+
+# class B(A):
+
+#     @classmethod
+#     def uno(cls) -> int:
+#         return 100 
+
+#     @classmethod
+#     def tres(cls) -> int:
+#         return 3 * cls.uno() 
+
+
+# print(f"B.dos: {B.dos()}")
+
+
+# from typing import Union
+# def choo() -> Union[str, None]:
+#     return None 
+
+# x = choo()
+
+# # env: x |-> Union[None, str]
+# if x:
+#     # collect all types in union except None
+#     # local env : x |-> str 
+#     x + "" 
+# else:
+#     # negative env : x |-> str
+#     # local env : x |-> None
+#     pass
+
+
+
+# # env: x |-> Union[None, str]
+# if not x:
+#     # local env : x |-> None
+#     x + ""
+#     pass
+# else:
+#     # negative env : x |-> None
+#     # local env : x |-> str 
+#     x + "" 
+
+
+# # env: x |-> Union[None, str]
+# if not isinstance(x, str):
+#     # negative env : x |-> str
+#     # local env : x |-> None 
+#     pass
+# else:
+#     # negative env : x |-> None
+#     # local env : x |-> str 
+#     x + "" 
+
+# def boo(hello : int, bye : str) -> str:
+#     return f"{hello} // {bye}" 
+
+# from pyrsistent import pmap, PMap
+# xs = [1, "bye"]
+
+
+# print(f"ooga : {boo(1, *xs)}")
+
+# print({}["hello"])
+
+# def ooga():
+#     for x in [1,2,3]:
+#         yield
+
+
+
+
+# def boo():
+#     class A:
+#         def foo(): pass 
+
+#     return (A(), A())
+
+
+# # class A: pass
+
+# x, y = boo()
+# w, z = boo()
+
+# print("***Dyno Class***********")
+# print(type(x) == type(y))
+# print(type(x) == type(w))
+
+# from typing import Any, Sequence, TypeVar
+
+# _T = TypeVar("_T")
+# _Mismatch = tuple[_T, _T, int]
+
+
+# x : _Mismatch[_T]
+
+xy = {"x" : "y", "b" : "d"}
+for item in xy:
+    print(item)

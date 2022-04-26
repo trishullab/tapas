@@ -10,7 +10,7 @@ import inflection
 
 from lib.rule_construct_autogen import *
 from lib import construct_def
-from lib import line_format as lf
+from lib import line_format_system as lf
 
 
 def to_dictionary(node: Rule):
@@ -45,17 +45,16 @@ def to_constructor(n : Rule) -> construct_def.Constructor:
         assert False 
 
     return construct_def.Constructor(
-        n.name,
-        [
+        n.name, [], [
             match_item(item, ItemHandlers[construct_def.Field](
                 case_Terminal = lambda o : (
                     fail()
                 ),
                 case_Nonterm = lambda o : (
-                    construct_def.Field(attr = o.relation, typ = o.nonterminal)
+                    construct_def.Field(attr = o.relation, typ = o.nonterminal, default = "")
                 ),
                 case_Vocab = lambda o : (
-                    construct_def.Field(attr = o.relation, typ = 'str')
+                    construct_def.Field(attr = o.relation, typ = 'str', default = "")
                 )
             )) 
             for item in n.content
@@ -71,9 +70,13 @@ def get_abstract_items(rule : Rule):
     ]
 
 
-def type_from_item(item : item):
+def type_from_item(item : item, prefix : str = ""):
     if isinstance(item, Nonterm):
-        return item.nonterminal
+        if prefix:
+            return f"{prefix}.{item.nonterminal}"
+        else:
+            return item.nonterminal
+
     elif isinstance(item, Vocab):
         return "str" 
     else:
@@ -91,7 +94,7 @@ def relation_from_item(item : item):
 def is_inductive(type_name : str, rules : list[Rule]) -> bool:
     for rule in rules:
         for item in rule.content:
-            if not isinstance(item, Terminal) and type_name == type_from_item(item):
+            if not isinstance(item, Terminal) and type_name == type_from_item(item, ""):
                 return True
     return False
 

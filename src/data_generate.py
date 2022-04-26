@@ -1,13 +1,15 @@
-from __future__ import annotations
-from lib import data
+from lib import python_analysis_system as pals
+from lib import data_system
 
-if __name__ == '__main__':
-    # data.generate_dir('mbpp')
+if __name__ == "__main__":
 
-    # data.generate_dir('apps')
+    # typeshed_inher_aux : pals.InherAux = pals.make_InherAux()
+    typeshed_inher_aux : pals.InherAux = pals.analyze_typeshed(1)
+    data_system.generate_dir(typeshed_inher_aux, 'mbpp')
 
-    # data.generate_dir('py150_train')
-    # data.generate_dir('py150_test')
-    # data.generate_dir('py150_validation')
+    # data_system.generate_dir('apps')
+    # data_system.generate_dir('py150_train')
+    # data_system.generate_dir('py150_test')
+    # data_system.generate_dir('py150_validation')
 
-    data.generate_dir('cubert')
+    # data_system.generate_dir('cubert')

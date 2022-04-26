@@ -2,6 +2,9 @@
 # CHANGES MAY BE LOST
 
 
+
+
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,12 +16,20 @@ from abc import ABC, abstractmethod
 T = TypeVar('T')
 
 
+@dataclass(frozen=True, eq=True)
+class SourceFlag: 
+    pass
+
+
+from typing import Union
+
 
 # type return_annotation
 @dataclass(frozen=True, eq=True)
 class return_annotation(ABC):
-    @abstractmethod
-    def _match(self, handlers : ReturnAnnotationHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ReturnAnnotationHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type return_annotation
@@ -27,22 +38,42 @@ class return_annotation(ABC):
 class SomeReturnAnno(return_annotation):
     content : expr
 
-    def _match(self, handlers : ReturnAnnotationHandlers[T]) -> T:
+    def match(self, handlers : ReturnAnnotationHandlers[T]) -> T:
         return handlers.case_SomeReturnAnno(self)
 
-def make_SomeReturnAnno(content : expr) -> return_annotation:
-    return SomeReturnAnno(content)
+def make_SomeReturnAnno(
+    content : expr
+) -> return_annotation:
+    return SomeReturnAnno(
+        content
+    )
+
+def update_SomeReturnAnno(source_SomeReturnAnno : SomeReturnAnno,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SomeReturnAnno:
+    return SomeReturnAnno(
+        source_SomeReturnAnno.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoReturnAnno(return_annotation):
 
 
-    def _match(self, handlers : ReturnAnnotationHandlers[T]) -> T:
+    def match(self, handlers : ReturnAnnotationHandlers[T]) -> T:
         return handlers.case_NoReturnAnno(self)
 
-def make_NoReturnAnno() -> return_annotation:
-    return NoReturnAnno()
+def make_NoReturnAnno(
+) -> return_annotation:
+    return NoReturnAnno(
+    )
+
+def update_NoReturnAnno(source_NoReturnAnno : NoReturnAnno
+) -> NoReturnAnno:
+    return NoReturnAnno(
+    )
+
         
 
 # case handlers for type return_annotation
@@ -54,14 +85,15 @@ class ReturnAnnotationHandlers(Generic[T]):
 
 # matching for type return_annotation
 def match_return_annotation(o : return_annotation, handlers : ReturnAnnotationHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type except_arg
 @dataclass(frozen=True, eq=True)
 class except_arg(ABC):
-    @abstractmethod
-    def _match(self, handlers : ExceptArgHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ExceptArgHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type except_arg
@@ -70,11 +102,23 @@ class except_arg(ABC):
 class SomeExceptArg(except_arg):
     content : expr
 
-    def _match(self, handlers : ExceptArgHandlers[T]) -> T:
+    def match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArg(self)
 
-def make_SomeExceptArg(content : expr) -> except_arg:
-    return SomeExceptArg(content)
+def make_SomeExceptArg(
+    content : expr
+) -> except_arg:
+    return SomeExceptArg(
+        content
+    )
+
+def update_SomeExceptArg(source_SomeExceptArg : SomeExceptArg,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SomeExceptArg:
+    return SomeExceptArg(
+        source_SomeExceptArg.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -82,22 +126,46 @@ class SomeExceptArgName(except_arg):
     content : expr
     name : str
 
-    def _match(self, handlers : ExceptArgHandlers[T]) -> T:
+    def match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArgName(self)
 
-def make_SomeExceptArgName(content : expr, name : str) -> except_arg:
-    return SomeExceptArgName(content, name)
+def make_SomeExceptArgName(
+    content : expr, 
+    name : str
+) -> except_arg:
+    return SomeExceptArgName(
+        content,
+        name
+    )
+
+def update_SomeExceptArgName(source_SomeExceptArgName : SomeExceptArgName,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    name : Union[str, SourceFlag] = SourceFlag()
+) -> SomeExceptArgName:
+    return SomeExceptArgName(
+        source_SomeExceptArgName.content if isinstance(content, SourceFlag) else content,
+        source_SomeExceptArgName.name if isinstance(name, SourceFlag) else name
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoExceptArg(except_arg):
 
 
-    def _match(self, handlers : ExceptArgHandlers[T]) -> T:
+    def match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_NoExceptArg(self)
 
-def make_NoExceptArg() -> except_arg:
-    return NoExceptArg()
+def make_NoExceptArg(
+) -> except_arg:
+    return NoExceptArg(
+    )
+
+def update_NoExceptArg(source_NoExceptArg : NoExceptArg
+) -> NoExceptArg:
+    return NoExceptArg(
+    )
+
         
 
 # case handlers for type except_arg
@@ -110,14 +178,15 @@ class ExceptArgHandlers(Generic[T]):
 
 # matching for type except_arg
 def match_except_arg(o : except_arg, handlers : ExceptArgHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type param_annotation
 @dataclass(frozen=True, eq=True)
 class param_annotation(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParamAnnotationHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParamAnnotationHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type param_annotation
@@ -126,22 +195,42 @@ class param_annotation(ABC):
 class SomeParamAnno(param_annotation):
     content : expr
 
-    def _match(self, handlers : ParamAnnotationHandlers[T]) -> T:
+    def match(self, handlers : ParamAnnotationHandlers[T]) -> T:
         return handlers.case_SomeParamAnno(self)
 
-def make_SomeParamAnno(content : expr) -> param_annotation:
-    return SomeParamAnno(content)
+def make_SomeParamAnno(
+    content : expr
+) -> param_annotation:
+    return SomeParamAnno(
+        content
+    )
+
+def update_SomeParamAnno(source_SomeParamAnno : SomeParamAnno,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SomeParamAnno:
+    return SomeParamAnno(
+        source_SomeParamAnno.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoParamAnno(param_annotation):
 
 
-    def _match(self, handlers : ParamAnnotationHandlers[T]) -> T:
+    def match(self, handlers : ParamAnnotationHandlers[T]) -> T:
         return handlers.case_NoParamAnno(self)
 
-def make_NoParamAnno() -> param_annotation:
-    return NoParamAnno()
+def make_NoParamAnno(
+) -> param_annotation:
+    return NoParamAnno(
+    )
+
+def update_NoParamAnno(source_NoParamAnno : NoParamAnno
+) -> NoParamAnno:
+    return NoParamAnno(
+    )
+
         
 
 # case handlers for type param_annotation
@@ -153,14 +242,15 @@ class ParamAnnotationHandlers(Generic[T]):
 
 # matching for type param_annotation
 def match_param_annotation(o : param_annotation, handlers : ParamAnnotationHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type param_default
 @dataclass(frozen=True, eq=True)
 class param_default(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParamDefaultHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParamDefaultHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type param_default
@@ -169,22 +259,42 @@ class param_default(ABC):
 class SomeParamDefault(param_default):
     content : expr
 
-    def _match(self, handlers : ParamDefaultHandlers[T]) -> T:
+    def match(self, handlers : ParamDefaultHandlers[T]) -> T:
         return handlers.case_SomeParamDefault(self)
 
-def make_SomeParamDefault(content : expr) -> param_default:
-    return SomeParamDefault(content)
+def make_SomeParamDefault(
+    content : expr
+) -> param_default:
+    return SomeParamDefault(
+        content
+    )
+
+def update_SomeParamDefault(source_SomeParamDefault : SomeParamDefault,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SomeParamDefault:
+    return SomeParamDefault(
+        source_SomeParamDefault.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoParamDefault(param_default):
 
 
-    def _match(self, handlers : ParamDefaultHandlers[T]) -> T:
+    def match(self, handlers : ParamDefaultHandlers[T]) -> T:
         return handlers.case_NoParamDefault(self)
 
-def make_NoParamDefault() -> param_default:
-    return NoParamDefault()
+def make_NoParamDefault(
+) -> param_default:
+    return NoParamDefault(
+    )
+
+def update_NoParamDefault(source_NoParamDefault : NoParamDefault
+) -> NoParamDefault:
+    return NoParamDefault(
+    )
+
         
 
 # case handlers for type param_default
@@ -196,14 +306,15 @@ class ParamDefaultHandlers(Generic[T]):
 
 # matching for type param_default
 def match_param_default(o : param_default, handlers : ParamDefaultHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type parameters_d
 @dataclass(frozen=True, eq=True)
 class parameters_d(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParametersDHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParametersDHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type parameters_d
@@ -213,33 +324,73 @@ class ConsKwParam(parameters_d):
     head : Param
     tail : parameters_d
 
-    def _match(self, handlers : ParametersDHandlers[T]) -> T:
+    def match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_ConsKwParam(self)
 
-def make_ConsKwParam(head : Param, tail : parameters_d) -> parameters_d:
-    return ConsKwParam(head, tail)
+def make_ConsKwParam(
+    head : Param, 
+    tail : parameters_d
+) -> parameters_d:
+    return ConsKwParam(
+        head,
+        tail
+    )
+
+def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
+    head : Union[Param, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_d, SourceFlag] = SourceFlag()
+) -> ConsKwParam:
+    return ConsKwParam(
+        source_ConsKwParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsKwParam.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleKwParam(parameters_d):
     content : Param
 
-    def _match(self, handlers : ParametersDHandlers[T]) -> T:
+    def match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_SingleKwParam(self)
 
-def make_SingleKwParam(content : Param) -> parameters_d:
-    return SingleKwParam(content)
+def make_SingleKwParam(
+    content : Param
+) -> parameters_d:
+    return SingleKwParam(
+        content
+    )
+
+def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
+    content : Union[Param, SourceFlag] = SourceFlag()
+) -> SingleKwParam:
+    return SingleKwParam(
+        source_SingleKwParam.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class DictionarySplatParam(parameters_d):
     content : Param
 
-    def _match(self, handlers : ParametersDHandlers[T]) -> T:
+    def match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_DictionarySplatParam(self)
 
-def make_DictionarySplatParam(content : Param) -> parameters_d:
-    return DictionarySplatParam(content)
+def make_DictionarySplatParam(
+    content : Param
+) -> parameters_d:
+    return DictionarySplatParam(
+        content
+    )
+
+def update_DictionarySplatParam(source_DictionarySplatParam : DictionarySplatParam,
+    content : Union[Param, SourceFlag] = SourceFlag()
+) -> DictionarySplatParam:
+    return DictionarySplatParam(
+        source_DictionarySplatParam.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type parameters_d
@@ -252,14 +403,15 @@ class ParametersDHandlers(Generic[T]):
 
 # matching for type parameters_d
 def match_parameters_d(o : parameters_d, handlers : ParametersDHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type parameters_c
 @dataclass(frozen=True, eq=True)
 class parameters_c(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParametersCHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParametersCHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type parameters_c
@@ -268,11 +420,23 @@ class parameters_c(ABC):
 class SingleListSplatParam(parameters_c):
     content : Param
 
-    def _match(self, handlers : ParametersCHandlers[T]) -> T:
+    def match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_SingleListSplatParam(self)
 
-def make_SingleListSplatParam(content : Param) -> parameters_c:
-    return SingleListSplatParam(content)
+def make_SingleListSplatParam(
+    content : Param
+) -> parameters_c:
+    return SingleListSplatParam(
+        content
+    )
+
+def update_SingleListSplatParam(source_SingleListSplatParam : SingleListSplatParam,
+    content : Union[Param, SourceFlag] = SourceFlag()
+) -> SingleListSplatParam:
+    return SingleListSplatParam(
+        source_SingleListSplatParam.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -280,22 +444,50 @@ class TransListSplatParam(parameters_c):
     head : Param
     tail : parameters_d
 
-    def _match(self, handlers : ParametersCHandlers[T]) -> T:
+    def match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_TransListSplatParam(self)
 
-def make_TransListSplatParam(head : Param, tail : parameters_d) -> parameters_c:
-    return TransListSplatParam(head, tail)
+def make_TransListSplatParam(
+    head : Param, 
+    tail : parameters_d
+) -> parameters_c:
+    return TransListSplatParam(
+        head,
+        tail
+    )
+
+def update_TransListSplatParam(source_TransListSplatParam : TransListSplatParam,
+    head : Union[Param, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_d, SourceFlag] = SourceFlag()
+) -> TransListSplatParam:
+    return TransListSplatParam(
+        source_TransListSplatParam.head if isinstance(head, SourceFlag) else head,
+        source_TransListSplatParam.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ParamsD(parameters_c):
     content : parameters_d
 
-    def _match(self, handlers : ParametersCHandlers[T]) -> T:
+    def match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_ParamsD(self)
 
-def make_ParamsD(content : parameters_d) -> parameters_c:
-    return ParamsD(content)
+def make_ParamsD(
+    content : parameters_d
+) -> parameters_c:
+    return ParamsD(
+        content
+    )
+
+def update_ParamsD(source_ParamsD : ParamsD,
+    content : Union[parameters_d, SourceFlag] = SourceFlag()
+) -> ParamsD:
+    return ParamsD(
+        source_ParamsD.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type parameters_c
@@ -308,70 +500,112 @@ class ParametersCHandlers(Generic[T]):
 
 # matching for type parameters_c
 def match_parameters_c(o : parameters_c, handlers : ParametersCHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type parameters_b
 @dataclass(frozen=True, eq=True)
 class parameters_b(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParametersBHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParametersBHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type parameters_b
 
 @dataclass(frozen=True, eq=True)
-class ConsParam(parameters_b):
+class ConsPosKeyParam(parameters_b):
     head : Param
     tail : parameters_b
 
-    def _match(self, handlers : ParametersBHandlers[T]) -> T:
-        return handlers.case_ConsParam(self)
+    def match(self, handlers : ParametersBHandlers[T]) -> T:
+        return handlers.case_ConsPosKeyParam(self)
 
-def make_ConsParam(head : Param, tail : parameters_b) -> parameters_b:
-    return ConsParam(head, tail)
+def make_ConsPosKeyParam(
+    head : Param, 
+    tail : parameters_b
+) -> parameters_b:
+    return ConsPosKeyParam(
+        head,
+        tail
+    )
+
+def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
+    head : Union[Param, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_b, SourceFlag] = SourceFlag()
+) -> ConsPosKeyParam:
+    return ConsPosKeyParam(
+        source_ConsPosKeyParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsPosKeyParam.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class SingleParam(parameters_b):
+class SinglePosKeyParam(parameters_b):
     content : Param
 
-    def _match(self, handlers : ParametersBHandlers[T]) -> T:
-        return handlers.case_SingleParam(self)
+    def match(self, handlers : ParametersBHandlers[T]) -> T:
+        return handlers.case_SinglePosKeyParam(self)
 
-def make_SingleParam(content : Param) -> parameters_b:
-    return SingleParam(content)
+def make_SinglePosKeyParam(
+    content : Param
+) -> parameters_b:
+    return SinglePosKeyParam(
+        content
+    )
+
+def update_SinglePosKeyParam(source_SinglePosKeyParam : SinglePosKeyParam,
+    content : Union[Param, SourceFlag] = SourceFlag()
+) -> SinglePosKeyParam:
+    return SinglePosKeyParam(
+        source_SinglePosKeyParam.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ParamsC(parameters_b):
     content : parameters_c
 
-    def _match(self, handlers : ParametersBHandlers[T]) -> T:
+    def match(self, handlers : ParametersBHandlers[T]) -> T:
         return handlers.case_ParamsC(self)
 
-def make_ParamsC(content : parameters_c) -> parameters_b:
-    return ParamsC(content)
+def make_ParamsC(
+    content : parameters_c
+) -> parameters_b:
+    return ParamsC(
+        content
+    )
+
+def update_ParamsC(source_ParamsC : ParamsC,
+    content : Union[parameters_c, SourceFlag] = SourceFlag()
+) -> ParamsC:
+    return ParamsC(
+        source_ParamsC.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type parameters_b
 @dataclass(frozen=True, eq=True)
 class ParametersBHandlers(Generic[T]):
-    case_ConsParam : Callable[[ConsParam], T]
-    case_SingleParam : Callable[[SingleParam], T]
+    case_ConsPosKeyParam : Callable[[ConsPosKeyParam], T]
+    case_SinglePosKeyParam : Callable[[SinglePosKeyParam], T]
     case_ParamsC : Callable[[ParamsC], T]
 
 
 # matching for type parameters_b
 def match_parameters_b(o : parameters_b, handlers : ParametersBHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type parameters_a
 @dataclass(frozen=True, eq=True)
 class parameters_a(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParametersAHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParametersAHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type parameters_a
@@ -381,22 +615,50 @@ class ConsPosParam(parameters_a):
     head : Param
     tail : parameters_a
 
-    def _match(self, handlers : ParametersAHandlers[T]) -> T:
+    def match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_ConsPosParam(self)
 
-def make_ConsPosParam(head : Param, tail : parameters_a) -> parameters_a:
-    return ConsPosParam(head, tail)
+def make_ConsPosParam(
+    head : Param, 
+    tail : parameters_a
+) -> parameters_a:
+    return ConsPosParam(
+        head,
+        tail
+    )
+
+def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
+    head : Union[Param, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_a, SourceFlag] = SourceFlag()
+) -> ConsPosParam:
+    return ConsPosParam(
+        source_ConsPosParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsPosParam.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SinglePosParam(parameters_a):
     content : Param
 
-    def _match(self, handlers : ParametersAHandlers[T]) -> T:
+    def match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_SinglePosParam(self)
 
-def make_SinglePosParam(content : Param) -> parameters_a:
-    return SinglePosParam(content)
+def make_SinglePosParam(
+    content : Param
+) -> parameters_a:
+    return SinglePosParam(
+        content
+    )
+
+def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
+    content : Union[Param, SourceFlag] = SourceFlag()
+) -> SinglePosParam:
+    return SinglePosParam(
+        source_SinglePosParam.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -404,11 +666,27 @@ class TransPosParam(parameters_a):
     head : Param
     tail : parameters_b
 
-    def _match(self, handlers : ParametersAHandlers[T]) -> T:
+    def match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_TransPosParam(self)
 
-def make_TransPosParam(head : Param, tail : parameters_b) -> parameters_a:
-    return TransPosParam(head, tail)
+def make_TransPosParam(
+    head : Param, 
+    tail : parameters_b
+) -> parameters_a:
+    return TransPosParam(
+        head,
+        tail
+    )
+
+def update_TransPosParam(source_TransPosParam : TransPosParam,
+    head : Union[Param, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_b, SourceFlag] = SourceFlag()
+) -> TransPosParam:
+    return TransPosParam(
+        source_TransPosParam.head if isinstance(head, SourceFlag) else head,
+        source_TransPosParam.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 # case handlers for type parameters_a
@@ -421,14 +699,15 @@ class ParametersAHandlers(Generic[T]):
 
 # matching for type parameters_a
 def match_parameters_a(o : parameters_a, handlers : ParametersAHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type parameters
 @dataclass(frozen=True, eq=True)
 class parameters(ABC):
-    @abstractmethod
-    def _match(self, handlers : ParametersHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ParametersHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type parameters
@@ -437,33 +716,65 @@ class parameters(ABC):
 class ParamsA(parameters):
     content : parameters_a
 
-    def _match(self, handlers : ParametersHandlers[T]) -> T:
+    def match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_ParamsA(self)
 
-def make_ParamsA(content : parameters_a) -> parameters:
-    return ParamsA(content)
+def make_ParamsA(
+    content : parameters_a
+) -> parameters:
+    return ParamsA(
+        content
+    )
+
+def update_ParamsA(source_ParamsA : ParamsA,
+    content : Union[parameters_a, SourceFlag] = SourceFlag()
+) -> ParamsA:
+    return ParamsA(
+        source_ParamsA.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ParamsB(parameters):
     content : parameters_b
 
-    def _match(self, handlers : ParametersHandlers[T]) -> T:
+    def match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_ParamsB(self)
 
-def make_ParamsB(content : parameters_b) -> parameters:
-    return ParamsB(content)
+def make_ParamsB(
+    content : parameters_b
+) -> parameters:
+    return ParamsB(
+        content
+    )
+
+def update_ParamsB(source_ParamsB : ParamsB,
+    content : Union[parameters_b, SourceFlag] = SourceFlag()
+) -> ParamsB:
+    return ParamsB(
+        source_ParamsB.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoParam(parameters):
 
 
-    def _match(self, handlers : ParametersHandlers[T]) -> T:
+    def match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_NoParam(self)
 
-def make_NoParam() -> parameters:
-    return NoParam()
+def make_NoParam(
+) -> parameters:
+    return NoParam(
+    )
+
+def update_NoParam(source_NoParam : NoParam
+) -> NoParam:
+    return NoParam(
+    )
+
         
 
 # case handlers for type parameters
@@ -476,14 +787,15 @@ class ParametersHandlers(Generic[T]):
 
 # matching for type parameters
 def match_parameters(o : parameters, handlers : ParametersHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type keyword
 @dataclass(frozen=True, eq=True)
 class keyword(ABC):
-    @abstractmethod
-    def _match(self, handlers : KeywordHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : KeywordHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type keyword
@@ -493,22 +805,50 @@ class NamedKeyword(keyword):
     name : str
     content : expr
 
-    def _match(self, handlers : KeywordHandlers[T]) -> T:
+    def match(self, handlers : KeywordHandlers[T]) -> T:
         return handlers.case_NamedKeyword(self)
 
-def make_NamedKeyword(name : str, content : expr) -> keyword:
-    return NamedKeyword(name, content)
+def make_NamedKeyword(
+    name : str, 
+    content : expr
+) -> keyword:
+    return NamedKeyword(
+        name,
+        content
+    )
+
+def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> NamedKeyword:
+    return NamedKeyword(
+        source_NamedKeyword.name if isinstance(name, SourceFlag) else name,
+        source_NamedKeyword.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SplatKeyword(keyword):
     content : expr
 
-    def _match(self, handlers : KeywordHandlers[T]) -> T:
+    def match(self, handlers : KeywordHandlers[T]) -> T:
         return handlers.case_SplatKeyword(self)
 
-def make_SplatKeyword(content : expr) -> keyword:
-    return SplatKeyword(content)
+def make_SplatKeyword(
+    content : expr
+) -> keyword:
+    return SplatKeyword(
+        content
+    )
+
+def update_SplatKeyword(source_SplatKeyword : SplatKeyword,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SplatKeyword:
+    return SplatKeyword(
+        source_SplatKeyword.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type keyword
@@ -520,14 +860,15 @@ class KeywordHandlers(Generic[T]):
 
 # matching for type keyword
 def match_keyword(o : keyword, handlers : KeywordHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type import_name
 @dataclass(frozen=True, eq=True)
 class import_name(ABC):
-    @abstractmethod
-    def _match(self, handlers : ImportNameHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ImportNameHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type import_name
@@ -537,22 +878,50 @@ class ImportNameAlias(import_name):
     name : str
     alias : str
 
-    def _match(self, handlers : ImportNameHandlers[T]) -> T:
+    def match(self, handlers : ImportNameHandlers[T]) -> T:
         return handlers.case_ImportNameAlias(self)
 
-def make_ImportNameAlias(name : str, alias : str) -> import_name:
-    return ImportNameAlias(name, alias)
+def make_ImportNameAlias(
+    name : str, 
+    alias : str
+) -> import_name:
+    return ImportNameAlias(
+        name,
+        alias
+    )
+
+def update_ImportNameAlias(source_ImportNameAlias : ImportNameAlias,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    alias : Union[str, SourceFlag] = SourceFlag()
+) -> ImportNameAlias:
+    return ImportNameAlias(
+        source_ImportNameAlias.name if isinstance(name, SourceFlag) else name,
+        source_ImportNameAlias.alias if isinstance(alias, SourceFlag) else alias
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ImportNameOnly(import_name):
     name : str
 
-    def _match(self, handlers : ImportNameHandlers[T]) -> T:
+    def match(self, handlers : ImportNameHandlers[T]) -> T:
         return handlers.case_ImportNameOnly(self)
 
-def make_ImportNameOnly(name : str) -> import_name:
-    return ImportNameOnly(name)
+def make_ImportNameOnly(
+    name : str
+) -> import_name:
+    return ImportNameOnly(
+        name
+    )
+
+def update_ImportNameOnly(source_ImportNameOnly : ImportNameOnly,
+    name : Union[str, SourceFlag] = SourceFlag()
+) -> ImportNameOnly:
+    return ImportNameOnly(
+        source_ImportNameOnly.name if isinstance(name, SourceFlag) else name
+    )
+
         
 
 # case handlers for type import_name
@@ -564,14 +933,15 @@ class ImportNameHandlers(Generic[T]):
 
 # matching for type import_name
 def match_import_name(o : import_name, handlers : ImportNameHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type with_item
 @dataclass(frozen=True, eq=True)
 class with_item(ABC):
-    @abstractmethod
-    def _match(self, handlers : WithItemHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : WithItemHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type with_item
@@ -581,22 +951,50 @@ class WithItemAlias(with_item):
     content : expr
     alias : expr
 
-    def _match(self, handlers : WithItemHandlers[T]) -> T:
+    def match(self, handlers : WithItemHandlers[T]) -> T:
         return handlers.case_WithItemAlias(self)
 
-def make_WithItemAlias(content : expr, alias : expr) -> with_item:
-    return WithItemAlias(content, alias)
+def make_WithItemAlias(
+    content : expr, 
+    alias : expr
+) -> with_item:
+    return WithItemAlias(
+        content,
+        alias
+    )
+
+def update_WithItemAlias(source_WithItemAlias : WithItemAlias,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    alias : Union[expr, SourceFlag] = SourceFlag()
+) -> WithItemAlias:
+    return WithItemAlias(
+        source_WithItemAlias.content if isinstance(content, SourceFlag) else content,
+        source_WithItemAlias.alias if isinstance(alias, SourceFlag) else alias
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class WithItemOnly(with_item):
     content : expr
 
-    def _match(self, handlers : WithItemHandlers[T]) -> T:
+    def match(self, handlers : WithItemHandlers[T]) -> T:
         return handlers.case_WithItemOnly(self)
 
-def make_WithItemOnly(content : expr) -> with_item:
-    return WithItemOnly(content)
+def make_WithItemOnly(
+    content : expr
+) -> with_item:
+    return WithItemOnly(
+        content
+    )
+
+def update_WithItemOnly(source_WithItemOnly : WithItemOnly,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> WithItemOnly:
+    return WithItemOnly(
+        source_WithItemOnly.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type with_item
@@ -608,14 +1006,15 @@ class WithItemHandlers(Generic[T]):
 
 # matching for type with_item
 def match_with_item(o : with_item, handlers : WithItemHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type bases
 @dataclass(frozen=True, eq=True)
 class bases(ABC):
-    @abstractmethod
-    def _match(self, handlers : BasesHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : BasesHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type bases
@@ -624,22 +1023,42 @@ class bases(ABC):
 class SomeBases(bases):
     bases : bases_a
 
-    def _match(self, handlers : BasesHandlers[T]) -> T:
+    def match(self, handlers : BasesHandlers[T]) -> T:
         return handlers.case_SomeBases(self)
 
-def make_SomeBases(bases : bases_a) -> bases:
-    return SomeBases(bases)
+def make_SomeBases(
+    bases : bases_a
+) -> bases:
+    return SomeBases(
+        bases
+    )
+
+def update_SomeBases(source_SomeBases : SomeBases,
+    bases : Union[bases_a, SourceFlag] = SourceFlag()
+) -> SomeBases:
+    return SomeBases(
+        source_SomeBases.bases if isinstance(bases, SourceFlag) else bases
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoBases(bases):
 
 
-    def _match(self, handlers : BasesHandlers[T]) -> T:
+    def match(self, handlers : BasesHandlers[T]) -> T:
         return handlers.case_NoBases(self)
 
-def make_NoBases() -> bases:
-    return NoBases()
+def make_NoBases(
+) -> bases:
+    return NoBases(
+    )
+
+def update_NoBases(source_NoBases : NoBases
+) -> NoBases:
+    return NoBases(
+    )
+
         
 
 # case handlers for type bases
@@ -651,14 +1070,15 @@ class BasesHandlers(Generic[T]):
 
 # matching for type bases
 def match_bases(o : bases, handlers : BasesHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type bases_a
 @dataclass(frozen=True, eq=True)
 class bases_a(ABC):
-    @abstractmethod
-    def _match(self, handlers : BasesAHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : BasesAHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type bases_a
@@ -668,33 +1088,73 @@ class ConsBase(bases_a):
     head : expr
     tail : bases_a
 
-    def _match(self, handlers : BasesAHandlers[T]) -> T:
+    def match(self, handlers : BasesAHandlers[T]) -> T:
         return handlers.case_ConsBase(self)
 
-def make_ConsBase(head : expr, tail : bases_a) -> bases_a:
-    return ConsBase(head, tail)
+def make_ConsBase(
+    head : expr, 
+    tail : bases_a
+) -> bases_a:
+    return ConsBase(
+        head,
+        tail
+    )
+
+def update_ConsBase(source_ConsBase : ConsBase,
+    head : Union[expr, SourceFlag] = SourceFlag(),
+    tail : Union[bases_a, SourceFlag] = SourceFlag()
+) -> ConsBase:
+    return ConsBase(
+        source_ConsBase.head if isinstance(head, SourceFlag) else head,
+        source_ConsBase.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleBase(bases_a):
     content : expr
 
-    def _match(self, handlers : BasesAHandlers[T]) -> T:
+    def match(self, handlers : BasesAHandlers[T]) -> T:
         return handlers.case_SingleBase(self)
 
-def make_SingleBase(content : expr) -> bases_a:
-    return SingleBase(content)
+def make_SingleBase(
+    content : expr
+) -> bases_a:
+    return SingleBase(
+        content
+    )
+
+def update_SingleBase(source_SingleBase : SingleBase,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SingleBase:
+    return SingleBase(
+        source_SingleBase.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class KeywordsBase(bases_a):
+class KeywordBases(bases_a):
     kws : keywords
 
-    def _match(self, handlers : BasesAHandlers[T]) -> T:
-        return handlers.case_KeywordsBase(self)
+    def match(self, handlers : BasesAHandlers[T]) -> T:
+        return handlers.case_KeywordBases(self)
 
-def make_KeywordsBase(kws : keywords) -> bases_a:
-    return KeywordsBase(kws)
+def make_KeywordBases(
+    kws : keywords
+) -> bases_a:
+    return KeywordBases(
+        kws
+    )
+
+def update_KeywordBases(source_KeywordBases : KeywordBases,
+    kws : Union[keywords, SourceFlag] = SourceFlag()
+) -> KeywordBases:
+    return KeywordBases(
+        source_KeywordBases.kws if isinstance(kws, SourceFlag) else kws
+    )
+
         
 
 # case handlers for type bases_a
@@ -702,19 +1162,20 @@ def make_KeywordsBase(kws : keywords) -> bases_a:
 class BasesAHandlers(Generic[T]):
     case_ConsBase : Callable[[ConsBase], T]
     case_SingleBase : Callable[[SingleBase], T]
-    case_KeywordsBase : Callable[[KeywordsBase], T]
+    case_KeywordBases : Callable[[KeywordBases], T]
 
 
 # matching for type bases_a
 def match_bases_a(o : bases_a, handlers : BasesAHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type keywords
 @dataclass(frozen=True, eq=True)
 class keywords(ABC):
-    @abstractmethod
-    def _match(self, handlers : KeywordsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : KeywordsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type keywords
@@ -724,22 +1185,50 @@ class ConsKeyword(keywords):
     head : keyword
     tail : keywords
 
-    def _match(self, handlers : KeywordsHandlers[T]) -> T:
+    def match(self, handlers : KeywordsHandlers[T]) -> T:
         return handlers.case_ConsKeyword(self)
 
-def make_ConsKeyword(head : keyword, tail : keywords) -> keywords:
-    return ConsKeyword(head, tail)
+def make_ConsKeyword(
+    head : keyword, 
+    tail : keywords
+) -> keywords:
+    return ConsKeyword(
+        head,
+        tail
+    )
+
+def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
+    head : Union[keyword, SourceFlag] = SourceFlag(),
+    tail : Union[keywords, SourceFlag] = SourceFlag()
+) -> ConsKeyword:
+    return ConsKeyword(
+        source_ConsKeyword.head if isinstance(head, SourceFlag) else head,
+        source_ConsKeyword.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleKeyword(keywords):
     content : keyword
 
-    def _match(self, handlers : KeywordsHandlers[T]) -> T:
+    def match(self, handlers : KeywordsHandlers[T]) -> T:
         return handlers.case_SingleKeyword(self)
 
-def make_SingleKeyword(content : keyword) -> keywords:
-    return SingleKeyword(content)
+def make_SingleKeyword(
+    content : keyword
+) -> keywords:
+    return SingleKeyword(
+        content
+    )
+
+def update_SingleKeyword(source_SingleKeyword : SingleKeyword,
+    content : Union[keyword, SourceFlag] = SourceFlag()
+) -> SingleKeyword:
+    return SingleKeyword(
+        source_SingleKeyword.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type keywords
@@ -751,14 +1240,15 @@ class KeywordsHandlers(Generic[T]):
 
 # matching for type keywords
 def match_keywords(o : keywords, handlers : KeywordsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type comparisons
 @dataclass(frozen=True, eq=True)
 class comparisons(ABC):
-    @abstractmethod
-    def _match(self, handlers : ComparisonsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ComparisonsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type comparisons
@@ -768,22 +1258,50 @@ class ConsCompareRight(comparisons):
     head : CompareRight
     tail : comparisons
 
-    def _match(self, handlers : ComparisonsHandlers[T]) -> T:
+    def match(self, handlers : ComparisonsHandlers[T]) -> T:
         return handlers.case_ConsCompareRight(self)
 
-def make_ConsCompareRight(head : CompareRight, tail : comparisons) -> comparisons:
-    return ConsCompareRight(head, tail)
+def make_ConsCompareRight(
+    head : CompareRight, 
+    tail : comparisons
+) -> comparisons:
+    return ConsCompareRight(
+        head,
+        tail
+    )
+
+def update_ConsCompareRight(source_ConsCompareRight : ConsCompareRight,
+    head : Union[CompareRight, SourceFlag] = SourceFlag(),
+    tail : Union[comparisons, SourceFlag] = SourceFlag()
+) -> ConsCompareRight:
+    return ConsCompareRight(
+        source_ConsCompareRight.head if isinstance(head, SourceFlag) else head,
+        source_ConsCompareRight.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleCompareRight(comparisons):
     content : CompareRight
 
-    def _match(self, handlers : ComparisonsHandlers[T]) -> T:
+    def match(self, handlers : ComparisonsHandlers[T]) -> T:
         return handlers.case_SingleCompareRight(self)
 
-def make_SingleCompareRight(content : CompareRight) -> comparisons:
-    return SingleCompareRight(content)
+def make_SingleCompareRight(
+    content : CompareRight
+) -> comparisons:
+    return SingleCompareRight(
+        content
+    )
+
+def update_SingleCompareRight(source_SingleCompareRight : SingleCompareRight,
+    content : Union[CompareRight, SourceFlag] = SourceFlag()
+) -> SingleCompareRight:
+    return SingleCompareRight(
+        source_SingleCompareRight.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type comparisons
@@ -795,14 +1313,15 @@ class ComparisonsHandlers(Generic[T]):
 
 # matching for type comparisons
 def match_comparisons(o : comparisons, handlers : ComparisonsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type option_expr
 @dataclass(frozen=True, eq=True)
 class option_expr(ABC):
-    @abstractmethod
-    def _match(self, handlers : OptionExprHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : OptionExprHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type option_expr
@@ -811,22 +1330,42 @@ class option_expr(ABC):
 class SomeExpr(option_expr):
     content : expr
 
-    def _match(self, handlers : OptionExprHandlers[T]) -> T:
+    def match(self, handlers : OptionExprHandlers[T]) -> T:
         return handlers.case_SomeExpr(self)
 
-def make_SomeExpr(content : expr) -> option_expr:
-    return SomeExpr(content)
+def make_SomeExpr(
+    content : expr
+) -> option_expr:
+    return SomeExpr(
+        content
+    )
+
+def update_SomeExpr(source_SomeExpr : SomeExpr,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SomeExpr:
+    return SomeExpr(
+        source_SomeExpr.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoExpr(option_expr):
 
 
-    def _match(self, handlers : OptionExprHandlers[T]) -> T:
+    def match(self, handlers : OptionExprHandlers[T]) -> T:
         return handlers.case_NoExpr(self)
 
-def make_NoExpr() -> option_expr:
-    return NoExpr()
+def make_NoExpr(
+) -> option_expr:
+    return NoExpr(
+    )
+
+def update_NoExpr(source_NoExpr : NoExpr
+) -> NoExpr:
+    return NoExpr(
+    )
+
         
 
 # case handlers for type option_expr
@@ -838,14 +1377,15 @@ class OptionExprHandlers(Generic[T]):
 
 # matching for type option_expr
 def match_option_expr(o : option_expr, handlers : OptionExprHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type comma_exprs
 @dataclass(frozen=True, eq=True)
 class comma_exprs(ABC):
-    @abstractmethod
-    def _match(self, handlers : CommaExprsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : CommaExprsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type comma_exprs
@@ -855,22 +1395,50 @@ class ConsExpr(comma_exprs):
     head : expr
     tail : comma_exprs
 
-    def _match(self, handlers : CommaExprsHandlers[T]) -> T:
+    def match(self, handlers : CommaExprsHandlers[T]) -> T:
         return handlers.case_ConsExpr(self)
 
-def make_ConsExpr(head : expr, tail : comma_exprs) -> comma_exprs:
-    return ConsExpr(head, tail)
+def make_ConsExpr(
+    head : expr, 
+    tail : comma_exprs
+) -> comma_exprs:
+    return ConsExpr(
+        head,
+        tail
+    )
+
+def update_ConsExpr(source_ConsExpr : ConsExpr,
+    head : Union[expr, SourceFlag] = SourceFlag(),
+    tail : Union[comma_exprs, SourceFlag] = SourceFlag()
+) -> ConsExpr:
+    return ConsExpr(
+        source_ConsExpr.head if isinstance(head, SourceFlag) else head,
+        source_ConsExpr.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleExpr(comma_exprs):
     content : expr
 
-    def _match(self, handlers : CommaExprsHandlers[T]) -> T:
+    def match(self, handlers : CommaExprsHandlers[T]) -> T:
         return handlers.case_SingleExpr(self)
 
-def make_SingleExpr(content : expr) -> comma_exprs:
-    return SingleExpr(content)
+def make_SingleExpr(
+    content : expr
+) -> comma_exprs:
+    return SingleExpr(
+        content
+    )
+
+def update_SingleExpr(source_SingleExpr : SingleExpr,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SingleExpr:
+    return SingleExpr(
+        source_SingleExpr.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type comma_exprs
@@ -882,14 +1450,15 @@ class CommaExprsHandlers(Generic[T]):
 
 # matching for type comma_exprs
 def match_comma_exprs(o : comma_exprs, handlers : CommaExprsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type target_exprs
 @dataclass(frozen=True, eq=True)
 class target_exprs(ABC):
-    @abstractmethod
-    def _match(self, handlers : TargetExprsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : TargetExprsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type target_exprs
@@ -899,22 +1468,50 @@ class ConsTargetExpr(target_exprs):
     head : expr
     tail : target_exprs
 
-    def _match(self, handlers : TargetExprsHandlers[T]) -> T:
+    def match(self, handlers : TargetExprsHandlers[T]) -> T:
         return handlers.case_ConsTargetExpr(self)
 
-def make_ConsTargetExpr(head : expr, tail : target_exprs) -> target_exprs:
-    return ConsTargetExpr(head, tail)
+def make_ConsTargetExpr(
+    head : expr, 
+    tail : target_exprs
+) -> target_exprs:
+    return ConsTargetExpr(
+        head,
+        tail
+    )
+
+def update_ConsTargetExpr(source_ConsTargetExpr : ConsTargetExpr,
+    head : Union[expr, SourceFlag] = SourceFlag(),
+    tail : Union[target_exprs, SourceFlag] = SourceFlag()
+) -> ConsTargetExpr:
+    return ConsTargetExpr(
+        source_ConsTargetExpr.head if isinstance(head, SourceFlag) else head,
+        source_ConsTargetExpr.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleTargetExpr(target_exprs):
     content : expr
 
-    def _match(self, handlers : TargetExprsHandlers[T]) -> T:
+    def match(self, handlers : TargetExprsHandlers[T]) -> T:
         return handlers.case_SingleTargetExpr(self)
 
-def make_SingleTargetExpr(content : expr) -> target_exprs:
-    return SingleTargetExpr(content)
+def make_SingleTargetExpr(
+    content : expr
+) -> target_exprs:
+    return SingleTargetExpr(
+        content
+    )
+
+def update_SingleTargetExpr(source_SingleTargetExpr : SingleTargetExpr,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SingleTargetExpr:
+    return SingleTargetExpr(
+        source_SingleTargetExpr.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type target_exprs
@@ -926,14 +1523,15 @@ class TargetExprsHandlers(Generic[T]):
 
 # matching for type target_exprs
 def match_target_exprs(o : target_exprs, handlers : TargetExprsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type decorators
 @dataclass(frozen=True, eq=True)
 class decorators(ABC):
-    @abstractmethod
-    def _match(self, handlers : DecoratorsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : DecoratorsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type decorators
@@ -943,22 +1541,46 @@ class ConsDec(decorators):
     head : expr
     tail : decorators
 
-    def _match(self, handlers : DecoratorsHandlers[T]) -> T:
+    def match(self, handlers : DecoratorsHandlers[T]) -> T:
         return handlers.case_ConsDec(self)
 
-def make_ConsDec(head : expr, tail : decorators) -> decorators:
-    return ConsDec(head, tail)
+def make_ConsDec(
+    head : expr, 
+    tail : decorators
+) -> decorators:
+    return ConsDec(
+        head,
+        tail
+    )
+
+def update_ConsDec(source_ConsDec : ConsDec,
+    head : Union[expr, SourceFlag] = SourceFlag(),
+    tail : Union[decorators, SourceFlag] = SourceFlag()
+) -> ConsDec:
+    return ConsDec(
+        source_ConsDec.head if isinstance(head, SourceFlag) else head,
+        source_ConsDec.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoDec(decorators):
 
 
-    def _match(self, handlers : DecoratorsHandlers[T]) -> T:
+    def match(self, handlers : DecoratorsHandlers[T]) -> T:
         return handlers.case_NoDec(self)
 
-def make_NoDec() -> decorators:
-    return NoDec()
+def make_NoDec(
+) -> decorators:
+    return NoDec(
+    )
+
+def update_NoDec(source_NoDec : NoDec
+) -> NoDec:
+    return NoDec(
+    )
+
         
 
 # case handlers for type decorators
@@ -970,14 +1592,15 @@ class DecoratorsHandlers(Generic[T]):
 
 # matching for type decorators
 def match_decorators(o : decorators, handlers : DecoratorsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type constraint_filters
 @dataclass(frozen=True, eq=True)
 class constraint_filters(ABC):
-    @abstractmethod
-    def _match(self, handlers : ConstraintFiltersHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type constraint_filters
@@ -987,33 +1610,69 @@ class ConsFilter(constraint_filters):
     head : expr
     tail : constraint_filters
 
-    def _match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
+    def match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
         return handlers.case_ConsFilter(self)
 
-def make_ConsFilter(head : expr, tail : constraint_filters) -> constraint_filters:
-    return ConsFilter(head, tail)
+def make_ConsFilter(
+    head : expr, 
+    tail : constraint_filters
+) -> constraint_filters:
+    return ConsFilter(
+        head,
+        tail
+    )
+
+def update_ConsFilter(source_ConsFilter : ConsFilter,
+    head : Union[expr, SourceFlag] = SourceFlag(),
+    tail : Union[constraint_filters, SourceFlag] = SourceFlag()
+) -> ConsFilter:
+    return ConsFilter(
+        source_ConsFilter.head if isinstance(head, SourceFlag) else head,
+        source_ConsFilter.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleFilter(constraint_filters):
     content : expr
 
-    def _match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
+    def match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
         return handlers.case_SingleFilter(self)
 
-def make_SingleFilter(content : expr) -> constraint_filters:
-    return SingleFilter(content)
+def make_SingleFilter(
+    content : expr
+) -> constraint_filters:
+    return SingleFilter(
+        content
+    )
+
+def update_SingleFilter(source_SingleFilter : SingleFilter,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SingleFilter:
+    return SingleFilter(
+        source_SingleFilter.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoFilter(constraint_filters):
 
 
-    def _match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
+    def match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
         return handlers.case_NoFilter(self)
 
-def make_NoFilter() -> constraint_filters:
-    return NoFilter()
+def make_NoFilter(
+) -> constraint_filters:
+    return NoFilter(
+    )
+
+def update_NoFilter(source_NoFilter : NoFilter
+) -> NoFilter:
+    return NoFilter(
+    )
+
         
 
 # case handlers for type constraint_filters
@@ -1026,14 +1685,15 @@ class ConstraintFiltersHandlers(Generic[T]):
 
 # matching for type constraint_filters
 def match_constraint_filters(o : constraint_filters, handlers : ConstraintFiltersHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type sequence_string
 @dataclass(frozen=True, eq=True)
 class sequence_string(ABC):
-    @abstractmethod
-    def _match(self, handlers : SequenceStringHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : SequenceStringHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type sequence_string
@@ -1043,22 +1703,50 @@ class ConsStr(sequence_string):
     head : str
     tail : sequence_string
 
-    def _match(self, handlers : SequenceStringHandlers[T]) -> T:
+    def match(self, handlers : SequenceStringHandlers[T]) -> T:
         return handlers.case_ConsStr(self)
 
-def make_ConsStr(head : str, tail : sequence_string) -> sequence_string:
-    return ConsStr(head, tail)
+def make_ConsStr(
+    head : str, 
+    tail : sequence_string
+) -> sequence_string:
+    return ConsStr(
+        head,
+        tail
+    )
+
+def update_ConsStr(source_ConsStr : ConsStr,
+    head : Union[str, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_string, SourceFlag] = SourceFlag()
+) -> ConsStr:
+    return ConsStr(
+        source_ConsStr.head if isinstance(head, SourceFlag) else head,
+        source_ConsStr.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleStr(sequence_string):
     content : str
 
-    def _match(self, handlers : SequenceStringHandlers[T]) -> T:
+    def match(self, handlers : SequenceStringHandlers[T]) -> T:
         return handlers.case_SingleStr(self)
 
-def make_SingleStr(content : str) -> sequence_string:
-    return SingleStr(content)
+def make_SingleStr(
+    content : str
+) -> sequence_string:
+    return SingleStr(
+        content
+    )
+
+def update_SingleStr(source_SingleStr : SingleStr,
+    content : Union[str, SourceFlag] = SourceFlag()
+) -> SingleStr:
+    return SingleStr(
+        source_SingleStr.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type sequence_string
@@ -1070,14 +1758,15 @@ class SequenceStringHandlers(Generic[T]):
 
 # matching for type sequence_string
 def match_sequence_string(o : sequence_string, handlers : SequenceStringHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type arguments
 @dataclass(frozen=True, eq=True)
 class arguments(ABC):
-    @abstractmethod
-    def _match(self, handlers : ArgumentsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ArgumentsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type arguments
@@ -1087,33 +1776,73 @@ class ConsArg(arguments):
     head : expr
     tail : arguments
 
-    def _match(self, handlers : ArgumentsHandlers[T]) -> T:
+    def match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_ConsArg(self)
 
-def make_ConsArg(head : expr, tail : arguments) -> arguments:
-    return ConsArg(head, tail)
+def make_ConsArg(
+    head : expr, 
+    tail : arguments
+) -> arguments:
+    return ConsArg(
+        head,
+        tail
+    )
+
+def update_ConsArg(source_ConsArg : ConsArg,
+    head : Union[expr, SourceFlag] = SourceFlag(),
+    tail : Union[arguments, SourceFlag] = SourceFlag()
+) -> ConsArg:
+    return ConsArg(
+        source_ConsArg.head if isinstance(head, SourceFlag) else head,
+        source_ConsArg.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleArg(arguments):
     content : expr
 
-    def _match(self, handlers : ArgumentsHandlers[T]) -> T:
+    def match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_SingleArg(self)
 
-def make_SingleArg(content : expr) -> arguments:
-    return SingleArg(content)
+def make_SingleArg(
+    content : expr
+) -> arguments:
+    return SingleArg(
+        content
+    )
+
+def update_SingleArg(source_SingleArg : SingleArg,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> SingleArg:
+    return SingleArg(
+        source_SingleArg.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class KeywordsArg(arguments):
     kws : keywords
 
-    def _match(self, handlers : ArgumentsHandlers[T]) -> T:
+    def match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_KeywordsArg(self)
 
-def make_KeywordsArg(kws : keywords) -> arguments:
-    return KeywordsArg(kws)
+def make_KeywordsArg(
+    kws : keywords
+) -> arguments:
+    return KeywordsArg(
+        kws
+    )
+
+def update_KeywordsArg(source_KeywordsArg : KeywordsArg,
+    kws : Union[keywords, SourceFlag] = SourceFlag()
+) -> KeywordsArg:
+    return KeywordsArg(
+        source_KeywordsArg.kws if isinstance(kws, SourceFlag) else kws
+    )
+
         
 
 # case handlers for type arguments
@@ -1126,14 +1855,15 @@ class ArgumentsHandlers(Generic[T]):
 
 # matching for type arguments
 def match_arguments(o : arguments, handlers : ArgumentsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type dictionary_item
 @dataclass(frozen=True, eq=True)
 class dictionary_item(ABC):
-    @abstractmethod
-    def _match(self, handlers : DictionaryItemHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : DictionaryItemHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type dictionary_item
@@ -1143,22 +1873,50 @@ class Field(dictionary_item):
     key : expr
     content : expr
 
-    def _match(self, handlers : DictionaryItemHandlers[T]) -> T:
+    def match(self, handlers : DictionaryItemHandlers[T]) -> T:
         return handlers.case_Field(self)
 
-def make_Field(key : expr, content : expr) -> dictionary_item:
-    return Field(key, content)
+def make_Field(
+    key : expr, 
+    content : expr
+) -> dictionary_item:
+    return Field(
+        key,
+        content
+    )
+
+def update_Field(source_Field : Field,
+    key : Union[expr, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> Field:
+    return Field(
+        source_Field.key if isinstance(key, SourceFlag) else key,
+        source_Field.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class DictionarySplatFields(dictionary_item):
     content : expr
 
-    def _match(self, handlers : DictionaryItemHandlers[T]) -> T:
+    def match(self, handlers : DictionaryItemHandlers[T]) -> T:
         return handlers.case_DictionarySplatFields(self)
 
-def make_DictionarySplatFields(content : expr) -> dictionary_item:
-    return DictionarySplatFields(content)
+def make_DictionarySplatFields(
+    content : expr
+) -> dictionary_item:
+    return DictionarySplatFields(
+        content
+    )
+
+def update_DictionarySplatFields(source_DictionarySplatFields : DictionarySplatFields,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> DictionarySplatFields:
+    return DictionarySplatFields(
+        source_DictionarySplatFields.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type dictionary_item
@@ -1170,14 +1928,15 @@ class DictionaryItemHandlers(Generic[T]):
 
 # matching for type dictionary_item
 def match_dictionary_item(o : dictionary_item, handlers : DictionaryItemHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type dictionary_content
 @dataclass(frozen=True, eq=True)
 class dictionary_content(ABC):
-    @abstractmethod
-    def _match(self, handlers : DictionaryContentHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : DictionaryContentHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type dictionary_content
@@ -1187,22 +1946,50 @@ class ConsDictionaryItem(dictionary_content):
     head : dictionary_item
     tail : dictionary_content
 
-    def _match(self, handlers : DictionaryContentHandlers[T]) -> T:
+    def match(self, handlers : DictionaryContentHandlers[T]) -> T:
         return handlers.case_ConsDictionaryItem(self)
 
-def make_ConsDictionaryItem(head : dictionary_item, tail : dictionary_content) -> dictionary_content:
-    return ConsDictionaryItem(head, tail)
+def make_ConsDictionaryItem(
+    head : dictionary_item, 
+    tail : dictionary_content
+) -> dictionary_content:
+    return ConsDictionaryItem(
+        head,
+        tail
+    )
+
+def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
+    head : Union[dictionary_item, SourceFlag] = SourceFlag(),
+    tail : Union[dictionary_content, SourceFlag] = SourceFlag()
+) -> ConsDictionaryItem:
+    return ConsDictionaryItem(
+        source_ConsDictionaryItem.head if isinstance(head, SourceFlag) else head,
+        source_ConsDictionaryItem.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleDictionaryItem(dictionary_content):
     content : dictionary_item
 
-    def _match(self, handlers : DictionaryContentHandlers[T]) -> T:
+    def match(self, handlers : DictionaryContentHandlers[T]) -> T:
         return handlers.case_SingleDictionaryItem(self)
 
-def make_SingleDictionaryItem(content : dictionary_item) -> dictionary_content:
-    return SingleDictionaryItem(content)
+def make_SingleDictionaryItem(
+    content : dictionary_item
+) -> dictionary_content:
+    return SingleDictionaryItem(
+        content
+    )
+
+def update_SingleDictionaryItem(source_SingleDictionaryItem : SingleDictionaryItem,
+    content : Union[dictionary_item, SourceFlag] = SourceFlag()
+) -> SingleDictionaryItem:
+    return SingleDictionaryItem(
+        source_SingleDictionaryItem.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type dictionary_content
@@ -1214,14 +2001,15 @@ class DictionaryContentHandlers(Generic[T]):
 
 # matching for type dictionary_content
 def match_dictionary_content(o : dictionary_content, handlers : DictionaryContentHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type sequence_name
 @dataclass(frozen=True, eq=True)
 class sequence_name(ABC):
-    @abstractmethod
-    def _match(self, handlers : SequenceNameHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : SequenceNameHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type sequence_name
@@ -1231,22 +2019,50 @@ class ConsId(sequence_name):
     head : str
     tail : sequence_name
 
-    def _match(self, handlers : SequenceNameHandlers[T]) -> T:
+    def match(self, handlers : SequenceNameHandlers[T]) -> T:
         return handlers.case_ConsId(self)
 
-def make_ConsId(head : str, tail : sequence_name) -> sequence_name:
-    return ConsId(head, tail)
+def make_ConsId(
+    head : str, 
+    tail : sequence_name
+) -> sequence_name:
+    return ConsId(
+        head,
+        tail
+    )
+
+def update_ConsId(source_ConsId : ConsId,
+    head : Union[str, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_name, SourceFlag] = SourceFlag()
+) -> ConsId:
+    return ConsId(
+        source_ConsId.head if isinstance(head, SourceFlag) else head,
+        source_ConsId.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleId(sequence_name):
     content : str
 
-    def _match(self, handlers : SequenceNameHandlers[T]) -> T:
+    def match(self, handlers : SequenceNameHandlers[T]) -> T:
         return handlers.case_SingleId(self)
 
-def make_SingleId(content : str) -> sequence_name:
-    return SingleId(content)
+def make_SingleId(
+    content : str
+) -> sequence_name:
+    return SingleId(
+        content
+    )
+
+def update_SingleId(source_SingleId : SingleId,
+    content : Union[str, SourceFlag] = SourceFlag()
+) -> SingleId:
+    return SingleId(
+        source_SingleId.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type sequence_name
@@ -1258,14 +2074,15 @@ class SequenceNameHandlers(Generic[T]):
 
 # matching for type sequence_name
 def match_sequence_name(o : sequence_name, handlers : SequenceNameHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type sequence_import_name
 @dataclass(frozen=True, eq=True)
 class sequence_import_name(ABC):
-    @abstractmethod
-    def _match(self, handlers : SequenceImportNameHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : SequenceImportNameHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type sequence_import_name
@@ -1275,22 +2092,50 @@ class ConsImportName(sequence_import_name):
     head : import_name
     tail : sequence_import_name
 
-    def _match(self, handlers : SequenceImportNameHandlers[T]) -> T:
+    def match(self, handlers : SequenceImportNameHandlers[T]) -> T:
         return handlers.case_ConsImportName(self)
 
-def make_ConsImportName(head : import_name, tail : sequence_import_name) -> sequence_import_name:
-    return ConsImportName(head, tail)
+def make_ConsImportName(
+    head : import_name, 
+    tail : sequence_import_name
+) -> sequence_import_name:
+    return ConsImportName(
+        head,
+        tail
+    )
+
+def update_ConsImportName(source_ConsImportName : ConsImportName,
+    head : Union[import_name, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_import_name, SourceFlag] = SourceFlag()
+) -> ConsImportName:
+    return ConsImportName(
+        source_ConsImportName.head if isinstance(head, SourceFlag) else head,
+        source_ConsImportName.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleImportName(sequence_import_name):
     content : import_name
 
-    def _match(self, handlers : SequenceImportNameHandlers[T]) -> T:
+    def match(self, handlers : SequenceImportNameHandlers[T]) -> T:
         return handlers.case_SingleImportName(self)
 
-def make_SingleImportName(content : import_name) -> sequence_import_name:
-    return SingleImportName(content)
+def make_SingleImportName(
+    content : import_name
+) -> sequence_import_name:
+    return SingleImportName(
+        content
+    )
+
+def update_SingleImportName(source_SingleImportName : SingleImportName,
+    content : Union[import_name, SourceFlag] = SourceFlag()
+) -> SingleImportName:
+    return SingleImportName(
+        source_SingleImportName.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type sequence_import_name
@@ -1302,14 +2147,15 @@ class SequenceImportNameHandlers(Generic[T]):
 
 # matching for type sequence_import_name
 def match_sequence_import_name(o : sequence_import_name, handlers : SequenceImportNameHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type sequence_with_item
 @dataclass(frozen=True, eq=True)
 class sequence_with_item(ABC):
-    @abstractmethod
-    def _match(self, handlers : SequenceWithItemHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : SequenceWithItemHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type sequence_with_item
@@ -1319,22 +2165,50 @@ class ConsWithItem(sequence_with_item):
     head : with_item
     tail : sequence_with_item
 
-    def _match(self, handlers : SequenceWithItemHandlers[T]) -> T:
+    def match(self, handlers : SequenceWithItemHandlers[T]) -> T:
         return handlers.case_ConsWithItem(self)
 
-def make_ConsWithItem(head : with_item, tail : sequence_with_item) -> sequence_with_item:
-    return ConsWithItem(head, tail)
+def make_ConsWithItem(
+    head : with_item, 
+    tail : sequence_with_item
+) -> sequence_with_item:
+    return ConsWithItem(
+        head,
+        tail
+    )
+
+def update_ConsWithItem(source_ConsWithItem : ConsWithItem,
+    head : Union[with_item, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_with_item, SourceFlag] = SourceFlag()
+) -> ConsWithItem:
+    return ConsWithItem(
+        source_ConsWithItem.head if isinstance(head, SourceFlag) else head,
+        source_ConsWithItem.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleWithItem(sequence_with_item):
     content : with_item
 
-    def _match(self, handlers : SequenceWithItemHandlers[T]) -> T:
+    def match(self, handlers : SequenceWithItemHandlers[T]) -> T:
         return handlers.case_SingleWithItem(self)
 
-def make_SingleWithItem(content : with_item) -> sequence_with_item:
-    return SingleWithItem(content)
+def make_SingleWithItem(
+    content : with_item
+) -> sequence_with_item:
+    return SingleWithItem(
+        content
+    )
+
+def update_SingleWithItem(source_SingleWithItem : SingleWithItem,
+    content : Union[with_item, SourceFlag] = SourceFlag()
+) -> SingleWithItem:
+    return SingleWithItem(
+        source_SingleWithItem.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type sequence_with_item
@@ -1346,14 +2220,15 @@ class SequenceWithItemHandlers(Generic[T]):
 
 # matching for type sequence_with_item
 def match_sequence_with_item(o : sequence_with_item, handlers : SequenceWithItemHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type module
 @dataclass(frozen=True, eq=True)
 class module(ABC):
-    @abstractmethod
-    def _match(self, handlers : ModuleHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ModuleHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type module
@@ -1363,22 +2238,50 @@ class FutureMod(module):
     names : sequence_import_name
     body : statements
 
-    def _match(self, handlers : ModuleHandlers[T]) -> T:
+    def match(self, handlers : ModuleHandlers[T]) -> T:
         return handlers.case_FutureMod(self)
 
-def make_FutureMod(names : sequence_import_name, body : statements) -> module:
-    return FutureMod(names, body)
+def make_FutureMod(
+    names : sequence_import_name, 
+    body : statements
+) -> module:
+    return FutureMod(
+        names,
+        body
+    )
+
+def update_FutureMod(source_FutureMod : FutureMod,
+    names : Union[sequence_import_name, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> FutureMod:
+    return FutureMod(
+        source_FutureMod.names if isinstance(names, SourceFlag) else names,
+        source_FutureMod.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SimpleMod(module):
     body : statements
 
-    def _match(self, handlers : ModuleHandlers[T]) -> T:
+    def match(self, handlers : ModuleHandlers[T]) -> T:
         return handlers.case_SimpleMod(self)
 
-def make_SimpleMod(body : statements) -> module:
-    return SimpleMod(body)
+def make_SimpleMod(
+    body : statements
+) -> module:
+    return SimpleMod(
+        body
+    )
+
+def update_SimpleMod(source_SimpleMod : SimpleMod,
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> SimpleMod:
+    return SimpleMod(
+        source_SimpleMod.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 # case handlers for type module
@@ -1390,14 +2293,15 @@ class ModuleHandlers(Generic[T]):
 
 # matching for type module
 def match_module(o : module, handlers : ModuleHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type statements
 @dataclass(frozen=True, eq=True)
 class statements(ABC):
-    @abstractmethod
-    def _match(self, handlers : StatementsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : StatementsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type statements
@@ -1407,22 +2311,50 @@ class ConsStmt(statements):
     head : stmt
     tail : statements
 
-    def _match(self, handlers : StatementsHandlers[T]) -> T:
+    def match(self, handlers : StatementsHandlers[T]) -> T:
         return handlers.case_ConsStmt(self)
 
-def make_ConsStmt(head : stmt, tail : statements) -> statements:
-    return ConsStmt(head, tail)
+def make_ConsStmt(
+    head : stmt, 
+    tail : statements
+) -> statements:
+    return ConsStmt(
+        head,
+        tail
+    )
+
+def update_ConsStmt(source_ConsStmt : ConsStmt,
+    head : Union[stmt, SourceFlag] = SourceFlag(),
+    tail : Union[statements, SourceFlag] = SourceFlag()
+) -> ConsStmt:
+    return ConsStmt(
+        source_ConsStmt.head if isinstance(head, SourceFlag) else head,
+        source_ConsStmt.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleStmt(statements):
     content : stmt
 
-    def _match(self, handlers : StatementsHandlers[T]) -> T:
+    def match(self, handlers : StatementsHandlers[T]) -> T:
         return handlers.case_SingleStmt(self)
 
-def make_SingleStmt(content : stmt) -> statements:
-    return SingleStmt(content)
+def make_SingleStmt(
+    content : stmt
+) -> statements:
+    return SingleStmt(
+        content
+    )
+
+def update_SingleStmt(source_SingleStmt : SingleStmt,
+    content : Union[stmt, SourceFlag] = SourceFlag()
+) -> SingleStmt:
+    return SingleStmt(
+        source_SingleStmt.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type statements
@@ -1434,14 +2366,15 @@ class StatementsHandlers(Generic[T]):
 
 # matching for type statements
 def match_statements(o : statements, handlers : StatementsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type comprehension_constraints
 @dataclass(frozen=True, eq=True)
 class comprehension_constraints(ABC):
-    @abstractmethod
-    def _match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type comprehension_constraints
@@ -1451,22 +2384,50 @@ class ConsConstraint(comprehension_constraints):
     head : constraint
     tail : comprehension_constraints
 
-    def _match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
+    def match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
         return handlers.case_ConsConstraint(self)
 
-def make_ConsConstraint(head : constraint, tail : comprehension_constraints) -> comprehension_constraints:
-    return ConsConstraint(head, tail)
+def make_ConsConstraint(
+    head : constraint, 
+    tail : comprehension_constraints
+) -> comprehension_constraints:
+    return ConsConstraint(
+        head,
+        tail
+    )
+
+def update_ConsConstraint(source_ConsConstraint : ConsConstraint,
+    head : Union[constraint, SourceFlag] = SourceFlag(),
+    tail : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+) -> ConsConstraint:
+    return ConsConstraint(
+        source_ConsConstraint.head if isinstance(head, SourceFlag) else head,
+        source_ConsConstraint.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleConstraint(comprehension_constraints):
     content : constraint
 
-    def _match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
+    def match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
         return handlers.case_SingleConstraint(self)
 
-def make_SingleConstraint(content : constraint) -> comprehension_constraints:
-    return SingleConstraint(content)
+def make_SingleConstraint(
+    content : constraint
+) -> comprehension_constraints:
+    return SingleConstraint(
+        content
+    )
+
+def update_SingleConstraint(source_SingleConstraint : SingleConstraint,
+    content : Union[constraint, SourceFlag] = SourceFlag()
+) -> SingleConstraint:
+    return SingleConstraint(
+        source_SingleConstraint.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type comprehension_constraints
@@ -1478,14 +2439,15 @@ class ComprehensionConstraintsHandlers(Generic[T]):
 
 # matching for type comprehension_constraints
 def match_comprehension_constraints(o : comprehension_constraints, handlers : ComprehensionConstraintsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type sequence_ExceptHandler
 @dataclass(frozen=True, eq=True)
 class sequence_ExceptHandler(ABC):
-    @abstractmethod
-    def _match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type sequence_ExceptHandler
@@ -1495,22 +2457,50 @@ class ConsExceptHandler(sequence_ExceptHandler):
     head : ExceptHandler
     tail : sequence_ExceptHandler
 
-    def _match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
+    def match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
         return handlers.case_ConsExceptHandler(self)
 
-def make_ConsExceptHandler(head : ExceptHandler, tail : sequence_ExceptHandler) -> sequence_ExceptHandler:
-    return ConsExceptHandler(head, tail)
+def make_ConsExceptHandler(
+    head : ExceptHandler, 
+    tail : sequence_ExceptHandler
+) -> sequence_ExceptHandler:
+    return ConsExceptHandler(
+        head,
+        tail
+    )
+
+def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
+    head : Union[ExceptHandler, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag()
+) -> ConsExceptHandler:
+    return ConsExceptHandler(
+        source_ConsExceptHandler.head if isinstance(head, SourceFlag) else head,
+        source_ConsExceptHandler.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class SingleExceptHandler(sequence_ExceptHandler):
     content : ExceptHandler
 
-    def _match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
+    def match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
         return handlers.case_SingleExceptHandler(self)
 
-def make_SingleExceptHandler(content : ExceptHandler) -> sequence_ExceptHandler:
-    return SingleExceptHandler(content)
+def make_SingleExceptHandler(
+    content : ExceptHandler
+) -> sequence_ExceptHandler:
+    return SingleExceptHandler(
+        content
+    )
+
+def update_SingleExceptHandler(source_SingleExceptHandler : SingleExceptHandler,
+    content : Union[ExceptHandler, SourceFlag] = SourceFlag()
+) -> SingleExceptHandler:
+    return SingleExceptHandler(
+        source_SingleExceptHandler.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 # case handlers for type sequence_ExceptHandler
@@ -1522,14 +2512,15 @@ class SequenceExceptHandlerHandlers(Generic[T]):
 
 # matching for type sequence_ExceptHandler
 def match_sequence_ExceptHandler(o : sequence_ExceptHandler, handlers : SequenceExceptHandlerHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type conditions
 @dataclass(frozen=True, eq=True)
 class conditions(ABC):
-    @abstractmethod
-    def _match(self, handlers : ConditionsHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ConditionsHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type conditions
@@ -1539,33 +2530,69 @@ class ElifCond(conditions):
     content : ElifBlock
     tail : conditions
 
-    def _match(self, handlers : ConditionsHandlers[T]) -> T:
+    def match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElifCond(self)
 
-def make_ElifCond(content : ElifBlock, tail : conditions) -> conditions:
-    return ElifCond(content, tail)
+def make_ElifCond(
+    content : ElifBlock, 
+    tail : conditions
+) -> conditions:
+    return ElifCond(
+        content,
+        tail
+    )
+
+def update_ElifCond(source_ElifCond : ElifCond,
+    content : Union[ElifBlock, SourceFlag] = SourceFlag(),
+    tail : Union[conditions, SourceFlag] = SourceFlag()
+) -> ElifCond:
+    return ElifCond(
+        source_ElifCond.content if isinstance(content, SourceFlag) else content,
+        source_ElifCond.tail if isinstance(tail, SourceFlag) else tail
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ElseCond(conditions):
     content : ElseBlock
 
-    def _match(self, handlers : ConditionsHandlers[T]) -> T:
+    def match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElseCond(self)
 
-def make_ElseCond(content : ElseBlock) -> conditions:
-    return ElseCond(content)
+def make_ElseCond(
+    content : ElseBlock
+) -> conditions:
+    return ElseCond(
+        content
+    )
+
+def update_ElseCond(source_ElseCond : ElseCond,
+    content : Union[ElseBlock, SourceFlag] = SourceFlag()
+) -> ElseCond:
+    return ElseCond(
+        source_ElseCond.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class NoCond(conditions):
 
 
-    def _match(self, handlers : ConditionsHandlers[T]) -> T:
+    def match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_NoCond(self)
 
-def make_NoCond() -> conditions:
-    return NoCond()
+def make_NoCond(
+) -> conditions:
+    return NoCond(
+    )
+
+def update_NoCond(source_NoCond : NoCond
+) -> NoCond:
+    return NoCond(
+    )
+
         
 
 # case handlers for type conditions
@@ -1578,14 +2605,15 @@ class ConditionsHandlers(Generic[T]):
 
 # matching for type conditions
 def match_conditions(o : conditions, handlers : ConditionsHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type function_def
 @dataclass(frozen=True, eq=True)
 class function_def(ABC):
-    @abstractmethod
-    def _match(self, handlers : FunctionDefHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : FunctionDefHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type function_def
@@ -1597,11 +2625,35 @@ class FunctionDef(function_def):
     ret_anno : return_annotation
     body : statements
 
-    def _match(self, handlers : FunctionDefHandlers[T]) -> T:
+    def match(self, handlers : FunctionDefHandlers[T]) -> T:
         return handlers.case_FunctionDef(self)
 
-def make_FunctionDef(name : str, params : parameters, ret_anno : return_annotation, body : statements) -> function_def:
-    return FunctionDef(name, params, ret_anno, body)
+def make_FunctionDef(
+    name : str, 
+    params : parameters, 
+    ret_anno : return_annotation, 
+    body : statements
+) -> function_def:
+    return FunctionDef(
+        name,
+        params,
+        ret_anno,
+        body
+    )
+
+def update_FunctionDef(source_FunctionDef : FunctionDef,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    params : Union[parameters, SourceFlag] = SourceFlag(),
+    ret_anno : Union[return_annotation, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> FunctionDef:
+    return FunctionDef(
+        source_FunctionDef.name if isinstance(name, SourceFlag) else name,
+        source_FunctionDef.params if isinstance(params, SourceFlag) else params,
+        source_FunctionDef.ret_anno if isinstance(ret_anno, SourceFlag) else ret_anno,
+        source_FunctionDef.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1611,11 +2663,35 @@ class AsyncFunctionDef(function_def):
     ret_anno : return_annotation
     body : statements
 
-    def _match(self, handlers : FunctionDefHandlers[T]) -> T:
+    def match(self, handlers : FunctionDefHandlers[T]) -> T:
         return handlers.case_AsyncFunctionDef(self)
 
-def make_AsyncFunctionDef(name : str, params : parameters, ret_anno : return_annotation, body : statements) -> function_def:
-    return AsyncFunctionDef(name, params, ret_anno, body)
+def make_AsyncFunctionDef(
+    name : str, 
+    params : parameters, 
+    ret_anno : return_annotation, 
+    body : statements
+) -> function_def:
+    return AsyncFunctionDef(
+        name,
+        params,
+        ret_anno,
+        body
+    )
+
+def update_AsyncFunctionDef(source_AsyncFunctionDef : AsyncFunctionDef,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    params : Union[parameters, SourceFlag] = SourceFlag(),
+    ret_anno : Union[return_annotation, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> AsyncFunctionDef:
+    return AsyncFunctionDef(
+        source_AsyncFunctionDef.name if isinstance(name, SourceFlag) else name,
+        source_AsyncFunctionDef.params if isinstance(params, SourceFlag) else params,
+        source_AsyncFunctionDef.ret_anno if isinstance(ret_anno, SourceFlag) else ret_anno,
+        source_AsyncFunctionDef.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 # case handlers for type function_def
@@ -1627,14 +2703,15 @@ class FunctionDefHandlers(Generic[T]):
 
 # matching for type function_def
 def match_function_def(o : function_def, handlers : FunctionDefHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type stmt
 @dataclass(frozen=True, eq=True)
 class stmt(ABC):
-    @abstractmethod
-    def _match(self, handlers : StmtHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : StmtHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type stmt
@@ -1644,11 +2721,27 @@ class DecFunctionDef(stmt):
     decs : decorators
     fun_def : function_def
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_DecFunctionDef(self)
 
-def make_DecFunctionDef(decs : decorators, fun_def : function_def) -> stmt:
-    return DecFunctionDef(decs, fun_def)
+def make_DecFunctionDef(
+    decs : decorators, 
+    fun_def : function_def
+) -> stmt:
+    return DecFunctionDef(
+        decs,
+        fun_def
+    )
+
+def update_DecFunctionDef(source_DecFunctionDef : DecFunctionDef,
+    decs : Union[decorators, SourceFlag] = SourceFlag(),
+    fun_def : Union[function_def, SourceFlag] = SourceFlag()
+) -> DecFunctionDef:
+    return DecFunctionDef(
+        source_DecFunctionDef.decs if isinstance(decs, SourceFlag) else decs,
+        source_DecFunctionDef.fun_def if isinstance(fun_def, SourceFlag) else fun_def
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1656,44 +2749,92 @@ class DecClassDef(stmt):
     decs : decorators
     class_def : ClassDef
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_DecClassDef(self)
 
-def make_DecClassDef(decs : decorators, class_def : ClassDef) -> stmt:
-    return DecClassDef(decs, class_def)
+def make_DecClassDef(
+    decs : decorators, 
+    class_def : ClassDef
+) -> stmt:
+    return DecClassDef(
+        decs,
+        class_def
+    )
+
+def update_DecClassDef(source_DecClassDef : DecClassDef,
+    decs : Union[decorators, SourceFlag] = SourceFlag(),
+    class_def : Union[ClassDef, SourceFlag] = SourceFlag()
+) -> DecClassDef:
+    return DecClassDef(
+        source_DecClassDef.decs if isinstance(decs, SourceFlag) else decs,
+        source_DecClassDef.class_def if isinstance(class_def, SourceFlag) else class_def
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ReturnSomething(stmt):
     content : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ReturnSomething(self)
 
-def make_ReturnSomething(content : expr) -> stmt:
-    return ReturnSomething(content)
+def make_ReturnSomething(
+    content : expr
+) -> stmt:
+    return ReturnSomething(
+        content
+    )
+
+def update_ReturnSomething(source_ReturnSomething : ReturnSomething,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> ReturnSomething:
+    return ReturnSomething(
+        source_ReturnSomething.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Return(stmt):
 
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Return(self)
 
-def make_Return() -> stmt:
-    return Return()
+def make_Return(
+) -> stmt:
+    return Return(
+    )
+
+def update_Return(source_Return : Return
+) -> Return:
+    return Return(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Delete(stmt):
     targets : comma_exprs
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Delete(self)
 
-def make_Delete(targets : comma_exprs) -> stmt:
-    return Delete(targets)
+def make_Delete(
+    targets : comma_exprs
+) -> stmt:
+    return Delete(
+        targets
+    )
+
+def update_Delete(source_Delete : Delete,
+    targets : Union[comma_exprs, SourceFlag] = SourceFlag()
+) -> Delete:
+    return Delete(
+        source_Delete.targets if isinstance(targets, SourceFlag) else targets
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1701,24 +2842,60 @@ class Assign(stmt):
     targets : target_exprs
     content : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Assign(self)
 
-def make_Assign(targets : target_exprs, content : expr) -> stmt:
-    return Assign(targets, content)
+def make_Assign(
+    targets : target_exprs, 
+    content : expr
+) -> stmt:
+    return Assign(
+        targets,
+        content
+    )
+
+def update_Assign(source_Assign : Assign,
+    targets : Union[target_exprs, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> Assign:
+    return Assign(
+        source_Assign.targets if isinstance(targets, SourceFlag) else targets,
+        source_Assign.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class AugAssign(stmt):
     target : expr
-    op : operator
+    op : bin_rator
     content : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AugAssign(self)
 
-def make_AugAssign(target : expr, op : operator, content : expr) -> stmt:
-    return AugAssign(target, op, content)
+def make_AugAssign(
+    target : expr, 
+    op : bin_rator, 
+    content : expr
+) -> stmt:
+    return AugAssign(
+        target,
+        op,
+        content
+    )
+
+def update_AugAssign(source_AugAssign : AugAssign,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    op : Union[bin_rator, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> AugAssign:
+    return AugAssign(
+        source_AugAssign.target if isinstance(target, SourceFlag) else target,
+        source_AugAssign.op if isinstance(op, SourceFlag) else op,
+        source_AugAssign.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1727,11 +2904,31 @@ class AnnoAssign(stmt):
     anno : expr
     content : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AnnoAssign(self)
 
-def make_AnnoAssign(target : expr, anno : expr, content : expr) -> stmt:
-    return AnnoAssign(target, anno, content)
+def make_AnnoAssign(
+    target : expr, 
+    anno : expr, 
+    content : expr
+) -> stmt:
+    return AnnoAssign(
+        target,
+        anno,
+        content
+    )
+
+def update_AnnoAssign(source_AnnoAssign : AnnoAssign,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    anno : Union[expr, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> AnnoAssign:
+    return AnnoAssign(
+        source_AnnoAssign.target if isinstance(target, SourceFlag) else target,
+        source_AnnoAssign.anno if isinstance(anno, SourceFlag) else anno,
+        source_AnnoAssign.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1739,11 +2936,27 @@ class AnnoDeclar(stmt):
     target : expr
     anno : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AnnoDeclar(self)
 
-def make_AnnoDeclar(target : expr, anno : expr) -> stmt:
-    return AnnoDeclar(target, anno)
+def make_AnnoDeclar(
+    target : expr, 
+    anno : expr
+) -> stmt:
+    return AnnoDeclar(
+        target,
+        anno
+    )
+
+def update_AnnoDeclar(source_AnnoDeclar : AnnoDeclar,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    anno : Union[expr, SourceFlag] = SourceFlag()
+) -> AnnoDeclar:
+    return AnnoDeclar(
+        source_AnnoDeclar.target if isinstance(target, SourceFlag) else target,
+        source_AnnoDeclar.anno if isinstance(anno, SourceFlag) else anno
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1752,11 +2965,31 @@ class For(stmt):
     iter : expr
     body : statements
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_For(self)
 
-def make_For(target : expr, iter : expr, body : statements) -> stmt:
-    return For(target, iter, body)
+def make_For(
+    target : expr, 
+    iter : expr, 
+    body : statements
+) -> stmt:
+    return For(
+        target,
+        iter,
+        body
+    )
+
+def update_For(source_For : For,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    iter : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> For:
+    return For(
+        source_For.target if isinstance(target, SourceFlag) else target,
+        source_For.iter if isinstance(iter, SourceFlag) else iter,
+        source_For.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1766,11 +2999,35 @@ class ForElse(stmt):
     body : statements
     orelse : ElseBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ForElse(self)
 
-def make_ForElse(target : expr, iter : expr, body : statements, orelse : ElseBlock) -> stmt:
-    return ForElse(target, iter, body, orelse)
+def make_ForElse(
+    target : expr, 
+    iter : expr, 
+    body : statements, 
+    orelse : ElseBlock
+) -> stmt:
+    return ForElse(
+        target,
+        iter,
+        body,
+        orelse
+    )
+
+def update_ForElse(source_ForElse : ForElse,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    iter : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+) -> ForElse:
+    return ForElse(
+        source_ForElse.target if isinstance(target, SourceFlag) else target,
+        source_ForElse.iter if isinstance(iter, SourceFlag) else iter,
+        source_ForElse.body if isinstance(body, SourceFlag) else body,
+        source_ForElse.orelse if isinstance(orelse, SourceFlag) else orelse
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1779,11 +3036,31 @@ class AsyncFor(stmt):
     iter : expr
     body : statements
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncFor(self)
 
-def make_AsyncFor(target : expr, iter : expr, body : statements) -> stmt:
-    return AsyncFor(target, iter, body)
+def make_AsyncFor(
+    target : expr, 
+    iter : expr, 
+    body : statements
+) -> stmt:
+    return AsyncFor(
+        target,
+        iter,
+        body
+    )
+
+def update_AsyncFor(source_AsyncFor : AsyncFor,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    iter : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> AsyncFor:
+    return AsyncFor(
+        source_AsyncFor.target if isinstance(target, SourceFlag) else target,
+        source_AsyncFor.iter if isinstance(iter, SourceFlag) else iter,
+        source_AsyncFor.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1793,11 +3070,35 @@ class AsyncForElse(stmt):
     body : statements
     orelse : ElseBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncForElse(self)
 
-def make_AsyncForElse(target : expr, iter : expr, body : statements, orelse : ElseBlock) -> stmt:
-    return AsyncForElse(target, iter, body, orelse)
+def make_AsyncForElse(
+    target : expr, 
+    iter : expr, 
+    body : statements, 
+    orelse : ElseBlock
+) -> stmt:
+    return AsyncForElse(
+        target,
+        iter,
+        body,
+        orelse
+    )
+
+def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    iter : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+) -> AsyncForElse:
+    return AsyncForElse(
+        source_AsyncForElse.target if isinstance(target, SourceFlag) else target,
+        source_AsyncForElse.iter if isinstance(iter, SourceFlag) else iter,
+        source_AsyncForElse.body if isinstance(body, SourceFlag) else body,
+        source_AsyncForElse.orelse if isinstance(orelse, SourceFlag) else orelse
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1805,11 +3106,27 @@ class While(stmt):
     test : expr
     body : statements
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_While(self)
 
-def make_While(test : expr, body : statements) -> stmt:
-    return While(test, body)
+def make_While(
+    test : expr, 
+    body : statements
+) -> stmt:
+    return While(
+        test,
+        body
+    )
+
+def update_While(source_While : While,
+    test : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> While:
+    return While(
+        source_While.test if isinstance(test, SourceFlag) else test,
+        source_While.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1818,11 +3135,31 @@ class WhileElse(stmt):
     body : statements
     orelse : ElseBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_WhileElse(self)
 
-def make_WhileElse(test : expr, body : statements, orelse : ElseBlock) -> stmt:
-    return WhileElse(test, body, orelse)
+def make_WhileElse(
+    test : expr, 
+    body : statements, 
+    orelse : ElseBlock
+) -> stmt:
+    return WhileElse(
+        test,
+        body,
+        orelse
+    )
+
+def update_WhileElse(source_WhileElse : WhileElse,
+    test : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+) -> WhileElse:
+    return WhileElse(
+        source_WhileElse.test if isinstance(test, SourceFlag) else test,
+        source_WhileElse.body if isinstance(body, SourceFlag) else body,
+        source_WhileElse.orelse if isinstance(orelse, SourceFlag) else orelse
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1831,11 +3168,31 @@ class If(stmt):
     body : statements
     orelse : conditions
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_If(self)
 
-def make_If(test : expr, body : statements, orelse : conditions) -> stmt:
-    return If(test, body, orelse)
+def make_If(
+    test : expr, 
+    body : statements, 
+    orelse : conditions
+) -> stmt:
+    return If(
+        test,
+        body,
+        orelse
+    )
+
+def update_If(source_If : If,
+    test : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    orelse : Union[conditions, SourceFlag] = SourceFlag()
+) -> If:
+    return If(
+        source_If.test if isinstance(test, SourceFlag) else test,
+        source_If.body if isinstance(body, SourceFlag) else body,
+        source_If.orelse if isinstance(orelse, SourceFlag) else orelse
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1843,11 +3200,27 @@ class With(stmt):
     items : sequence_with_item
     body : statements
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_With(self)
 
-def make_With(items : sequence_with_item, body : statements) -> stmt:
-    return With(items, body)
+def make_With(
+    items : sequence_with_item, 
+    body : statements
+) -> stmt:
+    return With(
+        items,
+        body
+    )
+
+def update_With(source_With : With,
+    items : Union[sequence_with_item, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> With:
+    return With(
+        source_With.items if isinstance(items, SourceFlag) else items,
+        source_With.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1855,33 +3228,69 @@ class AsyncWith(stmt):
     items : sequence_with_item
     body : statements
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncWith(self)
 
-def make_AsyncWith(items : sequence_with_item, body : statements) -> stmt:
-    return AsyncWith(items, body)
+def make_AsyncWith(
+    items : sequence_with_item, 
+    body : statements
+) -> stmt:
+    return AsyncWith(
+        items,
+        body
+    )
+
+def update_AsyncWith(source_AsyncWith : AsyncWith,
+    items : Union[sequence_with_item, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> AsyncWith:
+    return AsyncWith(
+        source_AsyncWith.items if isinstance(items, SourceFlag) else items,
+        source_AsyncWith.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Raise(stmt):
 
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Raise(self)
 
-def make_Raise() -> stmt:
-    return Raise()
+def make_Raise(
+) -> stmt:
+    return Raise(
+    )
+
+def update_Raise(source_Raise : Raise
+) -> Raise:
+    return Raise(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class RaiseExc(stmt):
     exc : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_RaiseExc(self)
 
-def make_RaiseExc(exc : expr) -> stmt:
-    return RaiseExc(exc)
+def make_RaiseExc(
+    exc : expr
+) -> stmt:
+    return RaiseExc(
+        exc
+    )
+
+def update_RaiseExc(source_RaiseExc : RaiseExc,
+    exc : Union[expr, SourceFlag] = SourceFlag()
+) -> RaiseExc:
+    return RaiseExc(
+        source_RaiseExc.exc if isinstance(exc, SourceFlag) else exc
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1889,11 +3298,27 @@ class RaiseFrom(stmt):
     exc : expr
     caus : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_RaiseFrom(self)
 
-def make_RaiseFrom(exc : expr, caus : expr) -> stmt:
-    return RaiseFrom(exc, caus)
+def make_RaiseFrom(
+    exc : expr, 
+    caus : expr
+) -> stmt:
+    return RaiseFrom(
+        exc,
+        caus
+    )
+
+def update_RaiseFrom(source_RaiseFrom : RaiseFrom,
+    exc : Union[expr, SourceFlag] = SourceFlag(),
+    caus : Union[expr, SourceFlag] = SourceFlag()
+) -> RaiseFrom:
+    return RaiseFrom(
+        source_RaiseFrom.exc if isinstance(exc, SourceFlag) else exc,
+        source_RaiseFrom.caus if isinstance(caus, SourceFlag) else caus
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1901,11 +3326,27 @@ class Try(stmt):
     body : statements
     handlers : sequence_ExceptHandler
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Try(self)
 
-def make_Try(body : statements, handlers : sequence_ExceptHandler) -> stmt:
-    return Try(body, handlers)
+def make_Try(
+    body : statements, 
+    handlers : sequence_ExceptHandler
+) -> stmt:
+    return Try(
+        body,
+        handlers
+    )
+
+def update_Try(source_Try : Try,
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag()
+) -> Try:
+    return Try(
+        source_Try.body if isinstance(body, SourceFlag) else body,
+        source_Try.handlers if isinstance(handlers, SourceFlag) else handlers
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1914,11 +3355,31 @@ class TryElse(stmt):
     handlers : sequence_ExceptHandler
     orelse : ElseBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryElse(self)
 
-def make_TryElse(body : statements, handlers : sequence_ExceptHandler, orelse : ElseBlock) -> stmt:
-    return TryElse(body, handlers, orelse)
+def make_TryElse(
+    body : statements, 
+    handlers : sequence_ExceptHandler, 
+    orelse : ElseBlock
+) -> stmt:
+    return TryElse(
+        body,
+        handlers,
+        orelse
+    )
+
+def update_TryElse(source_TryElse : TryElse,
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+) -> TryElse:
+    return TryElse(
+        source_TryElse.body if isinstance(body, SourceFlag) else body,
+        source_TryElse.handlers if isinstance(handlers, SourceFlag) else handlers,
+        source_TryElse.orelse if isinstance(orelse, SourceFlag) else orelse
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1927,11 +3388,31 @@ class TryExceptFin(stmt):
     handlers : sequence_ExceptHandler
     fin : FinallyBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryExceptFin(self)
 
-def make_TryExceptFin(body : statements, handlers : sequence_ExceptHandler, fin : FinallyBlock) -> stmt:
-    return TryExceptFin(body, handlers, fin)
+def make_TryExceptFin(
+    body : statements, 
+    handlers : sequence_ExceptHandler, 
+    fin : FinallyBlock
+) -> stmt:
+    return TryExceptFin(
+        body,
+        handlers,
+        fin
+    )
+
+def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag(),
+    fin : Union[FinallyBlock, SourceFlag] = SourceFlag()
+) -> TryExceptFin:
+    return TryExceptFin(
+        source_TryExceptFin.body if isinstance(body, SourceFlag) else body,
+        source_TryExceptFin.handlers if isinstance(handlers, SourceFlag) else handlers,
+        source_TryExceptFin.fin if isinstance(fin, SourceFlag) else fin
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1939,11 +3420,27 @@ class TryFin(stmt):
     body : statements
     fin : FinallyBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryFin(self)
 
-def make_TryFin(body : statements, fin : FinallyBlock) -> stmt:
-    return TryFin(body, fin)
+def make_TryFin(
+    body : statements, 
+    fin : FinallyBlock
+) -> stmt:
+    return TryFin(
+        body,
+        fin
+    )
+
+def update_TryFin(source_TryFin : TryFin,
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    fin : Union[FinallyBlock, SourceFlag] = SourceFlag()
+) -> TryFin:
+    return TryFin(
+        source_TryFin.body if isinstance(body, SourceFlag) else body,
+        source_TryFin.fin if isinstance(fin, SourceFlag) else fin
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1953,22 +3450,58 @@ class TryElseFin(stmt):
     orelse : ElseBlock
     fin : FinallyBlock
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryElseFin(self)
 
-def make_TryElseFin(body : statements, handlers : sequence_ExceptHandler, orelse : ElseBlock, fin : FinallyBlock) -> stmt:
-    return TryElseFin(body, handlers, orelse, fin)
+def make_TryElseFin(
+    body : statements, 
+    handlers : sequence_ExceptHandler, 
+    orelse : ElseBlock, 
+    fin : FinallyBlock
+) -> stmt:
+    return TryElseFin(
+        body,
+        handlers,
+        orelse,
+        fin
+    )
+
+def update_TryElseFin(source_TryElseFin : TryElseFin,
+    body : Union[statements, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock, SourceFlag] = SourceFlag(),
+    fin : Union[FinallyBlock, SourceFlag] = SourceFlag()
+) -> TryElseFin:
+    return TryElseFin(
+        source_TryElseFin.body if isinstance(body, SourceFlag) else body,
+        source_TryElseFin.handlers if isinstance(handlers, SourceFlag) else handlers,
+        source_TryElseFin.orelse if isinstance(orelse, SourceFlag) else orelse,
+        source_TryElseFin.fin if isinstance(fin, SourceFlag) else fin
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Assert(stmt):
     test : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Assert(self)
 
-def make_Assert(test : expr) -> stmt:
-    return Assert(test)
+def make_Assert(
+    test : expr
+) -> stmt:
+    return Assert(
+        test
+    )
+
+def update_Assert(source_Assert : Assert,
+    test : Union[expr, SourceFlag] = SourceFlag()
+) -> Assert:
+    return Assert(
+        source_Assert.test if isinstance(test, SourceFlag) else test
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1976,22 +3509,50 @@ class AssertMsg(stmt):
     test : expr
     msg : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AssertMsg(self)
 
-def make_AssertMsg(test : expr, msg : expr) -> stmt:
-    return AssertMsg(test, msg)
+def make_AssertMsg(
+    test : expr, 
+    msg : expr
+) -> stmt:
+    return AssertMsg(
+        test,
+        msg
+    )
+
+def update_AssertMsg(source_AssertMsg : AssertMsg,
+    test : Union[expr, SourceFlag] = SourceFlag(),
+    msg : Union[expr, SourceFlag] = SourceFlag()
+) -> AssertMsg:
+    return AssertMsg(
+        source_AssertMsg.test if isinstance(test, SourceFlag) else test,
+        source_AssertMsg.msg if isinstance(msg, SourceFlag) else msg
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Import(stmt):
     names : sequence_import_name
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Import(self)
 
-def make_Import(names : sequence_import_name) -> stmt:
-    return Import(names)
+def make_Import(
+    names : sequence_import_name
+) -> stmt:
+    return Import(
+        names
+    )
+
+def update_Import(source_Import : Import,
+    names : Union[sequence_import_name, SourceFlag] = SourceFlag()
+) -> Import:
+    return Import(
+        source_Import.names if isinstance(names, SourceFlag) else names
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -1999,88 +3560,176 @@ class ImportFrom(stmt):
     module : str
     names : sequence_import_name
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ImportFrom(self)
 
-def make_ImportFrom(module : str, names : sequence_import_name) -> stmt:
-    return ImportFrom(module, names)
+def make_ImportFrom(
+    module : str, 
+    names : sequence_import_name
+) -> stmt:
+    return ImportFrom(
+        module,
+        names
+    )
+
+def update_ImportFrom(source_ImportFrom : ImportFrom,
+    module : Union[str, SourceFlag] = SourceFlag(),
+    names : Union[sequence_import_name, SourceFlag] = SourceFlag()
+) -> ImportFrom:
+    return ImportFrom(
+        source_ImportFrom.module if isinstance(module, SourceFlag) else module,
+        source_ImportFrom.names if isinstance(names, SourceFlag) else names
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ImportWildCard(stmt):
     module : str
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ImportWildCard(self)
 
-def make_ImportWildCard(module : str) -> stmt:
-    return ImportWildCard(module)
+def make_ImportWildCard(
+    module : str
+) -> stmt:
+    return ImportWildCard(
+        module
+    )
+
+def update_ImportWildCard(source_ImportWildCard : ImportWildCard,
+    module : Union[str, SourceFlag] = SourceFlag()
+) -> ImportWildCard:
+    return ImportWildCard(
+        source_ImportWildCard.module if isinstance(module, SourceFlag) else module
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Global(stmt):
     names : sequence_name
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Global(self)
 
-def make_Global(names : sequence_name) -> stmt:
-    return Global(names)
+def make_Global(
+    names : sequence_name
+) -> stmt:
+    return Global(
+        names
+    )
+
+def update_Global(source_Global : Global,
+    names : Union[sequence_name, SourceFlag] = SourceFlag()
+) -> Global:
+    return Global(
+        source_Global.names if isinstance(names, SourceFlag) else names
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Nonlocal(stmt):
     names : sequence_name
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Nonlocal(self)
 
-def make_Nonlocal(names : sequence_name) -> stmt:
-    return Nonlocal(names)
+def make_Nonlocal(
+    names : sequence_name
+) -> stmt:
+    return Nonlocal(
+        names
+    )
+
+def update_Nonlocal(source_Nonlocal : Nonlocal,
+    names : Union[sequence_name, SourceFlag] = SourceFlag()
+) -> Nonlocal:
+    return Nonlocal(
+        source_Nonlocal.names if isinstance(names, SourceFlag) else names
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Expr(stmt):
     content : expr
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Expr(self)
 
-def make_Expr(content : expr) -> stmt:
-    return Expr(content)
+def make_Expr(
+    content : expr
+) -> stmt:
+    return Expr(
+        content
+    )
+
+def update_Expr(source_Expr : Expr,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> Expr:
+    return Expr(
+        source_Expr.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Pass(stmt):
 
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Pass(self)
 
-def make_Pass() -> stmt:
-    return Pass()
+def make_Pass(
+) -> stmt:
+    return Pass(
+    )
+
+def update_Pass(source_Pass : Pass
+) -> Pass:
+    return Pass(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Break(stmt):
 
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Break(self)
 
-def make_Break() -> stmt:
-    return Break()
+def make_Break(
+) -> stmt:
+    return Break(
+    )
+
+def update_Break(source_Break : Break
+) -> Break:
+    return Break(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Continue(stmt):
 
 
-    def _match(self, handlers : StmtHandlers[T]) -> T:
+    def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Continue(self)
 
-def make_Continue() -> stmt:
-    return Continue()
+def make_Continue(
+) -> stmt:
+    return Continue(
+    )
+
+def update_Continue(source_Continue : Continue
+) -> Continue:
+    return Continue(
+    )
+
         
 
 # case handlers for type stmt
@@ -2127,14 +3776,15 @@ class StmtHandlers(Generic[T]):
 
 # matching for type stmt
 def match_stmt(o : stmt, handlers : StmtHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
 # type expr
 @dataclass(frozen=True, eq=True)
 class expr(ABC):
-    @abstractmethod
-    def _match(self, handlers : ExprHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ExprHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type expr
@@ -2142,14 +3792,34 @@ class expr(ABC):
 @dataclass(frozen=True, eq=True)
 class BoolOp(expr):
     left : expr
-    op : boolop
+    op : bool_rator
     right : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_BoolOp(self)
 
-def make_BoolOp(left : expr, op : boolop, right : expr) -> expr:
-    return BoolOp(left, op, right)
+def make_BoolOp(
+    left : expr, 
+    op : bool_rator, 
+    right : expr
+) -> expr:
+    return BoolOp(
+        left,
+        op,
+        right
+    )
+
+def update_BoolOp(source_BoolOp : BoolOp,
+    left : Union[expr, SourceFlag] = SourceFlag(),
+    op : Union[bool_rator, SourceFlag] = SourceFlag(),
+    right : Union[expr, SourceFlag] = SourceFlag()
+) -> BoolOp:
+    return BoolOp(
+        source_BoolOp.left if isinstance(left, SourceFlag) else left,
+        source_BoolOp.op if isinstance(op, SourceFlag) else op,
+        source_BoolOp.right if isinstance(right, SourceFlag) else right
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2157,36 +3827,88 @@ class AssignExpr(expr):
     target : expr
     content : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_AssignExpr(self)
 
-def make_AssignExpr(target : expr, content : expr) -> expr:
-    return AssignExpr(target, content)
+def make_AssignExpr(
+    target : expr, 
+    content : expr
+) -> expr:
+    return AssignExpr(
+        target,
+        content
+    )
+
+def update_AssignExpr(source_AssignExpr : AssignExpr,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> AssignExpr:
+    return AssignExpr(
+        source_AssignExpr.target if isinstance(target, SourceFlag) else target,
+        source_AssignExpr.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class BinOp(expr):
     left : expr
-    op : operator
+    rator : bin_rator
     right : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_BinOp(self)
 
-def make_BinOp(left : expr, op : operator, right : expr) -> expr:
-    return BinOp(left, op, right)
+def make_BinOp(
+    left : expr, 
+    rator : bin_rator, 
+    right : expr
+) -> expr:
+    return BinOp(
+        left,
+        rator,
+        right
+    )
+
+def update_BinOp(source_BinOp : BinOp,
+    left : Union[expr, SourceFlag] = SourceFlag(),
+    rator : Union[bin_rator, SourceFlag] = SourceFlag(),
+    right : Union[expr, SourceFlag] = SourceFlag()
+) -> BinOp:
+    return BinOp(
+        source_BinOp.left if isinstance(left, SourceFlag) else left,
+        source_BinOp.rator if isinstance(rator, SourceFlag) else rator,
+        source_BinOp.right if isinstance(right, SourceFlag) else right
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class UnaryOp(expr):
-    op : unaryop
-    right : expr
+    rator : unary_rator
+    rand : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_UnaryOp(self)
 
-def make_UnaryOp(op : unaryop, right : expr) -> expr:
-    return UnaryOp(op, right)
+def make_UnaryOp(
+    rator : unary_rator, 
+    rand : expr
+) -> expr:
+    return UnaryOp(
+        rator,
+        rand
+    )
+
+def update_UnaryOp(source_UnaryOp : UnaryOp,
+    rator : Union[unary_rator, SourceFlag] = SourceFlag(),
+    rand : Union[expr, SourceFlag] = SourceFlag()
+) -> UnaryOp:
+    return UnaryOp(
+        source_UnaryOp.rator if isinstance(rator, SourceFlag) else rator,
+        source_UnaryOp.rand if isinstance(rand, SourceFlag) else rand
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2194,11 +3916,27 @@ class Lambda(expr):
     params : parameters
     body : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Lambda(self)
 
-def make_Lambda(params : parameters, body : expr) -> expr:
-    return Lambda(params, body)
+def make_Lambda(
+    params : parameters, 
+    body : expr
+) -> expr:
+    return Lambda(
+        params,
+        body
+    )
+
+def update_Lambda(source_Lambda : Lambda,
+    params : Union[parameters, SourceFlag] = SourceFlag(),
+    body : Union[expr, SourceFlag] = SourceFlag()
+) -> Lambda:
+    return Lambda(
+        source_Lambda.params if isinstance(params, SourceFlag) else params,
+        source_Lambda.body if isinstance(body, SourceFlag) else body
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2207,44 +3945,96 @@ class IfExp(expr):
     test : expr
     orelse : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_IfExp(self)
 
-def make_IfExp(body : expr, test : expr, orelse : expr) -> expr:
-    return IfExp(body, test, orelse)
+def make_IfExp(
+    body : expr, 
+    test : expr, 
+    orelse : expr
+) -> expr:
+    return IfExp(
+        body,
+        test,
+        orelse
+    )
+
+def update_IfExp(source_IfExp : IfExp,
+    body : Union[expr, SourceFlag] = SourceFlag(),
+    test : Union[expr, SourceFlag] = SourceFlag(),
+    orelse : Union[expr, SourceFlag] = SourceFlag()
+) -> IfExp:
+    return IfExp(
+        source_IfExp.body if isinstance(body, SourceFlag) else body,
+        source_IfExp.test if isinstance(test, SourceFlag) else test,
+        source_IfExp.orelse if isinstance(orelse, SourceFlag) else orelse
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Dictionary(expr):
     content : dictionary_content
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Dictionary(self)
 
-def make_Dictionary(content : dictionary_content) -> expr:
-    return Dictionary(content)
+def make_Dictionary(
+    content : dictionary_content
+) -> expr:
+    return Dictionary(
+        content
+    )
+
+def update_Dictionary(source_Dictionary : Dictionary,
+    content : Union[dictionary_content, SourceFlag] = SourceFlag()
+) -> Dictionary:
+    return Dictionary(
+        source_Dictionary.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class EmptyDictionary(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_EmptyDictionary(self)
 
-def make_EmptyDictionary() -> expr:
-    return EmptyDictionary()
+def make_EmptyDictionary(
+) -> expr:
+    return EmptyDictionary(
+    )
+
+def update_EmptyDictionary(source_EmptyDictionary : EmptyDictionary
+) -> EmptyDictionary:
+    return EmptyDictionary(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Set(expr):
     content : comma_exprs
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Set(self)
 
-def make_Set(content : comma_exprs) -> expr:
-    return Set(content)
+def make_Set(
+    content : comma_exprs
+) -> expr:
+    return Set(
+        content
+    )
+
+def update_Set(source_Set : Set,
+    content : Union[comma_exprs, SourceFlag] = SourceFlag()
+) -> Set:
+    return Set(
+        source_Set.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2252,11 +4042,27 @@ class ListComp(expr):
     content : expr
     constraints : comprehension_constraints
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ListComp(self)
 
-def make_ListComp(content : expr, constraints : comprehension_constraints) -> expr:
-    return ListComp(content, constraints)
+def make_ListComp(
+    content : expr, 
+    constraints : comprehension_constraints
+) -> expr:
+    return ListComp(
+        content,
+        constraints
+    )
+
+def update_ListComp(source_ListComp : ListComp,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+) -> ListComp:
+    return ListComp(
+        source_ListComp.content if isinstance(content, SourceFlag) else content,
+        source_ListComp.constraints if isinstance(constraints, SourceFlag) else constraints
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2264,11 +4070,27 @@ class SetComp(expr):
     content : expr
     constraints : comprehension_constraints
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_SetComp(self)
 
-def make_SetComp(content : expr, constraints : comprehension_constraints) -> expr:
-    return SetComp(content, constraints)
+def make_SetComp(
+    content : expr, 
+    constraints : comprehension_constraints
+) -> expr:
+    return SetComp(
+        content,
+        constraints
+    )
+
+def update_SetComp(source_SetComp : SetComp,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+) -> SetComp:
+    return SetComp(
+        source_SetComp.content if isinstance(content, SourceFlag) else content,
+        source_SetComp.constraints if isinstance(constraints, SourceFlag) else constraints
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2277,11 +4099,31 @@ class DictionaryComp(expr):
     content : expr
     constraints : comprehension_constraints
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_DictionaryComp(self)
 
-def make_DictionaryComp(key : expr, content : expr, constraints : comprehension_constraints) -> expr:
-    return DictionaryComp(key, content, constraints)
+def make_DictionaryComp(
+    key : expr, 
+    content : expr, 
+    constraints : comprehension_constraints
+) -> expr:
+    return DictionaryComp(
+        key,
+        content,
+        constraints
+    )
+
+def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
+    key : Union[expr, SourceFlag] = SourceFlag(),
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+) -> DictionaryComp:
+    return DictionaryComp(
+        source_DictionaryComp.key if isinstance(key, SourceFlag) else key,
+        source_DictionaryComp.content if isinstance(content, SourceFlag) else content,
+        source_DictionaryComp.constraints if isinstance(constraints, SourceFlag) else constraints
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2289,55 +4131,115 @@ class GeneratorExp(expr):
     content : expr
     constraints : comprehension_constraints
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_GeneratorExp(self)
 
-def make_GeneratorExp(content : expr, constraints : comprehension_constraints) -> expr:
-    return GeneratorExp(content, constraints)
+def make_GeneratorExp(
+    content : expr, 
+    constraints : comprehension_constraints
+) -> expr:
+    return GeneratorExp(
+        content,
+        constraints
+    )
+
+def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+) -> GeneratorExp:
+    return GeneratorExp(
+        source_GeneratorExp.content if isinstance(content, SourceFlag) else content,
+        source_GeneratorExp.constraints if isinstance(constraints, SourceFlag) else constraints
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Await(expr):
     content : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Await(self)
 
-def make_Await(content : expr) -> expr:
-    return Await(content)
+def make_Await(
+    content : expr
+) -> expr:
+    return Await(
+        content
+    )
+
+def update_Await(source_Await : Await,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> Await:
+    return Await(
+        source_Await.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class YieldNothing(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_YieldNothing(self)
 
-def make_YieldNothing() -> expr:
-    return YieldNothing()
+def make_YieldNothing(
+) -> expr:
+    return YieldNothing(
+    )
+
+def update_YieldNothing(source_YieldNothing : YieldNothing
+) -> YieldNothing:
+    return YieldNothing(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Yield(expr):
     content : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Yield(self)
 
-def make_Yield(content : expr) -> expr:
-    return Yield(content)
+def make_Yield(
+    content : expr
+) -> expr:
+    return Yield(
+        content
+    )
+
+def update_Yield(source_Yield : Yield,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> Yield:
+    return Yield(
+        source_Yield.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class YieldFrom(expr):
     content : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_YieldFrom(self)
 
-def make_YieldFrom(content : expr) -> expr:
-    return YieldFrom(content)
+def make_YieldFrom(
+    content : expr
+) -> expr:
+    return YieldFrom(
+        content
+    )
+
+def update_YieldFrom(source_YieldFrom : YieldFrom,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> YieldFrom:
+    return YieldFrom(
+        source_YieldFrom.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2345,22 +4247,50 @@ class Compare(expr):
     left : expr
     comps : comparisons
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Compare(self)
 
-def make_Compare(left : expr, comps : comparisons) -> expr:
-    return Compare(left, comps)
+def make_Compare(
+    left : expr, 
+    comps : comparisons
+) -> expr:
+    return Compare(
+        left,
+        comps
+    )
+
+def update_Compare(source_Compare : Compare,
+    left : Union[expr, SourceFlag] = SourceFlag(),
+    comps : Union[comparisons, SourceFlag] = SourceFlag()
+) -> Compare:
+    return Compare(
+        source_Compare.left if isinstance(left, SourceFlag) else left,
+        source_Compare.comps if isinstance(comps, SourceFlag) else comps
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Call(expr):
     func : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Call(self)
 
-def make_Call(func : expr) -> expr:
-    return Call(func)
+def make_Call(
+    func : expr
+) -> expr:
+    return Call(
+        func
+    )
+
+def update_Call(source_Call : Call,
+    func : Union[expr, SourceFlag] = SourceFlag()
+) -> Call:
+    return Call(
+        source_Call.func if isinstance(func, SourceFlag) else func
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2368,88 +4298,172 @@ class CallArgs(expr):
     func : expr
     args : arguments
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_CallArgs(self)
 
-def make_CallArgs(func : expr, args : arguments) -> expr:
-    return CallArgs(func, args)
+def make_CallArgs(
+    func : expr, 
+    args : arguments
+) -> expr:
+    return CallArgs(
+        func,
+        args
+    )
+
+def update_CallArgs(source_CallArgs : CallArgs,
+    func : Union[expr, SourceFlag] = SourceFlag(),
+    args : Union[arguments, SourceFlag] = SourceFlag()
+) -> CallArgs:
+    return CallArgs(
+        source_CallArgs.func if isinstance(func, SourceFlag) else func,
+        source_CallArgs.args if isinstance(args, SourceFlag) else args
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Integer(expr):
     content : str
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Integer(self)
 
-def make_Integer(content : str) -> expr:
-    return Integer(content)
+def make_Integer(
+    content : str
+) -> expr:
+    return Integer(
+        content
+    )
+
+def update_Integer(source_Integer : Integer,
+    content : Union[str, SourceFlag] = SourceFlag()
+) -> Integer:
+    return Integer(
+        source_Integer.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Float(expr):
     content : str
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Float(self)
 
-def make_Float(content : str) -> expr:
-    return Float(content)
+def make_Float(
+    content : str
+) -> expr:
+    return Float(
+        content
+    )
+
+def update_Float(source_Float : Float,
+    content : Union[str, SourceFlag] = SourceFlag()
+) -> Float:
+    return Float(
+        source_Float.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class ConcatString(expr):
     content : sequence_string
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ConcatString(self)
 
-def make_ConcatString(content : sequence_string) -> expr:
-    return ConcatString(content)
+def make_ConcatString(
+    content : sequence_string
+) -> expr:
+    return ConcatString(
+        content
+    )
+
+def update_ConcatString(source_ConcatString : ConcatString,
+    content : Union[sequence_string, SourceFlag] = SourceFlag()
+) -> ConcatString:
+    return ConcatString(
+        source_ConcatString.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class True_(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_True_(self)
 
-def make_True_() -> expr:
-    return True_()
+def make_True_(
+) -> expr:
+    return True_(
+    )
+
+def update_True_(source_True_ : True_
+) -> True_:
+    return True_(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class False_(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_False_(self)
 
-def make_False_() -> expr:
-    return False_()
+def make_False_(
+) -> expr:
+    return False_(
+    )
+
+def update_False_(source_False_ : False_
+) -> False_:
+    return False_(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class None_(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_None_(self)
 
-def make_None_() -> expr:
-    return None_()
+def make_None_(
+) -> expr:
+    return None_(
+    )
+
+def update_None_(source_None_ : None_
+) -> None_:
+    return None_(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Ellip(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Ellip(self)
 
-def make_Ellip() -> expr:
-    return Ellip()
+def make_Ellip(
+) -> expr:
+    return Ellip(
+    )
+
+def update_Ellip(source_Ellip : Ellip
+) -> Ellip:
+    return Ellip(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2457,11 +4471,27 @@ class Attribute(expr):
     content : expr
     name : str
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Attribute(self)
 
-def make_Attribute(content : expr, name : str) -> expr:
-    return Attribute(content, name)
+def make_Attribute(
+    content : expr, 
+    name : str
+) -> expr:
+    return Attribute(
+        content,
+        name
+    )
+
+def update_Attribute(source_Attribute : Attribute,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    name : Union[str, SourceFlag] = SourceFlag()
+) -> Attribute:
+    return Attribute(
+        source_Attribute.content if isinstance(content, SourceFlag) else content,
+        source_Attribute.name if isinstance(name, SourceFlag) else name
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2469,77 +4499,157 @@ class Subscript(expr):
     content : expr
     slice : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Subscript(self)
 
-def make_Subscript(content : expr, slice : expr) -> expr:
-    return Subscript(content, slice)
+def make_Subscript(
+    content : expr, 
+    slice : expr
+) -> expr:
+    return Subscript(
+        content,
+        slice
+    )
+
+def update_Subscript(source_Subscript : Subscript,
+    content : Union[expr, SourceFlag] = SourceFlag(),
+    slice : Union[expr, SourceFlag] = SourceFlag()
+) -> Subscript:
+    return Subscript(
+        source_Subscript.content if isinstance(content, SourceFlag) else content,
+        source_Subscript.slice if isinstance(slice, SourceFlag) else slice
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Starred(expr):
     content : expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Starred(self)
 
-def make_Starred(content : expr) -> expr:
-    return Starred(content)
+def make_Starred(
+    content : expr
+) -> expr:
+    return Starred(
+        content
+    )
+
+def update_Starred(source_Starred : Starred,
+    content : Union[expr, SourceFlag] = SourceFlag()
+) -> Starred:
+    return Starred(
+        source_Starred.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Name(expr):
     content : str
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Name(self)
 
-def make_Name(content : str) -> expr:
-    return Name(content)
+def make_Name(
+    content : str
+) -> expr:
+    return Name(
+        content
+    )
+
+def update_Name(source_Name : Name,
+    content : Union[str, SourceFlag] = SourceFlag()
+) -> Name:
+    return Name(
+        source_Name.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class List(expr):
     content : comma_exprs
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_List(self)
 
-def make_List(content : comma_exprs) -> expr:
-    return List(content)
+def make_List(
+    content : comma_exprs
+) -> expr:
+    return List(
+        content
+    )
+
+def update_List(source_List : List,
+    content : Union[comma_exprs, SourceFlag] = SourceFlag()
+) -> List:
+    return List(
+        source_List.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class EmptyList(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_EmptyList(self)
 
-def make_EmptyList() -> expr:
-    return EmptyList()
+def make_EmptyList(
+) -> expr:
+    return EmptyList(
+    )
+
+def update_EmptyList(source_EmptyList : EmptyList
+) -> EmptyList:
+    return EmptyList(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class Tuple(expr):
     content : comma_exprs
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Tuple(self)
 
-def make_Tuple(content : comma_exprs) -> expr:
-    return Tuple(content)
+def make_Tuple(
+    content : comma_exprs
+) -> expr:
+    return Tuple(
+        content
+    )
+
+def update_Tuple(source_Tuple : Tuple,
+    content : Union[comma_exprs, SourceFlag] = SourceFlag()
+) -> Tuple:
+    return Tuple(
+        source_Tuple.content if isinstance(content, SourceFlag) else content
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
 class EmptyTuple(expr):
 
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_EmptyTuple(self)
 
-def make_EmptyTuple() -> expr:
-    return EmptyTuple()
+def make_EmptyTuple(
+) -> expr:
+    return EmptyTuple(
+    )
+
+def update_EmptyTuple(source_EmptyTuple : EmptyTuple
+) -> EmptyTuple:
+    return EmptyTuple(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -2548,11 +4658,31 @@ class Slice(expr):
     upper : option_expr
     step : option_expr
 
-    def _match(self, handlers : ExprHandlers[T]) -> T:
+    def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Slice(self)
 
-def make_Slice(lower : option_expr, upper : option_expr, step : option_expr) -> expr:
-    return Slice(lower, upper, step)
+def make_Slice(
+    lower : option_expr, 
+    upper : option_expr, 
+    step : option_expr
+) -> expr:
+    return Slice(
+        lower,
+        upper,
+        step
+    )
+
+def update_Slice(source_Slice : Slice,
+    lower : Union[option_expr, SourceFlag] = SourceFlag(),
+    upper : Union[option_expr, SourceFlag] = SourceFlag(),
+    step : Union[option_expr, SourceFlag] = SourceFlag()
+) -> Slice:
+    return Slice(
+        source_Slice.lower if isinstance(lower, SourceFlag) else lower,
+        source_Slice.upper if isinstance(upper, SourceFlag) else upper,
+        source_Slice.step if isinstance(step, SourceFlag) else step
+    )
+
         
 
 # case handlers for type expr
@@ -2598,207 +4728,329 @@ class ExprHandlers(Generic[T]):
 
 # matching for type expr
 def match_expr(o : expr, handlers : ExprHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
     
 
-# type boolop
+# type bool_rator
 @dataclass(frozen=True, eq=True)
-class boolop(ABC):
-    @abstractmethod
-    def _match(self, handlers : BoolopHandlers[T]) -> T: pass
+class bool_rator(ABC):
+    # @abstractmethod
+    def match(self, handlers : BoolRatorHandlers[T]) -> T:
+        raise Exception()
 
 
-# constructors for type boolop
+# constructors for type bool_rator
 
 @dataclass(frozen=True, eq=True)
-class And(boolop):
+class And(bool_rator):
 
 
-    def _match(self, handlers : BoolopHandlers[T]) -> T:
+    def match(self, handlers : BoolRatorHandlers[T]) -> T:
         return handlers.case_And(self)
 
-def make_And() -> boolop:
-    return And()
+def make_And(
+) -> bool_rator:
+    return And(
+    )
+
+def update_And(source_And : And
+) -> And:
+    return And(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Or(boolop):
+class Or(bool_rator):
 
 
-    def _match(self, handlers : BoolopHandlers[T]) -> T:
+    def match(self, handlers : BoolRatorHandlers[T]) -> T:
         return handlers.case_Or(self)
 
-def make_Or() -> boolop:
-    return Or()
+def make_Or(
+) -> bool_rator:
+    return Or(
+    )
+
+def update_Or(source_Or : Or
+) -> Or:
+    return Or(
+    )
+
         
 
-# case handlers for type boolop
+# case handlers for type bool_rator
 @dataclass(frozen=True, eq=True)
-class BoolopHandlers(Generic[T]):
+class BoolRatorHandlers(Generic[T]):
     case_And : Callable[[And], T]
     case_Or : Callable[[Or], T]
 
 
-# matching for type boolop
-def match_boolop(o : boolop, handlers : BoolopHandlers[T]) -> T :
-    return o._match(handlers)
+# matching for type bool_rator
+def match_bool_rator(o : bool_rator, handlers : BoolRatorHandlers[T]) -> T :
+    return o.match(handlers)
     
 
-# type operator
+# type bin_rator
 @dataclass(frozen=True, eq=True)
-class operator(ABC):
-    @abstractmethod
-    def _match(self, handlers : OperatorHandlers[T]) -> T: pass
+class bin_rator(ABC):
+    # @abstractmethod
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
+        raise Exception()
 
 
-# constructors for type operator
+# constructors for type bin_rator
 
 @dataclass(frozen=True, eq=True)
-class Add(operator):
+class Add(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_Add(self)
 
-def make_Add() -> operator:
-    return Add()
+def make_Add(
+) -> bin_rator:
+    return Add(
+    )
+
+def update_Add(source_Add : Add
+) -> Add:
+    return Add(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Sub(operator):
+class Sub(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_Sub(self)
 
-def make_Sub() -> operator:
-    return Sub()
+def make_Sub(
+) -> bin_rator:
+    return Sub(
+    )
+
+def update_Sub(source_Sub : Sub
+) -> Sub:
+    return Sub(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Mult(operator):
+class Mult(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_Mult(self)
 
-def make_Mult() -> operator:
-    return Mult()
+def make_Mult(
+) -> bin_rator:
+    return Mult(
+    )
+
+def update_Mult(source_Mult : Mult
+) -> Mult:
+    return Mult(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class MatMult(operator):
+class MatMult(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_MatMult(self)
 
-def make_MatMult() -> operator:
-    return MatMult()
+def make_MatMult(
+) -> bin_rator:
+    return MatMult(
+    )
+
+def update_MatMult(source_MatMult : MatMult
+) -> MatMult:
+    return MatMult(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Div(operator):
+class Div(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_Div(self)
 
-def make_Div() -> operator:
-    return Div()
+def make_Div(
+) -> bin_rator:
+    return Div(
+    )
+
+def update_Div(source_Div : Div
+) -> Div:
+    return Div(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Mod(operator):
+class Mod(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_Mod(self)
 
-def make_Mod() -> operator:
-    return Mod()
+def make_Mod(
+) -> bin_rator:
+    return Mod(
+    )
+
+def update_Mod(source_Mod : Mod
+) -> Mod:
+    return Mod(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Pow(operator):
+class Pow(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_Pow(self)
 
-def make_Pow() -> operator:
-    return Pow()
+def make_Pow(
+) -> bin_rator:
+    return Pow(
+    )
+
+def update_Pow(source_Pow : Pow
+) -> Pow:
+    return Pow(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class LShift(operator):
+class LShift(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_LShift(self)
 
-def make_LShift() -> operator:
-    return LShift()
+def make_LShift(
+) -> bin_rator:
+    return LShift(
+    )
+
+def update_LShift(source_LShift : LShift
+) -> LShift:
+    return LShift(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class RShift(operator):
+class RShift(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_RShift(self)
 
-def make_RShift() -> operator:
-    return RShift()
+def make_RShift(
+) -> bin_rator:
+    return RShift(
+    )
+
+def update_RShift(source_RShift : RShift
+) -> RShift:
+    return RShift(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class BitOr(operator):
+class BitOr(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_BitOr(self)
 
-def make_BitOr() -> operator:
-    return BitOr()
+def make_BitOr(
+) -> bin_rator:
+    return BitOr(
+    )
+
+def update_BitOr(source_BitOr : BitOr
+) -> BitOr:
+    return BitOr(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class BitXor(operator):
+class BitXor(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_BitXor(self)
 
-def make_BitXor() -> operator:
-    return BitXor()
+def make_BitXor(
+) -> bin_rator:
+    return BitXor(
+    )
+
+def update_BitXor(source_BitXor : BitXor
+) -> BitXor:
+    return BitXor(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class BitAnd(operator):
+class BitAnd(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_BitAnd(self)
 
-def make_BitAnd() -> operator:
-    return BitAnd()
+def make_BitAnd(
+) -> bin_rator:
+    return BitAnd(
+    )
+
+def update_BitAnd(source_BitAnd : BitAnd
+) -> BitAnd:
+    return BitAnd(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class FloorDiv(operator):
+class FloorDiv(bin_rator):
 
 
-    def _match(self, handlers : OperatorHandlers[T]) -> T:
+    def match(self, handlers : BinRatorHandlers[T]) -> T:
         return handlers.case_FloorDiv(self)
 
-def make_FloorDiv() -> operator:
-    return FloorDiv()
+def make_FloorDiv(
+) -> bin_rator:
+    return FloorDiv(
+    )
+
+def update_FloorDiv(source_FloorDiv : FloorDiv
+) -> FloorDiv:
+    return FloorDiv(
+    )
+
         
 
-# case handlers for type operator
+# case handlers for type bin_rator
 @dataclass(frozen=True, eq=True)
-class OperatorHandlers(Generic[T]):
+class BinRatorHandlers(Generic[T]):
     case_Add : Callable[[Add], T]
     case_Sub : Callable[[Sub], T]
     case_Mult : Callable[[Mult], T]
@@ -2814,200 +5066,314 @@ class OperatorHandlers(Generic[T]):
     case_FloorDiv : Callable[[FloorDiv], T]
 
 
-# matching for type operator
-def match_operator(o : operator, handlers : OperatorHandlers[T]) -> T :
-    return o._match(handlers)
+# matching for type bin_rator
+def match_bin_rator(o : bin_rator, handlers : BinRatorHandlers[T]) -> T :
+    return o.match(handlers)
     
 
-# type unaryop
+# type unary_rator
 @dataclass(frozen=True, eq=True)
-class unaryop(ABC):
-    @abstractmethod
-    def _match(self, handlers : UnaryopHandlers[T]) -> T: pass
+class unary_rator(ABC):
+    # @abstractmethod
+    def match(self, handlers : UnaryRatorHandlers[T]) -> T:
+        raise Exception()
 
 
-# constructors for type unaryop
+# constructors for type unary_rator
 
 @dataclass(frozen=True, eq=True)
-class Invert(unaryop):
+class Invert(unary_rator):
 
 
-    def _match(self, handlers : UnaryopHandlers[T]) -> T:
+    def match(self, handlers : UnaryRatorHandlers[T]) -> T:
         return handlers.case_Invert(self)
 
-def make_Invert() -> unaryop:
-    return Invert()
+def make_Invert(
+) -> unary_rator:
+    return Invert(
+    )
+
+def update_Invert(source_Invert : Invert
+) -> Invert:
+    return Invert(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Not(unaryop):
+class Not(unary_rator):
 
 
-    def _match(self, handlers : UnaryopHandlers[T]) -> T:
+    def match(self, handlers : UnaryRatorHandlers[T]) -> T:
         return handlers.case_Not(self)
 
-def make_Not() -> unaryop:
-    return Not()
+def make_Not(
+) -> unary_rator:
+    return Not(
+    )
+
+def update_Not(source_Not : Not
+) -> Not:
+    return Not(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class UAdd(unaryop):
+class UAdd(unary_rator):
 
 
-    def _match(self, handlers : UnaryopHandlers[T]) -> T:
+    def match(self, handlers : UnaryRatorHandlers[T]) -> T:
         return handlers.case_UAdd(self)
 
-def make_UAdd() -> unaryop:
-    return UAdd()
+def make_UAdd(
+) -> unary_rator:
+    return UAdd(
+    )
+
+def update_UAdd(source_UAdd : UAdd
+) -> UAdd:
+    return UAdd(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class USub(unaryop):
+class USub(unary_rator):
 
 
-    def _match(self, handlers : UnaryopHandlers[T]) -> T:
+    def match(self, handlers : UnaryRatorHandlers[T]) -> T:
         return handlers.case_USub(self)
 
-def make_USub() -> unaryop:
-    return USub()
+def make_USub(
+) -> unary_rator:
+    return USub(
+    )
+
+def update_USub(source_USub : USub
+) -> USub:
+    return USub(
+    )
+
         
 
-# case handlers for type unaryop
+# case handlers for type unary_rator
 @dataclass(frozen=True, eq=True)
-class UnaryopHandlers(Generic[T]):
+class UnaryRatorHandlers(Generic[T]):
     case_Invert : Callable[[Invert], T]
     case_Not : Callable[[Not], T]
     case_UAdd : Callable[[UAdd], T]
     case_USub : Callable[[USub], T]
 
 
-# matching for type unaryop
-def match_unaryop(o : unaryop, handlers : UnaryopHandlers[T]) -> T :
-    return o._match(handlers)
+# matching for type unary_rator
+def match_unary_rator(o : unary_rator, handlers : UnaryRatorHandlers[T]) -> T :
+    return o.match(handlers)
     
 
-# type cmpop
+# type cmp_rator
 @dataclass(frozen=True, eq=True)
-class cmpop(ABC):
-    @abstractmethod
-    def _match(self, handlers : CmpopHandlers[T]) -> T: pass
+class cmp_rator(ABC):
+    # @abstractmethod
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
+        raise Exception()
 
 
-# constructors for type cmpop
+# constructors for type cmp_rator
 
 @dataclass(frozen=True, eq=True)
-class Eq(cmpop):
+class Eq(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_Eq(self)
 
-def make_Eq() -> cmpop:
-    return Eq()
+def make_Eq(
+) -> cmp_rator:
+    return Eq(
+    )
+
+def update_Eq(source_Eq : Eq
+) -> Eq:
+    return Eq(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class NotEq(cmpop):
+class NotEq(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_NotEq(self)
 
-def make_NotEq() -> cmpop:
-    return NotEq()
+def make_NotEq(
+) -> cmp_rator:
+    return NotEq(
+    )
+
+def update_NotEq(source_NotEq : NotEq
+) -> NotEq:
+    return NotEq(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Lt(cmpop):
+class Lt(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_Lt(self)
 
-def make_Lt() -> cmpop:
-    return Lt()
+def make_Lt(
+) -> cmp_rator:
+    return Lt(
+    )
+
+def update_Lt(source_Lt : Lt
+) -> Lt:
+    return Lt(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class LtE(cmpop):
+class LtE(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_LtE(self)
 
-def make_LtE() -> cmpop:
-    return LtE()
+def make_LtE(
+) -> cmp_rator:
+    return LtE(
+    )
+
+def update_LtE(source_LtE : LtE
+) -> LtE:
+    return LtE(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Gt(cmpop):
+class Gt(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_Gt(self)
 
-def make_Gt() -> cmpop:
-    return Gt()
+def make_Gt(
+) -> cmp_rator:
+    return Gt(
+    )
+
+def update_Gt(source_Gt : Gt
+) -> Gt:
+    return Gt(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class GtE(cmpop):
+class GtE(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_GtE(self)
 
-def make_GtE() -> cmpop:
-    return GtE()
+def make_GtE(
+) -> cmp_rator:
+    return GtE(
+    )
+
+def update_GtE(source_GtE : GtE
+) -> GtE:
+    return GtE(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class Is(cmpop):
+class Is(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_Is(self)
 
-def make_Is() -> cmpop:
-    return Is()
+def make_Is(
+) -> cmp_rator:
+    return Is(
+    )
+
+def update_Is(source_Is : Is
+) -> Is:
+    return Is(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class IsNot(cmpop):
+class IsNot(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_IsNot(self)
 
-def make_IsNot() -> cmpop:
-    return IsNot()
+def make_IsNot(
+) -> cmp_rator:
+    return IsNot(
+    )
+
+def update_IsNot(source_IsNot : IsNot
+) -> IsNot:
+    return IsNot(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class In(cmpop):
+class In(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_In(self)
 
-def make_In() -> cmpop:
-    return In()
+def make_In(
+) -> cmp_rator:
+    return In(
+    )
+
+def update_In(source_In : In
+) -> In:
+    return In(
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
-class NotIn(cmpop):
+class NotIn(cmp_rator):
 
 
-    def _match(self, handlers : CmpopHandlers[T]) -> T:
+    def match(self, handlers : CmpRatorHandlers[T]) -> T:
         return handlers.case_NotIn(self)
 
-def make_NotIn() -> cmpop:
-    return NotIn()
+def make_NotIn(
+) -> cmp_rator:
+    return NotIn(
+    )
+
+def update_NotIn(source_NotIn : NotIn
+) -> NotIn:
+    return NotIn(
+    )
+
         
 
-# case handlers for type cmpop
+# case handlers for type cmp_rator
 @dataclass(frozen=True, eq=True)
-class CmpopHandlers(Generic[T]):
+class CmpRatorHandlers(Generic[T]):
     case_Eq : Callable[[Eq], T]
     case_NotEq : Callable[[NotEq], T]
     case_Lt : Callable[[Lt], T]
@@ -3020,16 +5386,17 @@ class CmpopHandlers(Generic[T]):
     case_NotIn : Callable[[NotIn], T]
 
 
-# matching for type cmpop
-def match_cmpop(o : cmpop, handlers : CmpopHandlers[T]) -> T :
-    return o._match(handlers)
+# matching for type cmp_rator
+def match_cmp_rator(o : cmp_rator, handlers : CmpRatorHandlers[T]) -> T :
+    return o.match(handlers)
     
 
 # type constraint
 @dataclass(frozen=True, eq=True)
 class constraint(ABC):
-    @abstractmethod
-    def _match(self, handlers : ConstraintHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : ConstraintHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type constraint
@@ -3040,11 +5407,31 @@ class AsyncConstraint(constraint):
     search_space : expr
     filts : constraint_filters
 
-    def _match(self, handlers : ConstraintHandlers[T]) -> T:
+    def match(self, handlers : ConstraintHandlers[T]) -> T:
         return handlers.case_AsyncConstraint(self)
 
-def make_AsyncConstraint(target : expr, search_space : expr, filts : constraint_filters) -> constraint:
-    return AsyncConstraint(target, search_space, filts)
+def make_AsyncConstraint(
+    target : expr, 
+    search_space : expr, 
+    filts : constraint_filters
+) -> constraint:
+    return AsyncConstraint(
+        target,
+        search_space,
+        filts
+    )
+
+def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    search_space : Union[expr, SourceFlag] = SourceFlag(),
+    filts : Union[constraint_filters, SourceFlag] = SourceFlag()
+) -> AsyncConstraint:
+    return AsyncConstraint(
+        source_AsyncConstraint.target if isinstance(target, SourceFlag) else target,
+        source_AsyncConstraint.search_space if isinstance(search_space, SourceFlag) else search_space,
+        source_AsyncConstraint.filts if isinstance(filts, SourceFlag) else filts
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -3053,11 +5440,31 @@ class Constraint(constraint):
     search_space : expr
     filts : constraint_filters
 
-    def _match(self, handlers : ConstraintHandlers[T]) -> T:
+    def match(self, handlers : ConstraintHandlers[T]) -> T:
         return handlers.case_Constraint(self)
 
-def make_Constraint(target : expr, search_space : expr, filts : constraint_filters) -> constraint:
-    return Constraint(target, search_space, filts)
+def make_Constraint(
+    target : expr, 
+    search_space : expr, 
+    filts : constraint_filters
+) -> constraint:
+    return Constraint(
+        target,
+        search_space,
+        filts
+    )
+
+def update_Constraint(source_Constraint : Constraint,
+    target : Union[expr, SourceFlag] = SourceFlag(),
+    search_space : Union[expr, SourceFlag] = SourceFlag(),
+    filts : Union[constraint_filters, SourceFlag] = SourceFlag()
+) -> Constraint:
+    return Constraint(
+        source_Constraint.target if isinstance(target, SourceFlag) else target,
+        source_Constraint.search_space if isinstance(search_space, SourceFlag) else search_space,
+        source_Constraint.filts if isinstance(filts, SourceFlag) else filts
+    )
+
         
 
 # case handlers for type constraint
@@ -3069,16 +5476,34 @@ class ConstraintHandlers(Generic[T]):
 
 # matching for type constraint
 def match_constraint(o : constraint, handlers : ConstraintHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
      
 
 
 # type and constructor CompareRight
 @dataclass(frozen=True, eq=True)
 class CompareRight:
-    op : cmpop
+    rator : cmp_rator
     rand : expr
 
+
+def make_CompareRight(
+    rator : cmp_rator,
+    rand : expr
+) -> CompareRight:
+    return CompareRight(
+        rator,
+        rand)
+
+def update_CompareRight(source_CompareRight : CompareRight,
+    rator : Union[cmp_rator, SourceFlag] = SourceFlag(),
+    rand : Union[expr, SourceFlag] = SourceFlag()
+) -> CompareRight:
+    return CompareRight(
+        source_CompareRight.rator if isinstance(rator, SourceFlag) else rator, 
+        source_CompareRight.rand if isinstance(rand, SourceFlag) else rand)
+
+    
 
 # type and constructor ExceptHandler
 @dataclass(frozen=True, eq=True)
@@ -3086,6 +5511,24 @@ class ExceptHandler:
     arg : except_arg
     body : statements
 
+
+def make_ExceptHandler(
+    arg : except_arg,
+    body : statements
+) -> ExceptHandler:
+    return ExceptHandler(
+        arg,
+        body)
+
+def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
+    arg : Union[except_arg, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> ExceptHandler:
+    return ExceptHandler(
+        source_ExceptHandler.arg if isinstance(arg, SourceFlag) else arg, 
+        source_ExceptHandler.body if isinstance(body, SourceFlag) else body)
+
+    
 
 # type and constructor Param
 @dataclass(frozen=True, eq=True)
@@ -3095,6 +5538,28 @@ class Param:
     default : param_default
 
 
+def make_Param(
+    name : str,
+    anno : param_annotation,
+    default : param_default
+) -> Param:
+    return Param(
+        name,
+        anno,
+        default)
+
+def update_Param(source_Param : Param,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    anno : Union[param_annotation, SourceFlag] = SourceFlag(),
+    default : Union[param_default, SourceFlag] = SourceFlag()
+) -> Param:
+    return Param(
+        source_Param.name if isinstance(name, SourceFlag) else name, 
+        source_Param.anno if isinstance(anno, SourceFlag) else anno, 
+        source_Param.default if isinstance(default, SourceFlag) else default)
+
+    
+
 # type and constructor ClassDef
 @dataclass(frozen=True, eq=True)
 class ClassDef:
@@ -3103,6 +5568,28 @@ class ClassDef:
     body : statements
 
 
+def make_ClassDef(
+    name : str,
+    bs : bases,
+    body : statements
+) -> ClassDef:
+    return ClassDef(
+        name,
+        bs,
+        body)
+
+def update_ClassDef(source_ClassDef : ClassDef,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    bs : Union[bases, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> ClassDef:
+    return ClassDef(
+        source_ClassDef.name if isinstance(name, SourceFlag) else name, 
+        source_ClassDef.bs if isinstance(bs, SourceFlag) else bs, 
+        source_ClassDef.body if isinstance(body, SourceFlag) else body)
+
+    
+
 # type and constructor ElifBlock
 @dataclass(frozen=True, eq=True)
 class ElifBlock:
@@ -3110,15 +5597,255 @@ class ElifBlock:
     body : statements
 
 
+def make_ElifBlock(
+    test : expr,
+    body : statements
+) -> ElifBlock:
+    return ElifBlock(
+        test,
+        body)
+
+def update_ElifBlock(source_ElifBlock : ElifBlock,
+    test : Union[expr, SourceFlag] = SourceFlag(),
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> ElifBlock:
+    return ElifBlock(
+        source_ElifBlock.test if isinstance(test, SourceFlag) else test, 
+        source_ElifBlock.body if isinstance(body, SourceFlag) else body)
+
+    
+
 # type and constructor ElseBlock
 @dataclass(frozen=True, eq=True)
 class ElseBlock:
     body : statements
 
 
+def make_ElseBlock(
+    body : statements
+) -> ElseBlock:
+    return ElseBlock(
+        body)
+
+def update_ElseBlock(source_ElseBlock : ElseBlock,
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> ElseBlock:
+    return ElseBlock(
+        source_ElseBlock.body if isinstance(body, SourceFlag) else body)
+
+    
+
 # type and constructor FinallyBlock
 @dataclass(frozen=True, eq=True)
 class FinallyBlock:
     body : statements
- 
+
+
+def make_FinallyBlock(
+    body : statements
+) -> FinallyBlock:
+    return FinallyBlock(
+        body)
+
+def update_FinallyBlock(source_FinallyBlock : FinallyBlock,
+    body : Union[statements, SourceFlag] = SourceFlag()
+) -> FinallyBlock:
+    return FinallyBlock(
+        source_FinallyBlock.body if isinstance(body, SourceFlag) else body)
+
+     
+    
+
+ast = Union[
+    CompareRight,
+    ExceptHandler,
+    Param,
+    ClassDef,
+    ElifBlock,
+    ElseBlock,
+    FinallyBlock,
+    SomeReturnAnno,
+    NoReturnAnno,
+    SomeExceptArg,
+    SomeExceptArgName,
+    NoExceptArg,
+    SomeParamAnno,
+    NoParamAnno,
+    SomeParamDefault,
+    NoParamDefault,
+    ConsKwParam,
+    SingleKwParam,
+    DictionarySplatParam,
+    SingleListSplatParam,
+    TransListSplatParam,
+    ParamsD,
+    ConsPosKeyParam,
+    SinglePosKeyParam,
+    ParamsC,
+    ConsPosParam,
+    SinglePosParam,
+    TransPosParam,
+    ParamsA,
+    ParamsB,
+    NoParam,
+    NamedKeyword,
+    SplatKeyword,
+    ImportNameAlias,
+    ImportNameOnly,
+    WithItemAlias,
+    WithItemOnly,
+    SomeBases,
+    NoBases,
+    ConsBase,
+    SingleBase,
+    KeywordBases,
+    ConsKeyword,
+    SingleKeyword,
+    ConsCompareRight,
+    SingleCompareRight,
+    SomeExpr,
+    NoExpr,
+    ConsExpr,
+    SingleExpr,
+    ConsTargetExpr,
+    SingleTargetExpr,
+    ConsDec,
+    NoDec,
+    ConsFilter,
+    SingleFilter,
+    NoFilter,
+    ConsStr,
+    SingleStr,
+    ConsArg,
+    SingleArg,
+    KeywordsArg,
+    Field,
+    DictionarySplatFields,
+    ConsDictionaryItem,
+    SingleDictionaryItem,
+    ConsId,
+    SingleId,
+    ConsImportName,
+    SingleImportName,
+    ConsWithItem,
+    SingleWithItem,
+    FutureMod,
+    SimpleMod,
+    ConsStmt,
+    SingleStmt,
+    ConsConstraint,
+    SingleConstraint,
+    ConsExceptHandler,
+    SingleExceptHandler,
+    ElifCond,
+    ElseCond,
+    NoCond,
+    FunctionDef,
+    AsyncFunctionDef,
+    DecFunctionDef,
+    DecClassDef,
+    ReturnSomething,
+    Return,
+    Delete,
+    Assign,
+    AugAssign,
+    AnnoAssign,
+    AnnoDeclar,
+    For,
+    ForElse,
+    AsyncFor,
+    AsyncForElse,
+    While,
+    WhileElse,
+    If,
+    With,
+    AsyncWith,
+    Raise,
+    RaiseExc,
+    RaiseFrom,
+    Try,
+    TryElse,
+    TryExceptFin,
+    TryFin,
+    TryElseFin,
+    Assert,
+    AssertMsg,
+    Import,
+    ImportFrom,
+    ImportWildCard,
+    Global,
+    Nonlocal,
+    Expr,
+    Pass,
+    Break,
+    Continue,
+    BoolOp,
+    AssignExpr,
+    BinOp,
+    UnaryOp,
+    Lambda,
+    IfExp,
+    Dictionary,
+    EmptyDictionary,
+    Set,
+    ListComp,
+    SetComp,
+    DictionaryComp,
+    GeneratorExp,
+    Await,
+    YieldNothing,
+    Yield,
+    YieldFrom,
+    Compare,
+    Call,
+    CallArgs,
+    Integer,
+    Float,
+    ConcatString,
+    True_,
+    False_,
+    None_,
+    Ellip,
+    Attribute,
+    Subscript,
+    Starred,
+    Name,
+    List,
+    EmptyList,
+    Tuple,
+    EmptyTuple,
+    Slice,
+    And,
+    Or,
+    Add,
+    Sub,
+    Mult,
+    MatMult,
+    Div,
+    Mod,
+    Pow,
+    LShift,
+    RShift,
+    BitOr,
+    BitXor,
+    BitAnd,
+    FloorDiv,
+    Invert,
+    Not,
+    UAdd,
+    USub,
+    Eq,
+    NotEq,
+    Lt,
+    LtE,
+    Gt,
+    GtE,
+    Is,
+    IsNot,
+    In,
+    NotIn,
+    AsyncConstraint,
+    Constraint,
+    str
+] 
     

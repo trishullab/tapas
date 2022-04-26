@@ -7,24 +7,15 @@ type_name = "line_format"
 
 constructors = [
 
-    Constructor(
-        "InLine",
-        []
-    ),
+    Constructor("InLine", [], []),
 
-    Constructor(
-        "NewLine",
-        []
-    ),
+    Constructor("NewLine", [], []),
 
-    Constructor(
-        "IndentLine",
-        []
-    )
+    Constructor("IndentLine", [], [])
 ]
 
 def generate_content():
-    return construct_def.generate_content([], {type_name : constructors})
+    return construct_def.generate_content("", [], {type_name : constructors})
 
 
 

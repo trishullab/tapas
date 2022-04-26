@@ -2,6 +2,7 @@
 # CHANGES MAY BE LOST
 
 
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,12 +14,20 @@ from abc import ABC, abstractmethod
 T = TypeVar('T')
 
 
+@dataclass(frozen=True, eq=True)
+class SourceFlag: 
+    pass
+
+
+
+
 
 # type abstract_token
 @dataclass(frozen=True, eq=True)
 class abstract_token(ABC):
-    @abstractmethod
-    def _match(self, handlers : AbstractTokenHandlers[T]) -> T: pass
+    # @abstractmethod
+    def match(self, handlers : AbstractTokenHandlers[T]) -> T:
+        raise Exception()
 
 
 # constructors for type abstract_token
@@ -28,11 +37,27 @@ class Grammar(abstract_token):
     options : str
     selection : str
 
-    def _match(self, handlers : AbstractTokenHandlers[T]) -> T:
+    def match(self, handlers : AbstractTokenHandlers[T]) -> T:
         return handlers.case_Grammar(self)
 
-def make_Grammar(options : str, selection : str) -> abstract_token:
-    return Grammar(options, selection)
+def make_Grammar(
+    options : str, 
+    selection : str
+) -> abstract_token:
+    return Grammar(
+        options,
+        selection
+    )
+
+def update_Grammar(source_Grammar : Grammar,
+    options : Union[str, SourceFlag] = SourceFlag(),
+    selection : Union[str, SourceFlag] = SourceFlag()
+) -> Grammar:
+    return Grammar(
+        source_Grammar.options if isinstance(options, SourceFlag) else options,
+        source_Grammar.selection if isinstance(selection, SourceFlag) else selection
+    )
+
         
 
 @dataclass(frozen=True, eq=True)
@@ -40,11 +65,27 @@ class Vocab(abstract_token):
     options : str
     selection : str
 
-    def _match(self, handlers : AbstractTokenHandlers[T]) -> T:
+    def match(self, handlers : AbstractTokenHandlers[T]) -> T:
         return handlers.case_Vocab(self)
 
-def make_Vocab(options : str, selection : str) -> abstract_token:
-    return Vocab(options, selection)
+def make_Vocab(
+    options : str, 
+    selection : str
+) -> abstract_token:
+    return Vocab(
+        options,
+        selection
+    )
+
+def update_Vocab(source_Vocab : Vocab,
+    options : Union[str, SourceFlag] = SourceFlag(),
+    selection : Union[str, SourceFlag] = SourceFlag()
+) -> Vocab:
+    return Vocab(
+        source_Vocab.options if isinstance(options, SourceFlag) else options,
+        source_Vocab.selection if isinstance(selection, SourceFlag) else selection
+    )
+
         
 
 # case handlers for type abstract_token
@@ -56,7 +97,7 @@ class AbstractTokenHandlers(Generic[T]):
 
 # matching for type abstract_token
 def match_abstract_token(o : abstract_token, handlers : AbstractTokenHandlers[T]) -> T :
-    return o._match(handlers)
+    return o.match(handlers)
      
 
  

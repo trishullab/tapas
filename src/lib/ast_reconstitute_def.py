@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import lib.rule
-from lib.rule import Rule
+import lib.rule_system
+from lib.rule_system import Rule
 
-import lib.python_schema
+import lib.python_schema_system
 
 nl = "\n"
 
 def generate_choice_procedure(type_name : str, rules : list[Rule]) -> str:
 
     def generate_updates(type_name : str, rule : Rule):
-        abstract_items = lib.rule.get_abstract_items(rule)
+        abstract_items = lib.rule_system.get_abstract_items(rule)
         return f"""
         elif rule_name == "{rule.name}": 
             children = children
@@ -36,11 +36,11 @@ def generate_choice_procedure(type_name : str, rules : list[Rule]) -> str:
             {nl.join([
                 f'''
             elif index == {i}: # index does *not* refer to an inductive child
-                (child, remainder) = to_{lib.rule.type_from_item(item)}(remainder)
+                (child, remainder) = to_{lib.rule_system.type_from_item(item, '')}(remainder)
                 stack.append((x, children + [child], remainder))
                 '''
                 for i, item in enumerate(abstract_items)
-                if lib.rule.type_from_item(item) != type_name
+                if lib.rule_system.type_from_item(item, '') != type_name
             ])}
             else: # index refers to an inductive child
                 stack.append((x, children, remainder))
@@ -78,10 +78,10 @@ def to_{type_name}(xs : tuple[abstract_token, ...]) -> tuple[{type_name}, tuple[
 def generate_single_procedure(rule : Rule) -> str:
     type_name = rule.name
 
-    abstract_items = lib.rule.get_abstract_items(rule)
+    abstract_items = lib.rule_system.get_abstract_items(rule)
     nl = "\n"
 
-    node_str = f"{rule.name}({', '.join([lib.rule.relation_from_item(item) for item in abstract_items])})" 
+    node_str = f"{rule.name}({', '.join([lib.rule_system.relation_from_item(item) for item in abstract_items])})" 
 
     return (f"""
 def to_{type_name}(xs : tuple[abstract_token, ...]) -> tuple[{type_name}, tuple[abstract_token, ...]]:
@@ -92,24 +92,25 @@ def to_{type_name}(xs : tuple[abstract_token, ...]) -> tuple[{type_name}, tuple[
     assert x.selection == "{rule.name}"
 
 {nl.join([
-    f"    ({lib.rule.relation_from_item(item)}, xs) = to_{lib.rule.type_from_item(item)}(xs)"
+    f"    ({lib.rule_system.relation_from_item(item)}, xs) = to_{lib.rule_system.type_from_item(item, '')}(xs)"
     for item in abstract_items
 ])}
     return ({node_str}, xs)
     """)
     
-def generate_content(singles : list[Rule], choices : dict[str, list[Rule]]) -> str:
+def generate_content(content_header : str, singles : list[Rule], choices : dict[str, list[Rule]]) -> str:
 
     header = """
 from __future__ import annotations
-import lib.abstract_token
-from lib.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
-from lib.python_ast_construct_autogen import *
+from lib import abstract_token_system as ats
+from lib.abstract_token_system import abstract_token, Vocab, Grammar
 from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
     """
 
     return (f"""
 {header}
+
+{content_header}
 
 # definitions operate on reversed lists of abstract tokens, starting from the right, going left. 
 {nl.join([
