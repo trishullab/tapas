@@ -1185,10 +1185,10 @@ def analyze_modules_once(
         )
         assert path.isfile(file_path)
 
-        print(f"###############################")
-        print(f"## file_path : {file_path}")
-        print(f"## module_path : {module_path}")
-        print(f"###############################")
+        # print(f"###############################")
+        # print(f"## file_path : {file_path}")
+        # print(f"## module_path : {module_path}")
+        # print(f"###############################")
 
         try:
             with open(file_path) as f:
@@ -1201,17 +1201,18 @@ def analyze_modules_once(
         except Exception as ex:
             raise ex
         finally:
-            print("")
-            print("")
-            print("-------------------------------")
-            print(f"-- index : {i}")
-            print(f"-- total : {len(file_paths)}")
-            print(f"-- distance : {len(file_paths) - i}")
-            print(f"-- file_path : {file_path}")
-            print(f"-- module_path : {module_path}")
-            # print(f"-- inher_aux.package : {from_package_to_primitive(inher_aux.package)}")
-            print(f"-- success_count : {success_count}")
-            print("-------------------------------")
+            # print("")
+            # print("")
+            # print("-------------------------------")
+            # print(f"-- index : {i}")
+            # print(f"-- total : {len(file_paths)}")
+            # print(f"-- distance : {len(file_paths) - i}")
+            # print(f"-- file_path : {file_path}")
+            # print(f"-- module_path : {module_path}")
+            # # print(f"-- inher_aux.package : {from_package_to_primitive(inher_aux.package)}")
+            # print(f"-- success_count : {success_count}")
+            # print("-------------------------------")
+            pass
 
 
     return package 
@@ -1233,21 +1234,20 @@ def analyze_modules_fixpoint(
     package : PMap[str, ModulePackage]
 ) -> PMap[str, ModulePackage]:
 
-    print(f"fixpoint iteration count: {0}")
+    # print(f"fixpoint iteration count: {0}")
     in_package = package 
     in_package_prim = from_package_to_primitive(package)
     out_package = analyze_modules_once(root_dir, module_paths, in_package) 
     out_package_prim = from_package_to_primitive(out_package)
     count = 1
-    print(f"fixpoint iteration count: {count}")
+    # print(f"fixpoint iteration count: {count}")
     while out_package_prim != in_package_prim:
-        print(f"in fixpoint loop")
         in_package = out_package
         in_package_prim = out_package_prim 
         out_package = analyze_modules_once(root_dir, module_paths, in_package) 
         out_package_prim = from_package_to_primitive(out_package)
         count += 1
-        print(f"fixpoint iteration count: {count}")
+        # print(f"fixpoint iteration count: {count}")
 
     return out_package
 

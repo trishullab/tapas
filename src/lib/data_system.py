@@ -176,10 +176,10 @@ def generate_file(
             line = f.readline()
             total_count += 1
             
-            print(f"")
-            print(f"total_count: {total_count}")
-            print(f"processed_count: {processed_count}")
-            print(f"")
+            # print(f"")
+            # print(f"total_count: {total_count}")
+            # print(f"processed_count: {processed_count}")
+            # print(f"")
 
         #endwhile
 
@@ -239,7 +239,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
         error_count = 0
         total_count = 0
 
-        print(f"stats_collection length: {len(stats_collection)}")
+        # print(f"stats_collection length: {len(stats_collection)}")
 
         for stats in stats_collection:
             time += stats['time']
@@ -267,7 +267,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
             'total_count' : total_count
         }
 
-        print(f"DIR STATS: {stats}")
+        # print(f"DIR STATS: {stats}")
         write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
 
         write(abstract_data_dirpath, f'vocab.json', json.dumps(
