@@ -3,9 +3,8 @@ from lib import data_system
 
 if __name__ == "__main__":
 
-    # typeshed_inher_aux : pals.InherAux = pals.make_InherAux()
-    typeshed_inher_aux : pals.InherAux = pals.analyze_typeshed(1)
-    data_system.generate_dir(typeshed_inher_aux, 'mbpp')
+    package = pals.analyze_typeshed(2)
+    data_system.generate_dir(package, 'mbpp')
 
     # data_system.generate_dir('apps')
     # data_system.generate_dir('py150_train')

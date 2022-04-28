@@ -6,8 +6,22 @@ from lib.construct_def import Constructor, Field
 
 singles = [
 
+
+    # TODO: add abstract methods 
+    # related to universal type in PLT
+    # concrete type if it has no abstract_methods and no type parameters 
+    Constructor("ClassRecord", [], [
+        # class type params are determined by use of Generic constructor
+        Field("key", "str", ""),
+        Field("type_params", "tuple[VarType, ...]", ""),
+        Field("super_types", "tuple[type, ...]", ""),
+        Field("static_fields", "PMap[str, type]", ""),
+        Field("instance_fields", "PMap[str, type]", "")
+    ]),
+
     Constructor("ModulePackage", [], [
         Field("module", "PMap[str, type]", "m()"),
+        Field("class_env", "PMap[str, ClassRecord]", "m()"),
         Field("package", "PMap[str, ModulePackage]", "m()"),
     ]),
 
@@ -32,9 +46,12 @@ singles = [
         Field("global_env", "PMap[str, Provenance]", "m()"),
         Field("nonlocal_env", "PMap[str, Provenance]", "m()"),
         Field("local_env", "PMap[str, Provenance]", "m()"),
+        Field("class_env", "PMap[str, ClassRecord]", "m()"), # internal_path |-> ClassRecord
     ]),
 
     Constructor("SynthAux", [], [
+
+        Field("class_additions", "PMap[str, ClassRecord]", "m()"),
 
         Field("env_subtractions", "PSet[str]", "s()"),
         Field("env_additions", "PMap[str, Provenance]", "m()"),
@@ -142,22 +159,11 @@ choices = {
             Field("type_components", "tuple[type, ...]", "")
         ]),
 
-        # TODO: add abstract methods 
-        # related to universal type in PLT
-        # concrete type if it has no abstract_methods and no type parameters 
-        Constructor("ClassType", [], [
-            # class type params are determined by use of Generic constructor
-            Field("key", "str", ""),
-            Field("type_params", "tuple[VarType, ...]", ""),
-            Field("super_types", "tuple[type, ...]", ""),
-            Field("static_fields", "PMap[str, type]", ""),
-            Field("instance_fields", "PMap[str, type]", "")
-        ]),
-
         # created from ClassType. Refers to the methods of the class
         # related to product type in PLT
-        Constructor("InstanceType", [], [
-            Field("class_type", "ClassType", ""),
+        Constructor("RecordType", [], [
+            Field("class_key", "str", ""),
+            Field("class_uid", "int", "0"),
             Field("type_args", "tuple[type, ...]", "()"),
         ]),
 

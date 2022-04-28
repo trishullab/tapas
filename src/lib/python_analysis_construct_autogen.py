@@ -386,72 +386,34 @@ def update_InterType(source_InterType : InterType,
         
 
 @dataclass(frozen=True, eq=True)
-class ClassType(type):
-    key : str
-    type_params : tuple[VarType, ...]
-    super_types : tuple[type, ...]
-    static_fields : PMap[str, type]
-    instance_fields : PMap[str, type]
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_ClassType(self)
-
-def make_ClassType(
-    key : str, 
-    type_params : tuple[VarType, ...], 
-    super_types : tuple[type, ...], 
-    static_fields : PMap[str, type], 
-    instance_fields : PMap[str, type]
-) -> type:
-    return ClassType(
-        key,
-        type_params,
-        super_types,
-        static_fields,
-        instance_fields
-    )
-
-def update_ClassType(source_ClassType : ClassType,
-    key : Union[str, SourceFlag] = SourceFlag(),
-    type_params : Union[tuple[VarType, ...], SourceFlag] = SourceFlag(),
-    super_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
-    static_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
-    instance_fields : Union[PMap[str, type], SourceFlag] = SourceFlag()
-) -> ClassType:
-    return ClassType(
-        source_ClassType.key if isinstance(key, SourceFlag) else key,
-        source_ClassType.type_params if isinstance(type_params, SourceFlag) else type_params,
-        source_ClassType.super_types if isinstance(super_types, SourceFlag) else super_types,
-        source_ClassType.static_fields if isinstance(static_fields, SourceFlag) else static_fields,
-        source_ClassType.instance_fields if isinstance(instance_fields, SourceFlag) else instance_fields
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class InstanceType(type):
-    class_type : ClassType
+class RecordType(type):
+    class_key : str
+    class_uid : int
     type_args : tuple[type, ...]
 
     def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_InstanceType(self)
+        return handlers.case_RecordType(self)
 
-def make_InstanceType(
-    class_type : ClassType, 
+def make_RecordType(
+    class_key : str, 
+    class_uid : int = 0, 
     type_args : tuple[type, ...] = ()
 ) -> type:
-    return InstanceType(
-        class_type,
+    return RecordType(
+        class_key,
+        class_uid,
         type_args
     )
 
-def update_InstanceType(source_InstanceType : InstanceType,
-    class_type : Union[ClassType, SourceFlag] = SourceFlag(),
+def update_RecordType(source_RecordType : RecordType,
+    class_key : Union[str, SourceFlag] = SourceFlag(),
+    class_uid : Union[int, SourceFlag] = SourceFlag(),
     type_args : Union[tuple[type, ...], SourceFlag] = SourceFlag()
-) -> InstanceType:
-    return InstanceType(
-        source_InstanceType.class_type if isinstance(class_type, SourceFlag) else class_type,
-        source_InstanceType.type_args if isinstance(type_args, SourceFlag) else type_args
+) -> RecordType:
+    return RecordType(
+        source_RecordType.class_key if isinstance(class_key, SourceFlag) else class_key,
+        source_RecordType.class_uid if isinstance(class_uid, SourceFlag) else class_uid,
+        source_RecordType.type_args if isinstance(type_args, SourceFlag) else type_args
     )
 
         
@@ -1023,8 +985,7 @@ class TypeHandlers(Generic[T]):
     case_FunctionType : Callable[[FunctionType], T]
     case_UnionType : Callable[[UnionType], T]
     case_InterType : Callable[[InterType], T]
-    case_ClassType : Callable[[ClassType], T]
-    case_InstanceType : Callable[[InstanceType], T]
+    case_RecordType : Callable[[RecordType], T]
     case_FixedTupleType : Callable[[FixedTupleType], T]
     case_VariedTupleType : Callable[[VariedTupleType], T]
     case_MappingType : Callable[[MappingType], T]
@@ -1057,27 +1018,72 @@ def match_type(o : type, handlers : TypeHandlers[T]) -> T :
      
 
 
+# type and constructor ClassRecord
+@dataclass(frozen=True, eq=True)
+class ClassRecord:
+    key : str
+    type_params : tuple[VarType, ...]
+    super_types : tuple[type, ...]
+    static_fields : PMap[str, type]
+    instance_fields : PMap[str, type]
+
+
+def make_ClassRecord(
+    key : str,
+    type_params : tuple[VarType, ...],
+    super_types : tuple[type, ...],
+    static_fields : PMap[str, type],
+    instance_fields : PMap[str, type]
+) -> ClassRecord:
+    return ClassRecord(
+        key,
+        type_params,
+        super_types,
+        static_fields,
+        instance_fields)
+
+def update_ClassRecord(source_ClassRecord : ClassRecord,
+    key : Union[str, SourceFlag] = SourceFlag(),
+    type_params : Union[tuple[VarType, ...], SourceFlag] = SourceFlag(),
+    super_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
+    static_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
+    instance_fields : Union[PMap[str, type], SourceFlag] = SourceFlag()
+) -> ClassRecord:
+    return ClassRecord(
+        source_ClassRecord.key if isinstance(key, SourceFlag) else key, 
+        source_ClassRecord.type_params if isinstance(type_params, SourceFlag) else type_params, 
+        source_ClassRecord.super_types if isinstance(super_types, SourceFlag) else super_types, 
+        source_ClassRecord.static_fields if isinstance(static_fields, SourceFlag) else static_fields, 
+        source_ClassRecord.instance_fields if isinstance(instance_fields, SourceFlag) else instance_fields)
+
+    
+
 # type and constructor ModulePackage
 @dataclass(frozen=True, eq=True)
 class ModulePackage:
     module : PMap[str, type]
+    class_env : PMap[str, ClassRecord]
     package : PMap[str, ModulePackage]
 
 
 def make_ModulePackage(
     module : PMap[str, type] = m(),
+    class_env : PMap[str, ClassRecord] = m(),
     package : PMap[str, ModulePackage] = m()
 ) -> ModulePackage:
     return ModulePackage(
         module,
+        class_env,
         package)
 
 def update_ModulePackage(source_ModulePackage : ModulePackage,
     module : Union[PMap[str, type], SourceFlag] = SourceFlag(),
+    class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
     package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag()
 ) -> ModulePackage:
     return ModulePackage(
         source_ModulePackage.module if isinstance(module, SourceFlag) else module, 
+        source_ModulePackage.class_env if isinstance(class_env, SourceFlag) else class_env, 
         source_ModulePackage.package if isinstance(package, SourceFlag) else package)
 
     
@@ -1167,6 +1173,7 @@ class InherAux:
     global_env : PMap[str, Provenance]
     nonlocal_env : PMap[str, Provenance]
     local_env : PMap[str, Provenance]
+    class_env : PMap[str, ClassRecord]
 
 
 def make_InherAux(
@@ -1175,7 +1182,8 @@ def make_InherAux(
     internal_path : str = '',
     global_env : PMap[str, Provenance] = m(),
     nonlocal_env : PMap[str, Provenance] = m(),
-    local_env : PMap[str, Provenance] = m()
+    local_env : PMap[str, Provenance] = m(),
+    class_env : PMap[str, ClassRecord] = m()
 ) -> InherAux:
     return InherAux(
         package,
@@ -1183,7 +1191,8 @@ def make_InherAux(
         internal_path,
         global_env,
         nonlocal_env,
-        local_env)
+        local_env,
+        class_env)
 
 def update_InherAux(source_InherAux : InherAux,
     package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag(),
@@ -1191,7 +1200,8 @@ def update_InherAux(source_InherAux : InherAux,
     internal_path : Union[str, SourceFlag] = SourceFlag(),
     global_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
     nonlocal_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
-    local_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag()
+    local_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
+    class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag()
 ) -> InherAux:
     return InherAux(
         source_InherAux.package if isinstance(package, SourceFlag) else package, 
@@ -1199,13 +1209,15 @@ def update_InherAux(source_InherAux : InherAux,
         source_InherAux.internal_path if isinstance(internal_path, SourceFlag) else internal_path, 
         source_InherAux.global_env if isinstance(global_env, SourceFlag) else global_env, 
         source_InherAux.nonlocal_env if isinstance(nonlocal_env, SourceFlag) else nonlocal_env, 
-        source_InherAux.local_env if isinstance(local_env, SourceFlag) else local_env)
+        source_InherAux.local_env if isinstance(local_env, SourceFlag) else local_env, 
+        source_InherAux.class_env if isinstance(class_env, SourceFlag) else class_env)
 
     
 
 # type and constructor SynthAux
 @dataclass(frozen=True, eq=True)
 class SynthAux:
+    class_additions : PMap[str, ClassRecord]
     env_subtractions : PSet[str]
     env_additions : PMap[str, Provenance]
     names : PSet[str]
@@ -1225,6 +1237,7 @@ class SynthAux:
 
 
 def make_SynthAux(
+    class_additions : PMap[str, ClassRecord] = m(),
     env_subtractions : PSet[str] = s(),
     env_additions : PMap[str, Provenance] = m(),
     names : PSet[str] = s(),
@@ -1243,6 +1256,7 @@ def make_SynthAux(
     import_names : PMap[str, str] = m()
 ) -> SynthAux:
     return SynthAux(
+        class_additions,
         env_subtractions,
         env_additions,
         names,
@@ -1261,6 +1275,7 @@ def make_SynthAux(
         import_names)
 
 def update_SynthAux(source_SynthAux : SynthAux,
+    class_additions : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
     env_subtractions : Union[PSet[str], SourceFlag] = SourceFlag(),
     env_additions : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
     names : Union[PSet[str], SourceFlag] = SourceFlag(),
@@ -1279,6 +1294,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
     import_names : Union[PMap[str, str], SourceFlag] = SourceFlag()
 ) -> SynthAux:
     return SynthAux(
+        source_SynthAux.class_additions if isinstance(class_additions, SourceFlag) else class_additions, 
         source_SynthAux.env_subtractions if isinstance(env_subtractions, SourceFlag) else env_subtractions, 
         source_SynthAux.env_additions if isinstance(env_additions, SourceFlag) else env_additions, 
         source_SynthAux.names if isinstance(names, SourceFlag) else names, 

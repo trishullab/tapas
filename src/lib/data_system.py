@@ -29,7 +29,15 @@ class BigCodeError(Exception):
 
 concrete_dir_name = "concrete_data"
 
-def generate_file(inher_aux : pals.InherAux, dirname : str, name : str, vocab : dict, dir_count : int) -> dict[str, Any]:
+from pyrsistent.typing import PMap
+
+def generate_file(
+    package : PMap[str, pals.ModulePackage], 
+    dirname : str, 
+    name : str, 
+    vocab : dict, 
+    dir_count : int
+) -> dict[str, Any]:
 
     processed_count = 0
     rec_error_count = 0
@@ -77,8 +85,9 @@ def generate_file(inher_aux : pals.InherAux, dirname : str, name : str, vocab : 
 
                 abstract_tokens = python_ast_system.serialize(mod)
 
-                atok = pals.from_inher_aux_to_primitive(inher_aux)
-                client : pals.Client = pals.spawn_analysis(inher_aux)
+                client : pals.Client = pals.spawn_analysis(package, "main")
+
+                atok = client.init_prim
                 abstract_program_data = [atok]
 
                 for tok in abstract_tokens:
@@ -200,7 +209,7 @@ def generate_file_tuple(tup) -> dict[str, Any]:
     stats = generate_file(tup[0], tup[1], tup[2], tup[3], tup[4])
     return stats
 
-def generate_dir(inher_aux : pals.InherAux, dirname : str):
+def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
     concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
@@ -214,7 +223,7 @@ def generate_dir(inher_aux : pals.InherAux, dirname : str):
         write(abstract_data_dirpath, f'vocab.json', '')
     
         pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        stats_collection = pool.map(generate_file_tuple, [(inher_aux, dirname, n, vocab, i) for n in chunk])
+        stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, i) for n in chunk])
         pool.close()
         pool.join()
 

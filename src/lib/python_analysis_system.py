@@ -68,6 +68,22 @@ def unionize_types(a : type, b : type) -> type:
         )
 
 def get_type_args(t : type) -> tuple[type, ...]:
+
+    # TODO: should this return a single type annotation?
+    # type_arg = (
+    #     None
+    #     if len(spec_type_args) == 0 else
+    #     AnnoType(spec_type_args[0])
+    #     if len(spec_type_args) == 1 else
+    #     FixedTupleType(
+    #         item_types=tuple(
+    #             AnnoType(ta)
+    #             for ta in spec_type_args
+    #         )
+    #     )
+    # )
+
+
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : (t.content,),
         case_AnnoType = lambda t : (t.content,),
@@ -80,8 +96,7 @@ def get_type_args(t : type) -> tuple[type, ...]:
         case_FunctionType = lambda t : (),
         case_UnionType = lambda t : t.type_choices,
         case_InterType = lambda t : t.type_components,
-        case_ClassType = lambda t : (),
-        case_InstanceType = lambda t : t.type_args,
+        case_RecordType = lambda t : t.type_args,
         case_FixedTupleType = lambda t : t.item_types,
         case_VariedTupleType = lambda t : (t.item_type,),
         case_MappingType = lambda t : (t.key_type, t.value_type),
@@ -123,8 +138,7 @@ def get_class_key(t : type) -> str:
         case_FunctionType = lambda t : "_collections_abc.Callable",
         case_UnionType = lambda t : "typing.Union",
         case_InterType = lambda t : "",
-        case_ClassType = lambda t : t.key,
-        case_InstanceType = lambda t : t.class_type.key,
+        case_RecordType = lambda t : t.class_key,
         case_FixedTupleType = lambda t : "builtins.tuple",
         case_VariedTupleType = lambda t : "builtins.tuple",
         case_MappingType = lambda t : "_collections_abc.Mapping",
@@ -155,190 +169,168 @@ def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
 
-def to_instance_type(inher_aux : InherAux, t : type) -> type:
-    if isinstance(t, ClassType):
-        return from_ClassType_to_instance_type(inher_aux, t) 
-    elif isinstance(t, AnnoType):
-        return to_instance_type(inher_aux, t.content)
+def coerce_to_AnnoType(t : type) -> AnnoType:
+    if isinstance(t, AnyType):
+        return AnnoType(AnyType())
+    elif isinstance(t, NoneType):
+        return AnnoType(NoneType())
     else:
+        assert isinstance(t, AnnoType)
         return t
 
-def to_instance_types(inher_aux : InherAux, ts : Iterable[type]) -> tuple[type, ...]:
+def coerce_to_FixedTupleType(t : type) -> FixedTupleType:
+    assert isinstance(t, FixedTupleType)
+    return t
+
+def coerce_to_ListLitType(t : type) -> ListLitType:
+    assert isinstance(t, ListLitType)
+    return t
+
+def from_anno_seq_to_instance_types(ts : Iterable[type]) -> tuple[type, ...]:
     return tuple(
-        to_instance_type(inher_aux, t)
-        for t in ts
+        coerce_to_AnnoType(t).content
+        for t in ts 
     ) 
 
-def from_ClassType_to_instance_type(inher_aux : InherAux, class_type : ClassType, type_arg : Optional[type] = None) -> type:
-
-    if class_type.key == "builtins.type":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
-        return TypeType(
-            content = item_type
-        )
-
-    elif class_type.key == "builtins.ellipsis":
-        return EllipType()
-    elif class_type.key == "_collections_abc.Any":
+def from_anno_option_to_instance_type(t : type | None) -> type:
+    if t:
+        return coerce_to_AnnoType(t).content
+    else:
         return AnyType()
-    elif class_type.key == "_collections_abc.Callable":
+
+def from_anno_pair_option_to_instance_type(t : type | None) -> tuple[type, type]: 
+    if t:
+        ftt = coerce_to_FixedTupleType(t)
+        ts = from_anno_seq_to_instance_types(ftt.item_types)
+        assert len(ts) == 2
+        return (ts[0], ts[1])
+    else:
+        return (AnyType(), AnyType()) 
+
+def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Optional[type] = None) -> type:
+
+    if class_key == "builtins.type":
+        item_type = from_anno_option_to_instance_type(type_arg)
+        return TypeType(content = item_type)
+
+    elif class_key == "builtins.ellipsis":
+        assert not type_arg
+        return EllipType()
+    elif class_key == "_collections_abc.Any":
+        assert not type_arg
+        return AnyType()
+    elif class_key == "_collections_abc.Callable":
         assert isinstance(type_arg, FixedTupleType)
-        assert len(type_arg.item_types) == 2
-        param_type = type_arg.item_types[0]
-        assert isinstance(param_type, ListLitType)
-        pos_param_types = to_instance_types(inher_aux, param_type.item_types)
-        return_type = to_instance_type(inher_aux, type_arg.item_types[1])
+        type_args = coerce_to_FixedTupleType(type_arg).item_types
+        assert len(type_args) == 2
+        param_type_args = coerce_to_ListLitType(type_args[0]).item_types
+        pos_param_types = from_anno_seq_to_instance_types(param_type_args)
+        return_type = coerce_to_AnnoType(type_arg.item_types[1]).content
         return make_FunctionType(
             pos_param_types=pos_param_types,
             return_type=return_type
         )
-    elif class_type.key == "typing.Union":
-        assert isinstance(type_arg, FixedTupleType)
+    elif class_key == "typing.Union":
+        assert type_arg
+        ts = from_anno_seq_to_instance_types(coerce_to_FixedTupleType(type_arg).item_types)
+        return make_UnionType(type_choices=ts)
 
-        return make_UnionType(
-            type_choices=to_instance_types(inher_aux, type_arg.item_types)
-        )
-    elif class_type.key == "builtins.tuple":
+    elif class_key == "builtins.tuple":
         
         if (
             isinstance(type_arg, FixedTupleType) and
             len(type_arg.item_types) == 2 and
             isinstance(type_arg.item_types[1], EllipType)
         ):
-            return VariedTupleType(
-                item_type = to_instance_type(inher_aux, type_arg.item_types[0])
-            )
+            return VariedTupleType(item_type = coerce_to_AnnoType(type_arg.item_types[0]).content)
+
         elif isinstance(type_arg, FixedTupleType):
-            item_types = to_instance_types(inher_aux, type_arg.item_types)
-            return FixedTupleType(
-                item_types=item_types
-            )
-        elif type_arg:
-            item_types = (to_instance_type(inher_aux, type_arg),)
+            item_types = from_anno_seq_to_instance_types(type_arg.item_types)
             return FixedTupleType(item_types=item_types)
+
+        elif type_arg:
+            item_types = coerce_to_AnnoType(type_arg).content,
+            return FixedTupleType(item_types=item_types)
+
         else:
             return FixedTupleType(item_types=())
 
-    elif class_type.key == "builtins.dict":
-        key_type = AnyType()
-        value_type = AnyType()
-        if isinstance(type_arg, FixedTupleType):
-            assert len(type_arg.item_types) == 2
-            key_type = to_instance_type(inher_aux, type_arg.item_types[0])
-            value_type = to_instance_type(inher_aux, type_arg.item_types[1])
-        return DictType(
-            key_type=key_type,
-            value_type=value_type
-        )
-    elif class_type.key == "builtins.set":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
-        return SetType(
-            item_type = item_type
-        )
-    elif class_type.key == "_collections_abc.Iterable":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
+    elif class_key == "builtins.dict":
+        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
+        return DictType(key_type=key_type, value_type=value_type)
+
+    elif class_key == "builtins.set":
+        item_type = from_anno_option_to_instance_type(type_arg)
+        return SetType(item_type = item_type)
+    elif class_key == "_collections_abc.Iterable":
+        item_type = from_anno_option_to_instance_type(type_arg)
         return IterableType(item_type=item_type)
-    elif class_type.key == "_collections_abc.dict_keys":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
+    elif class_key == "_collections_abc.dict_keys":
+        item_type = from_anno_option_to_instance_type(type_arg)
         return DictKeysType(item_type=item_type)
 
-    elif class_type.key == "_collections_abc.dict_values":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
+    elif class_key == "_collections_abc.dict_values":
+        item_type = from_anno_option_to_instance_type(type_arg)
         return DictValuesType(item_type=item_type)
 
-    elif class_type.key == "_collections_abc.dict_items":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
+    elif class_key == "_collections_abc.dict_items":
+        item_type = from_anno_option_to_instance_type(type_arg)
         return DictItemsType(item_type=item_type)
 
-    elif class_type.key == "_collections_abc.Sequence":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
-        return SequenceType(
-            item_type=item_type
-        )
-    elif class_type.key == "builtins.range":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
-        return RangeType(
-            item_type=item_type
-        )
-    elif class_type.key == "builtins.list":
-        item_type = AnyType()
-        if isinstance(type_arg, ClassType) or isinstance(type_arg, AnnoType):
-            item_type = to_instance_type(inher_aux, type_arg)
-        return ListType(
-            item_type=item_type
-        )
-    elif class_type.key == "_collections_abc.Generator":
-        yield_type = AnyType()
-        return_type = AnyType()
-        if isinstance(type_arg, FixedTupleType):
-            assert len(type_arg.item_types) == 3
-            yield_type = to_instance_type(inher_aux, type_arg.item_types[0])
-            return_type = to_instance_type(inher_aux, type_arg.item_types[2])
-        return GeneratorType(
-            yield_type=yield_type,
-            return_type=return_type
-        )
-    elif class_type.key == "builtins.bool":
-        return BoolType()
-    elif class_type.key == "builtins.int":
-        return IntType()
-    elif class_type.key == "builtins.float":
-        return FloatType()
-    elif class_type.key == "builtins.str":
-        return StrType()
-    elif class_type.key == "builtins.slice":
-
-        start : type = AnyType()
-        stop : type = AnyType()
-        step : type = AnyType()
-        if isinstance(type_arg, FixedTupleType):
-            assert len(type_arg.item_types) == 3
-            instance_types = to_instance_types(inher_aux, type_arg.item_types)
-            start = instance_types[0]
-            stop = instance_types[1]
-            step = instance_types[2]
-
-        return SliceType(
-            start = start,
-            stop = stop,
-            step = step 
-        )
-    else:
-        type_args = ()
-        if isinstance(type_arg, FixedTupleType):
-            type_args = to_instance_types(inher_aux, type_arg.item_types)  
-        elif type_arg:
-            type_args = (to_instance_type(inher_aux, type_arg),)
-
-        if isinstance(class_type, ClassType):
-            return make_InstanceType(
-                class_type = class_type,
-                type_args = type_args 
-            )
+    elif class_key == "_collections_abc.Sequence":
+        item_type = from_anno_option_to_instance_type(type_arg)
+        return SequenceType(item_type=item_type)
+    elif class_key == "builtins.range":
+        item_type = from_anno_option_to_instance_type(type_arg)
+        return RangeType(item_type=item_type)
+    elif class_key == "builtins.list":
+        item_type = from_anno_option_to_instance_type(type_arg)
+        return ListType(item_type=item_type)
+    elif class_key == "_collections_abc.Generator":
+        if type_arg:
+            ftt = coerce_to_FixedTupleType(type_arg)
+            ts = from_anno_seq_to_instance_types(ftt.item_types)
+            assert len(ts) == 3
+            return GeneratorType(yield_type=ts[0], return_type=ts[2])
         else:
-            return AnyType()
+            return GeneratorType(AnyType(), AnyType())
+    elif class_key == "builtins.bool":
+        return BoolType()
+    elif class_key == "builtins.int":
+        return IntType()
+    elif class_key == "builtins.float":
+        return FloatType()
+    elif class_key == "builtins.str":
+        return StrType()
+    elif class_key == "builtins.slice":
+
+        if type_arg:
+            ftt = coerce_to_FixedTupleType(type_arg)
+            ts = from_anno_seq_to_instance_types(ftt.item_types)
+            assert len(ts) == 3
+            return SliceType(ts[0], ts[1], ts[2])
+        else:
+            return SliceType(AnyType(), AnyType(), AnyType())
+
+    else:
+        type_args = (
+            from_anno_seq_to_instance_types(type_arg.item_types)  
+            if isinstance(type_arg, FixedTupleType) else
+            (coerce_to_AnnoType(type_arg).content,)
+            if type_arg else
+            ()
+        )
+
+        return make_RecordType(
+            class_key=class_key,
+            type_args=type_args
+        )
 
 
 def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
     class_key = get_class_key(spec_type)
-    class_type = from_static_path_to_type(inher_aux, class_key)
-    if isinstance(class_type, ClassType):
+    class_record = from_static_path_to_ClassRecord(inher_aux, class_key)
+    if class_record:
         spec_type_args = get_type_args(spec_type)
         type_arg = (
             None
@@ -352,7 +344,7 @@ def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
                 )
             )
         )
-        gen_type = from_ClassType_to_instance_type(inher_aux, class_type, type_arg)
+        gen_type = from_class_key_to_type(inher_aux, class_key, type_arg)
         return gen_type
     else:
         return AnyType()
@@ -363,27 +355,23 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-def subsumes_InstanceType(sub_type : InstanceType, super_type : InstanceType, inher_aux : InherAux) -> bool:
-    assert sub_type.class_type.key == super_type.class_type.key 
-    class_type = sub_type.class_type
+def subsumes_RecordType(sub_type : RecordType, super_type : RecordType, inher_aux : InherAux) -> bool:
+    assert sub_type.class_key == super_type.class_key 
+    class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
+    assert class_record
+    type_params = class_record.type_params
 
-    type_params = class_type.type_params
-    type_vars : list[VarType] = [ 
-        coerce_to_VarType(to_instance_type(inher_aux, t))
-        for t in type_params
-    ]
-
-    assert len(type_vars) == len(sub_type.type_args) == len(super_type.type_args)
+    assert len(type_params) == len(sub_type.type_args) == len(super_type.type_args)
 
     subsumptions = [
         (
             subsumes(sub_type.type_args[i], super_type.type_args[i], inher_aux)
-            if isinstance(tv.variant, CoVariant) else
+            if isinstance(tp.variant, CoVariant) else
             subsumes(super_type.type_args[i], sub_type.type_args[i], inher_aux)
-            if isinstance(tv.variant, ContraVariant) else
+            if isinstance(tp.variant, ContraVariant) else
             sub_type.type_args[i] == super_type.type_args[i]
         )
-        for i, tv in enumerate(type_vars)
+        for i, tp in enumerate(type_params)
     ]
 
     return us.every(subsumptions, lambda x : x)
@@ -416,9 +404,9 @@ def type_args_subsume(sub_type : type, super_type : type, inher_aux : InherAux) 
     if isinstance(sub_type, FunctionType):
         assert isinstance(super_type, FunctionType)
         return subsumes_FunctionType(sub_type, super_type, inher_aux)
-    elif isinstance(sub_type, InstanceType):
-        assert isinstance(super_type, InstanceType)
-        return subsumes_InstanceType(sub_type, super_type, inher_aux)
+    elif isinstance(sub_type, RecordType):
+        assert isinstance(super_type, RecordType)
+        return subsumes_RecordType(sub_type, super_type, inher_aux)
     else:
         assert get_class_key(sub_type) == get_class_key(super_type)
         sub_type_args = get_type_args(sub_type)
@@ -464,17 +452,19 @@ def subsumes(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
     )
 
 
-def instance_parent_type(t : InstanceType, inher_aux : InherAux) -> type:
-    class_type = t.class_type 
-    assert isinstance(class_type, ClassType)
-    assert len(t.type_args) == len(class_type.type_params)
+def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
+    class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key) 
+    if not class_record:   
+        return ObjectType()
+
+    assert len(t.type_args) == len(class_record.type_params)
     subst_map = pmap({
         var_type.name : t.type_args[i]
-        for i, var_type in enumerate(class_type.type_params)
+        for i, var_type in enumerate(class_record.type_params)
     })
     parent_types = tuple(
         substitute_type_args(st, subst_map)
-        for st in class_type.super_types
+        for st in class_record.super_types
     )
     if len(parent_types) == 1:
         return parent_types[0]
@@ -496,8 +486,7 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
         case_FunctionType = lambda t : ObjectType(),
         case_UnionType = lambda t : ObjectType(),
         case_InterType = lambda t : ObjectType(),
-        case_ClassType = lambda t : ObjectType(),
-        case_InstanceType = lambda t : instance_parent_type(t, inher_aux),
+        case_RecordType = lambda t : instance_parent_type(t, inher_aux),
         case_FixedTupleType = lambda t : VariedTupleType(unionize_all_types(t.item_types)),
         case_VariedTupleType = lambda t : SequenceType(t.item_type),
         case_MappingType = lambda t : ObjectType(),
@@ -524,42 +513,39 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
         case_SliceType = lambda t : ObjectType() 
     )) 
 
-def infer_class_type(t : type, inher_aux : InherAux) -> ClassType | None:
-    if isinstance(t, ClassType):
-        return t
-    else:
-        class_key = get_class_key(t)
-        class_type = from_static_path_to_type(inher_aux, class_key) 
-        if isinstance(class_type, ClassType):
-            type_args : tuple[type, ...] = get_type_args(t)
-            subst_map = pmap({
-                tp.name : (type_args[i] if i < len(type_args) else AnyType())
-                for i, tp in enumerate(class_type.type_params) 
+def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
+    class_key = get_class_key(t)
+    class_record = from_static_path_to_ClassRecord(inher_aux, class_key) 
+    if class_record:
+        type_args : tuple[type, ...] = get_type_args(t)
+        subst_map = pmap({
+            tp.name : (type_args[i] if i < len(type_args) else AnyType())
+            for i, tp in enumerate(class_record.type_params) 
+        })
+
+        return update_ClassRecord(class_record,
+            static_fields = pmap({
+                k : substitute_type_args(t, subst_map)  
+                for k, t in class_record.static_fields.items()
+            }), 
+            instance_fields = pmap({
+                k : substitute_type_args(t, subst_map)  
+                for k, t in class_record.instance_fields.items()
             })
-
-            return update_ClassType(class_type,
-                static_fields = pmap({
-                    k : substitute_type_args(t, subst_map)  
-                    for k, t in class_type.static_fields.items()
-                }), 
-                instance_fields = pmap({
-                    k : substitute_type_args(t, subst_map)  
-                    for k, t in class_type.instance_fields.items()
-                })
-            )
-        else:
-            return None
+        )
+    else:
+        return None
 
 
-def static_field_type(anchor_type : ClassType, field_name : str, inher_aux : InherAux) -> Optional[type]:
-    fields = anchor_type.static_fields 
+def static_field_type(class_record : ClassRecord, field_name : str, inher_aux : InherAux) -> Optional[type]:
+    fields = class_record.static_fields 
     result = fields.get(field_name)
     if result:
         return result
     else:
         super_class_type_unresolved = False
-        for st in reversed(anchor_type.super_types):
-            super_class_type = infer_class_type(st, inher_aux)
+        for st in reversed(class_record.super_types):
+            super_class_type = infer_class_record(st, inher_aux)
             if super_class_type:
                 result = static_field_type(super_class_type, field_name, inher_aux)
                 if result:
@@ -573,28 +559,6 @@ def static_field_type(anchor_type : ClassType, field_name : str, inher_aux : Inh
 
             
 
-def instance_field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> Optional[type]:
-    if isinstance(anchor_type, TypeType):
-        class_type = infer_class_type(anchor_type.content, inher_aux)
-        if isinstance(class_type, ClassType):
-            return static_field_type(class_type, field_name, inher_aux)
-        else:
-            return AnyType()
-    else:
-        class_type = infer_class_type(anchor_type, inher_aux)
-        if isinstance(class_type, ClassType):
-            fields = class_type.instance_fields
-            result = fields.get(field_name)
-            if result:
-                return result 
-            else:
-                for super_type in reversed(class_type.super_types):
-                    result = instance_field_type(super_type, field_name, inher_aux)
-                    if result:
-                        return result
-        return AnyType()
-
-
 def field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> type | None:
 
     if isinstance(anchor_type, ModuleType):
@@ -602,26 +566,26 @@ def field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> ty
         path = f"{anchor_type.key}.{field_name}" 
         return from_static_path_to_type(inher_aux, path)
 
-    elif isinstance(anchor_type, ClassType):
-        result = static_field_type(anchor_type, field_name, inher_aux)
-        return result
-    elif isinstance(anchor_type, AnnoType):
-        class_type = infer_class_type(anchor_type, inher_aux)
-        if class_type:
-            result = static_field_type(class_type, field_name, inher_aux)
-            return result
+    elif isinstance(anchor_type, TypeType) or isinstance(anchor_type, AnnoType):
+        content_class_record = infer_class_record(anchor_type.content, inher_aux)
+        if content_class_record:
+            return static_field_type(content_class_record, field_name, inher_aux)
         else:
             return AnyType()
+
     else:
-        result = instance_field_type(anchor_type, field_name, inher_aux)
-        if result:
-            return result
-        else:
-            class_type = infer_class_type(anchor_type, inher_aux)
-            if isinstance(class_type, ClassType):
-                return static_field_type(class_type, field_name, inher_aux)
+        class_record = infer_class_record(anchor_type, inher_aux)
+        if class_record:
+            fields = class_record.instance_fields
+            result = fields.get(field_name)
+            if result:
+                return result 
             else:
-                return AnyType() 
+                for super_type in reversed(class_record.super_types):
+                    result = field_type(super_type, field_name, inher_aux)
+                    if result:
+                        return result
+        return AnyType()
 
 
 
@@ -690,9 +654,8 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
                 ), # tuple[type, ...]
             )
         ),
-        case_ClassType = lambda t : t,
-        case_InstanceType = lambda t : (
-            update_InstanceType(t,
+        case_RecordType = lambda t : (
+            update_RecordType(t,
                 type_args = tuple(
                     substitute_type_args(type_arg, subst_map)
                     for type_arg in t.type_args
@@ -801,36 +764,43 @@ def get_mapping_key_value_types(t : type, inher_aux : InherAux) -> tuple[type, t
         return (t.key_type, t.value_type)
     elif isinstance(t, MappingType):
         return (t.key_type, t.value_type)
-    elif isinstance(t, InstanceType):
-        class_type = t.class_type 
-        substitution_map : PMap[str, type] = pmap({
-            class_type.type_params[i].name : type_arg
-            for i, type_arg in enumerate(t.type_args) 
-        })
+    elif isinstance(t, RecordType):
+        class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
+        if class_record:
+            substitution_map : PMap[str, type] = pmap({
+                class_record.type_params[i].name : type_arg
+                for i, type_arg in enumerate(t.type_args) 
+            })
 
-        for super_type in class_type.super_types:
-            super_type = substitute_type_args(super_type, substitution_map)
-            result = get_mapping_key_value_types(super_type, inher_aux)
-            return result
-        assert False 
+            for super_type in class_record.super_types:
+                super_type = substitute_type_args(super_type, substitution_map)
+                result = get_mapping_key_value_types(super_type, inher_aux)
+                return result
+
+            assert False 
+        else:
+            return (AnyType(), AnyType())
     else:
         assert False
 
 
-def get_iterable_item_type_from_InstanceType(t : InstanceType, inher_aux : InherAux) -> type:
-    class_type = t.class_type 
+def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux) -> type:
+    class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
 
-    substitution_map : PMap[str, type] = pmap({
-        class_type.type_params[i].name : type_arg
-        for i, type_arg in enumerate(t.type_args) 
-    })
+    if class_record:
+        substitution_map : PMap[str, type] = pmap({
+            class_record.type_params[i].name : type_arg
+            for i, type_arg in enumerate(t.type_args) 
+        })
 
-    for super_type in reversed(class_type.super_types):
-        super_type = substitute_type_args(super_type, substitution_map)
-        result = get_iterable_item_type(super_type, inher_aux)
-        return result
+        for super_type in reversed(class_record.super_types):
+            super_type = substitute_type_args(super_type, substitution_map)
+            result = get_iterable_item_type(super_type, inher_aux)
+            return result
 
-    assert False
+        assert False
+    else:
+        return AnyType()
 
 def get_iterable_item_type_from_UnionType(t : UnionType, inher_aux : InherAux) -> type:
     assert len(t.type_choices) > 0
@@ -857,8 +827,7 @@ def get_iterable_item_type(t : type, inher_aux : InherAux) -> type:
         case_FunctionType = lambda t : fail(),
         case_UnionType = lambda t : get_iterable_item_type_from_UnionType(t, inher_aux),
         case_InterType = lambda t : fail(),
-        case_ClassType = lambda t : fail(),
-        case_InstanceType = lambda t : get_iterable_item_type_from_InstanceType(t, inher_aux),
+        case_RecordType = lambda t : get_iterable_item_type_from_RecordType(t, inher_aux),
         case_FixedTupleType = lambda t : unionize_all_types(t.item_types),
         case_VariedTupleType = lambda t : t.item_type,
         case_MappingType = lambda t : fail(),
@@ -929,6 +898,29 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
         raise UnifyError()
 
 
+def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRecord | None:
+    if path.startswith(inher_aux.external_path + "."):
+        return inher_aux.class_env.get(path[len(inher_aux.external_path + ".")])
+
+    sep = "."
+    levels = path.split(sep)
+    l = len(levels)
+    package : PMap[str, ModulePackage] = pmap(inher_aux.package)
+
+    for i, level in enumerate(levels):
+        if package.get(level):
+
+            mod_pack = package[level]
+
+            class_env = mod_pack.class_env
+            package = mod_pack.package
+            if i + 1 < l: 
+                remaining_path = ".".join(levels[i + 1:])
+                class_record = class_env.get(remaining_path)
+                if class_record: return class_record
+
+    return None
+
 def from_static_path_to_type(inher_aux : InherAux, path : str) -> type:
 
     if path == inher_aux.external_path:
@@ -965,7 +957,6 @@ def from_static_path_to_type(inher_aux : InherAux, path : str) -> type:
             return AnyType()
     
     return ModuleType(key = path)
-
 
 
 
@@ -1110,8 +1101,7 @@ def from_type_to_primitive(t : type) -> list:
         ],
         case_UnionType = lambda t : ["UnionType", [from_type_to_primitive(tc) for tc in t.type_choices]],
         case_InterType = lambda t : ["InterType", [from_type_to_primitive(tc) for tc in t.type_components]],
-        case_ClassType = lambda t : ["ClassType", t.key],
-        case_InstanceType = lambda t : ["InstanceType", t.class_type.key, [
+        case_RecordType = lambda t : ["RecordType", t.class_key, t.class_uid, [
             from_type_to_primitive(ta)
             for ta in t.type_args
         ]],
@@ -1147,32 +1137,35 @@ def from_type_to_primitive(t : type) -> list:
 
 
 
-def analyze_code(code : str, inher_aux : InherAux) -> InherAux:
-    client : Client = spawn_analysis(inher_aux)
+def analyze_code(
+    package : PMap[str, ModulePackage], 
+    module_name, 
+    code : str
+) -> PMap[str, ModulePackage]:
+    client : Client = spawn_analysis(package, module_name)
 
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
 
-    last_inher_aux : InherAux = inher_aux 
+    last_inher_aux : InherAux = client.init
     a_keys_len = len(last_inher_aux.package.keys())
     for token in abstract_tokens:
         result = client.next(token)
-        if isinstance(result, Exception):
-            raise result
-        else:
-            last_inher_aux = result
+        last_inher_aux = result
 
     b_keys_len = len(last_inher_aux.package.keys())
     assert b_keys_len >= a_keys_len
 
-    return last_inher_aux 
+    return last_inher_aux.package 
 
 
 from os import path
-def analyze_modules_once(root_dir : str, module_paths : Sequence[str], inher_aux_naught : InherAux) -> InherAux:
-
-    inher_aux = inher_aux_naught
+def analyze_modules_once(
+    root_dir : str, 
+    module_paths : Sequence[str], 
+    package : PMap[str, ModulePackage]
+) -> PMap[str, ModulePackage]:
 
     root_dir = path.abspath(root_dir)
     package_start = len(root_dir) + 1 
@@ -1191,33 +1184,36 @@ def analyze_modules_once(root_dir : str, module_paths : Sequence[str], inher_aux
         )
         assert path.isfile(file_path)
 
-        # print("")
-        # print("")
-        # print("-------------------------------")
-        # print(f"-- index : {i}")
-        # print(f"-- total : {len(file_paths)}")
-        # print(f"-- distance : {len(file_paths) - i}")
-        # print(f"-- file_path : {file_path}")
-        # print(f"-- module_path : {module_path}")
-        # print(f"-- inher_aux.package : {inher_aux.package}")
-        # print(f"-- success_count : {success_count}")
-        # print("-------------------------------")
+        print(f"###############################")
+        print(f"## file_path : {file_path}")
+        print(f"## module_path : {module_path}")
+        print(f"###############################")
 
-        inher_aux = update_InherAux(inher_aux,
-            external_path = module_path 
-        )
-        with open(file_path) as f:
-            code = f.read().strip()
-            if code:
-                inher_aux = analyze_code(code, inher_aux)
-            else:
-                inher_aux = inher_aux = update_InherAux(inher_aux,
-                    external_path = "",
-                    package = insert_module(inher_aux.package, module_path, m())
-                )
-            success_count += 1
+        try:
+            with open(file_path) as f:
+                code = f.read().strip()
+                if code:
+                    inher_aux = analyze_code(package, module_path, code)
+                else:
+                    package = insert_module(package, module_path, m())
+                success_count += 1
+        except Exception as ex:
+            raise ex
+        finally:
+            print("")
+            print("")
+            print("-------------------------------")
+            print(f"-- index : {i}")
+            print(f"-- total : {len(file_paths)}")
+            print(f"-- distance : {len(file_paths) - i}")
+            print(f"-- file_path : {file_path}")
+            print(f"-- module_path : {module_path}")
+            # print(f"-- inher_aux.package : {from_package_to_primitive(inher_aux.package)}")
+            print(f"-- success_count : {success_count}")
+            print("-------------------------------")
 
-    return inher_aux
+
+    return package 
 
 
 def collect_module_paths(dirpath : str) -> Sequence[str]:
@@ -1230,46 +1226,55 @@ def collect_module_paths(dirpath : str) -> Sequence[str]:
             result.append(file_path)
     return result
 
-def analyze_modules_fixpoint(root_dir : str, module_paths : Sequence[str], inher_aux : InherAux, limit : int) -> InherAux:
+def analyze_modules_fixpoint(
+    root_dir : str, 
+    module_paths : Sequence[str], 
+    package : PMap[str, ModulePackage], 
+    limit : int
+) -> PMap[str, ModulePackage]:
+
+    if limit == 0:
+        return package 
+
     print(f"fixpoint iteration count: {0}")
-    in_inher_aux = inher_aux
-    in_package_prim = from_package_to_primitive(in_inher_aux.package)
-    out_inher_aux = analyze_modules_once(root_dir, module_paths, in_inher_aux) 
-    out_package_prim = from_package_to_primitive(out_inher_aux.package)
+    in_package = package 
+    in_package_prim = from_package_to_primitive(package)
+    out_package = analyze_modules_once(root_dir, module_paths, in_package) 
+    out_package_prim = from_package_to_primitive(out_package)
     count = 1
     print(f"fixpoint iteration count: {count}")
     while (limit < 0 or count < limit) and out_package_prim != in_package_prim:
         print(f"in fixpoint loop")
-        in_inher_aux = out_inher_aux
+        in_package = out_package
         in_package_prim = out_package_prim 
-        out_inher_aux = analyze_modules_once(root_dir, module_paths, in_inher_aux) 
-        out_package_prim = from_package_to_primitive(out_inher_aux.package)
+        out_inher_aux = analyze_modules_once(root_dir, module_paths, in_package) 
+        out_package_prim = from_package_to_primitive(out_package)
         count += 1
         print(f"fixpoint iteration count: {count}")
 
-    return out_inher_aux
+    return out_package
 
-def analyze_typeshed(limit : int) -> InherAux:
-    inher_aux : InherAux = make_InherAux()
+def analyze_typeshed(limit : int) -> PMap[str, ModulePackage]:
     stdlib_dirpath = us.project_path(f"../typeshed/stdlib")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
 
-    inher_aux = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, inher_aux, limit) 
+    package : PMap[str, ModulePackage] = m()
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package, limit) 
 
     # other_libs_dirpath = us.project_path(f"../typeshed/stubs")
     # other_module_paths = collect_module_paths(other_libs_dirpath)
-    # inher_aux = analyze_modules_fixpoint(other_libs_dirpath, other_module_paths, inher_aux, limit) 
-    return inher_aux
+    # package = analyze_modules_fixpoint(other_libs_dirpath, other_module_paths, package, limit) 
+    return package 
 
 
-def make_demo(code : str) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
-    inher_aux : InherAux = analyze_typeshed(1)
+def make_demo(module_name : str, code : str) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
+    typeshed_package = analyze_typeshed(2) 
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
 
     partial_tokens = () 
-    client : Client = spawn_analysis(inher_aux)
+    client : Client = spawn_analysis(typeshed_package, module_name)
 
     for token in abstract_tokens:
         result = client.next(token)
@@ -1367,6 +1372,8 @@ from queue import Queue
 
 @dataclass
 class Client: 
+    init : InherAux
+    init_prim : list 
     next : Callable[[abstract_token], InherAux]
     next_prim : Callable[[list], list | None]
 
@@ -1395,13 +1402,41 @@ def insert_module(package : PMap[str, ModulePackage], rpath : Sequence[str], mod
         return package + insert_module(next_package, tl, module)
 
 
+def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_path : str) -> ModulePackage | None:
+    assert external_path
+    levels = external_path.split(".")
+    result : ModulePackage | None = package.get(levels[0])
 
-def spawn_analysis(inher_aux : InherAux) -> Client:
+    for level in levels[1:]:
+
+        if result:
+            result = result.package.get(level)
+        else:
+            return None
+
+
+    return result
+
+
+
+def spawn_analysis(package : PMap[str, ModulePackage], module_name : str) -> Client:
 
     in_stream : Queue[abstract_token] = Queue()
     out_stream : Queue[Union[InherAux, Exception]] = Queue()
 
     server : Server = Server(in_stream, out_stream)
+
+    mp = from_package_get_ModulePackage(package, module_name)
+    inher_aux = (
+        make_InherAux(
+            external_path = module_name, 
+            package = package,
+            local_env = pmap((sym, make_Provenance(initialized=True, type=t)) for sym, t in mp.module.items()),
+            class_env = mp.class_env
+        )
+        if mp else
+        make_InherAux(external_path = module_name, package = package)
+    )
 
     def run():
         try:
@@ -1417,6 +1452,10 @@ def spawn_analysis(inher_aux : InherAux) -> Client:
             rpath = [s for s in reversed(inher_aux.external_path.split("."))]
             final_inher_aux = update_InherAux(inher_aux,
                 external_path = "",
+                global_env = m(),
+                nonlocal_env = m(),
+                local_env = m(),
+                class_env = m(), 
                 package = insert_module(inher_aux.package, rpath, module)
             )
             out_stream.put(final_inher_aux)
@@ -1448,10 +1487,12 @@ def spawn_analysis(inher_aux : InherAux) -> Client:
             last_inher_prim = out_inher_prim
             return out_inher_prim
 
-
-
-    return Client(next, next_prim) 
-
+    return Client(
+        init = inher_aux, 
+        init_prim = from_inher_aux_to_primitive(inher_aux), 
+        next = next, 
+        next_prim = next_prim
+    ) 
 
 
 
@@ -1516,6 +1557,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
     # override parent class method
     def synthesize_auxes(self, auxes : tuple[SynthAux]) -> SynthAux:
+
+        class_additions : PMap[str, ClassRecord] = m()
         env_subtractions : PSet[str] = s()
         env_additions : PMap[str, Provenance] = m()
         names : PSet[str] = s()
@@ -1541,6 +1584,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
 
         for aux in auxes:
+
+            class_additions = class_additions + aux.class_additions
 
             for sub in aux.env_subtractions:
                 if env_additions.get(sub):
@@ -1572,6 +1617,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
             import_names = import_names + aux.import_names
 
         return SynthAux(
+            class_additions,
             env_subtractions, env_additions, 
             names, 
             method_names,
@@ -1662,22 +1708,17 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         expr_type = AnyType()
         if (
-            (
-                isinstance(left_type, ClassType) or  
-                isinstance(left_type, AnnoType) or
-                isinstance(right_type, ClassType) or  
-                isinstance(right_type, AnnoType)
-            ) and
+            (isinstance(left_type, AnnoType) or isinstance(right_type, AnnoType)) and
             isinstance(rator_tree, pas.BitOr)
         ):
-            left_instance_type = to_instance_type(inher_aux, left_type)
-            right_instance_type = to_instance_type(inher_aux, right_type)
+            left_instance_type = coerce_to_AnnoType(left_type).content
+            right_instance_type = coerce_to_AnnoType(right_type).content
             union_type = unionize_types(left_instance_type, right_instance_type)
             expr_type = AnnoType(union_type)
         else:
 
             method_name = pas.from_bin_rator_to_method_name(rator_tree)
-            method_type = instance_field_type(left_type, method_name, inher_aux)
+            method_type = field_type(left_type, method_name, inher_aux)
 
             if isinstance(method_type, FunctionType):
                 assert args_params_compatible(
@@ -1705,7 +1746,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         assert len(rand_aux.expr_types) == 1
         rand_type = rand_aux.expr_types[0]
         method_name = pas.from_unary_rator_to_method_name(rator_tree)
-        method_type = instance_field_type(rand_type, method_name, inher_aux)
+        method_type = field_type(rand_type, method_name, inher_aux)
         return_type = AnyType()
         if isinstance(method_type, FunctionType):
             assert args_params_compatible(
@@ -2111,7 +2152,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         assert len(comps_aux.expr_types) == len(comps_aux.method_names) 
         for i, method_name in enumerate(comps_aux.method_names):
             right_type = comps_aux.expr_types[i]
-            method_type = instance_field_type(left_type, method_name, inher_aux)
+            method_type = field_type(left_type, method_name, inher_aux)
             if isinstance(method_type, FunctionType):
                 assert args_params_compatible(
                     [right_type], {}, 
@@ -2140,8 +2181,6 @@ class Server(crawler.Server[InherAux, SynthAux]):
         func_type = func_aux.expr_types[0]
         if isinstance(func_type, FunctionType):
             inferred_type = func_type.return_type
-        elif isinstance(func_type, ClassType):
-            inferred_type = from_ClassType_to_instance_type(inher_aux, func_type) 
         elif isinstance(func_type, AnnoType):
             inferred_type = func_type.content 
         elif isinstance(func_type, AnyType):
@@ -2201,6 +2240,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         args_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
+
+
         expr_type = None
 
         assert len(func_aux.expr_types) == 1
@@ -2213,11 +2254,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
             )
             expr_type = func_type.return_type
 
-        elif isinstance(func_type, ClassType):
-            class_type = func_type
-            expr_type = from_ClassType_to_instance_type(inher_aux, class_type)
+        elif isinstance(func_type, AnnoType):
+            class_key = get_class_key(func_type.content)
 
-            if class_type.key == "typing.TypeVar": 
+            if class_key == "typing.TypeVar": 
 
                 pos_arg_types = args_aux.expr_types
                 kw_arg_types = args_aux.kw_types
@@ -2246,22 +2286,21 @@ class Server(crawler.Server[InherAux, SynthAux]):
             
                 expr_type = AnnoType(VarType(name = name, variant = variant))
             else:
-                expr_type = from_ClassType_to_instance_type(inher_aux, class_type)
 
-        elif isinstance(func_type, AnnoType):
-            class_key = get_class_key(func_type.content)
-            class_type = from_static_path_to_type(inher_aux, class_key)
+                class_key = get_class_key(func_type.content)
+                class_record = from_static_path_to_ClassRecord(inher_aux, class_key)
 
-            assert isinstance(class_type, ClassType)
+                if class_record:
+                    init_type = static_field_type(class_record, "__init__", inher_aux)
+                    assert isinstance(init_type, FunctionType)
 
-            init_type = static_field_type(class_type, "__init__", inher_aux)
-            assert isinstance(init_type, FunctionType)
+                    assert args_params_compatible(
+                        args_aux.expr_types,
+                        args_aux.kw_types, 
+                        init_type, inher_aux
+                    )
 
-            assert args_params_compatible(
-                args_aux.expr_types,
-                args_aux.kw_types, 
-                init_type, inher_aux
-            )
+                expr_type = func_type.content 
         else:
             expr_type = AnyType()
 
@@ -2460,9 +2499,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
         var_types : tuple[VarType, ...]= ()
         expr_types = ()
 
-        if isinstance(content_type, ClassType):
-
-            if content_type.key == "typing.Generic":
+        if isinstance(content_type, AnnoType):
+            class_key = get_class_key(content_type.content)
+            if class_key == "typing.Generic":
                 if isinstance(slice_type, FixedTupleType):
                     for anno_vt in slice_type.item_types:
                         assert isinstance(anno_vt, AnnoType)
@@ -2476,12 +2515,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
                     assert isinstance(vt, VarType)
                     var_types += (vt,) 
             else:
-                expr_types = (AnnoType(from_ClassType_to_instance_type(inher_aux, content_type, slice_type)),)
+                expr_types = (AnnoType(from_class_key_to_type(inher_aux, class_key, slice_type)),)
 
         elif isinstance(content_type, AnnoType):
             expr_types = tuple([AnyType()])
         else:
-            method_type = instance_field_type(content_type, "__getitem__", inher_aux)
+            method_type = field_type(content_type, "__getitem__", inher_aux)
             if isinstance(method_type, FunctionType): 
                 assert args_params_compatible(
                     [slice_type], {}, 
@@ -2632,7 +2671,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
             aux = update_SynthAux(content_aux)
         )
 
-    # module <-- FutureMod
+    # synthesize: module <-- FutureMod
     def synthesize_for_module_FutureMod(self, 
         inher_aux : InherAux,
         names_tree : pas.sequence_import_name, 
@@ -2683,7 +2722,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         })  
         return crawler.Synth[SynthAux](
             tree = pas.DecClassDef(decs_tree, class_def_tree),
-            aux = make_SynthAux(
+            aux = update_SynthAux(self.synthesize_auxes(tuple([decs_aux, class_def_aux])),
                 env_additions = env_additions
             ) 
         )
@@ -2736,19 +2775,29 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
+
         type_params : tuple[VarType, ...] = bs_aux.var_types
 
         super_types : tuple[type, ...] = bs_aux.expr_types
+
+        internal_class_key = (
+            f"{inher_aux.internal_path}.{name_tree}"
+            if inher_aux.internal_path else
+            f"{name_tree}"
+        )
+
+        class_key = f"{inher_aux.external_path}.{internal_class_key}"
 
         def expose_static_method_type(name : str, p : Provenance) -> type:
             if not isinstance(p.type, FunctionType):
                 return p.type
 
             for dt in p.decorator_types:
-                if isinstance(dt, ClassType):
-                    if dt.key == "builtins.staticmethod":
+                if isinstance(dt, AnnoType):
+                    dt_class_key = get_class_key(dt.content)
+                    if dt_class_key == "builtins.staticmethod":
                         return p.type
-                    elif dt.key == "builtins.classmethod":
+                    elif dt_class_key == "builtins.classmethod":
                         return update_FunctionType(p.type,
                             pos_kw_param_sigs=p.type.pos_kw_param_sigs[1:]
                         )
@@ -2766,19 +2815,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
             else:
 
                 # check if type has been partially resolved in previous iteration of analysis
-                class_key = (
-                    f"{inher_aux.external_path}.{inher_aux.internal_path}.{name_tree}"
-                    if inher_aux.internal_path else
-                    f"{inher_aux.external_path}.{name_tree}"
-                )
-                class_type = from_static_path_to_type(inher_aux, class_key)
-                self_instance_type = (
-                    from_ClassType_to_instance_type(inher_aux, class_type, FixedTupleType(type_params))
-                    if isinstance(class_type, ClassType) else
-                    AnyType()
-                )
+                self_instance_type = from_class_key_to_type(inher_aux, class_key, FixedTupleType(type_params))
 
-                self_instance_param_sig = update_ParamSig(p.type.pos_kw_param_sigs[0], type = self_instance_type )
+                self_instance_param_sig = update_ParamSig(p.type.pos_kw_param_sigs[0], type = self_instance_type)
 
                 return update_FunctionType(p.type,
                     pos_kw_param_sigs=tuple([self_instance_param_sig]) + p.type.pos_kw_param_sigs[1:]
@@ -2789,10 +2828,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
                 return None 
 
             for dt in p.decorator_types:
-                if isinstance(dt, ClassType):
-                    if dt.key == "builtins.staticmethod":
+                if isinstance(dt, AnnoType):
+                    dt_class_key = get_class_key(dt.content)
+                    if dt_class_key == "builtins.staticmethod":
                         return None 
-                    elif dt.key == "builtins.classmethod":
+                    elif dt_class_key == "builtins.classmethod":
                         return None
 
             if len(p.type.pos_kw_param_sigs) == 0:
@@ -2820,8 +2860,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         # TODO: check that contravariant type params are only used as inputs
         
 
-        type : type = ClassType(
-            key = inher_aux.external_path + "." + name_tree,
+        class_record = ClassRecord(
+            key = class_key,
             type_params = type_params,
             super_types = super_types, # tuple[ClassType, ...]
 
@@ -2829,11 +2869,18 @@ class Server(crawler.Server[InherAux, SynthAux]):
             instance_fields = instance_fields # PMap[str, type]
         )
 
+        instance_type = from_static_path_to_type(inher_aux, class_record.key)
         return crawler.Synth[SynthAux](
             tree = pas.ClassDef(name_tree, bs_tree, body_tree),
             aux = make_SynthAux(
                 env_subtractions=s(),
-                env_additions=(pmap({name_tree : make_Provenance(initialized=True, type=type)}))
+                env_additions=pmap({
+                    name_tree : make_Provenance(
+                        initialized=True, 
+                        type=AnnoType(instance_type)
+                    )
+                }),
+                class_additions=pmap({internal_class_key : class_record}) + body_aux.class_additions
             ) 
         )
 
@@ -2872,7 +2919,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         ret_anno_aux : SynthAux
     ) -> InherAux:
         # TODO: depending on context (e.g. instance vs class method vs static method),
-        # set the type of the first parameter to AnnoType or InstanceType 
+        # set the type of the first parameter to AnnoType or RecordType 
         assert len(params_aux.env_subtractions) == 0
         inher_aux = shift_env(inher_aux, name_tree)
         return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.env_additions) 
@@ -2926,7 +2973,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         if isinstance(ret_anno_tree, pas.SomeReturnAnno): 
             function_sig_return_type = (
-                to_instance_type(inher_aux, ret_anno_aux.expr_types[0])
+                coerce_to_AnnoType(ret_anno_aux.expr_types[0]).content
                 if len(ret_anno_aux.expr_types) == 1 else
                 AnyType()
             )
@@ -2984,9 +3031,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
         default_tree : pas.param_default, 
         default_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-    
+
         sig_type = (
-            to_instance_type(inher_aux, anno_aux.expr_types[0])
+            coerce_to_AnnoType(anno_aux.expr_types[0]).content
             if len(anno_aux.expr_types) == 1 else 
             AnyType()
         )
@@ -3235,7 +3282,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         content_type = content_aux.expr_types[0]
         method_name = pas.from_bin_rator_to_aug_method_name(rator_tree)
-        method_type = instance_field_type(target_type, method_name, inher_aux)
+        method_type = field_type(target_type, method_name, inher_aux)
 
         if isinstance(method_type, FunctionType):
             assert args_params_compatible(
@@ -3273,7 +3320,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         assert len(content_aux.expr_types) == 1
         content_type = content_aux.expr_types[0]
-        sig_type = to_instance_type(inher_aux, anno_aux.expr_types[0])
+        sig_type = coerce_to_AnnoType(anno_aux.expr_types[0]).content
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
@@ -3297,7 +3344,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         anno_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
         assert len(anno_aux.expr_types) > 0
-        sig_type = to_instance_type(inher_aux, anno_aux.expr_types[0])
+        sig_type = coerce_to_AnnoType( anno_aux.expr_types[0]).content
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
