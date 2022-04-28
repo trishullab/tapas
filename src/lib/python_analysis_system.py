@@ -1247,7 +1247,7 @@ def analyze_modules_fixpoint(
         print(f"in fixpoint loop")
         in_package = out_package
         in_package_prim = out_package_prim 
-        out_inher_aux = analyze_modules_once(root_dir, module_paths, in_package) 
+        out_package = analyze_modules_once(root_dir, module_paths, in_package) 
         out_package_prim = from_package_to_primitive(out_package)
         count += 1
         print(f"fixpoint iteration count: {count}")
@@ -1268,7 +1268,7 @@ def analyze_typeshed(limit : int) -> PMap[str, ModulePackage]:
 
 
 def make_demo(module_name : str, code : str) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
-    typeshed_package = analyze_typeshed(2) 
+    typeshed_package = analyze_typeshed(30) 
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
