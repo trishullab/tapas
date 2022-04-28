@@ -46,6 +46,7 @@ singles = [
         Field("global_env", "PMap[str, Provenance]", "m()"),
         Field("nonlocal_env", "PMap[str, Provenance]", "m()"),
         Field("local_env", "PMap[str, Provenance]", "m()"),
+        Field("expr_types", "tuple[type, ...]", "()"),
         Field("class_env", "PMap[str, ClassRecord]", "m()"), # internal_path |-> ClassRecord
     ]),
 

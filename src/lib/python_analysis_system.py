@@ -1049,6 +1049,7 @@ def is_literal_string(content : str) -> bool:
 def from_inher_aux_to_primitive(inher_aux : InherAux):
     return ['A', 
         from_env_to_primitive(inher_aux.local_env), 
+        [from_type_to_primitive(t) for t in inher_aux.expr_types], 
         from_env_to_primitive(inher_aux.nonlocal_env), 
         from_env_to_primitive(inher_aux.global_env)
     ]
@@ -1229,12 +1230,8 @@ def collect_module_paths(dirpath : str) -> Sequence[str]:
 def analyze_modules_fixpoint(
     root_dir : str, 
     module_paths : Sequence[str], 
-    package : PMap[str, ModulePackage], 
-    limit : int
+    package : PMap[str, ModulePackage]
 ) -> PMap[str, ModulePackage]:
-
-    if limit == 0:
-        return package 
 
     print(f"fixpoint iteration count: {0}")
     in_package = package 
@@ -1243,7 +1240,7 @@ def analyze_modules_fixpoint(
     out_package_prim = from_package_to_primitive(out_package)
     count = 1
     print(f"fixpoint iteration count: {count}")
-    while (limit < 0 or count < limit) and out_package_prim != in_package_prim:
+    while out_package_prim != in_package_prim:
         print(f"in fixpoint loop")
         in_package = out_package
         in_package_prim = out_package_prim 
@@ -1254,12 +1251,12 @@ def analyze_modules_fixpoint(
 
     return out_package
 
-def analyze_typeshed(limit : int) -> PMap[str, ModulePackage]:
+def analyze_typeshed() -> PMap[str, ModulePackage]:
     stdlib_dirpath = us.project_path(f"../typeshed/stdlib")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
 
     package : PMap[str, ModulePackage] = m()
-    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package, limit) 
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
 
     # other_libs_dirpath = us.project_path(f"../typeshed/stubs")
     # other_module_paths = collect_module_paths(other_libs_dirpath)
@@ -1268,7 +1265,7 @@ def analyze_typeshed(limit : int) -> PMap[str, ModulePackage]:
 
 
 def make_demo(module_name : str, code : str) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
-    typeshed_package = analyze_typeshed(30) 
+    typeshed_package = analyze_typeshed() 
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
@@ -1292,13 +1289,6 @@ def from_env_to_primitive(env : PMap[str, Provenance]) -> dict:
     return {
         symbol : [p.initialized, from_type_to_primitive(p.type)]
         for symbol, p in env.items()
-    }
-
-def from_InherAux_to_dictionary(inher_aux : InherAux) -> dict:
-    return {
-        'local_env' : from_env_to_primitive(inher_aux.local_env),
-        'nonlocal_env' : from_env_to_primitive(inher_aux.nonlocal_env),
-        'global_env' : from_env_to_primitive(inher_aux.global_env)
     }
 
 
@@ -1341,7 +1331,11 @@ def traverse_aux(inher_aux : InherAux, synth_aux : SynthAux) -> InherAux:
     for sub in synth_aux.env_subtractions:
         local_env.remove(sub)
 
-    return update_InherAux(inher_aux, local_env = local_env + synth_aux.env_additions)
+    return update_InherAux(inher_aux, 
+        local_env = local_env + synth_aux.env_additions,
+        class_env = inher_aux.class_env + synth_aux.class_additions,
+        expr_types = synth_aux.expr_types
+    )
 
 def cross_join_aux(true_body_aux : SynthAux, false_body_aux : SynthAux) -> SynthAux:
 
@@ -2779,14 +2773,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
         type_params : tuple[VarType, ...] = bs_aux.var_types
 
         super_types : tuple[type, ...] = bs_aux.expr_types
+        assert inher_aux.internal_path.endswith(name_tree)
 
-        internal_class_key = (
-            f"{inher_aux.internal_path}.{name_tree}"
-            if inher_aux.internal_path else
-            f"{name_tree}"
-        )
-
-        class_key = f"{inher_aux.external_path}.{internal_class_key}"
+        class_key = f"{inher_aux.external_path}.{inher_aux.internal_path}"
 
         def expose_static_method_type(name : str, p : Provenance) -> type:
             if not isinstance(p.type, FunctionType):
@@ -2815,7 +2804,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
             else:
 
                 # check if type has been partially resolved in previous iteration of analysis
-                self_instance_type = from_class_key_to_type(inher_aux, class_key, FixedTupleType(type_params))
+                type_arg = (
+                    AnnoType(type_params[0])
+                    if len(type_params) == 1 else 
+                    FixedTupleType(tuple(AnnoType(t) for t in type_params))
+                    if len(type_params) > 1 else
+                    None
+                ) 
+                self_instance_type = from_class_key_to_type(inher_aux, class_key, type_arg)
 
                 self_instance_param_sig = update_ParamSig(p.type.pos_kw_param_sigs[0], type = self_instance_type)
 
@@ -2880,7 +2876,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                         type=AnnoType(instance_type)
                     )
                 }),
-                class_additions=pmap({internal_class_key : class_record}) + body_aux.class_additions
+                class_additions=pmap({inher_aux.internal_path : class_record}) + body_aux.class_additions
             ) 
         )
 

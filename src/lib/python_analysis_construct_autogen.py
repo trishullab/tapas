@@ -1173,6 +1173,7 @@ class InherAux:
     global_env : PMap[str, Provenance]
     nonlocal_env : PMap[str, Provenance]
     local_env : PMap[str, Provenance]
+    expr_types : tuple[type, ...]
     class_env : PMap[str, ClassRecord]
 
 
@@ -1183,6 +1184,7 @@ def make_InherAux(
     global_env : PMap[str, Provenance] = m(),
     nonlocal_env : PMap[str, Provenance] = m(),
     local_env : PMap[str, Provenance] = m(),
+    expr_types : tuple[type, ...] = (),
     class_env : PMap[str, ClassRecord] = m()
 ) -> InherAux:
     return InherAux(
@@ -1192,6 +1194,7 @@ def make_InherAux(
         global_env,
         nonlocal_env,
         local_env,
+        expr_types,
         class_env)
 
 def update_InherAux(source_InherAux : InherAux,
@@ -1201,6 +1204,7 @@ def update_InherAux(source_InherAux : InherAux,
     global_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
     nonlocal_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
     local_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
+    expr_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag()
 ) -> InherAux:
     return InherAux(
@@ -1210,6 +1214,7 @@ def update_InherAux(source_InherAux : InherAux,
         source_InherAux.global_env if isinstance(global_env, SourceFlag) else global_env, 
         source_InherAux.nonlocal_env if isinstance(nonlocal_env, SourceFlag) else nonlocal_env, 
         source_InherAux.local_env if isinstance(local_env, SourceFlag) else local_env, 
+        source_InherAux.expr_types if isinstance(expr_types, SourceFlag) else expr_types, 
         source_InherAux.class_env if isinstance(class_env, SourceFlag) else class_env)
 
     
