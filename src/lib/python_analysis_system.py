@@ -1048,8 +1048,8 @@ def is_literal_string(content : str) -> bool:
 
 def from_inher_aux_to_primitive(inher_aux : InherAux):
     return ['A', 
-        from_env_to_primitive(inher_aux.local_env), 
         [from_type_to_primitive(t) for t in inher_aux.expr_types], 
+        from_env_to_primitive(inher_aux.local_env), 
         from_env_to_primitive(inher_aux.nonlocal_env), 
         from_env_to_primitive(inher_aux.global_env)
     ]

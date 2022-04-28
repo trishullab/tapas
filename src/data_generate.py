@@ -3,7 +3,7 @@ from lib import data_system
 
 if __name__ == "__main__":
 
-    package = pals.analyze_typeshed(2)
+    package = pals.analyze_typeshed()
     data_system.generate_dir(package, 'mbpp')
 
     # data_system.generate_dir('apps')

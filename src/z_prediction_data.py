@@ -22,15 +22,16 @@ with open(fpath, 'r') as f:
 
 
     from lib import python_analysis_system as pals
-    package = pals.analyze_typeshed(1)
+    package = pals.analyze_typeshed()
     client = pals.spawn_analysis(package, "example")
     
-    print(client.init_prim)
+    atok = client.init_prim
+    print(atok)
     for ptok in just_the_ps:
         print(ptok)
-        inher_prim = client.next_prim(ptok)
-        if inher_prim:
-            print(inher_prim)
+        atok = client.next_prim(ptok)
+        if atok:
+            print(atok)
         else:
             # no change 
             pass
