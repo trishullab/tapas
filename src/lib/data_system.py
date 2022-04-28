@@ -101,7 +101,10 @@ def generate_file(
                         abstract_program_data.append(new_atok)
                         atok = new_atok
 
-                write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', br + json.dumps(abstract_program_data), append=True)
+
+                content = br + json.dumps(abstract_program_data)
+                if content.strip():
+                    write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', content, append=True)
 
                 def handle_Vocab(o : Vocab):
                     if o.options in vocab.keys():
