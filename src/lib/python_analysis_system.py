@@ -1504,6 +1504,44 @@ def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) 
     return target_types
 
 
+def check_forward_references(inher_aux : InherAux, body_aux : SynthAux, body_tree : pas.statements):
+
+    for body_aux_name in body_aux.names:
+        assert (
+            body_aux.env_additions.get(body_aux_name) != None or
+            body_aux_name in inher_aux.local_env
+        )
+
+    body_inher_aux = traverse_aux(inher_aux, body_aux)
+    analyze_statements(body_tree, body_inher_aux)
+
+def analyze_statements(statements_ast : pas.statements, inher_aux : InherAux) -> SynthAux:
+
+    in_stream : Queue[abstract_token] = Queue()
+    out_stream : Queue[Union[InherAux, Exception]] = Queue()
+
+    return_stream : Queue[SynthAux] = Queue()
+
+    server : Server = Server(in_stream, out_stream)
+
+    def run():
+        tok = in_stream.get()
+        synth = server.crawl_statements(tok, inher_aux)
+        out_stream.put(inher_aux)
+        return_stream.put(synth.aux)
+
+    import threading
+    thread = threading.Thread(target = run)
+    thread.start()
+
+    from lib.python_ast_serialize_autogen import from_statements as serialize_statements
+    tokens : tuple[abstract_token, ...] = serialize_statements(statements_ast)
+    for tok in tokens:
+        in_stream.put(tok)
+        out_stream.get()
+
+    return return_stream.get()
+
 
 def analyze_expr(expr_ast : pas.expr, inher_aux : InherAux) -> SynthAux:
 
@@ -2769,6 +2807,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
+        # check semantics of body
+        check_forward_references(inher_aux, body_aux, body_tree)
 
         type_params : tuple[VarType, ...] = bs_aux.var_types
 
@@ -2914,8 +2954,6 @@ class Server(crawler.Server[InherAux, SynthAux]):
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        # TODO: depending on context (e.g. instance vs class method vs static method),
-        # set the type of the first parameter to AnnoType or RecordType 
         assert len(params_aux.env_subtractions) == 0
         inher_aux = shift_env(inher_aux, name_tree)
         return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.env_additions) 
@@ -2930,8 +2968,6 @@ class Server(crawler.Server[InherAux, SynthAux]):
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        # TODO: depending on context (e.g. instance vs class method vs static method),
-        # set the type of the first parameter to ClassType or SpecialType 
         assert len(params_aux.env_subtractions) == 0
         inher_aux = shift_env(inher_aux, name_tree)
         return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.env_additions) 
@@ -2951,6 +2987,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
+
+        # check semantics of body
+        check_forward_references(inher_aux, body_aux, body_tree)
 
         function_body_return_type = (
             GeneratorType(
@@ -2992,7 +3031,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
             aux = make_SynthAux(
                 env_subtractions = s(),
                 env_additions = pmap({name_tree : make_Provenance(initialized = True, type = type)})
-            ) 
+            )
         )
 
     # synthesize: function_def <-- AsyncFunctionDef
@@ -3007,8 +3046,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        # TODO: check return type against return_type/yield_type of body
-        # TODO: if ret_anno is Any, record body's return_type/yield_type as return_type
+        # TODO: follow FunctionDef but return a CoroutineType 
         return crawler.Synth[SynthAux](
             tree = pas.AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
             aux = make_SynthAux(

@@ -76,7 +76,7 @@ def generate_file(
 
                 source_code = line_obj['code']
 
-                if len(source_code) > 10 ** 6:
+                if len(source_code) > 50000:
                     raise BigCodeError(len(source_code))
 
                 tree = generic_tree_system.parse('python', source_code, 'utf8')
@@ -155,20 +155,20 @@ def generate_file(
             except AssertionError as ex:
                 assertion_error_count += 1
                 error_count += 1
-                print(f"")
-                print(f"** ERROR index: {total_count}")
-                line_obj = json.loads(line)
-                source_code = line_obj['code']
-                print(f"** ERROR source code:\n{source_code}")
-                print(f"** ERROR index: {total_count}")
-                print("** partial_program **")
-                print(python_abstract_token_system.concretize(tuple(partial_program)))
-                print("*********************")
-                print(f"")
-                raise ex
+                # print(f"")
+                # print(f"** ERROR index: {total_count}")
+                # line_obj = json.loads(line)
+                # source_code = line_obj['code']
+                # print(f"** ERROR source code:\n{source_code}")
+                # print(f"** ERROR index: {total_count}")
+                # print("** partial_program **")
+                # print(python_abstract_token_system.concretize(tuple(partial_program)))
+                # print("*********************")
+                # print(f"")
+                # raise ex
 
             except Exception as ex:
-                raise ex
+                # raise ex
                 error_count += 1
 
             # update
@@ -215,7 +215,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
 
     concrete_data_file_names = os.listdir(concrete_data_dirpath)
     cdpl = len(concrete_data_file_names)
-    stepsize = 10 ** 5
+    stepsize = 50
     chunks = [concrete_data_file_names[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
 
