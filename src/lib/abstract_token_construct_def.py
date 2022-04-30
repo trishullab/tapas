@@ -18,6 +18,10 @@ constructors = [
             Field('options', 'str', ""),
             Field('selection', 'str', "")
         ]
+    ),
+
+    Constructor(
+        "Hole", [], []
     )
 ]
 

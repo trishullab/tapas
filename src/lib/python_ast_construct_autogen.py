@@ -36,20 +36,20 @@ class return_annotation(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeReturnAnno(return_annotation):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ReturnAnnotationHandlers[T]) -> T:
         return handlers.case_SomeReturnAnno(self)
 
 def make_SomeReturnAnno(
-    content : expr
+    content : expr | None
 ) -> return_annotation:
     return SomeReturnAnno(
         content
     )
 
 def update_SomeReturnAnno(source_SomeReturnAnno : SomeReturnAnno,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SomeReturnAnno:
     return SomeReturnAnno(
         source_SomeReturnAnno.content if isinstance(content, SourceFlag) else content
@@ -100,20 +100,20 @@ class except_arg(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeExceptArg(except_arg):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArg(self)
 
 def make_SomeExceptArg(
-    content : expr
+    content : expr | None
 ) -> except_arg:
     return SomeExceptArg(
         content
     )
 
 def update_SomeExceptArg(source_SomeExceptArg : SomeExceptArg,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SomeExceptArg:
     return SomeExceptArg(
         source_SomeExceptArg.content if isinstance(content, SourceFlag) else content
@@ -123,14 +123,14 @@ def update_SomeExceptArg(source_SomeExceptArg : SomeExceptArg,
 
 @dataclass(frozen=True, eq=True)
 class SomeExceptArgName(except_arg):
-    content : expr
+    content : expr | None
     name : str
 
     def match(self, handlers : ExceptArgHandlers[T]) -> T:
         return handlers.case_SomeExceptArgName(self)
 
 def make_SomeExceptArgName(
-    content : expr, 
+    content : expr | None, 
     name : str
 ) -> except_arg:
     return SomeExceptArgName(
@@ -139,7 +139,7 @@ def make_SomeExceptArgName(
     )
 
 def update_SomeExceptArgName(source_SomeExceptArgName : SomeExceptArgName,
-    content : Union[expr, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
     name : Union[str, SourceFlag] = SourceFlag()
 ) -> SomeExceptArgName:
     return SomeExceptArgName(
@@ -193,20 +193,20 @@ class param_annotation(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeParamAnno(param_annotation):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ParamAnnotationHandlers[T]) -> T:
         return handlers.case_SomeParamAnno(self)
 
 def make_SomeParamAnno(
-    content : expr
+    content : expr | None
 ) -> param_annotation:
     return SomeParamAnno(
         content
     )
 
 def update_SomeParamAnno(source_SomeParamAnno : SomeParamAnno,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SomeParamAnno:
     return SomeParamAnno(
         source_SomeParamAnno.content if isinstance(content, SourceFlag) else content
@@ -257,20 +257,20 @@ class param_default(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeParamDefault(param_default):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ParamDefaultHandlers[T]) -> T:
         return handlers.case_SomeParamDefault(self)
 
 def make_SomeParamDefault(
-    content : expr
+    content : expr | None
 ) -> param_default:
     return SomeParamDefault(
         content
     )
 
 def update_SomeParamDefault(source_SomeParamDefault : SomeParamDefault,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SomeParamDefault:
     return SomeParamDefault(
         source_SomeParamDefault.content if isinstance(content, SourceFlag) else content
@@ -321,15 +321,15 @@ class parameters_d(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsKwParam(parameters_d):
-    head : Param
-    tail : parameters_d
+    head : Param | None
+    tail : parameters_d | None
 
     def match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_ConsKwParam(self)
 
 def make_ConsKwParam(
-    head : Param, 
-    tail : parameters_d
+    head : Param | None, 
+    tail : parameters_d | None
 ) -> parameters_d:
     return ConsKwParam(
         head,
@@ -337,8 +337,8 @@ def make_ConsKwParam(
     )
 
 def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
-    head : Union[Param, SourceFlag] = SourceFlag(),
-    tail : Union[parameters_d, SourceFlag] = SourceFlag()
+    head : Union[Param | None, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_d | None, SourceFlag] = SourceFlag()
 ) -> ConsKwParam:
     return ConsKwParam(
         source_ConsKwParam.head if isinstance(head, SourceFlag) else head,
@@ -349,20 +349,20 @@ def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
 
 @dataclass(frozen=True, eq=True)
 class SingleKwParam(parameters_d):
-    content : Param
+    content : Param | None
 
     def match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_SingleKwParam(self)
 
 def make_SingleKwParam(
-    content : Param
+    content : Param | None
 ) -> parameters_d:
     return SingleKwParam(
         content
     )
 
 def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
-    content : Union[Param, SourceFlag] = SourceFlag()
+    content : Union[Param | None, SourceFlag] = SourceFlag()
 ) -> SingleKwParam:
     return SingleKwParam(
         source_SingleKwParam.content if isinstance(content, SourceFlag) else content
@@ -372,20 +372,20 @@ def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
 
 @dataclass(frozen=True, eq=True)
 class DictionarySplatParam(parameters_d):
-    content : Param
+    content : Param | None
 
     def match(self, handlers : ParametersDHandlers[T]) -> T:
         return handlers.case_DictionarySplatParam(self)
 
 def make_DictionarySplatParam(
-    content : Param
+    content : Param | None
 ) -> parameters_d:
     return DictionarySplatParam(
         content
     )
 
 def update_DictionarySplatParam(source_DictionarySplatParam : DictionarySplatParam,
-    content : Union[Param, SourceFlag] = SourceFlag()
+    content : Union[Param | None, SourceFlag] = SourceFlag()
 ) -> DictionarySplatParam:
     return DictionarySplatParam(
         source_DictionarySplatParam.content if isinstance(content, SourceFlag) else content
@@ -418,20 +418,20 @@ class parameters_c(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SingleListSplatParam(parameters_c):
-    content : Param
+    content : Param | None
 
     def match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_SingleListSplatParam(self)
 
 def make_SingleListSplatParam(
-    content : Param
+    content : Param | None
 ) -> parameters_c:
     return SingleListSplatParam(
         content
     )
 
 def update_SingleListSplatParam(source_SingleListSplatParam : SingleListSplatParam,
-    content : Union[Param, SourceFlag] = SourceFlag()
+    content : Union[Param | None, SourceFlag] = SourceFlag()
 ) -> SingleListSplatParam:
     return SingleListSplatParam(
         source_SingleListSplatParam.content if isinstance(content, SourceFlag) else content
@@ -441,15 +441,15 @@ def update_SingleListSplatParam(source_SingleListSplatParam : SingleListSplatPar
 
 @dataclass(frozen=True, eq=True)
 class TransListSplatParam(parameters_c):
-    head : Param
-    tail : parameters_d
+    head : Param | None
+    tail : parameters_d | None
 
     def match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_TransListSplatParam(self)
 
 def make_TransListSplatParam(
-    head : Param, 
-    tail : parameters_d
+    head : Param | None, 
+    tail : parameters_d | None
 ) -> parameters_c:
     return TransListSplatParam(
         head,
@@ -457,8 +457,8 @@ def make_TransListSplatParam(
     )
 
 def update_TransListSplatParam(source_TransListSplatParam : TransListSplatParam,
-    head : Union[Param, SourceFlag] = SourceFlag(),
-    tail : Union[parameters_d, SourceFlag] = SourceFlag()
+    head : Union[Param | None, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_d | None, SourceFlag] = SourceFlag()
 ) -> TransListSplatParam:
     return TransListSplatParam(
         source_TransListSplatParam.head if isinstance(head, SourceFlag) else head,
@@ -469,20 +469,20 @@ def update_TransListSplatParam(source_TransListSplatParam : TransListSplatParam,
 
 @dataclass(frozen=True, eq=True)
 class ParamsD(parameters_c):
-    content : parameters_d
+    content : parameters_d | None
 
     def match(self, handlers : ParametersCHandlers[T]) -> T:
         return handlers.case_ParamsD(self)
 
 def make_ParamsD(
-    content : parameters_d
+    content : parameters_d | None
 ) -> parameters_c:
     return ParamsD(
         content
     )
 
 def update_ParamsD(source_ParamsD : ParamsD,
-    content : Union[parameters_d, SourceFlag] = SourceFlag()
+    content : Union[parameters_d | None, SourceFlag] = SourceFlag()
 ) -> ParamsD:
     return ParamsD(
         source_ParamsD.content if isinstance(content, SourceFlag) else content
@@ -515,15 +515,15 @@ class parameters_b(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsPosKeyParam(parameters_b):
-    head : Param
-    tail : parameters_b
+    head : Param | None
+    tail : parameters_b | None
 
     def match(self, handlers : ParametersBHandlers[T]) -> T:
         return handlers.case_ConsPosKeyParam(self)
 
 def make_ConsPosKeyParam(
-    head : Param, 
-    tail : parameters_b
+    head : Param | None, 
+    tail : parameters_b | None
 ) -> parameters_b:
     return ConsPosKeyParam(
         head,
@@ -531,8 +531,8 @@ def make_ConsPosKeyParam(
     )
 
 def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
-    head : Union[Param, SourceFlag] = SourceFlag(),
-    tail : Union[parameters_b, SourceFlag] = SourceFlag()
+    head : Union[Param | None, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_b | None, SourceFlag] = SourceFlag()
 ) -> ConsPosKeyParam:
     return ConsPosKeyParam(
         source_ConsPosKeyParam.head if isinstance(head, SourceFlag) else head,
@@ -543,20 +543,20 @@ def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
 
 @dataclass(frozen=True, eq=True)
 class SinglePosKeyParam(parameters_b):
-    content : Param
+    content : Param | None
 
     def match(self, handlers : ParametersBHandlers[T]) -> T:
         return handlers.case_SinglePosKeyParam(self)
 
 def make_SinglePosKeyParam(
-    content : Param
+    content : Param | None
 ) -> parameters_b:
     return SinglePosKeyParam(
         content
     )
 
 def update_SinglePosKeyParam(source_SinglePosKeyParam : SinglePosKeyParam,
-    content : Union[Param, SourceFlag] = SourceFlag()
+    content : Union[Param | None, SourceFlag] = SourceFlag()
 ) -> SinglePosKeyParam:
     return SinglePosKeyParam(
         source_SinglePosKeyParam.content if isinstance(content, SourceFlag) else content
@@ -566,20 +566,20 @@ def update_SinglePosKeyParam(source_SinglePosKeyParam : SinglePosKeyParam,
 
 @dataclass(frozen=True, eq=True)
 class ParamsC(parameters_b):
-    content : parameters_c
+    content : parameters_c | None
 
     def match(self, handlers : ParametersBHandlers[T]) -> T:
         return handlers.case_ParamsC(self)
 
 def make_ParamsC(
-    content : parameters_c
+    content : parameters_c | None
 ) -> parameters_b:
     return ParamsC(
         content
     )
 
 def update_ParamsC(source_ParamsC : ParamsC,
-    content : Union[parameters_c, SourceFlag] = SourceFlag()
+    content : Union[parameters_c | None, SourceFlag] = SourceFlag()
 ) -> ParamsC:
     return ParamsC(
         source_ParamsC.content if isinstance(content, SourceFlag) else content
@@ -612,15 +612,15 @@ class parameters_a(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsPosParam(parameters_a):
-    head : Param
-    tail : parameters_a
+    head : Param | None
+    tail : parameters_a | None
 
     def match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_ConsPosParam(self)
 
 def make_ConsPosParam(
-    head : Param, 
-    tail : parameters_a
+    head : Param | None, 
+    tail : parameters_a | None
 ) -> parameters_a:
     return ConsPosParam(
         head,
@@ -628,8 +628,8 @@ def make_ConsPosParam(
     )
 
 def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
-    head : Union[Param, SourceFlag] = SourceFlag(),
-    tail : Union[parameters_a, SourceFlag] = SourceFlag()
+    head : Union[Param | None, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_a | None, SourceFlag] = SourceFlag()
 ) -> ConsPosParam:
     return ConsPosParam(
         source_ConsPosParam.head if isinstance(head, SourceFlag) else head,
@@ -640,20 +640,20 @@ def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
 
 @dataclass(frozen=True, eq=True)
 class SinglePosParam(parameters_a):
-    content : Param
+    content : Param | None
 
     def match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_SinglePosParam(self)
 
 def make_SinglePosParam(
-    content : Param
+    content : Param | None
 ) -> parameters_a:
     return SinglePosParam(
         content
     )
 
 def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
-    content : Union[Param, SourceFlag] = SourceFlag()
+    content : Union[Param | None, SourceFlag] = SourceFlag()
 ) -> SinglePosParam:
     return SinglePosParam(
         source_SinglePosParam.content if isinstance(content, SourceFlag) else content
@@ -663,15 +663,15 @@ def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
 
 @dataclass(frozen=True, eq=True)
 class TransPosParam(parameters_a):
-    head : Param
-    tail : parameters_b
+    head : Param | None
+    tail : parameters_b | None
 
     def match(self, handlers : ParametersAHandlers[T]) -> T:
         return handlers.case_TransPosParam(self)
 
 def make_TransPosParam(
-    head : Param, 
-    tail : parameters_b
+    head : Param | None, 
+    tail : parameters_b | None
 ) -> parameters_a:
     return TransPosParam(
         head,
@@ -679,8 +679,8 @@ def make_TransPosParam(
     )
 
 def update_TransPosParam(source_TransPosParam : TransPosParam,
-    head : Union[Param, SourceFlag] = SourceFlag(),
-    tail : Union[parameters_b, SourceFlag] = SourceFlag()
+    head : Union[Param | None, SourceFlag] = SourceFlag(),
+    tail : Union[parameters_b | None, SourceFlag] = SourceFlag()
 ) -> TransPosParam:
     return TransPosParam(
         source_TransPosParam.head if isinstance(head, SourceFlag) else head,
@@ -714,20 +714,20 @@ class parameters(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ParamsA(parameters):
-    content : parameters_a
+    content : parameters_a | None
 
     def match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_ParamsA(self)
 
 def make_ParamsA(
-    content : parameters_a
+    content : parameters_a | None
 ) -> parameters:
     return ParamsA(
         content
     )
 
 def update_ParamsA(source_ParamsA : ParamsA,
-    content : Union[parameters_a, SourceFlag] = SourceFlag()
+    content : Union[parameters_a | None, SourceFlag] = SourceFlag()
 ) -> ParamsA:
     return ParamsA(
         source_ParamsA.content if isinstance(content, SourceFlag) else content
@@ -737,20 +737,20 @@ def update_ParamsA(source_ParamsA : ParamsA,
 
 @dataclass(frozen=True, eq=True)
 class ParamsB(parameters):
-    content : parameters_b
+    content : parameters_b | None
 
     def match(self, handlers : ParametersHandlers[T]) -> T:
         return handlers.case_ParamsB(self)
 
 def make_ParamsB(
-    content : parameters_b
+    content : parameters_b | None
 ) -> parameters:
     return ParamsB(
         content
     )
 
 def update_ParamsB(source_ParamsB : ParamsB,
-    content : Union[parameters_b, SourceFlag] = SourceFlag()
+    content : Union[parameters_b | None, SourceFlag] = SourceFlag()
 ) -> ParamsB:
     return ParamsB(
         source_ParamsB.content if isinstance(content, SourceFlag) else content
@@ -803,14 +803,14 @@ class keyword(ABC):
 @dataclass(frozen=True, eq=True)
 class NamedKeyword(keyword):
     name : str
-    content : expr
+    content : expr | None
 
     def match(self, handlers : KeywordHandlers[T]) -> T:
         return handlers.case_NamedKeyword(self)
 
 def make_NamedKeyword(
     name : str, 
-    content : expr
+    content : expr | None
 ) -> keyword:
     return NamedKeyword(
         name,
@@ -819,7 +819,7 @@ def make_NamedKeyword(
 
 def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
     name : Union[str, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> NamedKeyword:
     return NamedKeyword(
         source_NamedKeyword.name if isinstance(name, SourceFlag) else name,
@@ -830,20 +830,20 @@ def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
 
 @dataclass(frozen=True, eq=True)
 class SplatKeyword(keyword):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : KeywordHandlers[T]) -> T:
         return handlers.case_SplatKeyword(self)
 
 def make_SplatKeyword(
-    content : expr
+    content : expr | None
 ) -> keyword:
     return SplatKeyword(
         content
     )
 
 def update_SplatKeyword(source_SplatKeyword : SplatKeyword,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SplatKeyword:
     return SplatKeyword(
         source_SplatKeyword.content if isinstance(content, SourceFlag) else content
@@ -948,15 +948,15 @@ class with_item(ABC):
 
 @dataclass(frozen=True, eq=True)
 class WithItemAlias(with_item):
-    content : expr
-    alias : expr
+    content : expr | None
+    alias : expr | None
 
     def match(self, handlers : WithItemHandlers[T]) -> T:
         return handlers.case_WithItemAlias(self)
 
 def make_WithItemAlias(
-    content : expr, 
-    alias : expr
+    content : expr | None, 
+    alias : expr | None
 ) -> with_item:
     return WithItemAlias(
         content,
@@ -964,8 +964,8 @@ def make_WithItemAlias(
     )
 
 def update_WithItemAlias(source_WithItemAlias : WithItemAlias,
-    content : Union[expr, SourceFlag] = SourceFlag(),
-    alias : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    alias : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> WithItemAlias:
     return WithItemAlias(
         source_WithItemAlias.content if isinstance(content, SourceFlag) else content,
@@ -976,20 +976,20 @@ def update_WithItemAlias(source_WithItemAlias : WithItemAlias,
 
 @dataclass(frozen=True, eq=True)
 class WithItemOnly(with_item):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : WithItemHandlers[T]) -> T:
         return handlers.case_WithItemOnly(self)
 
 def make_WithItemOnly(
-    content : expr
+    content : expr | None
 ) -> with_item:
     return WithItemOnly(
         content
     )
 
 def update_WithItemOnly(source_WithItemOnly : WithItemOnly,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> WithItemOnly:
     return WithItemOnly(
         source_WithItemOnly.content if isinstance(content, SourceFlag) else content
@@ -1021,20 +1021,20 @@ class bases(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeBases(bases):
-    bases : bases_a
+    bases : bases_a | None
 
     def match(self, handlers : BasesHandlers[T]) -> T:
         return handlers.case_SomeBases(self)
 
 def make_SomeBases(
-    bases : bases_a
+    bases : bases_a | None
 ) -> bases:
     return SomeBases(
         bases
     )
 
 def update_SomeBases(source_SomeBases : SomeBases,
-    bases : Union[bases_a, SourceFlag] = SourceFlag()
+    bases : Union[bases_a | None, SourceFlag] = SourceFlag()
 ) -> SomeBases:
     return SomeBases(
         source_SomeBases.bases if isinstance(bases, SourceFlag) else bases
@@ -1085,15 +1085,15 @@ class bases_a(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsBase(bases_a):
-    head : expr
-    tail : bases_a
+    head : expr | None
+    tail : bases_a | None
 
     def match(self, handlers : BasesAHandlers[T]) -> T:
         return handlers.case_ConsBase(self)
 
 def make_ConsBase(
-    head : expr, 
-    tail : bases_a
+    head : expr | None, 
+    tail : bases_a | None
 ) -> bases_a:
     return ConsBase(
         head,
@@ -1101,8 +1101,8 @@ def make_ConsBase(
     )
 
 def update_ConsBase(source_ConsBase : ConsBase,
-    head : Union[expr, SourceFlag] = SourceFlag(),
-    tail : Union[bases_a, SourceFlag] = SourceFlag()
+    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    tail : Union[bases_a | None, SourceFlag] = SourceFlag()
 ) -> ConsBase:
     return ConsBase(
         source_ConsBase.head if isinstance(head, SourceFlag) else head,
@@ -1113,20 +1113,20 @@ def update_ConsBase(source_ConsBase : ConsBase,
 
 @dataclass(frozen=True, eq=True)
 class SingleBase(bases_a):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : BasesAHandlers[T]) -> T:
         return handlers.case_SingleBase(self)
 
 def make_SingleBase(
-    content : expr
+    content : expr | None
 ) -> bases_a:
     return SingleBase(
         content
     )
 
 def update_SingleBase(source_SingleBase : SingleBase,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SingleBase:
     return SingleBase(
         source_SingleBase.content if isinstance(content, SourceFlag) else content
@@ -1136,20 +1136,20 @@ def update_SingleBase(source_SingleBase : SingleBase,
 
 @dataclass(frozen=True, eq=True)
 class KeywordBases(bases_a):
-    kws : keywords
+    kws : keywords | None
 
     def match(self, handlers : BasesAHandlers[T]) -> T:
         return handlers.case_KeywordBases(self)
 
 def make_KeywordBases(
-    kws : keywords
+    kws : keywords | None
 ) -> bases_a:
     return KeywordBases(
         kws
     )
 
 def update_KeywordBases(source_KeywordBases : KeywordBases,
-    kws : Union[keywords, SourceFlag] = SourceFlag()
+    kws : Union[keywords | None, SourceFlag] = SourceFlag()
 ) -> KeywordBases:
     return KeywordBases(
         source_KeywordBases.kws if isinstance(kws, SourceFlag) else kws
@@ -1182,15 +1182,15 @@ class keywords(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsKeyword(keywords):
-    head : keyword
-    tail : keywords
+    head : keyword | None
+    tail : keywords | None
 
     def match(self, handlers : KeywordsHandlers[T]) -> T:
         return handlers.case_ConsKeyword(self)
 
 def make_ConsKeyword(
-    head : keyword, 
-    tail : keywords
+    head : keyword | None, 
+    tail : keywords | None
 ) -> keywords:
     return ConsKeyword(
         head,
@@ -1198,8 +1198,8 @@ def make_ConsKeyword(
     )
 
 def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
-    head : Union[keyword, SourceFlag] = SourceFlag(),
-    tail : Union[keywords, SourceFlag] = SourceFlag()
+    head : Union[keyword | None, SourceFlag] = SourceFlag(),
+    tail : Union[keywords | None, SourceFlag] = SourceFlag()
 ) -> ConsKeyword:
     return ConsKeyword(
         source_ConsKeyword.head if isinstance(head, SourceFlag) else head,
@@ -1210,20 +1210,20 @@ def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
 
 @dataclass(frozen=True, eq=True)
 class SingleKeyword(keywords):
-    content : keyword
+    content : keyword | None
 
     def match(self, handlers : KeywordsHandlers[T]) -> T:
         return handlers.case_SingleKeyword(self)
 
 def make_SingleKeyword(
-    content : keyword
+    content : keyword | None
 ) -> keywords:
     return SingleKeyword(
         content
     )
 
 def update_SingleKeyword(source_SingleKeyword : SingleKeyword,
-    content : Union[keyword, SourceFlag] = SourceFlag()
+    content : Union[keyword | None, SourceFlag] = SourceFlag()
 ) -> SingleKeyword:
     return SingleKeyword(
         source_SingleKeyword.content if isinstance(content, SourceFlag) else content
@@ -1255,15 +1255,15 @@ class comparisons(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsCompareRight(comparisons):
-    head : CompareRight
-    tail : comparisons
+    head : CompareRight | None
+    tail : comparisons | None
 
     def match(self, handlers : ComparisonsHandlers[T]) -> T:
         return handlers.case_ConsCompareRight(self)
 
 def make_ConsCompareRight(
-    head : CompareRight, 
-    tail : comparisons
+    head : CompareRight | None, 
+    tail : comparisons | None
 ) -> comparisons:
     return ConsCompareRight(
         head,
@@ -1271,8 +1271,8 @@ def make_ConsCompareRight(
     )
 
 def update_ConsCompareRight(source_ConsCompareRight : ConsCompareRight,
-    head : Union[CompareRight, SourceFlag] = SourceFlag(),
-    tail : Union[comparisons, SourceFlag] = SourceFlag()
+    head : Union[CompareRight | None, SourceFlag] = SourceFlag(),
+    tail : Union[comparisons | None, SourceFlag] = SourceFlag()
 ) -> ConsCompareRight:
     return ConsCompareRight(
         source_ConsCompareRight.head if isinstance(head, SourceFlag) else head,
@@ -1283,20 +1283,20 @@ def update_ConsCompareRight(source_ConsCompareRight : ConsCompareRight,
 
 @dataclass(frozen=True, eq=True)
 class SingleCompareRight(comparisons):
-    content : CompareRight
+    content : CompareRight | None
 
     def match(self, handlers : ComparisonsHandlers[T]) -> T:
         return handlers.case_SingleCompareRight(self)
 
 def make_SingleCompareRight(
-    content : CompareRight
+    content : CompareRight | None
 ) -> comparisons:
     return SingleCompareRight(
         content
     )
 
 def update_SingleCompareRight(source_SingleCompareRight : SingleCompareRight,
-    content : Union[CompareRight, SourceFlag] = SourceFlag()
+    content : Union[CompareRight | None, SourceFlag] = SourceFlag()
 ) -> SingleCompareRight:
     return SingleCompareRight(
         source_SingleCompareRight.content if isinstance(content, SourceFlag) else content
@@ -1328,20 +1328,20 @@ class option_expr(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeExpr(option_expr):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : OptionExprHandlers[T]) -> T:
         return handlers.case_SomeExpr(self)
 
 def make_SomeExpr(
-    content : expr
+    content : expr | None
 ) -> option_expr:
     return SomeExpr(
         content
     )
 
 def update_SomeExpr(source_SomeExpr : SomeExpr,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SomeExpr:
     return SomeExpr(
         source_SomeExpr.content if isinstance(content, SourceFlag) else content
@@ -1392,15 +1392,15 @@ class comma_exprs(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsExpr(comma_exprs):
-    head : expr
-    tail : comma_exprs
+    head : expr | None
+    tail : comma_exprs | None
 
     def match(self, handlers : CommaExprsHandlers[T]) -> T:
         return handlers.case_ConsExpr(self)
 
 def make_ConsExpr(
-    head : expr, 
-    tail : comma_exprs
+    head : expr | None, 
+    tail : comma_exprs | None
 ) -> comma_exprs:
     return ConsExpr(
         head,
@@ -1408,8 +1408,8 @@ def make_ConsExpr(
     )
 
 def update_ConsExpr(source_ConsExpr : ConsExpr,
-    head : Union[expr, SourceFlag] = SourceFlag(),
-    tail : Union[comma_exprs, SourceFlag] = SourceFlag()
+    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    tail : Union[comma_exprs | None, SourceFlag] = SourceFlag()
 ) -> ConsExpr:
     return ConsExpr(
         source_ConsExpr.head if isinstance(head, SourceFlag) else head,
@@ -1420,20 +1420,20 @@ def update_ConsExpr(source_ConsExpr : ConsExpr,
 
 @dataclass(frozen=True, eq=True)
 class SingleExpr(comma_exprs):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : CommaExprsHandlers[T]) -> T:
         return handlers.case_SingleExpr(self)
 
 def make_SingleExpr(
-    content : expr
+    content : expr | None
 ) -> comma_exprs:
     return SingleExpr(
         content
     )
 
 def update_SingleExpr(source_SingleExpr : SingleExpr,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SingleExpr:
     return SingleExpr(
         source_SingleExpr.content if isinstance(content, SourceFlag) else content
@@ -1465,15 +1465,15 @@ class target_exprs(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsTargetExpr(target_exprs):
-    head : expr
-    tail : target_exprs
+    head : expr | None
+    tail : target_exprs | None
 
     def match(self, handlers : TargetExprsHandlers[T]) -> T:
         return handlers.case_ConsTargetExpr(self)
 
 def make_ConsTargetExpr(
-    head : expr, 
-    tail : target_exprs
+    head : expr | None, 
+    tail : target_exprs | None
 ) -> target_exprs:
     return ConsTargetExpr(
         head,
@@ -1481,8 +1481,8 @@ def make_ConsTargetExpr(
     )
 
 def update_ConsTargetExpr(source_ConsTargetExpr : ConsTargetExpr,
-    head : Union[expr, SourceFlag] = SourceFlag(),
-    tail : Union[target_exprs, SourceFlag] = SourceFlag()
+    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    tail : Union[target_exprs | None, SourceFlag] = SourceFlag()
 ) -> ConsTargetExpr:
     return ConsTargetExpr(
         source_ConsTargetExpr.head if isinstance(head, SourceFlag) else head,
@@ -1493,20 +1493,20 @@ def update_ConsTargetExpr(source_ConsTargetExpr : ConsTargetExpr,
 
 @dataclass(frozen=True, eq=True)
 class SingleTargetExpr(target_exprs):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : TargetExprsHandlers[T]) -> T:
         return handlers.case_SingleTargetExpr(self)
 
 def make_SingleTargetExpr(
-    content : expr
+    content : expr | None
 ) -> target_exprs:
     return SingleTargetExpr(
         content
     )
 
 def update_SingleTargetExpr(source_SingleTargetExpr : SingleTargetExpr,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SingleTargetExpr:
     return SingleTargetExpr(
         source_SingleTargetExpr.content if isinstance(content, SourceFlag) else content
@@ -1538,15 +1538,15 @@ class decorators(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsDec(decorators):
-    head : expr
-    tail : decorators
+    head : expr | None
+    tail : decorators | None
 
     def match(self, handlers : DecoratorsHandlers[T]) -> T:
         return handlers.case_ConsDec(self)
 
 def make_ConsDec(
-    head : expr, 
-    tail : decorators
+    head : expr | None, 
+    tail : decorators | None
 ) -> decorators:
     return ConsDec(
         head,
@@ -1554,8 +1554,8 @@ def make_ConsDec(
     )
 
 def update_ConsDec(source_ConsDec : ConsDec,
-    head : Union[expr, SourceFlag] = SourceFlag(),
-    tail : Union[decorators, SourceFlag] = SourceFlag()
+    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    tail : Union[decorators | None, SourceFlag] = SourceFlag()
 ) -> ConsDec:
     return ConsDec(
         source_ConsDec.head if isinstance(head, SourceFlag) else head,
@@ -1607,15 +1607,15 @@ class constraint_filters(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsFilter(constraint_filters):
-    head : expr
-    tail : constraint_filters
+    head : expr | None
+    tail : constraint_filters | None
 
     def match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
         return handlers.case_ConsFilter(self)
 
 def make_ConsFilter(
-    head : expr, 
-    tail : constraint_filters
+    head : expr | None, 
+    tail : constraint_filters | None
 ) -> constraint_filters:
     return ConsFilter(
         head,
@@ -1623,8 +1623,8 @@ def make_ConsFilter(
     )
 
 def update_ConsFilter(source_ConsFilter : ConsFilter,
-    head : Union[expr, SourceFlag] = SourceFlag(),
-    tail : Union[constraint_filters, SourceFlag] = SourceFlag()
+    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    tail : Union[constraint_filters | None, SourceFlag] = SourceFlag()
 ) -> ConsFilter:
     return ConsFilter(
         source_ConsFilter.head if isinstance(head, SourceFlag) else head,
@@ -1635,20 +1635,20 @@ def update_ConsFilter(source_ConsFilter : ConsFilter,
 
 @dataclass(frozen=True, eq=True)
 class SingleFilter(constraint_filters):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ConstraintFiltersHandlers[T]) -> T:
         return handlers.case_SingleFilter(self)
 
 def make_SingleFilter(
-    content : expr
+    content : expr | None
 ) -> constraint_filters:
     return SingleFilter(
         content
     )
 
 def update_SingleFilter(source_SingleFilter : SingleFilter,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SingleFilter:
     return SingleFilter(
         source_SingleFilter.content if isinstance(content, SourceFlag) else content
@@ -1701,14 +1701,14 @@ class sequence_string(ABC):
 @dataclass(frozen=True, eq=True)
 class ConsStr(sequence_string):
     head : str
-    tail : sequence_string
+    tail : sequence_string | None
 
     def match(self, handlers : SequenceStringHandlers[T]) -> T:
         return handlers.case_ConsStr(self)
 
 def make_ConsStr(
     head : str, 
-    tail : sequence_string
+    tail : sequence_string | None
 ) -> sequence_string:
     return ConsStr(
         head,
@@ -1717,7 +1717,7 @@ def make_ConsStr(
 
 def update_ConsStr(source_ConsStr : ConsStr,
     head : Union[str, SourceFlag] = SourceFlag(),
-    tail : Union[sequence_string, SourceFlag] = SourceFlag()
+    tail : Union[sequence_string | None, SourceFlag] = SourceFlag()
 ) -> ConsStr:
     return ConsStr(
         source_ConsStr.head if isinstance(head, SourceFlag) else head,
@@ -1773,15 +1773,15 @@ class arguments(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsArg(arguments):
-    head : expr
-    tail : arguments
+    head : expr | None
+    tail : arguments | None
 
     def match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_ConsArg(self)
 
 def make_ConsArg(
-    head : expr, 
-    tail : arguments
+    head : expr | None, 
+    tail : arguments | None
 ) -> arguments:
     return ConsArg(
         head,
@@ -1789,8 +1789,8 @@ def make_ConsArg(
     )
 
 def update_ConsArg(source_ConsArg : ConsArg,
-    head : Union[expr, SourceFlag] = SourceFlag(),
-    tail : Union[arguments, SourceFlag] = SourceFlag()
+    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    tail : Union[arguments | None, SourceFlag] = SourceFlag()
 ) -> ConsArg:
     return ConsArg(
         source_ConsArg.head if isinstance(head, SourceFlag) else head,
@@ -1801,20 +1801,20 @@ def update_ConsArg(source_ConsArg : ConsArg,
 
 @dataclass(frozen=True, eq=True)
 class SingleArg(arguments):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_SingleArg(self)
 
 def make_SingleArg(
-    content : expr
+    content : expr | None
 ) -> arguments:
     return SingleArg(
         content
     )
 
 def update_SingleArg(source_SingleArg : SingleArg,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> SingleArg:
     return SingleArg(
         source_SingleArg.content if isinstance(content, SourceFlag) else content
@@ -1824,20 +1824,20 @@ def update_SingleArg(source_SingleArg : SingleArg,
 
 @dataclass(frozen=True, eq=True)
 class KeywordsArg(arguments):
-    kws : keywords
+    kws : keywords | None
 
     def match(self, handlers : ArgumentsHandlers[T]) -> T:
         return handlers.case_KeywordsArg(self)
 
 def make_KeywordsArg(
-    kws : keywords
+    kws : keywords | None
 ) -> arguments:
     return KeywordsArg(
         kws
     )
 
 def update_KeywordsArg(source_KeywordsArg : KeywordsArg,
-    kws : Union[keywords, SourceFlag] = SourceFlag()
+    kws : Union[keywords | None, SourceFlag] = SourceFlag()
 ) -> KeywordsArg:
     return KeywordsArg(
         source_KeywordsArg.kws if isinstance(kws, SourceFlag) else kws
@@ -1870,15 +1870,15 @@ class dictionary_item(ABC):
 
 @dataclass(frozen=True, eq=True)
 class Field(dictionary_item):
-    key : expr
-    content : expr
+    key : expr | None
+    content : expr | None
 
     def match(self, handlers : DictionaryItemHandlers[T]) -> T:
         return handlers.case_Field(self)
 
 def make_Field(
-    key : expr, 
-    content : expr
+    key : expr | None, 
+    content : expr | None
 ) -> dictionary_item:
     return Field(
         key,
@@ -1886,8 +1886,8 @@ def make_Field(
     )
 
 def update_Field(source_Field : Field,
-    key : Union[expr, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag()
+    key : Union[expr | None, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Field:
     return Field(
         source_Field.key if isinstance(key, SourceFlag) else key,
@@ -1898,20 +1898,20 @@ def update_Field(source_Field : Field,
 
 @dataclass(frozen=True, eq=True)
 class DictionarySplatFields(dictionary_item):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : DictionaryItemHandlers[T]) -> T:
         return handlers.case_DictionarySplatFields(self)
 
 def make_DictionarySplatFields(
-    content : expr
+    content : expr | None
 ) -> dictionary_item:
     return DictionarySplatFields(
         content
     )
 
 def update_DictionarySplatFields(source_DictionarySplatFields : DictionarySplatFields,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> DictionarySplatFields:
     return DictionarySplatFields(
         source_DictionarySplatFields.content if isinstance(content, SourceFlag) else content
@@ -1943,15 +1943,15 @@ class dictionary_content(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsDictionaryItem(dictionary_content):
-    head : dictionary_item
-    tail : dictionary_content
+    head : dictionary_item | None
+    tail : dictionary_content | None
 
     def match(self, handlers : DictionaryContentHandlers[T]) -> T:
         return handlers.case_ConsDictionaryItem(self)
 
 def make_ConsDictionaryItem(
-    head : dictionary_item, 
-    tail : dictionary_content
+    head : dictionary_item | None, 
+    tail : dictionary_content | None
 ) -> dictionary_content:
     return ConsDictionaryItem(
         head,
@@ -1959,8 +1959,8 @@ def make_ConsDictionaryItem(
     )
 
 def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
-    head : Union[dictionary_item, SourceFlag] = SourceFlag(),
-    tail : Union[dictionary_content, SourceFlag] = SourceFlag()
+    head : Union[dictionary_item | None, SourceFlag] = SourceFlag(),
+    tail : Union[dictionary_content | None, SourceFlag] = SourceFlag()
 ) -> ConsDictionaryItem:
     return ConsDictionaryItem(
         source_ConsDictionaryItem.head if isinstance(head, SourceFlag) else head,
@@ -1971,20 +1971,20 @@ def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
 
 @dataclass(frozen=True, eq=True)
 class SingleDictionaryItem(dictionary_content):
-    content : dictionary_item
+    content : dictionary_item | None
 
     def match(self, handlers : DictionaryContentHandlers[T]) -> T:
         return handlers.case_SingleDictionaryItem(self)
 
 def make_SingleDictionaryItem(
-    content : dictionary_item
+    content : dictionary_item | None
 ) -> dictionary_content:
     return SingleDictionaryItem(
         content
     )
 
 def update_SingleDictionaryItem(source_SingleDictionaryItem : SingleDictionaryItem,
-    content : Union[dictionary_item, SourceFlag] = SourceFlag()
+    content : Union[dictionary_item | None, SourceFlag] = SourceFlag()
 ) -> SingleDictionaryItem:
     return SingleDictionaryItem(
         source_SingleDictionaryItem.content if isinstance(content, SourceFlag) else content
@@ -2017,14 +2017,14 @@ class sequence_name(ABC):
 @dataclass(frozen=True, eq=True)
 class ConsId(sequence_name):
     head : str
-    tail : sequence_name
+    tail : sequence_name | None
 
     def match(self, handlers : SequenceNameHandlers[T]) -> T:
         return handlers.case_ConsId(self)
 
 def make_ConsId(
     head : str, 
-    tail : sequence_name
+    tail : sequence_name | None
 ) -> sequence_name:
     return ConsId(
         head,
@@ -2033,7 +2033,7 @@ def make_ConsId(
 
 def update_ConsId(source_ConsId : ConsId,
     head : Union[str, SourceFlag] = SourceFlag(),
-    tail : Union[sequence_name, SourceFlag] = SourceFlag()
+    tail : Union[sequence_name | None, SourceFlag] = SourceFlag()
 ) -> ConsId:
     return ConsId(
         source_ConsId.head if isinstance(head, SourceFlag) else head,
@@ -2089,15 +2089,15 @@ class sequence_import_name(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsImportName(sequence_import_name):
-    head : import_name
-    tail : sequence_import_name
+    head : import_name | None
+    tail : sequence_import_name | None
 
     def match(self, handlers : SequenceImportNameHandlers[T]) -> T:
         return handlers.case_ConsImportName(self)
 
 def make_ConsImportName(
-    head : import_name, 
-    tail : sequence_import_name
+    head : import_name | None, 
+    tail : sequence_import_name | None
 ) -> sequence_import_name:
     return ConsImportName(
         head,
@@ -2105,8 +2105,8 @@ def make_ConsImportName(
     )
 
 def update_ConsImportName(source_ConsImportName : ConsImportName,
-    head : Union[import_name, SourceFlag] = SourceFlag(),
-    tail : Union[sequence_import_name, SourceFlag] = SourceFlag()
+    head : Union[import_name | None, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_import_name | None, SourceFlag] = SourceFlag()
 ) -> ConsImportName:
     return ConsImportName(
         source_ConsImportName.head if isinstance(head, SourceFlag) else head,
@@ -2117,20 +2117,20 @@ def update_ConsImportName(source_ConsImportName : ConsImportName,
 
 @dataclass(frozen=True, eq=True)
 class SingleImportName(sequence_import_name):
-    content : import_name
+    content : import_name | None
 
     def match(self, handlers : SequenceImportNameHandlers[T]) -> T:
         return handlers.case_SingleImportName(self)
 
 def make_SingleImportName(
-    content : import_name
+    content : import_name | None
 ) -> sequence_import_name:
     return SingleImportName(
         content
     )
 
 def update_SingleImportName(source_SingleImportName : SingleImportName,
-    content : Union[import_name, SourceFlag] = SourceFlag()
+    content : Union[import_name | None, SourceFlag] = SourceFlag()
 ) -> SingleImportName:
     return SingleImportName(
         source_SingleImportName.content if isinstance(content, SourceFlag) else content
@@ -2162,15 +2162,15 @@ class sequence_with_item(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsWithItem(sequence_with_item):
-    head : with_item
-    tail : sequence_with_item
+    head : with_item | None
+    tail : sequence_with_item | None
 
     def match(self, handlers : SequenceWithItemHandlers[T]) -> T:
         return handlers.case_ConsWithItem(self)
 
 def make_ConsWithItem(
-    head : with_item, 
-    tail : sequence_with_item
+    head : with_item | None, 
+    tail : sequence_with_item | None
 ) -> sequence_with_item:
     return ConsWithItem(
         head,
@@ -2178,8 +2178,8 @@ def make_ConsWithItem(
     )
 
 def update_ConsWithItem(source_ConsWithItem : ConsWithItem,
-    head : Union[with_item, SourceFlag] = SourceFlag(),
-    tail : Union[sequence_with_item, SourceFlag] = SourceFlag()
+    head : Union[with_item | None, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_with_item | None, SourceFlag] = SourceFlag()
 ) -> ConsWithItem:
     return ConsWithItem(
         source_ConsWithItem.head if isinstance(head, SourceFlag) else head,
@@ -2190,20 +2190,20 @@ def update_ConsWithItem(source_ConsWithItem : ConsWithItem,
 
 @dataclass(frozen=True, eq=True)
 class SingleWithItem(sequence_with_item):
-    content : with_item
+    content : with_item | None
 
     def match(self, handlers : SequenceWithItemHandlers[T]) -> T:
         return handlers.case_SingleWithItem(self)
 
 def make_SingleWithItem(
-    content : with_item
+    content : with_item | None
 ) -> sequence_with_item:
     return SingleWithItem(
         content
     )
 
 def update_SingleWithItem(source_SingleWithItem : SingleWithItem,
-    content : Union[with_item, SourceFlag] = SourceFlag()
+    content : Union[with_item | None, SourceFlag] = SourceFlag()
 ) -> SingleWithItem:
     return SingleWithItem(
         source_SingleWithItem.content if isinstance(content, SourceFlag) else content
@@ -2235,15 +2235,15 @@ class module(ABC):
 
 @dataclass(frozen=True, eq=True)
 class FutureMod(module):
-    names : sequence_import_name
-    body : statements
+    names : sequence_import_name | None
+    body : statements | None
 
     def match(self, handlers : ModuleHandlers[T]) -> T:
         return handlers.case_FutureMod(self)
 
 def make_FutureMod(
-    names : sequence_import_name, 
-    body : statements
+    names : sequence_import_name | None, 
+    body : statements | None
 ) -> module:
     return FutureMod(
         names,
@@ -2251,8 +2251,8 @@ def make_FutureMod(
     )
 
 def update_FutureMod(source_FutureMod : FutureMod,
-    names : Union[sequence_import_name, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    names : Union[sequence_import_name | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> FutureMod:
     return FutureMod(
         source_FutureMod.names if isinstance(names, SourceFlag) else names,
@@ -2263,20 +2263,20 @@ def update_FutureMod(source_FutureMod : FutureMod,
 
 @dataclass(frozen=True, eq=True)
 class SimpleMod(module):
-    body : statements
+    body : statements | None
 
     def match(self, handlers : ModuleHandlers[T]) -> T:
         return handlers.case_SimpleMod(self)
 
 def make_SimpleMod(
-    body : statements
+    body : statements | None
 ) -> module:
     return SimpleMod(
         body
     )
 
 def update_SimpleMod(source_SimpleMod : SimpleMod,
-    body : Union[statements, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> SimpleMod:
     return SimpleMod(
         source_SimpleMod.body if isinstance(body, SourceFlag) else body
@@ -2308,15 +2308,15 @@ class statements(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsStmt(statements):
-    head : stmt
-    tail : statements
+    head : stmt | None
+    tail : statements | None
 
     def match(self, handlers : StatementsHandlers[T]) -> T:
         return handlers.case_ConsStmt(self)
 
 def make_ConsStmt(
-    head : stmt, 
-    tail : statements
+    head : stmt | None, 
+    tail : statements | None
 ) -> statements:
     return ConsStmt(
         head,
@@ -2324,8 +2324,8 @@ def make_ConsStmt(
     )
 
 def update_ConsStmt(source_ConsStmt : ConsStmt,
-    head : Union[stmt, SourceFlag] = SourceFlag(),
-    tail : Union[statements, SourceFlag] = SourceFlag()
+    head : Union[stmt | None, SourceFlag] = SourceFlag(),
+    tail : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> ConsStmt:
     return ConsStmt(
         source_ConsStmt.head if isinstance(head, SourceFlag) else head,
@@ -2336,20 +2336,20 @@ def update_ConsStmt(source_ConsStmt : ConsStmt,
 
 @dataclass(frozen=True, eq=True)
 class SingleStmt(statements):
-    content : stmt
+    content : stmt | None
 
     def match(self, handlers : StatementsHandlers[T]) -> T:
         return handlers.case_SingleStmt(self)
 
 def make_SingleStmt(
-    content : stmt
+    content : stmt | None
 ) -> statements:
     return SingleStmt(
         content
     )
 
 def update_SingleStmt(source_SingleStmt : SingleStmt,
-    content : Union[stmt, SourceFlag] = SourceFlag()
+    content : Union[stmt | None, SourceFlag] = SourceFlag()
 ) -> SingleStmt:
     return SingleStmt(
         source_SingleStmt.content if isinstance(content, SourceFlag) else content
@@ -2381,15 +2381,15 @@ class comprehension_constraints(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsConstraint(comprehension_constraints):
-    head : constraint
-    tail : comprehension_constraints
+    head : constraint | None
+    tail : comprehension_constraints | None
 
     def match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
         return handlers.case_ConsConstraint(self)
 
 def make_ConsConstraint(
-    head : constraint, 
-    tail : comprehension_constraints
+    head : constraint | None, 
+    tail : comprehension_constraints | None
 ) -> comprehension_constraints:
     return ConsConstraint(
         head,
@@ -2397,8 +2397,8 @@ def make_ConsConstraint(
     )
 
 def update_ConsConstraint(source_ConsConstraint : ConsConstraint,
-    head : Union[constraint, SourceFlag] = SourceFlag(),
-    tail : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+    head : Union[constraint | None, SourceFlag] = SourceFlag(),
+    tail : Union[comprehension_constraints | None, SourceFlag] = SourceFlag()
 ) -> ConsConstraint:
     return ConsConstraint(
         source_ConsConstraint.head if isinstance(head, SourceFlag) else head,
@@ -2409,20 +2409,20 @@ def update_ConsConstraint(source_ConsConstraint : ConsConstraint,
 
 @dataclass(frozen=True, eq=True)
 class SingleConstraint(comprehension_constraints):
-    content : constraint
+    content : constraint | None
 
     def match(self, handlers : ComprehensionConstraintsHandlers[T]) -> T:
         return handlers.case_SingleConstraint(self)
 
 def make_SingleConstraint(
-    content : constraint
+    content : constraint | None
 ) -> comprehension_constraints:
     return SingleConstraint(
         content
     )
 
 def update_SingleConstraint(source_SingleConstraint : SingleConstraint,
-    content : Union[constraint, SourceFlag] = SourceFlag()
+    content : Union[constraint | None, SourceFlag] = SourceFlag()
 ) -> SingleConstraint:
     return SingleConstraint(
         source_SingleConstraint.content if isinstance(content, SourceFlag) else content
@@ -2454,15 +2454,15 @@ class sequence_ExceptHandler(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsExceptHandler(sequence_ExceptHandler):
-    head : ExceptHandler
-    tail : sequence_ExceptHandler
+    head : ExceptHandler | None
+    tail : sequence_ExceptHandler | None
 
     def match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
         return handlers.case_ConsExceptHandler(self)
 
 def make_ConsExceptHandler(
-    head : ExceptHandler, 
-    tail : sequence_ExceptHandler
+    head : ExceptHandler | None, 
+    tail : sequence_ExceptHandler | None
 ) -> sequence_ExceptHandler:
     return ConsExceptHandler(
         head,
@@ -2470,8 +2470,8 @@ def make_ConsExceptHandler(
     )
 
 def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
-    head : Union[ExceptHandler, SourceFlag] = SourceFlag(),
-    tail : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag()
+    head : Union[ExceptHandler | None, SourceFlag] = SourceFlag(),
+    tail : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag()
 ) -> ConsExceptHandler:
     return ConsExceptHandler(
         source_ConsExceptHandler.head if isinstance(head, SourceFlag) else head,
@@ -2482,20 +2482,20 @@ def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
 
 @dataclass(frozen=True, eq=True)
 class SingleExceptHandler(sequence_ExceptHandler):
-    content : ExceptHandler
+    content : ExceptHandler | None
 
     def match(self, handlers : SequenceExceptHandlerHandlers[T]) -> T:
         return handlers.case_SingleExceptHandler(self)
 
 def make_SingleExceptHandler(
-    content : ExceptHandler
+    content : ExceptHandler | None
 ) -> sequence_ExceptHandler:
     return SingleExceptHandler(
         content
     )
 
 def update_SingleExceptHandler(source_SingleExceptHandler : SingleExceptHandler,
-    content : Union[ExceptHandler, SourceFlag] = SourceFlag()
+    content : Union[ExceptHandler | None, SourceFlag] = SourceFlag()
 ) -> SingleExceptHandler:
     return SingleExceptHandler(
         source_SingleExceptHandler.content if isinstance(content, SourceFlag) else content
@@ -2527,15 +2527,15 @@ class conditions(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ElifCond(conditions):
-    content : ElifBlock
-    tail : conditions
+    content : ElifBlock | None
+    tail : conditions | None
 
     def match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElifCond(self)
 
 def make_ElifCond(
-    content : ElifBlock, 
-    tail : conditions
+    content : ElifBlock | None, 
+    tail : conditions | None
 ) -> conditions:
     return ElifCond(
         content,
@@ -2543,8 +2543,8 @@ def make_ElifCond(
     )
 
 def update_ElifCond(source_ElifCond : ElifCond,
-    content : Union[ElifBlock, SourceFlag] = SourceFlag(),
-    tail : Union[conditions, SourceFlag] = SourceFlag()
+    content : Union[ElifBlock | None, SourceFlag] = SourceFlag(),
+    tail : Union[conditions | None, SourceFlag] = SourceFlag()
 ) -> ElifCond:
     return ElifCond(
         source_ElifCond.content if isinstance(content, SourceFlag) else content,
@@ -2555,20 +2555,20 @@ def update_ElifCond(source_ElifCond : ElifCond,
 
 @dataclass(frozen=True, eq=True)
 class ElseCond(conditions):
-    content : ElseBlock
+    content : ElseBlock | None
 
     def match(self, handlers : ConditionsHandlers[T]) -> T:
         return handlers.case_ElseCond(self)
 
 def make_ElseCond(
-    content : ElseBlock
+    content : ElseBlock | None
 ) -> conditions:
     return ElseCond(
         content
     )
 
 def update_ElseCond(source_ElseCond : ElseCond,
-    content : Union[ElseBlock, SourceFlag] = SourceFlag()
+    content : Union[ElseBlock | None, SourceFlag] = SourceFlag()
 ) -> ElseCond:
     return ElseCond(
         source_ElseCond.content if isinstance(content, SourceFlag) else content
@@ -2621,18 +2621,18 @@ class function_def(ABC):
 @dataclass(frozen=True, eq=True)
 class FunctionDef(function_def):
     name : str
-    params : parameters
-    ret_anno : return_annotation
-    body : statements
+    params : parameters | None
+    ret_anno : return_annotation | None
+    body : statements | None
 
     def match(self, handlers : FunctionDefHandlers[T]) -> T:
         return handlers.case_FunctionDef(self)
 
 def make_FunctionDef(
     name : str, 
-    params : parameters, 
-    ret_anno : return_annotation, 
-    body : statements
+    params : parameters | None, 
+    ret_anno : return_annotation | None, 
+    body : statements | None
 ) -> function_def:
     return FunctionDef(
         name,
@@ -2643,9 +2643,9 @@ def make_FunctionDef(
 
 def update_FunctionDef(source_FunctionDef : FunctionDef,
     name : Union[str, SourceFlag] = SourceFlag(),
-    params : Union[parameters, SourceFlag] = SourceFlag(),
-    ret_anno : Union[return_annotation, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    params : Union[parameters | None, SourceFlag] = SourceFlag(),
+    ret_anno : Union[return_annotation | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> FunctionDef:
     return FunctionDef(
         source_FunctionDef.name if isinstance(name, SourceFlag) else name,
@@ -2659,18 +2659,18 @@ def update_FunctionDef(source_FunctionDef : FunctionDef,
 @dataclass(frozen=True, eq=True)
 class AsyncFunctionDef(function_def):
     name : str
-    params : parameters
-    ret_anno : return_annotation
-    body : statements
+    params : parameters | None
+    ret_anno : return_annotation | None
+    body : statements | None
 
     def match(self, handlers : FunctionDefHandlers[T]) -> T:
         return handlers.case_AsyncFunctionDef(self)
 
 def make_AsyncFunctionDef(
     name : str, 
-    params : parameters, 
-    ret_anno : return_annotation, 
-    body : statements
+    params : parameters | None, 
+    ret_anno : return_annotation | None, 
+    body : statements | None
 ) -> function_def:
     return AsyncFunctionDef(
         name,
@@ -2681,9 +2681,9 @@ def make_AsyncFunctionDef(
 
 def update_AsyncFunctionDef(source_AsyncFunctionDef : AsyncFunctionDef,
     name : Union[str, SourceFlag] = SourceFlag(),
-    params : Union[parameters, SourceFlag] = SourceFlag(),
-    ret_anno : Union[return_annotation, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    params : Union[parameters | None, SourceFlag] = SourceFlag(),
+    ret_anno : Union[return_annotation | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> AsyncFunctionDef:
     return AsyncFunctionDef(
         source_AsyncFunctionDef.name if isinstance(name, SourceFlag) else name,
@@ -2718,15 +2718,15 @@ class stmt(ABC):
 
 @dataclass(frozen=True, eq=True)
 class DecFunctionDef(stmt):
-    decs : decorators
-    fun_def : function_def
+    decs : decorators | None
+    fun_def : function_def | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_DecFunctionDef(self)
 
 def make_DecFunctionDef(
-    decs : decorators, 
-    fun_def : function_def
+    decs : decorators | None, 
+    fun_def : function_def | None
 ) -> stmt:
     return DecFunctionDef(
         decs,
@@ -2734,8 +2734,8 @@ def make_DecFunctionDef(
     )
 
 def update_DecFunctionDef(source_DecFunctionDef : DecFunctionDef,
-    decs : Union[decorators, SourceFlag] = SourceFlag(),
-    fun_def : Union[function_def, SourceFlag] = SourceFlag()
+    decs : Union[decorators | None, SourceFlag] = SourceFlag(),
+    fun_def : Union[function_def | None, SourceFlag] = SourceFlag()
 ) -> DecFunctionDef:
     return DecFunctionDef(
         source_DecFunctionDef.decs if isinstance(decs, SourceFlag) else decs,
@@ -2746,15 +2746,15 @@ def update_DecFunctionDef(source_DecFunctionDef : DecFunctionDef,
 
 @dataclass(frozen=True, eq=True)
 class DecClassDef(stmt):
-    decs : decorators
-    class_def : ClassDef
+    decs : decorators | None
+    class_def : ClassDef | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_DecClassDef(self)
 
 def make_DecClassDef(
-    decs : decorators, 
-    class_def : ClassDef
+    decs : decorators | None, 
+    class_def : ClassDef | None
 ) -> stmt:
     return DecClassDef(
         decs,
@@ -2762,8 +2762,8 @@ def make_DecClassDef(
     )
 
 def update_DecClassDef(source_DecClassDef : DecClassDef,
-    decs : Union[decorators, SourceFlag] = SourceFlag(),
-    class_def : Union[ClassDef, SourceFlag] = SourceFlag()
+    decs : Union[decorators | None, SourceFlag] = SourceFlag(),
+    class_def : Union[ClassDef | None, SourceFlag] = SourceFlag()
 ) -> DecClassDef:
     return DecClassDef(
         source_DecClassDef.decs if isinstance(decs, SourceFlag) else decs,
@@ -2774,20 +2774,20 @@ def update_DecClassDef(source_DecClassDef : DecClassDef,
 
 @dataclass(frozen=True, eq=True)
 class ReturnSomething(stmt):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ReturnSomething(self)
 
 def make_ReturnSomething(
-    content : expr
+    content : expr | None
 ) -> stmt:
     return ReturnSomething(
         content
     )
 
 def update_ReturnSomething(source_ReturnSomething : ReturnSomething,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> ReturnSomething:
     return ReturnSomething(
         source_ReturnSomething.content if isinstance(content, SourceFlag) else content
@@ -2816,20 +2816,20 @@ def update_Return(source_Return : Return
 
 @dataclass(frozen=True, eq=True)
 class Delete(stmt):
-    targets : comma_exprs
+    targets : comma_exprs | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Delete(self)
 
 def make_Delete(
-    targets : comma_exprs
+    targets : comma_exprs | None
 ) -> stmt:
     return Delete(
         targets
     )
 
 def update_Delete(source_Delete : Delete,
-    targets : Union[comma_exprs, SourceFlag] = SourceFlag()
+    targets : Union[comma_exprs | None, SourceFlag] = SourceFlag()
 ) -> Delete:
     return Delete(
         source_Delete.targets if isinstance(targets, SourceFlag) else targets
@@ -2839,15 +2839,15 @@ def update_Delete(source_Delete : Delete,
 
 @dataclass(frozen=True, eq=True)
 class Assign(stmt):
-    targets : target_exprs
-    content : expr
+    targets : target_exprs | None
+    content : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Assign(self)
 
 def make_Assign(
-    targets : target_exprs, 
-    content : expr
+    targets : target_exprs | None, 
+    content : expr | None
 ) -> stmt:
     return Assign(
         targets,
@@ -2855,8 +2855,8 @@ def make_Assign(
     )
 
 def update_Assign(source_Assign : Assign,
-    targets : Union[target_exprs, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag()
+    targets : Union[target_exprs | None, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Assign:
     return Assign(
         source_Assign.targets if isinstance(targets, SourceFlag) else targets,
@@ -2867,17 +2867,17 @@ def update_Assign(source_Assign : Assign,
 
 @dataclass(frozen=True, eq=True)
 class AugAssign(stmt):
-    target : expr
-    op : bin_rator
-    content : expr
+    target : expr | None
+    op : bin_rator | None
+    content : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AugAssign(self)
 
 def make_AugAssign(
-    target : expr, 
-    op : bin_rator, 
-    content : expr
+    target : expr | None, 
+    op : bin_rator | None, 
+    content : expr | None
 ) -> stmt:
     return AugAssign(
         target,
@@ -2886,9 +2886,9 @@ def make_AugAssign(
     )
 
 def update_AugAssign(source_AugAssign : AugAssign,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    op : Union[bin_rator, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    op : Union[bin_rator | None, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> AugAssign:
     return AugAssign(
         source_AugAssign.target if isinstance(target, SourceFlag) else target,
@@ -2900,17 +2900,17 @@ def update_AugAssign(source_AugAssign : AugAssign,
 
 @dataclass(frozen=True, eq=True)
 class AnnoAssign(stmt):
-    target : expr
-    anno : expr
-    content : expr
+    target : expr | None
+    anno : expr | None
+    content : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AnnoAssign(self)
 
 def make_AnnoAssign(
-    target : expr, 
-    anno : expr, 
-    content : expr
+    target : expr | None, 
+    anno : expr | None, 
+    content : expr | None
 ) -> stmt:
     return AnnoAssign(
         target,
@@ -2919,9 +2919,9 @@ def make_AnnoAssign(
     )
 
 def update_AnnoAssign(source_AnnoAssign : AnnoAssign,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    anno : Union[expr, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    anno : Union[expr | None, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> AnnoAssign:
     return AnnoAssign(
         source_AnnoAssign.target if isinstance(target, SourceFlag) else target,
@@ -2933,15 +2933,15 @@ def update_AnnoAssign(source_AnnoAssign : AnnoAssign,
 
 @dataclass(frozen=True, eq=True)
 class AnnoDeclar(stmt):
-    target : expr
-    anno : expr
+    target : expr | None
+    anno : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AnnoDeclar(self)
 
 def make_AnnoDeclar(
-    target : expr, 
-    anno : expr
+    target : expr | None, 
+    anno : expr | None
 ) -> stmt:
     return AnnoDeclar(
         target,
@@ -2949,8 +2949,8 @@ def make_AnnoDeclar(
     )
 
 def update_AnnoDeclar(source_AnnoDeclar : AnnoDeclar,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    anno : Union[expr, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    anno : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> AnnoDeclar:
     return AnnoDeclar(
         source_AnnoDeclar.target if isinstance(target, SourceFlag) else target,
@@ -2961,17 +2961,17 @@ def update_AnnoDeclar(source_AnnoDeclar : AnnoDeclar,
 
 @dataclass(frozen=True, eq=True)
 class For(stmt):
-    target : expr
-    iter : expr
-    body : statements
+    target : expr | None
+    iter : expr | None
+    body : statements | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_For(self)
 
 def make_For(
-    target : expr, 
-    iter : expr, 
-    body : statements
+    target : expr | None, 
+    iter : expr | None, 
+    body : statements | None
 ) -> stmt:
     return For(
         target,
@@ -2980,9 +2980,9 @@ def make_For(
     )
 
 def update_For(source_For : For,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    iter : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> For:
     return For(
         source_For.target if isinstance(target, SourceFlag) else target,
@@ -2994,19 +2994,19 @@ def update_For(source_For : For,
 
 @dataclass(frozen=True, eq=True)
 class ForElse(stmt):
-    target : expr
-    iter : expr
-    body : statements
-    orelse : ElseBlock
+    target : expr | None
+    iter : expr | None
+    body : statements | None
+    orelse : ElseBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ForElse(self)
 
 def make_ForElse(
-    target : expr, 
-    iter : expr, 
-    body : statements, 
-    orelse : ElseBlock
+    target : expr | None, 
+    iter : expr | None, 
+    body : statements | None, 
+    orelse : ElseBlock | None
 ) -> stmt:
     return ForElse(
         target,
@@ -3016,10 +3016,10 @@ def make_ForElse(
     )
 
 def update_ForElse(source_ForElse : ForElse,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    iter : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag()
 ) -> ForElse:
     return ForElse(
         source_ForElse.target if isinstance(target, SourceFlag) else target,
@@ -3032,17 +3032,17 @@ def update_ForElse(source_ForElse : ForElse,
 
 @dataclass(frozen=True, eq=True)
 class AsyncFor(stmt):
-    target : expr
-    iter : expr
-    body : statements
+    target : expr | None
+    iter : expr | None
+    body : statements | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncFor(self)
 
 def make_AsyncFor(
-    target : expr, 
-    iter : expr, 
-    body : statements
+    target : expr | None, 
+    iter : expr | None, 
+    body : statements | None
 ) -> stmt:
     return AsyncFor(
         target,
@@ -3051,9 +3051,9 @@ def make_AsyncFor(
     )
 
 def update_AsyncFor(source_AsyncFor : AsyncFor,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    iter : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> AsyncFor:
     return AsyncFor(
         source_AsyncFor.target if isinstance(target, SourceFlag) else target,
@@ -3065,19 +3065,19 @@ def update_AsyncFor(source_AsyncFor : AsyncFor,
 
 @dataclass(frozen=True, eq=True)
 class AsyncForElse(stmt):
-    target : expr
-    iter : expr
-    body : statements
-    orelse : ElseBlock
+    target : expr | None
+    iter : expr | None
+    body : statements | None
+    orelse : ElseBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncForElse(self)
 
 def make_AsyncForElse(
-    target : expr, 
-    iter : expr, 
-    body : statements, 
-    orelse : ElseBlock
+    target : expr | None, 
+    iter : expr | None, 
+    body : statements | None, 
+    orelse : ElseBlock | None
 ) -> stmt:
     return AsyncForElse(
         target,
@@ -3087,10 +3087,10 @@ def make_AsyncForElse(
     )
 
 def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    iter : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag()
 ) -> AsyncForElse:
     return AsyncForElse(
         source_AsyncForElse.target if isinstance(target, SourceFlag) else target,
@@ -3103,15 +3103,15 @@ def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
 
 @dataclass(frozen=True, eq=True)
 class While(stmt):
-    test : expr
-    body : statements
+    test : expr | None
+    body : statements | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_While(self)
 
 def make_While(
-    test : expr, 
-    body : statements
+    test : expr | None, 
+    body : statements | None
 ) -> stmt:
     return While(
         test,
@@ -3119,8 +3119,8 @@ def make_While(
     )
 
 def update_While(source_While : While,
-    test : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    test : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> While:
     return While(
         source_While.test if isinstance(test, SourceFlag) else test,
@@ -3131,17 +3131,17 @@ def update_While(source_While : While,
 
 @dataclass(frozen=True, eq=True)
 class WhileElse(stmt):
-    test : expr
-    body : statements
-    orelse : ElseBlock
+    test : expr | None
+    body : statements | None
+    orelse : ElseBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_WhileElse(self)
 
 def make_WhileElse(
-    test : expr, 
-    body : statements, 
-    orelse : ElseBlock
+    test : expr | None, 
+    body : statements | None, 
+    orelse : ElseBlock | None
 ) -> stmt:
     return WhileElse(
         test,
@@ -3150,9 +3150,9 @@ def make_WhileElse(
     )
 
 def update_WhileElse(source_WhileElse : WhileElse,
-    test : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+    test : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag()
 ) -> WhileElse:
     return WhileElse(
         source_WhileElse.test if isinstance(test, SourceFlag) else test,
@@ -3164,17 +3164,17 @@ def update_WhileElse(source_WhileElse : WhileElse,
 
 @dataclass(frozen=True, eq=True)
 class If(stmt):
-    test : expr
-    body : statements
-    orelse : conditions
+    test : expr | None
+    body : statements | None
+    orelse : conditions | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_If(self)
 
 def make_If(
-    test : expr, 
-    body : statements, 
-    orelse : conditions
+    test : expr | None, 
+    body : statements | None, 
+    orelse : conditions | None
 ) -> stmt:
     return If(
         test,
@@ -3183,9 +3183,9 @@ def make_If(
     )
 
 def update_If(source_If : If,
-    test : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    orelse : Union[conditions, SourceFlag] = SourceFlag()
+    test : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    orelse : Union[conditions | None, SourceFlag] = SourceFlag()
 ) -> If:
     return If(
         source_If.test if isinstance(test, SourceFlag) else test,
@@ -3197,15 +3197,15 @@ def update_If(source_If : If,
 
 @dataclass(frozen=True, eq=True)
 class With(stmt):
-    items : sequence_with_item
-    body : statements
+    items : sequence_with_item | None
+    body : statements | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_With(self)
 
 def make_With(
-    items : sequence_with_item, 
-    body : statements
+    items : sequence_with_item | None, 
+    body : statements | None
 ) -> stmt:
     return With(
         items,
@@ -3213,8 +3213,8 @@ def make_With(
     )
 
 def update_With(source_With : With,
-    items : Union[sequence_with_item, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    items : Union[sequence_with_item | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> With:
     return With(
         source_With.items if isinstance(items, SourceFlag) else items,
@@ -3225,15 +3225,15 @@ def update_With(source_With : With,
 
 @dataclass(frozen=True, eq=True)
 class AsyncWith(stmt):
-    items : sequence_with_item
-    body : statements
+    items : sequence_with_item | None
+    body : statements | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AsyncWith(self)
 
 def make_AsyncWith(
-    items : sequence_with_item, 
-    body : statements
+    items : sequence_with_item | None, 
+    body : statements | None
 ) -> stmt:
     return AsyncWith(
         items,
@@ -3241,8 +3241,8 @@ def make_AsyncWith(
     )
 
 def update_AsyncWith(source_AsyncWith : AsyncWith,
-    items : Union[sequence_with_item, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    items : Union[sequence_with_item | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> AsyncWith:
     return AsyncWith(
         source_AsyncWith.items if isinstance(items, SourceFlag) else items,
@@ -3272,20 +3272,20 @@ def update_Raise(source_Raise : Raise
 
 @dataclass(frozen=True, eq=True)
 class RaiseExc(stmt):
-    exc : expr
+    exc : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_RaiseExc(self)
 
 def make_RaiseExc(
-    exc : expr
+    exc : expr | None
 ) -> stmt:
     return RaiseExc(
         exc
     )
 
 def update_RaiseExc(source_RaiseExc : RaiseExc,
-    exc : Union[expr, SourceFlag] = SourceFlag()
+    exc : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> RaiseExc:
     return RaiseExc(
         source_RaiseExc.exc if isinstance(exc, SourceFlag) else exc
@@ -3295,15 +3295,15 @@ def update_RaiseExc(source_RaiseExc : RaiseExc,
 
 @dataclass(frozen=True, eq=True)
 class RaiseFrom(stmt):
-    exc : expr
-    caus : expr
+    exc : expr | None
+    caus : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_RaiseFrom(self)
 
 def make_RaiseFrom(
-    exc : expr, 
-    caus : expr
+    exc : expr | None, 
+    caus : expr | None
 ) -> stmt:
     return RaiseFrom(
         exc,
@@ -3311,8 +3311,8 @@ def make_RaiseFrom(
     )
 
 def update_RaiseFrom(source_RaiseFrom : RaiseFrom,
-    exc : Union[expr, SourceFlag] = SourceFlag(),
-    caus : Union[expr, SourceFlag] = SourceFlag()
+    exc : Union[expr | None, SourceFlag] = SourceFlag(),
+    caus : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> RaiseFrom:
     return RaiseFrom(
         source_RaiseFrom.exc if isinstance(exc, SourceFlag) else exc,
@@ -3323,15 +3323,15 @@ def update_RaiseFrom(source_RaiseFrom : RaiseFrom,
 
 @dataclass(frozen=True, eq=True)
 class Try(stmt):
-    body : statements
-    handlers : sequence_ExceptHandler
+    body : statements | None
+    handlers : sequence_ExceptHandler | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Try(self)
 
 def make_Try(
-    body : statements, 
-    handlers : sequence_ExceptHandler
+    body : statements | None, 
+    handlers : sequence_ExceptHandler | None
 ) -> stmt:
     return Try(
         body,
@@ -3339,8 +3339,8 @@ def make_Try(
     )
 
 def update_Try(source_Try : Try,
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag()
 ) -> Try:
     return Try(
         source_Try.body if isinstance(body, SourceFlag) else body,
@@ -3351,17 +3351,17 @@ def update_Try(source_Try : Try,
 
 @dataclass(frozen=True, eq=True)
 class TryElse(stmt):
-    body : statements
-    handlers : sequence_ExceptHandler
-    orelse : ElseBlock
+    body : statements | None
+    handlers : sequence_ExceptHandler | None
+    orelse : ElseBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryElse(self)
 
 def make_TryElse(
-    body : statements, 
-    handlers : sequence_ExceptHandler, 
-    orelse : ElseBlock
+    body : statements | None, 
+    handlers : sequence_ExceptHandler | None, 
+    orelse : ElseBlock | None
 ) -> stmt:
     return TryElse(
         body,
@@ -3370,9 +3370,9 @@ def make_TryElse(
     )
 
 def update_TryElse(source_TryElse : TryElse,
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag(),
-    orelse : Union[ElseBlock, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag()
 ) -> TryElse:
     return TryElse(
         source_TryElse.body if isinstance(body, SourceFlag) else body,
@@ -3384,17 +3384,17 @@ def update_TryElse(source_TryElse : TryElse,
 
 @dataclass(frozen=True, eq=True)
 class TryExceptFin(stmt):
-    body : statements
-    handlers : sequence_ExceptHandler
-    fin : FinallyBlock
+    body : statements | None
+    handlers : sequence_ExceptHandler | None
+    fin : FinallyBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryExceptFin(self)
 
 def make_TryExceptFin(
-    body : statements, 
-    handlers : sequence_ExceptHandler, 
-    fin : FinallyBlock
+    body : statements | None, 
+    handlers : sequence_ExceptHandler | None, 
+    fin : FinallyBlock | None
 ) -> stmt:
     return TryExceptFin(
         body,
@@ -3403,9 +3403,9 @@ def make_TryExceptFin(
     )
 
 def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag(),
-    fin : Union[FinallyBlock, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
+    fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag()
 ) -> TryExceptFin:
     return TryExceptFin(
         source_TryExceptFin.body if isinstance(body, SourceFlag) else body,
@@ -3417,15 +3417,15 @@ def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
 
 @dataclass(frozen=True, eq=True)
 class TryFin(stmt):
-    body : statements
-    fin : FinallyBlock
+    body : statements | None
+    fin : FinallyBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryFin(self)
 
 def make_TryFin(
-    body : statements, 
-    fin : FinallyBlock
+    body : statements | None, 
+    fin : FinallyBlock | None
 ) -> stmt:
     return TryFin(
         body,
@@ -3433,8 +3433,8 @@ def make_TryFin(
     )
 
 def update_TryFin(source_TryFin : TryFin,
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    fin : Union[FinallyBlock, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag()
 ) -> TryFin:
     return TryFin(
         source_TryFin.body if isinstance(body, SourceFlag) else body,
@@ -3445,19 +3445,19 @@ def update_TryFin(source_TryFin : TryFin,
 
 @dataclass(frozen=True, eq=True)
 class TryElseFin(stmt):
-    body : statements
-    handlers : sequence_ExceptHandler
-    orelse : ElseBlock
-    fin : FinallyBlock
+    body : statements | None
+    handlers : sequence_ExceptHandler | None
+    orelse : ElseBlock | None
+    fin : FinallyBlock | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_TryElseFin(self)
 
 def make_TryElseFin(
-    body : statements, 
-    handlers : sequence_ExceptHandler, 
-    orelse : ElseBlock, 
-    fin : FinallyBlock
+    body : statements | None, 
+    handlers : sequence_ExceptHandler | None, 
+    orelse : ElseBlock | None, 
+    fin : FinallyBlock | None
 ) -> stmt:
     return TryElseFin(
         body,
@@ -3467,10 +3467,10 @@ def make_TryElseFin(
     )
 
 def update_TryElseFin(source_TryElseFin : TryElseFin,
-    body : Union[statements, SourceFlag] = SourceFlag(),
-    handlers : Union[sequence_ExceptHandler, SourceFlag] = SourceFlag(),
-    orelse : Union[ElseBlock, SourceFlag] = SourceFlag(),
-    fin : Union[FinallyBlock, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag(),
+    handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
+    orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
+    fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag()
 ) -> TryElseFin:
     return TryElseFin(
         source_TryElseFin.body if isinstance(body, SourceFlag) else body,
@@ -3483,20 +3483,20 @@ def update_TryElseFin(source_TryElseFin : TryElseFin,
 
 @dataclass(frozen=True, eq=True)
 class Assert(stmt):
-    test : expr
+    test : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Assert(self)
 
 def make_Assert(
-    test : expr
+    test : expr | None
 ) -> stmt:
     return Assert(
         test
     )
 
 def update_Assert(source_Assert : Assert,
-    test : Union[expr, SourceFlag] = SourceFlag()
+    test : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Assert:
     return Assert(
         source_Assert.test if isinstance(test, SourceFlag) else test
@@ -3506,15 +3506,15 @@ def update_Assert(source_Assert : Assert,
 
 @dataclass(frozen=True, eq=True)
 class AssertMsg(stmt):
-    test : expr
-    msg : expr
+    test : expr | None
+    msg : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_AssertMsg(self)
 
 def make_AssertMsg(
-    test : expr, 
-    msg : expr
+    test : expr | None, 
+    msg : expr | None
 ) -> stmt:
     return AssertMsg(
         test,
@@ -3522,8 +3522,8 @@ def make_AssertMsg(
     )
 
 def update_AssertMsg(source_AssertMsg : AssertMsg,
-    test : Union[expr, SourceFlag] = SourceFlag(),
-    msg : Union[expr, SourceFlag] = SourceFlag()
+    test : Union[expr | None, SourceFlag] = SourceFlag(),
+    msg : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> AssertMsg:
     return AssertMsg(
         source_AssertMsg.test if isinstance(test, SourceFlag) else test,
@@ -3534,20 +3534,20 @@ def update_AssertMsg(source_AssertMsg : AssertMsg,
 
 @dataclass(frozen=True, eq=True)
 class Import(stmt):
-    names : sequence_import_name
+    names : sequence_import_name | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Import(self)
 
 def make_Import(
-    names : sequence_import_name
+    names : sequence_import_name | None
 ) -> stmt:
     return Import(
         names
     )
 
 def update_Import(source_Import : Import,
-    names : Union[sequence_import_name, SourceFlag] = SourceFlag()
+    names : Union[sequence_import_name | None, SourceFlag] = SourceFlag()
 ) -> Import:
     return Import(
         source_Import.names if isinstance(names, SourceFlag) else names
@@ -3558,14 +3558,14 @@ def update_Import(source_Import : Import,
 @dataclass(frozen=True, eq=True)
 class ImportFrom(stmt):
     module : str
-    names : sequence_import_name
+    names : sequence_import_name | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_ImportFrom(self)
 
 def make_ImportFrom(
     module : str, 
-    names : sequence_import_name
+    names : sequence_import_name | None
 ) -> stmt:
     return ImportFrom(
         module,
@@ -3574,7 +3574,7 @@ def make_ImportFrom(
 
 def update_ImportFrom(source_ImportFrom : ImportFrom,
     module : Union[str, SourceFlag] = SourceFlag(),
-    names : Union[sequence_import_name, SourceFlag] = SourceFlag()
+    names : Union[sequence_import_name | None, SourceFlag] = SourceFlag()
 ) -> ImportFrom:
     return ImportFrom(
         source_ImportFrom.module if isinstance(module, SourceFlag) else module,
@@ -3608,20 +3608,20 @@ def update_ImportWildCard(source_ImportWildCard : ImportWildCard,
 
 @dataclass(frozen=True, eq=True)
 class Global(stmt):
-    names : sequence_name
+    names : sequence_name | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Global(self)
 
 def make_Global(
-    names : sequence_name
+    names : sequence_name | None
 ) -> stmt:
     return Global(
         names
     )
 
 def update_Global(source_Global : Global,
-    names : Union[sequence_name, SourceFlag] = SourceFlag()
+    names : Union[sequence_name | None, SourceFlag] = SourceFlag()
 ) -> Global:
     return Global(
         source_Global.names if isinstance(names, SourceFlag) else names
@@ -3631,20 +3631,20 @@ def update_Global(source_Global : Global,
 
 @dataclass(frozen=True, eq=True)
 class Nonlocal(stmt):
-    names : sequence_name
+    names : sequence_name | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Nonlocal(self)
 
 def make_Nonlocal(
-    names : sequence_name
+    names : sequence_name | None
 ) -> stmt:
     return Nonlocal(
         names
     )
 
 def update_Nonlocal(source_Nonlocal : Nonlocal,
-    names : Union[sequence_name, SourceFlag] = SourceFlag()
+    names : Union[sequence_name | None, SourceFlag] = SourceFlag()
 ) -> Nonlocal:
     return Nonlocal(
         source_Nonlocal.names if isinstance(names, SourceFlag) else names
@@ -3654,20 +3654,20 @@ def update_Nonlocal(source_Nonlocal : Nonlocal,
 
 @dataclass(frozen=True, eq=True)
 class Expr(stmt):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : StmtHandlers[T]) -> T:
         return handlers.case_Expr(self)
 
 def make_Expr(
-    content : expr
+    content : expr | None
 ) -> stmt:
     return Expr(
         content
     )
 
 def update_Expr(source_Expr : Expr,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Expr:
     return Expr(
         source_Expr.content if isinstance(content, SourceFlag) else content
@@ -3791,17 +3791,17 @@ class expr(ABC):
 
 @dataclass(frozen=True, eq=True)
 class BoolOp(expr):
-    left : expr
-    op : bool_rator
-    right : expr
+    left : expr | None
+    op : bool_rator | None
+    right : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_BoolOp(self)
 
 def make_BoolOp(
-    left : expr, 
-    op : bool_rator, 
-    right : expr
+    left : expr | None, 
+    op : bool_rator | None, 
+    right : expr | None
 ) -> expr:
     return BoolOp(
         left,
@@ -3810,9 +3810,9 @@ def make_BoolOp(
     )
 
 def update_BoolOp(source_BoolOp : BoolOp,
-    left : Union[expr, SourceFlag] = SourceFlag(),
-    op : Union[bool_rator, SourceFlag] = SourceFlag(),
-    right : Union[expr, SourceFlag] = SourceFlag()
+    left : Union[expr | None, SourceFlag] = SourceFlag(),
+    op : Union[bool_rator | None, SourceFlag] = SourceFlag(),
+    right : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> BoolOp:
     return BoolOp(
         source_BoolOp.left if isinstance(left, SourceFlag) else left,
@@ -3824,15 +3824,15 @@ def update_BoolOp(source_BoolOp : BoolOp,
 
 @dataclass(frozen=True, eq=True)
 class AssignExpr(expr):
-    target : expr
-    content : expr
+    target : expr | None
+    content : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_AssignExpr(self)
 
 def make_AssignExpr(
-    target : expr, 
-    content : expr
+    target : expr | None, 
+    content : expr | None
 ) -> expr:
     return AssignExpr(
         target,
@@ -3840,8 +3840,8 @@ def make_AssignExpr(
     )
 
 def update_AssignExpr(source_AssignExpr : AssignExpr,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> AssignExpr:
     return AssignExpr(
         source_AssignExpr.target if isinstance(target, SourceFlag) else target,
@@ -3852,17 +3852,17 @@ def update_AssignExpr(source_AssignExpr : AssignExpr,
 
 @dataclass(frozen=True, eq=True)
 class BinOp(expr):
-    left : expr
-    rator : bin_rator
-    right : expr
+    left : expr | None
+    rator : bin_rator | None
+    right : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_BinOp(self)
 
 def make_BinOp(
-    left : expr, 
-    rator : bin_rator, 
-    right : expr
+    left : expr | None, 
+    rator : bin_rator | None, 
+    right : expr | None
 ) -> expr:
     return BinOp(
         left,
@@ -3871,9 +3871,9 @@ def make_BinOp(
     )
 
 def update_BinOp(source_BinOp : BinOp,
-    left : Union[expr, SourceFlag] = SourceFlag(),
-    rator : Union[bin_rator, SourceFlag] = SourceFlag(),
-    right : Union[expr, SourceFlag] = SourceFlag()
+    left : Union[expr | None, SourceFlag] = SourceFlag(),
+    rator : Union[bin_rator | None, SourceFlag] = SourceFlag(),
+    right : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> BinOp:
     return BinOp(
         source_BinOp.left if isinstance(left, SourceFlag) else left,
@@ -3885,15 +3885,15 @@ def update_BinOp(source_BinOp : BinOp,
 
 @dataclass(frozen=True, eq=True)
 class UnaryOp(expr):
-    rator : unary_rator
-    rand : expr
+    rator : unary_rator | None
+    rand : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_UnaryOp(self)
 
 def make_UnaryOp(
-    rator : unary_rator, 
-    rand : expr
+    rator : unary_rator | None, 
+    rand : expr | None
 ) -> expr:
     return UnaryOp(
         rator,
@@ -3901,8 +3901,8 @@ def make_UnaryOp(
     )
 
 def update_UnaryOp(source_UnaryOp : UnaryOp,
-    rator : Union[unary_rator, SourceFlag] = SourceFlag(),
-    rand : Union[expr, SourceFlag] = SourceFlag()
+    rator : Union[unary_rator | None, SourceFlag] = SourceFlag(),
+    rand : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> UnaryOp:
     return UnaryOp(
         source_UnaryOp.rator if isinstance(rator, SourceFlag) else rator,
@@ -3913,15 +3913,15 @@ def update_UnaryOp(source_UnaryOp : UnaryOp,
 
 @dataclass(frozen=True, eq=True)
 class Lambda(expr):
-    params : parameters
-    body : expr
+    params : parameters | None
+    body : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Lambda(self)
 
 def make_Lambda(
-    params : parameters, 
-    body : expr
+    params : parameters | None, 
+    body : expr | None
 ) -> expr:
     return Lambda(
         params,
@@ -3929,8 +3929,8 @@ def make_Lambda(
     )
 
 def update_Lambda(source_Lambda : Lambda,
-    params : Union[parameters, SourceFlag] = SourceFlag(),
-    body : Union[expr, SourceFlag] = SourceFlag()
+    params : Union[parameters | None, SourceFlag] = SourceFlag(),
+    body : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Lambda:
     return Lambda(
         source_Lambda.params if isinstance(params, SourceFlag) else params,
@@ -3941,17 +3941,17 @@ def update_Lambda(source_Lambda : Lambda,
 
 @dataclass(frozen=True, eq=True)
 class IfExp(expr):
-    body : expr
-    test : expr
-    orelse : expr
+    body : expr | None
+    test : expr | None
+    orelse : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_IfExp(self)
 
 def make_IfExp(
-    body : expr, 
-    test : expr, 
-    orelse : expr
+    body : expr | None, 
+    test : expr | None, 
+    orelse : expr | None
 ) -> expr:
     return IfExp(
         body,
@@ -3960,9 +3960,9 @@ def make_IfExp(
     )
 
 def update_IfExp(source_IfExp : IfExp,
-    body : Union[expr, SourceFlag] = SourceFlag(),
-    test : Union[expr, SourceFlag] = SourceFlag(),
-    orelse : Union[expr, SourceFlag] = SourceFlag()
+    body : Union[expr | None, SourceFlag] = SourceFlag(),
+    test : Union[expr | None, SourceFlag] = SourceFlag(),
+    orelse : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> IfExp:
     return IfExp(
         source_IfExp.body if isinstance(body, SourceFlag) else body,
@@ -3974,20 +3974,20 @@ def update_IfExp(source_IfExp : IfExp,
 
 @dataclass(frozen=True, eq=True)
 class Dictionary(expr):
-    content : dictionary_content
+    content : dictionary_content | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Dictionary(self)
 
 def make_Dictionary(
-    content : dictionary_content
+    content : dictionary_content | None
 ) -> expr:
     return Dictionary(
         content
     )
 
 def update_Dictionary(source_Dictionary : Dictionary,
-    content : Union[dictionary_content, SourceFlag] = SourceFlag()
+    content : Union[dictionary_content | None, SourceFlag] = SourceFlag()
 ) -> Dictionary:
     return Dictionary(
         source_Dictionary.content if isinstance(content, SourceFlag) else content
@@ -4016,20 +4016,20 @@ def update_EmptyDictionary(source_EmptyDictionary : EmptyDictionary
 
 @dataclass(frozen=True, eq=True)
 class Set(expr):
-    content : comma_exprs
+    content : comma_exprs | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Set(self)
 
 def make_Set(
-    content : comma_exprs
+    content : comma_exprs | None
 ) -> expr:
     return Set(
         content
     )
 
 def update_Set(source_Set : Set,
-    content : Union[comma_exprs, SourceFlag] = SourceFlag()
+    content : Union[comma_exprs | None, SourceFlag] = SourceFlag()
 ) -> Set:
     return Set(
         source_Set.content if isinstance(content, SourceFlag) else content
@@ -4039,15 +4039,15 @@ def update_Set(source_Set : Set,
 
 @dataclass(frozen=True, eq=True)
 class ListComp(expr):
-    content : expr
-    constraints : comprehension_constraints
+    content : expr | None
+    constraints : comprehension_constraints | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ListComp(self)
 
 def make_ListComp(
-    content : expr, 
-    constraints : comprehension_constraints
+    content : expr | None, 
+    constraints : comprehension_constraints | None
 ) -> expr:
     return ListComp(
         content,
@@ -4055,8 +4055,8 @@ def make_ListComp(
     )
 
 def update_ListComp(source_ListComp : ListComp,
-    content : Union[expr, SourceFlag] = SourceFlag(),
-    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag()
 ) -> ListComp:
     return ListComp(
         source_ListComp.content if isinstance(content, SourceFlag) else content,
@@ -4067,15 +4067,15 @@ def update_ListComp(source_ListComp : ListComp,
 
 @dataclass(frozen=True, eq=True)
 class SetComp(expr):
-    content : expr
-    constraints : comprehension_constraints
+    content : expr | None
+    constraints : comprehension_constraints | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_SetComp(self)
 
 def make_SetComp(
-    content : expr, 
-    constraints : comprehension_constraints
+    content : expr | None, 
+    constraints : comprehension_constraints | None
 ) -> expr:
     return SetComp(
         content,
@@ -4083,8 +4083,8 @@ def make_SetComp(
     )
 
 def update_SetComp(source_SetComp : SetComp,
-    content : Union[expr, SourceFlag] = SourceFlag(),
-    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag()
 ) -> SetComp:
     return SetComp(
         source_SetComp.content if isinstance(content, SourceFlag) else content,
@@ -4095,17 +4095,17 @@ def update_SetComp(source_SetComp : SetComp,
 
 @dataclass(frozen=True, eq=True)
 class DictionaryComp(expr):
-    key : expr
-    content : expr
-    constraints : comprehension_constraints
+    key : expr | None
+    content : expr | None
+    constraints : comprehension_constraints | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_DictionaryComp(self)
 
 def make_DictionaryComp(
-    key : expr, 
-    content : expr, 
-    constraints : comprehension_constraints
+    key : expr | None, 
+    content : expr | None, 
+    constraints : comprehension_constraints | None
 ) -> expr:
     return DictionaryComp(
         key,
@@ -4114,9 +4114,9 @@ def make_DictionaryComp(
     )
 
 def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
-    key : Union[expr, SourceFlag] = SourceFlag(),
-    content : Union[expr, SourceFlag] = SourceFlag(),
-    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+    key : Union[expr | None, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag()
 ) -> DictionaryComp:
     return DictionaryComp(
         source_DictionaryComp.key if isinstance(key, SourceFlag) else key,
@@ -4128,15 +4128,15 @@ def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
 
 @dataclass(frozen=True, eq=True)
 class GeneratorExp(expr):
-    content : expr
-    constraints : comprehension_constraints
+    content : expr | None
+    constraints : comprehension_constraints | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_GeneratorExp(self)
 
 def make_GeneratorExp(
-    content : expr, 
-    constraints : comprehension_constraints
+    content : expr | None, 
+    constraints : comprehension_constraints | None
 ) -> expr:
     return GeneratorExp(
         content,
@@ -4144,8 +4144,8 @@ def make_GeneratorExp(
     )
 
 def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
-    content : Union[expr, SourceFlag] = SourceFlag(),
-    constraints : Union[comprehension_constraints, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag()
 ) -> GeneratorExp:
     return GeneratorExp(
         source_GeneratorExp.content if isinstance(content, SourceFlag) else content,
@@ -4156,20 +4156,20 @@ def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
 
 @dataclass(frozen=True, eq=True)
 class Await(expr):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Await(self)
 
 def make_Await(
-    content : expr
+    content : expr | None
 ) -> expr:
     return Await(
         content
     )
 
 def update_Await(source_Await : Await,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Await:
     return Await(
         source_Await.content if isinstance(content, SourceFlag) else content
@@ -4198,20 +4198,20 @@ def update_YieldNothing(source_YieldNothing : YieldNothing
 
 @dataclass(frozen=True, eq=True)
 class Yield(expr):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Yield(self)
 
 def make_Yield(
-    content : expr
+    content : expr | None
 ) -> expr:
     return Yield(
         content
     )
 
 def update_Yield(source_Yield : Yield,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Yield:
     return Yield(
         source_Yield.content if isinstance(content, SourceFlag) else content
@@ -4221,20 +4221,20 @@ def update_Yield(source_Yield : Yield,
 
 @dataclass(frozen=True, eq=True)
 class YieldFrom(expr):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_YieldFrom(self)
 
 def make_YieldFrom(
-    content : expr
+    content : expr | None
 ) -> expr:
     return YieldFrom(
         content
     )
 
 def update_YieldFrom(source_YieldFrom : YieldFrom,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> YieldFrom:
     return YieldFrom(
         source_YieldFrom.content if isinstance(content, SourceFlag) else content
@@ -4244,15 +4244,15 @@ def update_YieldFrom(source_YieldFrom : YieldFrom,
 
 @dataclass(frozen=True, eq=True)
 class Compare(expr):
-    left : expr
-    comps : comparisons
+    left : expr | None
+    comps : comparisons | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Compare(self)
 
 def make_Compare(
-    left : expr, 
-    comps : comparisons
+    left : expr | None, 
+    comps : comparisons | None
 ) -> expr:
     return Compare(
         left,
@@ -4260,8 +4260,8 @@ def make_Compare(
     )
 
 def update_Compare(source_Compare : Compare,
-    left : Union[expr, SourceFlag] = SourceFlag(),
-    comps : Union[comparisons, SourceFlag] = SourceFlag()
+    left : Union[expr | None, SourceFlag] = SourceFlag(),
+    comps : Union[comparisons | None, SourceFlag] = SourceFlag()
 ) -> Compare:
     return Compare(
         source_Compare.left if isinstance(left, SourceFlag) else left,
@@ -4272,20 +4272,20 @@ def update_Compare(source_Compare : Compare,
 
 @dataclass(frozen=True, eq=True)
 class Call(expr):
-    func : expr
+    func : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Call(self)
 
 def make_Call(
-    func : expr
+    func : expr | None
 ) -> expr:
     return Call(
         func
     )
 
 def update_Call(source_Call : Call,
-    func : Union[expr, SourceFlag] = SourceFlag()
+    func : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Call:
     return Call(
         source_Call.func if isinstance(func, SourceFlag) else func
@@ -4295,15 +4295,15 @@ def update_Call(source_Call : Call,
 
 @dataclass(frozen=True, eq=True)
 class CallArgs(expr):
-    func : expr
-    args : arguments
+    func : expr | None
+    args : arguments | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_CallArgs(self)
 
 def make_CallArgs(
-    func : expr, 
-    args : arguments
+    func : expr | None, 
+    args : arguments | None
 ) -> expr:
     return CallArgs(
         func,
@@ -4311,8 +4311,8 @@ def make_CallArgs(
     )
 
 def update_CallArgs(source_CallArgs : CallArgs,
-    func : Union[expr, SourceFlag] = SourceFlag(),
-    args : Union[arguments, SourceFlag] = SourceFlag()
+    func : Union[expr | None, SourceFlag] = SourceFlag(),
+    args : Union[arguments | None, SourceFlag] = SourceFlag()
 ) -> CallArgs:
     return CallArgs(
         source_CallArgs.func if isinstance(func, SourceFlag) else func,
@@ -4369,20 +4369,20 @@ def update_Float(source_Float : Float,
 
 @dataclass(frozen=True, eq=True)
 class ConcatString(expr):
-    content : sequence_string
+    content : sequence_string | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_ConcatString(self)
 
 def make_ConcatString(
-    content : sequence_string
+    content : sequence_string | None
 ) -> expr:
     return ConcatString(
         content
     )
 
 def update_ConcatString(source_ConcatString : ConcatString,
-    content : Union[sequence_string, SourceFlag] = SourceFlag()
+    content : Union[sequence_string | None, SourceFlag] = SourceFlag()
 ) -> ConcatString:
     return ConcatString(
         source_ConcatString.content if isinstance(content, SourceFlag) else content
@@ -4468,14 +4468,14 @@ def update_Ellip(source_Ellip : Ellip
 
 @dataclass(frozen=True, eq=True)
 class Attribute(expr):
-    content : expr
+    content : expr | None
     name : str
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Attribute(self)
 
 def make_Attribute(
-    content : expr, 
+    content : expr | None, 
     name : str
 ) -> expr:
     return Attribute(
@@ -4484,7 +4484,7 @@ def make_Attribute(
     )
 
 def update_Attribute(source_Attribute : Attribute,
-    content : Union[expr, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
     name : Union[str, SourceFlag] = SourceFlag()
 ) -> Attribute:
     return Attribute(
@@ -4496,15 +4496,15 @@ def update_Attribute(source_Attribute : Attribute,
 
 @dataclass(frozen=True, eq=True)
 class Subscript(expr):
-    content : expr
-    slice : expr
+    content : expr | None
+    slice : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Subscript(self)
 
 def make_Subscript(
-    content : expr, 
-    slice : expr
+    content : expr | None, 
+    slice : expr | None
 ) -> expr:
     return Subscript(
         content,
@@ -4512,8 +4512,8 @@ def make_Subscript(
     )
 
 def update_Subscript(source_Subscript : Subscript,
-    content : Union[expr, SourceFlag] = SourceFlag(),
-    slice : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    slice : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Subscript:
     return Subscript(
         source_Subscript.content if isinstance(content, SourceFlag) else content,
@@ -4524,20 +4524,20 @@ def update_Subscript(source_Subscript : Subscript,
 
 @dataclass(frozen=True, eq=True)
 class Starred(expr):
-    content : expr
+    content : expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Starred(self)
 
 def make_Starred(
-    content : expr
+    content : expr | None
 ) -> expr:
     return Starred(
         content
     )
 
 def update_Starred(source_Starred : Starred,
-    content : Union[expr, SourceFlag] = SourceFlag()
+    content : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> Starred:
     return Starred(
         source_Starred.content if isinstance(content, SourceFlag) else content
@@ -4570,20 +4570,20 @@ def update_Name(source_Name : Name,
 
 @dataclass(frozen=True, eq=True)
 class List(expr):
-    content : comma_exprs
+    content : comma_exprs | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_List(self)
 
 def make_List(
-    content : comma_exprs
+    content : comma_exprs | None
 ) -> expr:
     return List(
         content
     )
 
 def update_List(source_List : List,
-    content : Union[comma_exprs, SourceFlag] = SourceFlag()
+    content : Union[comma_exprs | None, SourceFlag] = SourceFlag()
 ) -> List:
     return List(
         source_List.content if isinstance(content, SourceFlag) else content
@@ -4612,20 +4612,20 @@ def update_EmptyList(source_EmptyList : EmptyList
 
 @dataclass(frozen=True, eq=True)
 class Tuple(expr):
-    content : comma_exprs
+    content : comma_exprs | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Tuple(self)
 
 def make_Tuple(
-    content : comma_exprs
+    content : comma_exprs | None
 ) -> expr:
     return Tuple(
         content
     )
 
 def update_Tuple(source_Tuple : Tuple,
-    content : Union[comma_exprs, SourceFlag] = SourceFlag()
+    content : Union[comma_exprs | None, SourceFlag] = SourceFlag()
 ) -> Tuple:
     return Tuple(
         source_Tuple.content if isinstance(content, SourceFlag) else content
@@ -4654,17 +4654,17 @@ def update_EmptyTuple(source_EmptyTuple : EmptyTuple
 
 @dataclass(frozen=True, eq=True)
 class Slice(expr):
-    lower : option_expr
-    upper : option_expr
-    step : option_expr
+    lower : option_expr | None
+    upper : option_expr | None
+    step : option_expr | None
 
     def match(self, handlers : ExprHandlers[T]) -> T:
         return handlers.case_Slice(self)
 
 def make_Slice(
-    lower : option_expr, 
-    upper : option_expr, 
-    step : option_expr
+    lower : option_expr | None, 
+    upper : option_expr | None, 
+    step : option_expr | None
 ) -> expr:
     return Slice(
         lower,
@@ -4673,9 +4673,9 @@ def make_Slice(
     )
 
 def update_Slice(source_Slice : Slice,
-    lower : Union[option_expr, SourceFlag] = SourceFlag(),
-    upper : Union[option_expr, SourceFlag] = SourceFlag(),
-    step : Union[option_expr, SourceFlag] = SourceFlag()
+    lower : Union[option_expr | None, SourceFlag] = SourceFlag(),
+    upper : Union[option_expr | None, SourceFlag] = SourceFlag(),
+    step : Union[option_expr | None, SourceFlag] = SourceFlag()
 ) -> Slice:
     return Slice(
         source_Slice.lower if isinstance(lower, SourceFlag) else lower,
@@ -5403,17 +5403,17 @@ class constraint(ABC):
 
 @dataclass(frozen=True, eq=True)
 class AsyncConstraint(constraint):
-    target : expr
-    search_space : expr
-    filts : constraint_filters
+    target : expr | None
+    search_space : expr | None
+    filts : constraint_filters | None
 
     def match(self, handlers : ConstraintHandlers[T]) -> T:
         return handlers.case_AsyncConstraint(self)
 
 def make_AsyncConstraint(
-    target : expr, 
-    search_space : expr, 
-    filts : constraint_filters
+    target : expr | None, 
+    search_space : expr | None, 
+    filts : constraint_filters | None
 ) -> constraint:
     return AsyncConstraint(
         target,
@@ -5422,9 +5422,9 @@ def make_AsyncConstraint(
     )
 
 def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    search_space : Union[expr, SourceFlag] = SourceFlag(),
-    filts : Union[constraint_filters, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    search_space : Union[expr | None, SourceFlag] = SourceFlag(),
+    filts : Union[constraint_filters | None, SourceFlag] = SourceFlag()
 ) -> AsyncConstraint:
     return AsyncConstraint(
         source_AsyncConstraint.target if isinstance(target, SourceFlag) else target,
@@ -5436,17 +5436,17 @@ def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
 
 @dataclass(frozen=True, eq=True)
 class Constraint(constraint):
-    target : expr
-    search_space : expr
-    filts : constraint_filters
+    target : expr | None
+    search_space : expr | None
+    filts : constraint_filters | None
 
     def match(self, handlers : ConstraintHandlers[T]) -> T:
         return handlers.case_Constraint(self)
 
 def make_Constraint(
-    target : expr, 
-    search_space : expr, 
-    filts : constraint_filters
+    target : expr | None, 
+    search_space : expr | None, 
+    filts : constraint_filters | None
 ) -> constraint:
     return Constraint(
         target,
@@ -5455,9 +5455,9 @@ def make_Constraint(
     )
 
 def update_Constraint(source_Constraint : Constraint,
-    target : Union[expr, SourceFlag] = SourceFlag(),
-    search_space : Union[expr, SourceFlag] = SourceFlag(),
-    filts : Union[constraint_filters, SourceFlag] = SourceFlag()
+    target : Union[expr | None, SourceFlag] = SourceFlag(),
+    search_space : Union[expr | None, SourceFlag] = SourceFlag(),
+    filts : Union[constraint_filters | None, SourceFlag] = SourceFlag()
 ) -> Constraint:
     return Constraint(
         source_Constraint.target if isinstance(target, SourceFlag) else target,
@@ -5483,21 +5483,21 @@ def match_constraint(o : constraint, handlers : ConstraintHandlers[T]) -> T :
 # type and constructor CompareRight
 @dataclass(frozen=True, eq=True)
 class CompareRight:
-    rator : cmp_rator
-    rand : expr
+    rator : cmp_rator | None
+    rand : expr | None
 
 
 def make_CompareRight(
-    rator : cmp_rator,
-    rand : expr
+    rator : cmp_rator | None,
+    rand : expr | None
 ) -> CompareRight:
     return CompareRight(
         rator,
         rand)
 
 def update_CompareRight(source_CompareRight : CompareRight,
-    rator : Union[cmp_rator, SourceFlag] = SourceFlag(),
-    rand : Union[expr, SourceFlag] = SourceFlag()
+    rator : Union[cmp_rator | None, SourceFlag] = SourceFlag(),
+    rand : Union[expr | None, SourceFlag] = SourceFlag()
 ) -> CompareRight:
     return CompareRight(
         source_CompareRight.rator if isinstance(rator, SourceFlag) else rator, 
@@ -5508,21 +5508,21 @@ def update_CompareRight(source_CompareRight : CompareRight,
 # type and constructor ExceptHandler
 @dataclass(frozen=True, eq=True)
 class ExceptHandler:
-    arg : except_arg
-    body : statements
+    arg : except_arg | None
+    body : statements | None
 
 
 def make_ExceptHandler(
-    arg : except_arg,
-    body : statements
+    arg : except_arg | None,
+    body : statements | None
 ) -> ExceptHandler:
     return ExceptHandler(
         arg,
         body)
 
 def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
-    arg : Union[except_arg, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    arg : Union[except_arg | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> ExceptHandler:
     return ExceptHandler(
         source_ExceptHandler.arg if isinstance(arg, SourceFlag) else arg, 
@@ -5534,14 +5534,14 @@ def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
 @dataclass(frozen=True, eq=True)
 class Param:
     name : str
-    anno : param_annotation
-    default : param_default
+    anno : param_annotation | None
+    default : param_default | None
 
 
 def make_Param(
     name : str,
-    anno : param_annotation,
-    default : param_default
+    anno : param_annotation | None,
+    default : param_default | None
 ) -> Param:
     return Param(
         name,
@@ -5550,8 +5550,8 @@ def make_Param(
 
 def update_Param(source_Param : Param,
     name : Union[str, SourceFlag] = SourceFlag(),
-    anno : Union[param_annotation, SourceFlag] = SourceFlag(),
-    default : Union[param_default, SourceFlag] = SourceFlag()
+    anno : Union[param_annotation | None, SourceFlag] = SourceFlag(),
+    default : Union[param_default | None, SourceFlag] = SourceFlag()
 ) -> Param:
     return Param(
         source_Param.name if isinstance(name, SourceFlag) else name, 
@@ -5564,14 +5564,14 @@ def update_Param(source_Param : Param,
 @dataclass(frozen=True, eq=True)
 class ClassDef:
     name : str
-    bs : bases
-    body : statements
+    bs : bases | None
+    body : statements | None
 
 
 def make_ClassDef(
     name : str,
-    bs : bases,
-    body : statements
+    bs : bases | None,
+    body : statements | None
 ) -> ClassDef:
     return ClassDef(
         name,
@@ -5580,8 +5580,8 @@ def make_ClassDef(
 
 def update_ClassDef(source_ClassDef : ClassDef,
     name : Union[str, SourceFlag] = SourceFlag(),
-    bs : Union[bases, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    bs : Union[bases | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> ClassDef:
     return ClassDef(
         source_ClassDef.name if isinstance(name, SourceFlag) else name, 
@@ -5593,21 +5593,21 @@ def update_ClassDef(source_ClassDef : ClassDef,
 # type and constructor ElifBlock
 @dataclass(frozen=True, eq=True)
 class ElifBlock:
-    test : expr
-    body : statements
+    test : expr | None
+    body : statements | None
 
 
 def make_ElifBlock(
-    test : expr,
-    body : statements
+    test : expr | None,
+    body : statements | None
 ) -> ElifBlock:
     return ElifBlock(
         test,
         body)
 
 def update_ElifBlock(source_ElifBlock : ElifBlock,
-    test : Union[expr, SourceFlag] = SourceFlag(),
-    body : Union[statements, SourceFlag] = SourceFlag()
+    test : Union[expr | None, SourceFlag] = SourceFlag(),
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> ElifBlock:
     return ElifBlock(
         source_ElifBlock.test if isinstance(test, SourceFlag) else test, 
@@ -5618,17 +5618,17 @@ def update_ElifBlock(source_ElifBlock : ElifBlock,
 # type and constructor ElseBlock
 @dataclass(frozen=True, eq=True)
 class ElseBlock:
-    body : statements
+    body : statements | None
 
 
 def make_ElseBlock(
-    body : statements
+    body : statements | None
 ) -> ElseBlock:
     return ElseBlock(
         body)
 
 def update_ElseBlock(source_ElseBlock : ElseBlock,
-    body : Union[statements, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> ElseBlock:
     return ElseBlock(
         source_ElseBlock.body if isinstance(body, SourceFlag) else body)
@@ -5638,17 +5638,17 @@ def update_ElseBlock(source_ElseBlock : ElseBlock,
 # type and constructor FinallyBlock
 @dataclass(frozen=True, eq=True)
 class FinallyBlock:
-    body : statements
+    body : statements | None
 
 
 def make_FinallyBlock(
-    body : statements
+    body : statements | None
 ) -> FinallyBlock:
     return FinallyBlock(
         body)
 
 def update_FinallyBlock(source_FinallyBlock : FinallyBlock,
-    body : Union[statements, SourceFlag] = SourceFlag()
+    body : Union[statements | None, SourceFlag] = SourceFlag()
 ) -> FinallyBlock:
     return FinallyBlock(
         source_FinallyBlock.body if isinstance(body, SourceFlag) else body)

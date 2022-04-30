@@ -27,46 +27,48 @@ class TreeSitterError(Exception):
 def obsolete(node : GenericNode):
     raise Obsolete(node.syntax_part)
 
-def unsupported(node : GenericNode):
+def hole_or_error(node : GenericNode) -> None:
     if (node.syntax_part == "ERROR"):
-        raise ConcreteParsingError()
+        return None
+        # raise ConcreteParsingError()
     else:
         raise Unsupported(node.syntax_part)
 
 
-def to_bases(bases : list[expr], keywords : list[keyword]) -> bases:
+def to_bases(bases : list[expr | None], keywords : list[keyword | None]) -> bases:
     if not bases and not keywords:
         return NoBases()
     else:
         return SomeBases(to_sequence_base(bases, keywords))
 
 
-def to_sequence_base(bases : list[expr], keywords : list[keyword]):
+def to_sequence_base(bases : list[expr | None], keywords : list[keyword | None]) -> bases_a | None:
+    if  bases or keywords:
 
-    assert bases or keywords
+        (result, bases) = (
 
-    (result, bases) = (
+            (KeywordBases(to_keywords(keywords)), bases)
+            if keywords else
 
-        (KeywordBases(to_keywords(keywords)), bases)
-        if keywords else
+            (SingleBase(bases[-1]), bases[:-1])
 
-        (SingleBase(bases[-1]), bases[:-1])
+        )
 
-    )
+        for b in reversed(bases):
+            result = ConsBase(b, result)
 
-    for b in reversed(bases):
-        result = ConsBase(b, result)
-
-    return result
+        return result
+    else:
+        return None
 
 
 
 def to_parameters(
-    pos_params : list[Param], 
-    params : list[Param], 
-    list_splat_param : Optional[Param], 
-    kw_params : list[Param], 
-    dictionary_splat_param : Optional[Param]
+    pos_params : list[Param | None], 
+    params : list[Param | None], 
+    list_splat_param : Param | None, 
+    kw_params : list[Param | None], 
+    dictionary_splat_param : Param | None
 ) -> parameters:
 
     if not (
@@ -84,8 +86,8 @@ def to_parameters(
 
 
 def to_parameters_d(
-    kw_params : list[Param], 
-    dictionary_splat_param : Optional[Param]
+    kw_params : list[Param | None], 
+    dictionary_splat_param : Param | None
 ) -> parameters_d:
     assert kw_params or dictionary_splat_param
     (result, kw_params) = (
@@ -102,9 +104,9 @@ def to_parameters_d(
 
 
 def to_parameters_c(
-    list_splat_param : Optional[Param], 
-    kw_params : list[Param], 
-    dictionary_splat_param : Optional[Param]
+    list_splat_param : Param | None, 
+    kw_params : list[Param | None], 
+    dictionary_splat_param : Param | None
 ) -> parameters_c:
     if (list_splat_param and (kw_params or dictionary_splat_param)):
         return TransListSplatParam(list_splat_param, 
@@ -117,10 +119,10 @@ def to_parameters_c(
 
 
 def to_parameters_b(
-    params : list[Param], 
-    list_splat_param : Optional[Param], 
-    kw_params : list[Param], 
-    dictionary_splat_param : Optional[Param]
+    params : list[Param | None], 
+    list_splat_param : Param | None, 
+    kw_params : list[Param | None], 
+    dictionary_splat_param : Param | None
 ) -> parameters_b:
 
     (result, params) = (
@@ -142,11 +144,11 @@ def to_parameters_b(
 
 
 def to_parameters_a(
-    pos_params : list[Param], 
-    params : list[Param], 
-    list_splat_param : Optional[Param], 
-    kw_params : list[Param], 
-    dictionary_splat_param : Optional[Param]
+    pos_params : list[Param | None], 
+    params : list[Param | None], 
+    list_splat_param : Param | None, 
+    kw_params : list[Param | None], 
+    dictionary_splat_param : Param | None
 ) -> parameters_a:
     assert pos_params
 
@@ -194,16 +196,18 @@ def to_comprehension_constraints(cs : list[constraint]) -> comprehension_constra
 
     return result
 
-def to_statements(stmts : list[stmt]) -> statements:
-    assert stmts
+def to_statements(stmts : list[stmt | None]) -> statements | None:
+    if stmts:
 
-    result = SingleStmt(stmts[-1])
-    for stmt in reversed(stmts[:-1]):
-        result = ConsStmt(stmt, result)
+        result = SingleStmt(stmts[-1])
+        for stmt in reversed(stmts[:-1]):
+            result = ConsStmt(stmt, result)
 
-    return result
+        return result
+    else:
+        return None
 
-def to_sequence_import_name(ns : list[import_name]) -> sequence_import_name:
+def to_sequence_import_name(ns : list[import_name | None]) -> sequence_import_name:
     assert ns 
 
     result = SingleImportName(ns[-1])
@@ -241,7 +245,7 @@ def to_sequence_with_item(ws : list[with_item]) -> sequence_with_item:
     return result
 
 
-def to_decorators(ds : list[expr]) -> decorators:
+def to_decorators(ds : list[expr | None]) -> decorators:
 
     result = NoDec()
     for d in reversed(ds):
@@ -250,14 +254,16 @@ def to_decorators(ds : list[expr]) -> decorators:
     return result 
 
 
-def to_comma_exprs(es : list[expr]) -> comma_exprs:
-    assert es 
+def to_comma_exprs(es : list[expr | None]) -> comma_exprs | None:
+    if es:
 
-    result = SingleExpr(es[-1])
-    for e in reversed(es[:-1]):
-        result = ConsExpr(e, result)
+        result = SingleExpr(es[-1])
+        for e in reversed(es[:-1]):
+            result = ConsExpr(e, result)
 
-    return result
+        return result
+    else:
+        return None
 
 def to_target_exprs(es : list[expr]) -> target_exprs:
     assert es 
@@ -268,8 +274,7 @@ def to_target_exprs(es : list[expr]) -> target_exprs:
 
     return result
 
-def to_constraint_filters(es : list[expr]) -> constraint_filters:
-
+def to_constraint_filters(es : list[expr | None]) -> constraint_filters:
 
     (result, es) = (
         (SingleFilter(es[-1]), es[:-1])
@@ -291,7 +296,7 @@ def to_sequence_string(ss : list[str]) -> sequence_string:
 
     return result
 
-def to_keywords(ks : list[keyword]) -> keywords:
+def to_keywords(ks : list[keyword | None]) -> keywords:
     assert ks  
 
     result = SingleKeyword(ks[-1])
@@ -300,7 +305,7 @@ def to_keywords(ks : list[keyword]) -> keywords:
 
     return result
 
-def to_arguments(ps : list[expr], ks : list[keyword]) -> arguments:
+def to_arguments(ps : list[expr | None], ks : list[keyword | None]) -> arguments:
 
     (result, ps) = (
         (KeywordsArg(to_keywords(ks)), ps)
@@ -357,7 +362,10 @@ def from_generic_tree(node : GenericNode) -> module:
             
             return SimpleMod(to_statements(statements))
     else:
-       unsupported(node) 
+       hole_or_error(node) 
+       raise ConcreteParsingError()
+
+
 
 
 
@@ -372,10 +380,10 @@ def from_generic_tree_to_identifier(node : GenericNode) -> str:
     elif (node.syntax_part == "identifier"):
         return node.text
     else:
-       unsupported(node) 
+       return "" 
 
 
-def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] = None) -> import_name:
+def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] = None) -> import_name | None:
     
     if (node.syntax_part == "dotted_name"):
         dotted_name = ".".join([
@@ -405,7 +413,7 @@ def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] =
         asname_text = asname_node.text
         return from_generic_tree_to_import_name(name_node, asname_text)
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
 def from_generic_tree_to_unaryop(node):
     if (node.syntax_part == "~"):
@@ -415,7 +423,7 @@ def from_generic_tree_to_unaryop(node):
     elif (node.syntax_part == "-"):
        return USub() 
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
 def from_generic_tree_to_boolop(node):
     if node.syntax_part == "and":
@@ -423,9 +431,9 @@ def from_generic_tree_to_boolop(node):
     elif node.syntax_part == "or":
        return Or() 
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
-def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator: 
+def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator | None: 
 
     if node.syntax_part in {"+=", "+"}:
        return Add() 
@@ -467,14 +475,14 @@ def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator:
         return BitOr()
 
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
 
 def split_rators_and_rands(
     nodes : list[GenericNode], 
     rators : list[cmp_rator] = [], 
-    rands : list[expr] = []
-) -> tuple[list[cmp_rator], list[expr]]:
+    rands : list[expr | None] = []
+) -> tuple[list[cmp_rator], list[expr | None]]:
 
     if len(nodes) == 0:
         return (rators, rands)
@@ -626,13 +634,13 @@ def from_nodes_to_constraint(nodes : list[GenericNode]) -> constraint:
         return Constraint(target_expr, iter_expr, to_constraint_filters(if_exprs))
 
 
-def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint]:
+def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint] | None:
 
     def collapse_constraint_nodes_r(
         nodes : list[GenericNode], 
         collected_group : list[GenericNode] = [], 
         collected_constraints : list[constraint] = []
-    ) -> list[constraint]:
+    ) -> list[constraint] | None:
 
         if len(nodes) == 0:
             if len(collected_group) == 0:
@@ -660,12 +668,12 @@ def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint]:
                     collected_constraints
                 )
             else:
-                unsupported(node)
+                return hole_or_error(node)
 
     return collapse_constraint_nodes_r([n for n in reversed(nodes)])
 
 
-def from_generic_tree_to_expr(node : GenericNode) -> expr: 
+def from_generic_tree_to_expr(node : GenericNode) -> expr | None: 
 
     if node.syntax_part == "binary_operator" :
         children = node.children
@@ -767,7 +775,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
                 for n in pos_nodes
             ]
 
-            keywords = [
+            keywords : list[keyword | None] = [
                 from_generic_tree_to_keyword(n)
                 for n in kw_nodes
             ]
@@ -782,7 +790,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
             return CallArgs(func, to_arguments([from_generic_tree_to_expr(args_node)], []))
 
         else:
-            unsupported(args_node)
+            return hole_or_error(args_node)
 
     elif (node.syntax_part == "list"):
         items = [
@@ -803,7 +811,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
 
         constraints = collapse_constraint_nodes(constraint_nodes)
 
-        return ListComp(expr, to_comprehension_constraints(constraints))
+        return ListComp(expr, 
+            to_comprehension_constraints(constraints)
+            if constraints else
+            None
+        )
 
     elif (node.syntax_part == "dictionary"):
         children = [
@@ -850,7 +862,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
 
-        return DictionaryComp(key, value, to_comprehension_constraints(constraints))
+        return DictionaryComp(key, value, 
+            to_comprehension_constraints(constraints)
+            if constraints else
+            None
+        )
 
     elif (node.syntax_part == "set"):
         
@@ -867,7 +883,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
 
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
-        return SetComp(expr, to_comprehension_constraints(constraints))
+        return SetComp(expr, 
+            to_comprehension_constraints(constraints)
+            if constraints else
+            None
+        )
 
 
     elif (node.syntax_part == "generator_expression"):
@@ -876,7 +896,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
 
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
-        return GeneratorExp(expr, to_comprehension_constraints(constraints))
+        return GeneratorExp(expr, 
+            to_comprehension_constraints(constraints)
+            if constraints else
+            None
+        )
 
     elif (node.syntax_part == "tuple"):
 
@@ -1084,11 +1108,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr:
 
     else:
         # keyword_identifier / not sure if this is actually ever used
-        unsupported(node)
+        return hole_or_error(node)
 
 
 
-def from_generic_tree_to_keyword(node) -> keyword:
+def from_generic_tree_to_keyword(node) -> keyword | None:
     children = node.children
 
     if (node.syntax_part == "keyword_argument"):
@@ -1106,11 +1130,11 @@ def from_generic_tree_to_keyword(node) -> keyword:
         return SplatKeyword(value_expr)
 
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
 
 
-def from_generic_tree_to_Param(node : GenericNode) -> Param:
+def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
 
     if node.syntax_part == "identifier":
         id = from_generic_tree_to_identifier(node)
@@ -1165,10 +1189,10 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param:
     elif node.syntax_part == "tuple_pattern":
         obsolete(node)
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
 
-def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
+def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
 
     if node.syntax_part == "lambda_parameters":
         lambda_params = [
@@ -1293,11 +1317,11 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters:
 
 
     else:
-        unsupported(node)
+        return hole_or_error(node)
 
 
 
-def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoDec()) -> list[stmt]: 
+def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoDec()) -> list[stmt | None]: 
 
     if (node.syntax_part == "import_statement"):
         children = node.children
@@ -1388,7 +1412,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
         assert children[0].syntax_part == "print"
 
         arg_index = 1
-        arg_keywords = []
+        arg_keywords : list[keyword | None] = []
 
         if children[1].syntax_part == "chevron":
             arg_index = 2
@@ -1474,7 +1498,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                         ] 
 
                     else:
-                        unsupported(node) 
+                        return [hole_or_error(node)]
 
 
             elif (estmt_node.syntax_part == "augmented_assignment"):
@@ -1596,7 +1620,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
         block_node = children[3]
 
 
-        def to_else_content(else_node : GenericNode) -> statements:
+        def to_else_content(else_node : GenericNode) -> statements | None:
             assert else_node.syntax_part == "else_clause"
 
             else_children = else_node.children
@@ -1610,7 +1634,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ])
 
-        def to_elif_content(elif_node : GenericNode) -> tuple[expr, statements]:
+        def to_elif_content(elif_node : GenericNode) -> tuple[expr | None, statements | None]:
             assert (elif_node.syntax_part == "elif_clause")
             else_children = elif_node.children
             assert else_children[0].syntax_part == "elif"
@@ -2051,5 +2075,4 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
     else:
         # exec_statement for Python 2
         # print_statement for Python 2
-        print("syntax unsupported: " + node.syntax_part)
-        unsupported(node)
+        return [hole_or_error(node)]

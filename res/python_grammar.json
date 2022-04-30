@@ -5,8 +5,8 @@
             "children": [
                 {
                     "kind": "grammar",
-                    "relation": "op",
-                    "nonterminal": "cmpop",
+                    "relation": "rator",
+                    "nonterminal": "cmp_rator",
                     "format": "InLine"
                 },
                 {
@@ -382,7 +382,7 @@
     ],
     "parameters_b": [
         {
-            "name": "ConsParam",
+            "name": "ConsPosKeyParam",
             "children": [
                 {
                     "kind": "grammar",
@@ -403,7 +403,7 @@
             ]
         },
         {
-            "name": "SingleParam",
+            "name": "SinglePosKeyParam",
             "children": [
                 {
                     "kind": "grammar",
@@ -673,7 +673,7 @@
             ]
         },
         {
-            "name": "KeywordsBase",
+            "name": "KeywordBases",
             "children": [
                 {
                     "kind": "grammar",
@@ -1467,7 +1467,7 @@
             "children": [
                 {
                     "kind": "terminal",
-                    "terminal": "del"
+                    "terminal": "del "
                 },
                 {
                     "kind": "grammar",
@@ -1514,7 +1514,7 @@
                 {
                     "kind": "grammar",
                     "relation": "op",
-                    "nonterminal": "operator",
+                    "nonterminal": "bin_rator",
                     "format": "InLine"
                 },
                 {
@@ -2235,7 +2235,7 @@
                 {
                     "kind": "grammar",
                     "relation": "op",
-                    "nonterminal": "boolop",
+                    "nonterminal": "bool_rator",
                     "format": "InLine"
                 },
                 {
@@ -2294,8 +2294,8 @@
                 },
                 {
                     "kind": "grammar",
-                    "relation": "op",
-                    "nonterminal": "operator",
+                    "relation": "rator",
+                    "nonterminal": "bin_rator",
                     "format": "InLine"
                 },
                 {
@@ -2323,8 +2323,8 @@
                 },
                 {
                     "kind": "grammar",
-                    "relation": "op",
-                    "nonterminal": "unaryop",
+                    "relation": "rator",
+                    "nonterminal": "unary_rator",
                     "format": "InLine"
                 },
                 {
@@ -2333,7 +2333,7 @@
                 },
                 {
                     "kind": "grammar",
-                    "relation": "right",
+                    "relation": "rand",
                     "nonterminal": "expr",
                     "format": "InLine"
                 },
@@ -2896,7 +2896,7 @@
             ]
         }
     ],
-    "boolop": [
+    "bool_rator": [
         {
             "name": "And",
             "children": [
@@ -2916,7 +2916,7 @@
             ]
         }
     ],
-    "operator": [
+    "bin_rator": [
         {
             "name": "Add",
             "children": [
@@ -3035,7 +3035,7 @@
             ]
         }
     ],
-    "unaryop": [
+    "unary_rator": [
         {
             "name": "Invert",
             "children": [
@@ -3073,7 +3073,7 @@
             ]
         }
     ],
-    "cmpop": [
+    "cmp_rator": [
         {
             "name": "Eq",
             "children": [

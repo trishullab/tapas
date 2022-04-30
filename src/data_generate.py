@@ -4,11 +4,11 @@ from lib import data_system
 if __name__ == "__main__":
 
     package = pals.analyze_typeshed()
-    # data_system.generate_dir(package, 'mbpp')
+    data_system.generate_dir(package, 'mbpp')
 
     # data_system.generate_dir(package, 'apps')
     # data_system.generate_dir(package, 'py150_train')
     # data_system.generate_dir(package, 'py150_test')
     # data_system.generate_dir(package, 'py150_validation')
 
-    data_system.generate_dir(package, 'cubert')
+    # data_system.generate_dir(package, 'cubert')

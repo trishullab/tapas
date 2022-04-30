@@ -16,12 +16,14 @@ from lib.python_ast_system import *
 
 
 def from_return_annotation(
-    o : return_annotation
+    o : return_annotation | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[return_annotation, tuple[abstract_token, ...]]] = [o]
+    stack : list[return_annotation | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, return_annotation):
@@ -55,6 +57,8 @@ def from_return_annotation(
                 case_NoReturnAnno = handle_NoReturnAnno
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -63,12 +67,14 @@ def from_return_annotation(
 
 
 def from_except_arg(
-    o : except_arg
+    o : except_arg | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[except_arg, tuple[abstract_token, ...]]] = [o]
+    stack : list[except_arg | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, except_arg):
@@ -124,6 +130,8 @@ def from_except_arg(
                 case_NoExceptArg = handle_NoExceptArg
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -132,12 +140,14 @@ def from_except_arg(
 
 
 def from_param_annotation(
-    o : param_annotation
+    o : param_annotation | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[param_annotation, tuple[abstract_token, ...]]] = [o]
+    stack : list[param_annotation | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, param_annotation):
@@ -171,6 +181,8 @@ def from_param_annotation(
                 case_NoParamAnno = handle_NoParamAnno
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -179,12 +191,14 @@ def from_param_annotation(
 
 
 def from_param_default(
-    o : param_default
+    o : param_default | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[param_default, tuple[abstract_token, ...]]] = [o]
+    stack : list[param_default | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, param_default):
@@ -218,6 +232,8 @@ def from_param_default(
                 case_NoParamDefault = handle_NoParamDefault
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -226,12 +242,14 @@ def from_param_default(
 
 
 def from_parameters_d(
-    o : parameters_d
+    o : parameters_d | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[parameters_d, tuple[abstract_token, ...]]] = [o]
+    stack : list[parameters_d | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_d):
@@ -281,6 +299,8 @@ def from_parameters_d(
                 case_DictionarySplatParam = handle_DictionarySplatParam
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -289,12 +309,14 @@ def from_parameters_d(
 
 
 def from_parameters_c(
-    o : parameters_c
+    o : parameters_c | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[parameters_c, tuple[abstract_token, ...]]] = [o]
+    stack : list[parameters_c | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_c):
@@ -346,6 +368,8 @@ def from_parameters_c(
                 case_ParamsD = handle_ParamsD
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -354,12 +378,14 @@ def from_parameters_c(
 
 
 def from_parameters_b(
-    o : parameters_b
+    o : parameters_b | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[parameters_b, tuple[abstract_token, ...]]] = [o]
+    stack : list[parameters_b | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_b):
@@ -408,6 +434,8 @@ def from_parameters_b(
                 case_ParamsC = handle_ParamsC
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -416,12 +444,14 @@ def from_parameters_b(
 
 
 def from_parameters_a(
-    o : parameters_a
+    o : parameters_a | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[parameters_a, tuple[abstract_token, ...]]] = [o]
+    stack : list[parameters_a | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters_a):
@@ -474,6 +504,8 @@ def from_parameters_a(
                 case_TransPosParam = handle_TransPosParam
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -482,12 +514,14 @@ def from_parameters_a(
 
 
 def from_parameters(
-    o : parameters
+    o : parameters | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[parameters, tuple[abstract_token, ...]]] = [o]
+    stack : list[parameters | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, parameters):
@@ -532,6 +566,8 @@ def from_parameters(
                 case_NoParam = handle_NoParam
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -540,12 +576,14 @@ def from_parameters(
 
 
 def from_keyword(
-    o : keyword
+    o : keyword | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[keyword, tuple[abstract_token, ...]]] = [o]
+    stack : list[keyword | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, keyword):
@@ -589,6 +627,8 @@ def from_keyword(
                 case_SplatKeyword = handle_SplatKeyword
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -597,12 +637,14 @@ def from_keyword(
 
 
 def from_import_name(
-    o : import_name
+    o : import_name | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[import_name, tuple[abstract_token, ...]]] = [o]
+    stack : list[import_name | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, import_name):
@@ -657,6 +699,8 @@ def from_import_name(
                 case_ImportNameOnly = handle_ImportNameOnly
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -665,12 +709,14 @@ def from_import_name(
 
 
 def from_with_item(
-    o : with_item
+    o : with_item | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[with_item, tuple[abstract_token, ...]]] = [o]
+    stack : list[with_item | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, with_item):
@@ -707,6 +753,8 @@ def from_with_item(
                 case_WithItemOnly = handle_WithItemOnly
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -715,12 +763,14 @@ def from_with_item(
 
 
 def from_bases(
-    o : bases
+    o : bases | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[bases, tuple[abstract_token, ...]]] = [o]
+    stack : list[bases | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, bases):
@@ -755,6 +805,8 @@ def from_bases(
                 case_NoBases = handle_NoBases
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -763,12 +815,14 @@ def from_bases(
 
 
 def from_bases_a(
-    o : bases_a
+    o : bases_a | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[bases_a, tuple[abstract_token, ...]]] = [o]
+    stack : list[bases_a | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, bases_a):
@@ -817,6 +871,8 @@ def from_bases_a(
                 case_KeywordBases = handle_KeywordBases
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -825,12 +881,14 @@ def from_bases_a(
 
 
 def from_keywords(
-    o : keywords
+    o : keywords | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[keywords, tuple[abstract_token, ...]]] = [o]
+    stack : list[keywords | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, keywords):
@@ -867,6 +925,8 @@ def from_keywords(
                 case_SingleKeyword = handle_SingleKeyword
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -875,12 +935,14 @@ def from_keywords(
 
 
 def from_comparisons(
-    o : comparisons
+    o : comparisons | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[comparisons, tuple[abstract_token, ...]]] = [o]
+    stack : list[comparisons | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, comparisons):
@@ -917,6 +979,8 @@ def from_comparisons(
                 case_SingleCompareRight = handle_SingleCompareRight
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -925,12 +989,14 @@ def from_comparisons(
 
 
 def from_option_expr(
-    o : option_expr
+    o : option_expr | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[option_expr, tuple[abstract_token, ...]]] = [o]
+    stack : list[option_expr | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, option_expr):
@@ -963,6 +1029,8 @@ def from_option_expr(
                 case_NoExpr = handle_NoExpr
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -971,12 +1039,14 @@ def from_option_expr(
 
 
 def from_comma_exprs(
-    o : comma_exprs
+    o : comma_exprs | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[comma_exprs, tuple[abstract_token, ...]]] = [o]
+    stack : list[comma_exprs | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, comma_exprs):
@@ -1013,6 +1083,8 @@ def from_comma_exprs(
                 case_SingleExpr = handle_SingleExpr
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1021,12 +1093,14 @@ def from_comma_exprs(
 
 
 def from_target_exprs(
-    o : target_exprs
+    o : target_exprs | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[target_exprs, tuple[abstract_token, ...]]] = [o]
+    stack : list[target_exprs | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, target_exprs):
@@ -1063,6 +1137,8 @@ def from_target_exprs(
                 case_SingleTargetExpr = handle_SingleTargetExpr
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1071,12 +1147,14 @@ def from_target_exprs(
 
 
 def from_decorators(
-    o : decorators
+    o : decorators | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[decorators, tuple[abstract_token, ...]]] = [o]
+    stack : list[decorators | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, decorators):
@@ -1112,6 +1190,8 @@ def from_decorators(
                 case_NoDec = handle_NoDec
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1120,12 +1200,14 @@ def from_decorators(
 
 
 def from_constraint_filters(
-    o : constraint_filters
+    o : constraint_filters | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[constraint_filters, tuple[abstract_token, ...]]] = [o]
+    stack : list[constraint_filters | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, constraint_filters):
@@ -1174,6 +1256,8 @@ def from_constraint_filters(
                 case_NoFilter = handle_NoFilter
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1182,12 +1266,14 @@ def from_constraint_filters(
 
 
 def from_sequence_string(
-    o : sequence_string
+    o : sequence_string | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[sequence_string, tuple[abstract_token, ...]]] = [o]
+    stack : list[sequence_string | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_string):
@@ -1236,6 +1322,8 @@ def from_sequence_string(
                 case_SingleStr = handle_SingleStr
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1244,12 +1332,14 @@ def from_sequence_string(
 
 
 def from_arguments(
-    o : arguments
+    o : arguments | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[arguments, tuple[abstract_token, ...]]] = [o]
+    stack : list[arguments | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, arguments):
@@ -1298,6 +1388,8 @@ def from_arguments(
                 case_KeywordsArg = handle_KeywordsArg
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1306,12 +1398,14 @@ def from_arguments(
 
 
 def from_dictionary_item(
-    o : dictionary_item
+    o : dictionary_item | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[dictionary_item, tuple[abstract_token, ...]]] = [o]
+    stack : list[dictionary_item | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, dictionary_item):
@@ -1349,6 +1443,8 @@ def from_dictionary_item(
                 case_DictionarySplatFields = handle_DictionarySplatFields
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1357,12 +1453,14 @@ def from_dictionary_item(
 
 
 def from_dictionary_content(
-    o : dictionary_content
+    o : dictionary_content | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[dictionary_content, tuple[abstract_token, ...]]] = [o]
+    stack : list[dictionary_content | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, dictionary_content):
@@ -1399,6 +1497,8 @@ def from_dictionary_content(
                 case_SingleDictionaryItem = handle_SingleDictionaryItem
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1407,12 +1507,14 @@ def from_dictionary_content(
 
 
 def from_sequence_name(
-    o : sequence_name
+    o : sequence_name | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[sequence_name, tuple[abstract_token, ...]]] = [o]
+    stack : list[sequence_name | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_name):
@@ -1461,6 +1563,8 @@ def from_sequence_name(
                 case_SingleId = handle_SingleId
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1469,12 +1573,14 @@ def from_sequence_name(
 
 
 def from_sequence_import_name(
-    o : sequence_import_name
+    o : sequence_import_name | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[sequence_import_name, tuple[abstract_token, ...]]] = [o]
+    stack : list[sequence_import_name | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_import_name):
@@ -1511,6 +1617,8 @@ def from_sequence_import_name(
                 case_SingleImportName = handle_SingleImportName
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1519,12 +1627,14 @@ def from_sequence_import_name(
 
 
 def from_sequence_with_item(
-    o : sequence_with_item
+    o : sequence_with_item | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[sequence_with_item, tuple[abstract_token, ...]]] = [o]
+    stack : list[sequence_with_item | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_with_item):
@@ -1561,6 +1671,8 @@ def from_sequence_with_item(
                 case_SingleWithItem = handle_SingleWithItem
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1569,12 +1681,14 @@ def from_sequence_with_item(
 
 
 def from_module(
-    o : module
+    o : module | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[module, tuple[abstract_token, ...]]] = [o]
+    stack : list[module | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, module):
@@ -1611,6 +1725,8 @@ def from_module(
                 case_SimpleMod = handle_SimpleMod
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1619,12 +1735,14 @@ def from_module(
 
 
 def from_statements(
-    o : statements
+    o : statements | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[statements, tuple[abstract_token, ...]]] = [o]
+    stack : list[statements | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, statements):
@@ -1660,6 +1778,8 @@ def from_statements(
                 case_SingleStmt = handle_SingleStmt
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1668,12 +1788,14 @@ def from_statements(
 
 
 def from_comprehension_constraints(
-    o : comprehension_constraints
+    o : comprehension_constraints | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[comprehension_constraints, tuple[abstract_token, ...]]] = [o]
+    stack : list[comprehension_constraints | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, comprehension_constraints):
@@ -1709,6 +1831,8 @@ def from_comprehension_constraints(
                 case_SingleConstraint = handle_SingleConstraint
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1717,12 +1841,14 @@ def from_comprehension_constraints(
 
 
 def from_sequence_ExceptHandler(
-    o : sequence_ExceptHandler
+    o : sequence_ExceptHandler | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[sequence_ExceptHandler, tuple[abstract_token, ...]]] = [o]
+    stack : list[sequence_ExceptHandler | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, sequence_ExceptHandler):
@@ -1758,6 +1884,8 @@ def from_sequence_ExceptHandler(
                 case_SingleExceptHandler = handle_SingleExceptHandler
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1766,12 +1894,14 @@ def from_sequence_ExceptHandler(
 
 
 def from_conditions(
-    o : conditions
+    o : conditions | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[conditions, tuple[abstract_token, ...]]] = [o]
+    stack : list[conditions | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, conditions):
@@ -1818,6 +1948,8 @@ def from_conditions(
                 case_NoCond = handle_NoCond
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1826,12 +1958,14 @@ def from_conditions(
 
 
 def from_function_def(
-    o : function_def
+    o : function_def | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[function_def, tuple[abstract_token, ...]]] = [o]
+    stack : list[function_def | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, function_def):
@@ -1897,6 +2031,8 @@ def from_function_def(
                 case_AsyncFunctionDef = handle_AsyncFunctionDef
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -1905,12 +2041,14 @@ def from_function_def(
 
 
 def from_stmt(
-    o : stmt
+    o : stmt | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[stmt, tuple[abstract_token, ...]]] = [o]
+    stack : list[stmt | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, stmt):
@@ -2493,6 +2631,8 @@ def from_stmt(
                 case_Continue = handle_Continue
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -2501,12 +2641,14 @@ def from_stmt(
 
 
 def from_expr(
-    o : expr
+    o : expr | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[expr, tuple[abstract_token, ...]]] = [o]
+    stack : list[expr | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, expr):
@@ -3050,6 +3192,8 @@ def from_expr(
                 case_Slice = handle_Slice
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -3058,12 +3202,14 @@ def from_expr(
 
 
 def from_bool_rator(
-    o : bool_rator
+    o : bool_rator | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[bool_rator, tuple[abstract_token, ...]]] = [o]
+    stack : list[bool_rator | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, bool_rator):
@@ -3095,6 +3241,8 @@ def from_bool_rator(
                 case_Or = handle_Or
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -3103,12 +3251,14 @@ def from_bool_rator(
 
 
 def from_bin_rator(
-    o : bin_rator
+    o : bin_rator | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[bin_rator, tuple[abstract_token, ...]]] = [o]
+    stack : list[bin_rator | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, bin_rator):
@@ -3261,6 +3411,8 @@ def from_bin_rator(
                 case_FloorDiv = handle_FloorDiv
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -3269,12 +3421,14 @@ def from_bin_rator(
 
 
 def from_unary_rator(
-    o : unary_rator
+    o : unary_rator | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[unary_rator, tuple[abstract_token, ...]]] = [o]
+    stack : list[unary_rator | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, unary_rator):
@@ -3328,6 +3482,8 @@ def from_unary_rator(
                 case_USub = handle_USub
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -3336,12 +3492,14 @@ def from_unary_rator(
 
 
 def from_cmp_rator(
-    o : cmp_rator
+    o : cmp_rator | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[cmp_rator, tuple[abstract_token, ...]]] = [o]
+    stack : list[cmp_rator | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, cmp_rator):
@@ -3461,6 +3619,8 @@ def from_cmp_rator(
                 case_NotIn = handle_NotIn
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -3469,12 +3629,14 @@ def from_cmp_rator(
 
 
 def from_constraint(
-    o : constraint
+    o : constraint | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[constraint, tuple[abstract_token, ...]]] = [o]
+    stack : list[constraint | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, constraint):
@@ -3520,6 +3682,8 @@ def from_constraint(
                 case_Constraint = handle_Constraint
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 
@@ -3529,8 +3693,10 @@ def from_constraint(
 
 
 def from_CompareRight(
-    o : CompareRight
+    o : CompareRight | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -3546,8 +3712,10 @@ def from_CompareRight(
 
 
 def from_ExceptHandler(
-    o : ExceptHandler
+    o : ExceptHandler | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -3563,8 +3731,10 @@ def from_ExceptHandler(
 
 
 def from_Param(
-    o : Param
+    o : Param | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -3581,8 +3751,10 @@ def from_Param(
 
 
 def from_ClassDef(
-    o : ClassDef
+    o : ClassDef | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -3599,8 +3771,10 @@ def from_ClassDef(
 
 
 def from_ElifBlock(
-    o : ElifBlock
+    o : ElifBlock | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -3616,8 +3790,10 @@ def from_ElifBlock(
 
 
 def from_ElseBlock(
-    o : ElseBlock
+    o : ElseBlock | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -3632,8 +3808,10 @@ def from_ElseBlock(
 
 
 def from_FinallyBlock(
-    o : FinallyBlock
+    o : FinallyBlock | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(

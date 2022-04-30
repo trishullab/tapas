@@ -20,8 +20,10 @@ def generate_single_procedure(
     return (f"""
 
 def from_{rule.name}(
-    o : {rule.name}
+    o : {rule.name} | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     return (
         tuple([lib.abstract_token_system.make_Grammar(
@@ -102,12 +104,14 @@ def generate_choice_procedure(
     return (f"""
 
 def from_{type_name}(
-    o : {type_name}
+    o : {type_name} | None
 ) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (lib.abstract_token_system.Hole(),)
 
     result = () 
 
-    stack : list[Union[{type_name}, tuple[abstract_token, ...]]] = [o]
+    stack : list[{type_name} | None | tuple[abstract_token, ...]] = [o]
     while stack:
         stack_item = stack.pop()
         if isinstance(stack_item, {type_name}):
@@ -125,6 +129,8 @@ def from_{type_name}(
 ])}
             ))
 
+        elif stack_item == None:
+            result += (lib.abstract_token_system.Hole(),) 
         else:
             result += stack_item 
 

@@ -861,15 +861,19 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
     from typing import Iterator 
     def generate_items(exprs : pas.comma_exprs) -> Iterator[pas.expr]:
         while isinstance(exprs, pas.ConsExpr):
+            assert exprs.head
             yield exprs.head
+            assert exprs.tail
             exprs = exprs.tail 
         assert isinstance(exprs, pas.SingleExpr)
+        assert exprs.content
         yield exprs.content
 
     if isinstance(pattern, pas.Name):
         return pmap({pattern.content : type})
     elif isinstance(pattern, pas.List):
         type_env : PMap[str, type] = m()
+        assert pattern.content
         for p in generate_items(pattern.content):
             item_type = get_iterable_item_type(type, inher_aux)
             type_env += unify(p, item_type, inher_aux)
@@ -879,12 +883,14 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
         if isinstance(type, FixedTupleType):
 
             type_env : PMap[str, type] = m()
+            assert pattern.content
             for i, p in enumerate(generate_items(pattern.content)):
                 type_env += unify(p, type.item_types[i], inher_aux)
 
             return type_env 
         else:
             type_env : PMap[str, type] = m()
+            assert pattern.content
             for p in generate_items(pattern.content):
                 item_type = get_iterable_item_type(type, inher_aux)
                 type_env += unify(p, item_type, inher_aux)
@@ -1080,7 +1086,7 @@ def from_package_to_primitive(package : PMap[str, ModulePackage]) -> dict[str, l
 
 
 def from_ParamSig_to_primitive(p : ParamSig) -> list:
-    return ["ParamSig", p.key, from_type_to_primitive(p.type), p.optional]
+    return [p.key, from_type_to_primitive(p.type), p.optional]
     
 def from_type_to_primitive(t : type) -> list:
     return match_type(t, TypeHandlers(

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from lib import abstract_token_system as ats
+from lib.abstract_token_construct_autogen import Grammar 
 from lib.abstract_token_system import abstract_token 
 from lib.generic_tree_system import GenericNode
 from lib import python_ast_parse
@@ -18,7 +20,11 @@ def parse(concrete : str) -> module:
     return python_ast_parse.from_generic_tree(gnode)
 
 def serialize(mod : module) -> tuple[abstract_token, ...]:
-    return python_ast_serialize_autogen.from_module(mod)
+    toks = python_ast_serialize_autogen.from_module(mod)
+    if isinstance(toks[-1], ats.Hole):
+        return toks[:-1]
+    else:
+        return toks
 
 def reconstitute(xs : tuple[abstract_token, ...]) -> module:
     return python_ast_reconstitute_autogen.to_module(tuple([x for x in reversed(xs)]))[0] 
@@ -100,3 +106,27 @@ def from_bin_rator_to_aug_method_name(br : bin_rator) -> str:
         case_BitAnd = lambda _: "__iand__",
         case_FloorDiv = lambda _: "__ifloordiv__",
     ))
+
+def truncate(code : str, k : float) -> str:
+    ast = parse(code)
+    toks = serialize(ast)
+    
+    l = len(toks)
+    end : int = int(
+        l * k
+        if 0 <= k < 1 else
+        l
+        if k < 0 else
+        min(k,l)
+    ) 
+    toks = toks[0:end]
+    l = len(toks)
+    end : int = int(next(
+        l - 1 - j 
+        for j, tok in enumerate(reversed(toks))
+        if isinstance(tok, Grammar) and tok.options == "statements"
+    ))
+    toks = toks[0:end]
+
+    result = pats.concretize(toks)
+    return result 

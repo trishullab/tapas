@@ -88,11 +88,31 @@ def update_Vocab(source_Vocab : Vocab,
 
         
 
+@dataclass(frozen=True, eq=True)
+class Hole(abstract_token):
+
+
+    def match(self, handlers : AbstractTokenHandlers[T]) -> T:
+        return handlers.case_Hole(self)
+
+def make_Hole(
+) -> abstract_token:
+    return Hole(
+    )
+
+def update_Hole(source_Hole : Hole
+) -> Hole:
+    return Hole(
+    )
+
+        
+
 # case handlers for type abstract_token
 @dataclass(frozen=True, eq=True)
 class AbstractTokenHandlers(Generic[T]):
     case_Grammar : Callable[[Grammar], T]
     case_Vocab : Callable[[Vocab], T]
+    case_Hole : Callable[[Hole], T]
 
 
 # matching for type abstract_token

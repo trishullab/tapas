@@ -116,8 +116,9 @@ def generate_file(
                 for inst in abstract_tokens:
 
                     match_abstract_token(inst, AbstractTokenHandlers(
-                        case_Grammar=lambda o : (),
-                        case_Vocab=handle_Vocab 
+                        case_Grammar=lambda _ : (),
+                        case_Vocab=handle_Vocab,
+                        case_Hole=lambda _ : () 
                     )) 
                 
                 processed_count += 1

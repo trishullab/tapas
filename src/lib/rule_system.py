@@ -51,7 +51,7 @@ def to_constructor(n : Rule) -> construct_def.Constructor:
                     fail()
                 ),
                 case_Nonterm = lambda o : (
-                    construct_def.Field(attr = o.relation, typ = o.nonterminal, default = "")
+                    construct_def.Field(attr = o.relation, typ = f'{o.nonterminal} | None', default = "")
                 ),
                 case_Vocab = lambda o : (
                     construct_def.Field(attr = o.relation, typ = 'str', default = "")
