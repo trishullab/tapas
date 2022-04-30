@@ -112,20 +112,19 @@ def truncate(code : str, k : float) -> str:
     toks = serialize(ast)
     
     l = len(toks)
-    end : int = int(
+    k_index : int = int(
         l * k
         if 0 <= k < 1 else
         l
         if k < 0 else
         min(k,l)
     ) 
-    toks = toks[0:end]
-    l = len(toks)
-    end : int = int(next(
-        l - 1 - j 
-        for j, tok in enumerate(reversed(toks))
+    
+    end : int = next(
+        k_index + i 
+        for i, tok in enumerate(toks[k_index:])
         if isinstance(tok, Grammar) and tok.options == "statements"
-    ))
+    )
     toks = toks[0:end]
 
     result = pats.concretize(toks)

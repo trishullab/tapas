@@ -93,7 +93,7 @@ with open(concrete_fpath, 'r') as f:
 
     print("")
     print("######### truncated ###########")
-    truncated = pas.truncate(code, .7)
+    truncated = pas.truncate(code, .5)
     print(truncated)
 
     print("")
