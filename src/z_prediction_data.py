@@ -5,6 +5,7 @@ import json
 
 from lib import abstract_token_system as ats
 from lib import python_abstract_token_system as pats
+from lib import python_ast_system as pas
 def concretize_ptokens(ptoks : list[str]) -> str:
 
     triples = [ptoks[i:i + 3] for i in range(0, len(ptoks), 3)]
@@ -63,7 +64,6 @@ def concretize_ptokens(ptoks : list[str]) -> str:
     #         pass
 
 
-from lib import python_ast_system as pas
 concrete_fpath = util_system.project_path('res/mbpp/concrete_data/mbpp.jsonl')
 
 with open(concrete_fpath, 'r') as f:
@@ -88,12 +88,8 @@ with open(concrete_fpath, 'r') as f:
     print([ats.to_primitive(t) for t in toks])
 
     print("")
-    print("######### original concretized ###########")
-    print(pats.concretize(tuple(toks)))
-
-    print("")
-    print("######### original strictly concretized ###########")
-    print(pats.concretize(tuple(toks)))
+    print("######### concretized ###########")
+    print(pats.concretize(toks))
 
     print("")
     print("######### truncated ###########")
@@ -107,5 +103,5 @@ with open(concrete_fpath, 'r') as f:
     print([ats.to_primitive(t) for t in toks])
 
     print("")
-    print("######### truncated concretzied ###########")
+    print("######### truncated concretized ###########")
     print(pats.concretize(toks))
