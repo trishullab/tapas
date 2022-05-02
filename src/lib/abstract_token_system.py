@@ -217,7 +217,6 @@ def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_toke
                 stack.append((format, token, children + (s,)))
 
 
-
     # if stack is not empty, then input program must be incomplete
     # so clean up the stack
     while stack:
@@ -227,96 +226,92 @@ def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_toke
             # get the result from the child in the stack
             children = children + (stack_result,) 
 
+        rule = rule_map[token.selection]
+        prefix = "" if format.inline else "\n" + "    " * format.indent_width
+        stack_result = prefix + "".join(children)
 
-        if children:
-            rule = rule_map[token.selection]
-            prefix = "" if format.inline else "\n" + "    " * format.indent_width
-            stack_result = prefix + "".join(children)
-        else:
-            stack_result = None
-
-    assert stack_result
+    assert stack_result != None
     return stack_result
 
-# def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...]) -> str:
+def concretize_old(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...]) -> str:
 
-#     @dataclass
-#     class Format:
-#         inline : bool 
-#         indent_width : int 
+    @dataclass
+    class Format:
+        inline : bool 
+        indent_width : int 
 
-#     result = ""
+    result = ""
 
-#     token_iter = iter(abstract_tokens)
+    token_iter = iter(abstract_tokens)
 
-#     stack : list[Union[str, Format]] = [Format(True, 0)] # str is concrete syntax, and int is indentation of the abstract_token from the iterator 
-#     abstract_token_count = 0
+    stack : list[Union[str, Format]] = [Format(True, 0)] # str is concrete syntax, and int is indentation of the abstract_token from the iterator 
+    abstract_token_count = 0
 
-#     while stack:
+    while stack:
 
-#         stack_item : Union[str, Format] = stack.pop()
-#         if isinstance(stack_item, str):
-#             result += stack_item 
-#         else: 
-#             assert isinstance(stack_item, Format)
-#             format = stack_item
+        stack_item : Union[str, Format] = stack.pop()
+        if isinstance(stack_item, str):
+            result += stack_item 
+        else: 
+            assert isinstance(stack_item, Format)
+            format = stack_item
 
-#             # take an element from the iterator
-#             inst = next(token_iter, None)
-#             if not inst:
-#                 break
+            # take an element from the iterator
+            inst = next(token_iter, None)
+            if not inst:
+                break
 
-#             abstract_token_count += 1
+            abstract_token_count += 1
 
-#             def concretize_grammar(inst : Grammar):
-#                 nonlocal stack
-#                 rule = rule_map[inst.selection]
-#                 for i, item in enumerate(reversed(rule.content)):
-#                     lib.rule_system.match_item(item, ItemHandlers(
-#                         case_Terminal=lambda o : (
-#                             j := len(rule.content) - 1 - i,
-#                             prefix := (
-#                                 (
-#                                     pred := rule.content[j - 1],
-#                                     match_line_format(pred.format, LineFormatHandlers[str](
-#                                         case_InLine = lambda _ : "",
-#                                         case_NewLine = lambda _ : "\n" + ("    " * format.indent_width),
-#                                         case_IndentLine = lambda _ : "\n" + ("    " * format.indent_width)
-#                                     ))
-#                                     if isinstance(pred, lib.rule_system.Nonterm) else ""
-#                                 )[-1]
-#                                 if i == 0 else "" 
-#                             ),
-#                             stack.append(prefix + o.terminal)
-#                         ),
-#                         case_Nonterm=lambda o : (
-#                             child_format := Format(is_inline(o.format), next_indent_width(format.indent_width, o.format)),
-#                             stack.append(child_format),
-#                         ),
-#                         case_Vocab=lambda o : (
-#                             stack.append(format)
-#                         )
-#                     ))
+            def concretize_grammar(inst : Grammar):
+                nonlocal stack
+                rule = rule_map[inst.selection]
+                for i, item in enumerate(reversed(rule.content)):
+                    lib.rule_system.match_item(item, ItemHandlers(
+                        case_Terminal=lambda o : (
+                            j := len(rule.content) - 1 - i,
+                            prefix := (
+                                (
+                                    pred := rule.content[j - 1],
+                                    match_line_format(pred.format, LineFormatHandlers[str](
+                                        case_InLine = lambda _ : "",
+                                        case_NewLine = lambda _ : "\n" + ("    " * format.indent_width),
+                                        case_IndentLine = lambda _ : "\n" + ("    " * format.indent_width)
+                                    ))
+                                    if isinstance(pred, lib.rule_system.Nonterm) else ""
+                                )[-1]
+                                if i == 0 else "" 
+                            ),
+                            stack.append(prefix + o.terminal)
+                        ),
+                        case_Nonterm=lambda o : (
+                            child_format := Format(is_inline(o.format), next_indent_width(format.indent_width, o.format)),
+                            stack.append(child_format),
+                        ),
+                        case_Vocab=lambda o : (
+                            stack.append(format)
+                        )
+                    ))
 
-#                 prefix = "" if format.inline else "\n" + "    " * format.indent_width
-#                 stack += [prefix]
+                prefix = "" if format.inline else "\n" + "    " * format.indent_width
+                stack += [prefix]
             
-#             def concretize_vocab(inst : Vocab):
-#                 nonlocal stack
-#                 stack += [inst.selection]
+            def concretize_vocab(inst : Vocab):
+                nonlocal stack
+                stack += [inst.selection]
 
-#             def concretize_hole(_ : Hole):
-#                 nonlocal stack
-#                 stack += ['(HOLE)']
+            def concretize_hole(_ : Hole):
+                nonlocal stack
+                stack += ['(HOLE)']
 
 
-#             match_abstract_token(inst, AbstractTokenHandlers(
-#                 case_Grammar = concretize_grammar,
-#                 case_Vocab = concretize_vocab,
-#                 case_Hole = concretize_hole,
-#             ))
+            match_abstract_token(inst, AbstractTokenHandlers(
+                case_Grammar = concretize_grammar,
+                case_Vocab = concretize_vocab,
+                case_Hole = concretize_hole,
+            ))
 
-#     return result
+    return result
 
 
 from typing import Sequence

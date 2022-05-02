@@ -86,7 +86,6 @@ def get_type_args(t : type) -> tuple[type, ...]:
 
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : (t.content,),
-        case_AnnoType = lambda t : (t.content,),
         case_VarType = lambda t : (),
         case_EllipType = lambda t : (),
         case_AnyType = lambda t : (),
@@ -128,7 +127,6 @@ from typing import Union
 def get_class_key(t : type) -> str:
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : "typing.type",
-        case_AnnoType = lambda t : get_class_key(t.content),
         case_VarType = lambda t : "typing.TypeVar",
         case_EllipType = lambda t : "builtins.ellipsis",
         case_AnyType = lambda t : "typing.Any",
@@ -169,13 +167,13 @@ def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
 
-def coerce_to_AnnoType(t : type) -> AnnoType:
+def coerce_to_TypeType(t : type) -> TypeType:
     if isinstance(t, AnyType):
-        return AnnoType(AnyType())
+        return TypeType(AnyType())
     elif isinstance(t, NoneType):
-        return AnnoType(NoneType())
+        return TypeType(NoneType())
     else:
-        assert isinstance(t, AnnoType)
+        assert isinstance(t, TypeType)
         return t
 
 def coerce_to_FixedTupleType(t : type) -> FixedTupleType:
@@ -188,13 +186,13 @@ def coerce_to_ListLitType(t : type) -> ListLitType:
 
 def from_anno_seq_to_instance_types(ts : Iterable[type]) -> tuple[type, ...]:
     return tuple(
-        coerce_to_AnnoType(t).content
+        coerce_to_TypeType(t).content
         for t in ts 
     ) 
 
 def from_anno_option_to_instance_type(t : type | None) -> type:
     if t:
-        return coerce_to_AnnoType(t).content
+        return coerce_to_TypeType(t).content
     else:
         return AnyType()
 
@@ -225,7 +223,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         assert len(type_args) == 2
         param_type_args = coerce_to_ListLitType(type_args[0]).item_types
         pos_param_types = from_anno_seq_to_instance_types(param_type_args)
-        return_type = coerce_to_AnnoType(type_arg.item_types[1]).content
+        return_type = coerce_to_TypeType(type_arg.item_types[1]).content
         return make_FunctionType(
             pos_param_types=pos_param_types,
             return_type=return_type
@@ -242,14 +240,14 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
             len(type_arg.item_types) == 2 and
             isinstance(type_arg.item_types[1], EllipType)
         ):
-            return VariedTupleType(item_type = coerce_to_AnnoType(type_arg.item_types[0]).content)
+            return VariedTupleType(item_type = coerce_to_TypeType(type_arg.item_types[0]).content)
 
         elif isinstance(type_arg, FixedTupleType):
             item_types = from_anno_seq_to_instance_types(type_arg.item_types)
             return FixedTupleType(item_types=item_types)
 
         elif type_arg:
-            item_types = coerce_to_AnnoType(type_arg).content,
+            item_types = coerce_to_TypeType(type_arg).content,
             return FixedTupleType(item_types=item_types)
 
         else:
@@ -316,7 +314,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         type_args = (
             from_anno_seq_to_instance_types(type_arg.item_types)  
             if isinstance(type_arg, FixedTupleType) else
-            (coerce_to_AnnoType(type_arg).content,)
+            (coerce_to_TypeType(type_arg).content,)
             if type_arg else
             ()
         )
@@ -335,11 +333,11 @@ def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
         type_arg = (
             None
             if len(spec_type_args) == 0 else
-            AnnoType(spec_type_args[0])
+            TypeType(spec_type_args[0])
             if len(spec_type_args) == 1 else
             FixedTupleType(
                 item_types=tuple(
-                    AnnoType(ta)
+                    TypeType(ta)
                     for ta in spec_type_args
                 )
             )
@@ -475,8 +473,7 @@ def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
 def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
 
     return match_type(t, TypeHandlers(
-        case_TypeType = lambda t : AnnoType(t.content),
-        case_AnnoType = lambda t : None,
+        case_TypeType = lambda t : ObjectType(),
         case_VarType = lambda t : None,
         case_EllipType = lambda t : ObjectType(),
         case_AnyType = lambda t : None,
@@ -566,7 +563,7 @@ def field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> ty
         path = f"{anchor_type.key}.{field_name}" 
         return from_static_path_to_type(inher_aux, path)
 
-    elif isinstance(anchor_type, TypeType) or isinstance(anchor_type, AnnoType):
+    elif isinstance(anchor_type, TypeType) or isinstance(anchor_type, TypeType):
         content_class_record = infer_class_record(anchor_type.content, inher_aux)
         if content_class_record:
             return static_field_type(content_class_record, field_name, inher_aux)
@@ -593,7 +590,6 @@ def field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> ty
 def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : substitute_type_args(t.content, subst_map),
-        case_AnnoType = lambda t : substitute_type_args(t.content, subst_map),
         case_VarType = lambda t : subst_map[t.name],
         case_EllipType = lambda t : t,
         case_AnyType = lambda t : t,
@@ -817,7 +813,6 @@ def get_iterable_item_type(t : type, inher_aux : InherAux) -> type:
 
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : fail(),
-        case_AnnoType = lambda t : fail(),
         case_VarType = lambda t : fail(),
         case_EllipType = lambda t : fail(),
         case_AnyType = lambda t : AnyType(),
@@ -1091,7 +1086,6 @@ def from_ParamSig_to_primitive(p : ParamSig) -> list:
 def from_type_to_primitive(t : type) -> list:
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : ["TypeType", from_type_to_primitive(t.content)],
-        case_AnnoType = lambda t : ["AnnoType", from_type_to_primitive(t.content)],
         case_VarType = lambda t : ["VarType", t.name, from_variant_to_primitive(t.variant)],
         case_EllipType = lambda t : ["EllipType"],
         case_AnyType = lambda t : ["AnyType"],
@@ -1207,17 +1201,17 @@ def analyze_modules_once(
         except Exception as ex:
             raise ex
         finally:
-            # print("")
-            # print("")
-            # print("-------------------------------")
-            # print(f"-- index : {i}")
-            # print(f"-- total : {len(file_paths)}")
-            # print(f"-- distance : {len(file_paths) - i}")
-            # print(f"-- file_path : {file_path}")
-            # print(f"-- module_path : {module_path}")
-            # # print(f"-- inher_aux.package : {from_package_to_primitive(inher_aux.package)}")
-            # print(f"-- success_count : {success_count}")
-            # print("-------------------------------")
+            print("")
+            print("")
+            print("-------------------------------")
+            print(f"-- index : {i}")
+            print(f"-- total : {len(file_paths)}")
+            print(f"-- distance : {len(file_paths) - i}")
+            print(f"-- file_path : {file_path}")
+            print(f"-- module_path : {module_path}")
+            # print(f"-- inher_aux.package : {from_package_to_primitive(inher_aux.package)}")
+            print(f"-- success_count : {success_count}")
+            print("-------------------------------")
             pass
 
 
@@ -1269,15 +1263,13 @@ def analyze_typeshed() -> PMap[str, ModulePackage]:
     # package = analyze_modules_fixpoint(other_libs_dirpath, other_module_paths, package, limit) 
     return package 
 
-
-def make_demo(module_name : str, code : str) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
-    typeshed_package = analyze_typeshed() 
+def make_demo(module_name : str, code : str, package : PMap[str, ModulePackage]) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
 
     partial_tokens = () 
-    client : Client = spawn_analysis(typeshed_package, module_name)
+    client : Client = spawn_analysis(package, module_name)
 
     for token in abstract_tokens:
         result = client.next(token)
@@ -1746,13 +1738,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         expr_type = AnyType()
         if (
-            (isinstance(left_type, AnnoType) or isinstance(right_type, AnnoType)) and
+            (isinstance(left_type, TypeType) or isinstance(right_type, TypeType)) and
             isinstance(rator_tree, pas.BitOr)
         ):
-            left_instance_type = coerce_to_AnnoType(left_type).content
-            right_instance_type = coerce_to_AnnoType(right_type).content
+            left_instance_type = coerce_to_TypeType(left_type).content
+            right_instance_type = coerce_to_TypeType(right_type).content
             union_type = unionize_types(left_instance_type, right_instance_type)
-            expr_type = AnnoType(union_type)
+            expr_type = TypeType(union_type)
         else:
 
             method_name = pas.from_bin_rator_to_method_name(rator_tree)
@@ -2219,7 +2211,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         func_type = func_aux.expr_types[0]
         if isinstance(func_type, FunctionType):
             inferred_type = func_type.return_type
-        elif isinstance(func_type, AnnoType):
+        elif isinstance(func_type, TypeType):
             inferred_type = func_type.content 
         elif isinstance(func_type, AnyType):
             inferred_type = AnyType() 
@@ -2292,7 +2284,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
             )
             expr_type = func_type.return_type
 
-        elif isinstance(func_type, AnnoType):
+        elif isinstance(func_type, TypeType):
             class_key = get_class_key(func_type.content)
 
             if class_key == "typing.TypeVar": 
@@ -2322,7 +2314,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                 elif isinstance(kw_arg_types.get("contravariant"), TrueType):
                     variant = ContraVariant()
             
-                expr_type = AnnoType(VarType(name = name, variant = variant))
+                expr_type = TypeType(VarType(name = name, variant = variant))
             else:
 
                 class_key = get_class_key(func_type.content)
@@ -2537,25 +2529,25 @@ class Server(crawler.Server[InherAux, SynthAux]):
         var_types : tuple[VarType, ...]= ()
         expr_types = ()
 
-        if isinstance(content_type, AnnoType):
+        if isinstance(content_type, TypeType):
             class_key = get_class_key(content_type.content)
             if class_key == "typing.Generic":
                 if isinstance(slice_type, FixedTupleType):
                     for anno_vt in slice_type.item_types:
-                        assert isinstance(anno_vt, AnnoType)
+                        assert isinstance(anno_vt, TypeType)
                         vt = anno_vt.content
                         assert isinstance(vt, VarType)
                         var_types += (vt,) 
                 else:
                     anno_vt = slice_type
-                    assert isinstance(anno_vt, AnnoType)
+                    assert isinstance(anno_vt, TypeType)
                     vt = anno_vt.content
                     assert isinstance(vt, VarType)
                     var_types += (vt,) 
             else:
-                expr_types = (AnnoType(from_class_key_to_type(inher_aux, class_key, slice_type)),)
+                expr_types = (TypeType(from_class_key_to_type(inher_aux, class_key, slice_type)),)
 
-        elif isinstance(content_type, AnnoType):
+        elif isinstance(content_type, TypeType):
             expr_types = tuple([AnyType()])
         else:
             method_type = field_type(content_type, "__getitem__", inher_aux)
@@ -2828,7 +2820,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                 return p.type
 
             for dt in p.decorator_types:
-                if isinstance(dt, AnnoType):
+                if isinstance(dt, TypeType):
                     dt_class_key = get_class_key(dt.content)
                     if dt_class_key == "builtins.staticmethod":
                         return p.type
@@ -2851,9 +2843,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
                 # check if type has been partially resolved in previous iteration of analysis
                 type_arg = (
-                    AnnoType(type_params[0])
+                    TypeType(type_params[0])
                     if len(type_params) == 1 else 
-                    FixedTupleType(tuple(AnnoType(t) for t in type_params))
+                    FixedTupleType(tuple(TypeType(t) for t in type_params))
                     if len(type_params) > 1 else
                     None
                 ) 
@@ -2870,7 +2862,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                 return None 
 
             for dt in p.decorator_types:
-                if isinstance(dt, AnnoType):
+                if isinstance(dt, TypeType):
                     dt_class_key = get_class_key(dt.content)
                     if dt_class_key == "builtins.staticmethod":
                         return None 
@@ -2919,7 +2911,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                 env_additions=pmap({
                     name_tree : make_Provenance(
                         initialized=True, 
-                        type=AnnoType(instance_type)
+                        type=TypeType(instance_type)
                     )
                 }),
                 class_additions=pmap({inher_aux.internal_path : class_record}) + body_aux.class_additions
@@ -3014,7 +3006,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         if isinstance(ret_anno_tree, pas.SomeReturnAnno): 
             function_sig_return_type = (
-                coerce_to_AnnoType(ret_anno_aux.expr_types[0]).content
+                coerce_to_TypeType(ret_anno_aux.expr_types[0]).content
                 if len(ret_anno_aux.expr_types) == 1 else
                 AnyType()
             )
@@ -3073,7 +3065,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
 
         sig_type = (
-            coerce_to_AnnoType(anno_aux.expr_types[0]).content
+            coerce_to_TypeType(anno_aux.expr_types[0]).content
             if len(anno_aux.expr_types) == 1 else 
             AnyType()
         )
@@ -3360,7 +3352,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         assert len(content_aux.expr_types) == 1
         content_type = content_aux.expr_types[0]
-        sig_type = coerce_to_AnnoType(anno_aux.expr_types[0]).content
+        sig_type = coerce_to_TypeType(anno_aux.expr_types[0]).content
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
@@ -3384,7 +3376,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         anno_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
         assert len(anno_aux.expr_types) > 0
-        sig_type = coerce_to_AnnoType( anno_aux.expr_types[0]).content
+        sig_type = coerce_to_TypeType( anno_aux.expr_types[0]).content
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 

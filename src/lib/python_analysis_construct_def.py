@@ -103,11 +103,6 @@ choices = {
             Field("content", "type", ""),
         ]),
 
-        # TODO: should TypeType and AnnoType be merged?
-        Constructor("AnnoType", [], [
-            Field("content", "type", "")
-        ]),
-
         Constructor("VarType", [], [
             Field("name", "str", ""),
             Field("variant", "variant", "NoVariant()")

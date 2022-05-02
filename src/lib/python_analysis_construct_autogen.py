@@ -142,29 +142,6 @@ def update_TypeType(source_TypeType : TypeType,
         
 
 @dataclass(frozen=True, eq=True)
-class AnnoType(type):
-    content : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_AnnoType(self)
-
-def make_AnnoType(
-    content : type
-) -> type:
-    return AnnoType(
-        content
-    )
-
-def update_AnnoType(source_AnnoType : AnnoType,
-    content : Union[type, SourceFlag] = SourceFlag()
-) -> AnnoType:
-    return AnnoType(
-        source_AnnoType.content if isinstance(content, SourceFlag) else content
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
 class VarType(type):
     name : str
     variant : variant
@@ -975,7 +952,6 @@ def update_SliceType(source_SliceType : SliceType,
 @dataclass(frozen=True, eq=True)
 class TypeHandlers(Generic[T]):
     case_TypeType : Callable[[TypeType], T]
-    case_AnnoType : Callable[[AnnoType], T]
     case_VarType : Callable[[VarType], T]
     case_EllipType : Callable[[EllipType], T]
     case_AnyType : Callable[[AnyType], T]

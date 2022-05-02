@@ -21,3 +21,6 @@ def dump(instances : tuple[abstract_token, ...]):
 
 def concretize(instances : tuple[abstract_token, ...]):
     return lib.abstract_token_system.concretize(python_schema_system.node_schema, instances)
+
+def concretize_old(instances : tuple[abstract_token, ...]):
+    return lib.abstract_token_system.concretize_old(python_schema_system.node_schema, instances)
