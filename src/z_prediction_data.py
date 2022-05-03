@@ -64,6 +64,17 @@ def concretize_ptokens(ptoks : list[str]) -> str:
     #         pass
 
 
+# from lib import python_schema_system as pss
+
+# vocab = set({})
+
+# for rule in pss.node_schema.values():
+#     for item in rule.content:
+#         if isinstance(item, pss.Vocab):
+#             vocab.add(item.vocab)
+
+# print(vocab)
+
 concrete_fpath = util_system.project_path('res/mbpp/concrete_data/mbpp.jsonl')
 
 with open(concrete_fpath, 'r') as f:
