@@ -631,3 +631,16 @@ for k, v in pmap({"hello" : "world", "alpha" : "beta", "good" : "bye"}).items():
 # for item in xy:
 #     print(item)
 
+
+
+from lib import python_analysis_construct_def as pacd
+vocab = set({})
+
+for cons in pacd.choices.values():
+    for con in cons:
+        vocab.add(con.name)
+
+for con in pacd.singles:
+    vocab.add(con.name)
+
+print(vocab)
