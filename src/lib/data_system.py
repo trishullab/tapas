@@ -139,7 +139,7 @@ def generate_file(
                 unsupported_error_count += 1
                 error_count += 1
 
-            except pals.ArgParamMismatchError as ex:
+            except pals.ApplyArgTypeError as ex:
                 arg_param_mismatch_error_count += 1
                 error_count += 1
             except AnalysisError as ex:

@@ -86,6 +86,8 @@ def update_{constructor.name}(source_{constructor.name} : {constructor.name}{''.
 
 
 
+
+
 def generate_choice(
     type_name : str,
     constructors : list[Constructor] 

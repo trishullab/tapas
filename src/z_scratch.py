@@ -627,6 +627,11 @@ for k, v in pmap({"hello" : "world", "alpha" : "beta", "good" : "bye"}).items():
 
 # x : _Mismatch[_T]
 
+xy = {"x" : "y", "b" : "d"}
+for item in xy:
+    print(item)
+
+
 # xy = {"x" : "y", "b" : "d"}
 # for item in xy:
 #     print(item)

@@ -6,7 +6,6 @@ from lib.construct_def import Constructor, Field
 
 singles = [
 
-
     # TODO: add abstract methods 
     # related to universal type in PLT
     # concrete type if it has no abstract_methods and no type parameters 
