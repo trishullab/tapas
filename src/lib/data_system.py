@@ -219,9 +219,12 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
 
     concrete_data_file_names = os.listdir(concrete_data_dirpath)
     cdpl = len(concrete_data_file_names)
-    stepsize = 50
+    stepsize = 50 
     chunks = [concrete_data_file_names[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
+
+        # generate for abstract_data_1 and abstract_data_2 only
+        if i not in [1,2]: continue 
 
         abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
         write(abstract_data_dirpath, f'vocab.json', '')
