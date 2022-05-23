@@ -9,7 +9,7 @@ from pyrsistent.typing import PMap
 
 def make_demo_code(module_name, code :str, package : PMap[str, pals.ModulePackage], step_size : int = 1):
     acc = [] 
-    for token, code, inher_aux in pals.make_demo(module_name, code, package):
+    for token, code, inher_aux in pals.analyze_in_steps(module_name, code, package):
         acc += [f"""
 <<<<
 {ats.to_string(token)}
@@ -40,8 +40,10 @@ def make_demo_file(path = "res/example.py", n : int = 1):
 
 
 if __name__ == "__main__":
-    for out in make_demo_code(
-        "main", """
-print "hello world"
-    """, pals.analyze_typeshed(), 1):
-        print(out)
+    pals.analyze_typeshed()
+#     for out in make_demo_code(
+#         "main", """
+# print "hello world"
+#     """, pals.analyze_typeshed(), 
+#     1):
+#         print(out)

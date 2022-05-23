@@ -75,11 +75,11 @@ def generate_inspect_inductive_choice_rule(type_name : str, rule : Rule):
             {assign_synths(rule, i)}
 
 
-            inher_aux = self.traverse_{type_name}_{rule.name}_{rule_system.relation_from_item(item)}(
+            child_inher_aux = self.traverse_{type_name}_{rule.name}_{rule_system.relation_from_item(item)}(
                 inher_aux{synth_args(rule, i, 4)}
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, child_inher_aux)
 
             stack.append((Grammar("{type_name}", "{rule.name}"), inher_aux, children + tuple([child_synth])))
             return None
@@ -205,13 +205,14 @@ def generate_inspect_noninduct_choice_rule(type_name : str, rule : Rule) -> str:
     # inspect: {type_name} <-- {rule.name}"
     def inspect_{type_name}_{rule.name}(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         {''.join([
             f'''
-        inher_aux = self.traverse_{type_name}_{rule.name}_{rule_system.relation_from_item(item)}(
+        child_inher_aux = self.traverse_{type_name}_{rule.name}_{rule_system.relation_from_item(item)}(
             inher_aux{synth_args(rule, i, 3)}
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, child_inher_aux)
         {rule_system.relation_from_item(item)}_tree = synth.tree
         assert isinstance({rule_system.relation_from_item(item)}_tree, {rule_system.type_from_item(item)})
         {rule_system.relation_from_item(item)}_aux = synth.aux
@@ -271,11 +272,11 @@ def generate_inspect_single_rule(rule : Rule) -> str:
         {''.join([
             f'''
 
-        inher_aux = self.traverse_{rule.name}_{rule_system.relation_from_item(item)}(
+        child_inher_aux = self.traverse_{rule.name}_{rule_system.relation_from_item(item)}(
             inher_aux{synth_args(rule, i, 3)}
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, child_inher_aux)
         {rule_system.relation_from_item(item)}_tree = synth.tree
         assert isinstance({rule_system.relation_from_item(item)}_tree, {rule_system.type_from_item(item)})
         {rule_system.relation_from_item(item)}_aux = synth.aux

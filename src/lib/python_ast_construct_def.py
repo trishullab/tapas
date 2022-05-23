@@ -11,7 +11,11 @@ def generate_content() -> str:
 ast = Union[
 {f',{nl}'.join([
     f"    {node_type}"
-    for node_type in (list(python_schema_system.node_schema.keys()) + ['str'])
+    for node_type in (
+        list(python_schema_system.node_schema.keys()) + 
+        list(python_schema_system.choices_schema.keys()) + 
+        ['str']
+    )
 ])}
 ] 
     """

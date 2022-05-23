@@ -13,13 +13,15 @@ singles = [
         # class type params are determined by use of Generic constructor
         Field("key", "str", ""),
         Field("type_params", "tuple[VarType, ...]", ""),
-        Field("super_types", "tuple[type, ...]", ""),
+        Field("super_types", "tuple[TypeType, ...]", ""),
         Field("static_fields", "PMap[str, type]", ""),
         Field("instance_fields", "PMap[str, type]", "")
     ]),
 
     Constructor("ModulePackage", [], [
-        Field("module", "PMap[str, type]", "m()"),
+        # TODO: update module to contain declaration instead of merely the type. 
+        # Need to know if constant/initialized.
+        Field("module", "PMap[str, Declaration]", "m()"),
         Field("class_env", "PMap[str, ClassRecord]", "m()"),
         Field("package", "PMap[str, ModulePackage]", "m()"),
     ]),
@@ -32,20 +34,19 @@ singles = [
 
     Constructor("VarLen", [], []),
 
-    Constructor("Provenance", [], [
-        Field("initialized", "bool", "False"),
-        Field("type", "type", "AnyType()"),
-        Field("decorator_types", "tuple[type, ...]", "()")
-    ]),
-
     Constructor("InherAux", [], [
         Field("package", "PMap[str, ModulePackage]", "m()"),
         Field("external_path", "str", "''"),
         Field("internal_path", "str", "''"),
-        Field("global_env", "PMap[str, Provenance]", "m()"),
-        Field("nonlocal_env", "PMap[str, Provenance]", "m()"),
-        Field("local_env", "PMap[str, Provenance]", "m()"),
-        Field("expr_types", "tuple[type, ...]", "()"),
+        Field("in_class", "bool", "False"),
+        Field("global_env", "PMap[str, Declaration]", "m()"),
+        Field("nonlocal_env", "PMap[str, Declaration]", "m()"),
+        Field("local_env", "PMap[str, Declaration]", "m()"),
+        Field("declared_globals", "PSet[str]", "s()"),
+        Field("declared_nonlocals", "PSet[str]", "s()"),
+
+        Field("usage_env", "PMap[str, Usage]", "m()"),
+        Field("observed_types", "tuple[type, ...]", "()"),
         Field("class_env", "PMap[str, ClassRecord]", "m()"), # internal_path |-> ClassRecord
     ]),
 
@@ -53,14 +54,15 @@ singles = [
 
         Field("class_additions", "PMap[str, ClassRecord]", "m()"),
 
-        Field("env_subtractions", "PSet[str]", "s()"),
-        Field("env_additions", "PMap[str, Provenance]", "m()"),
-        Field("names", "PSet[str]", "s()"),
+        Field("decl_subtractions", "PSet[str]", "s()"),
+        Field("decl_additions", "PMap[str, Declaration]", "m()"),
+        Field("declared_globals", "PSet[str]", "s()"),
+        Field("declared_nonlocals", "PSet[str]", "s()"),
 
+        Field("usage_additions", "PMap[str, Usage]", "m()"), # TODO: add more info like type info - PMap[str, Usage]
+        Field("cmp_names", "tuple[str, ...]", "()"),
 
-        Field("method_names", "tuple[str, ...]", "()"),
-
-        Field("expr_types", "tuple[type, ...]", "()"),
+        Field("observed_types", "tuple[type, ...]", "()"),
         Field("kw_types", "PMap[str, type]", "m()"),
 
         Field("return_types", "tuple[type, ...]", "()"),
@@ -82,8 +84,29 @@ singles = [
         # import names { alias : module source }
         Field("import_names", "PMap[str, str]", "m()")
 
+    ]),
 
+    Constructor("Declaration", [], [
+        Field("annotated", "bool", ""), # used to determine if types may be generalized or not
+        Field("constant", "bool", ""), # def/class are constant; assignment is not constant
+        Field("initialized", "bool", "False"),
+        Field("type", "type", "AnyType()"),
+        Field("decorator_types", "tuple[type, ...]", "()")
+    ]),
 
+    Constructor("Usage", [], [
+        Field("updated", "bool", "False"),
+        # Field("type", "type", "AnyType()"), # expectation
+
+        # if field_usages is not empty, then the function types should be empty
+        # Field("field_usages", "PMap[str, Usage]", "m()"), # expectations
+
+        # if the following are not empty, then the expected type should be a FunctionType/TypeType
+        # and expected_field_types should be empty.
+        # The observations/expectations of a function are reversed from that of a function definition.
+        # Field("pos_types", "tuple[type, ...]", "()"), # observation
+        # Field("kw_types", "PMap[str, type]", "m()"), # observation
+        # Field("return_type", "type | None", "None"), # expectation
     ]),
 
 ]
@@ -99,6 +122,7 @@ choices = {
     "type" : [
 
         Constructor("TypeType", [], [
+            Field("class_key", "str", ""),
             Field("content", "type", ""),
         ]),
 
@@ -163,7 +187,7 @@ choices = {
         ]),
 
 
-        Constructor("FixedTupleType", [], [
+        Constructor("TupleLitType", [], [
             Field("item_types", "tuple[type, ...]", "()"),
         ]),
 
@@ -191,13 +215,16 @@ choices = {
 
 
         Constructor("DictKeysType", [], [
-            Field("item_type", "type", "AnyType()"),
+            Field("key_type", "type", "AnyType()"),
+            Field("value_type", "type", "AnyType()"),
         ]),
         Constructor("DictValuesType", [], [
-            Field("item_type", "type", "AnyType()"),
+            Field("key_type", "type", "AnyType()"),
+            Field("value_type", "type", "AnyType()"),
         ]),
         Constructor("DictItemsType", [], [
-            Field("item_type", "type", "AnyType()"),
+            Field("key_type", "type", "AnyType()"),
+            Field("value_type", "type", "AnyType()"),
         ]),
 
         Constructor("SequenceType", [], [
@@ -242,8 +269,7 @@ choices = {
             Field("step", "type", "AnyType()")
         ]),
 
-    ]
-
+    ],
 }
 
 

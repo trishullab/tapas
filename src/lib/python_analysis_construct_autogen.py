@@ -120,22 +120,27 @@ class type(ABC):
 
 @dataclass(frozen=True, eq=True)
 class TypeType(type):
+    class_key : str
     content : type
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_TypeType(self)
 
 def make_TypeType(
+    class_key : str, 
     content : type
 ) -> type:
     return TypeType(
+        class_key,
         content
     )
 
 def update_TypeType(source_TypeType : TypeType,
+    class_key : Union[str, SourceFlag] = SourceFlag(),
     content : Union[type, SourceFlag] = SourceFlag()
 ) -> TypeType:
     return TypeType(
+        source_TypeType.class_key if isinstance(class_key, SourceFlag) else class_key,
         source_TypeType.content if isinstance(content, SourceFlag) else content
     )
 
@@ -396,24 +401,24 @@ def update_RecordType(source_RecordType : RecordType,
         
 
 @dataclass(frozen=True, eq=True)
-class FixedTupleType(type):
+class TupleLitType(type):
     item_types : tuple[type, ...]
 
     def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_FixedTupleType(self)
+        return handlers.case_TupleLitType(self)
 
-def make_FixedTupleType(
+def make_TupleLitType(
     item_types : tuple[type, ...] = ()
 ) -> type:
-    return FixedTupleType(
+    return TupleLitType(
         item_types
     )
 
-def update_FixedTupleType(source_FixedTupleType : FixedTupleType,
+def update_TupleLitType(source_TupleLitType : TupleLitType,
     item_types : Union[tuple[type, ...], SourceFlag] = SourceFlag()
-) -> FixedTupleType:
-    return FixedTupleType(
-        source_FixedTupleType.item_types if isinstance(item_types, SourceFlag) else item_types
+) -> TupleLitType:
+    return TupleLitType(
+        source_TupleLitType.item_types if isinstance(item_types, SourceFlag) else item_types
     )
 
         
@@ -545,69 +550,84 @@ def update_IterableType(source_IterableType : IterableType,
 
 @dataclass(frozen=True, eq=True)
 class DictKeysType(type):
-    item_type : type
+    key_type : type
+    value_type : type
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_DictKeysType(self)
 
 def make_DictKeysType(
-    item_type : type = AnyType()
+    key_type : type = AnyType(), 
+    value_type : type = AnyType()
 ) -> type:
     return DictKeysType(
-        item_type
+        key_type,
+        value_type
     )
 
 def update_DictKeysType(source_DictKeysType : DictKeysType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
+    key_type : Union[type, SourceFlag] = SourceFlag(),
+    value_type : Union[type, SourceFlag] = SourceFlag()
 ) -> DictKeysType:
     return DictKeysType(
-        source_DictKeysType.item_type if isinstance(item_type, SourceFlag) else item_type
+        source_DictKeysType.key_type if isinstance(key_type, SourceFlag) else key_type,
+        source_DictKeysType.value_type if isinstance(value_type, SourceFlag) else value_type
     )
 
         
 
 @dataclass(frozen=True, eq=True)
 class DictValuesType(type):
-    item_type : type
+    key_type : type
+    value_type : type
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_DictValuesType(self)
 
 def make_DictValuesType(
-    item_type : type = AnyType()
+    key_type : type = AnyType(), 
+    value_type : type = AnyType()
 ) -> type:
     return DictValuesType(
-        item_type
+        key_type,
+        value_type
     )
 
 def update_DictValuesType(source_DictValuesType : DictValuesType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
+    key_type : Union[type, SourceFlag] = SourceFlag(),
+    value_type : Union[type, SourceFlag] = SourceFlag()
 ) -> DictValuesType:
     return DictValuesType(
-        source_DictValuesType.item_type if isinstance(item_type, SourceFlag) else item_type
+        source_DictValuesType.key_type if isinstance(key_type, SourceFlag) else key_type,
+        source_DictValuesType.value_type if isinstance(value_type, SourceFlag) else value_type
     )
 
         
 
 @dataclass(frozen=True, eq=True)
 class DictItemsType(type):
-    item_type : type
+    key_type : type
+    value_type : type
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_DictItemsType(self)
 
 def make_DictItemsType(
-    item_type : type = AnyType()
+    key_type : type = AnyType(), 
+    value_type : type = AnyType()
 ) -> type:
     return DictItemsType(
-        item_type
+        key_type,
+        value_type
     )
 
 def update_DictItemsType(source_DictItemsType : DictItemsType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
+    key_type : Union[type, SourceFlag] = SourceFlag(),
+    value_type : Union[type, SourceFlag] = SourceFlag()
 ) -> DictItemsType:
     return DictItemsType(
-        source_DictItemsType.item_type if isinstance(item_type, SourceFlag) else item_type
+        source_DictItemsType.key_type if isinstance(key_type, SourceFlag) else key_type,
+        source_DictItemsType.value_type if isinstance(value_type, SourceFlag) else value_type
     )
 
         
@@ -962,7 +982,7 @@ class TypeHandlers(Generic[T]):
     case_UnionType : Callable[[UnionType], T]
     case_InterType : Callable[[InterType], T]
     case_RecordType : Callable[[RecordType], T]
-    case_FixedTupleType : Callable[[FixedTupleType], T]
+    case_TupleLitType : Callable[[TupleLitType], T]
     case_VariedTupleType : Callable[[VariedTupleType], T]
     case_MappingType : Callable[[MappingType], T]
     case_DictType : Callable[[DictType], T]
@@ -999,7 +1019,7 @@ def match_type(o : type, handlers : TypeHandlers[T]) -> T :
 class ClassRecord:
     key : str
     type_params : tuple[VarType, ...]
-    super_types : tuple[type, ...]
+    super_types : tuple[TypeType, ...]
     static_fields : PMap[str, type]
     instance_fields : PMap[str, type]
 
@@ -1007,7 +1027,7 @@ class ClassRecord:
 def make_ClassRecord(
     key : str,
     type_params : tuple[VarType, ...],
-    super_types : tuple[type, ...],
+    super_types : tuple[TypeType, ...],
     static_fields : PMap[str, type],
     instance_fields : PMap[str, type]
 ) -> ClassRecord:
@@ -1021,7 +1041,7 @@ def make_ClassRecord(
 def update_ClassRecord(source_ClassRecord : ClassRecord,
     key : Union[str, SourceFlag] = SourceFlag(),
     type_params : Union[tuple[VarType, ...], SourceFlag] = SourceFlag(),
-    super_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
+    super_types : Union[tuple[TypeType, ...], SourceFlag] = SourceFlag(),
     static_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
     instance_fields : Union[PMap[str, type], SourceFlag] = SourceFlag()
 ) -> ClassRecord:
@@ -1037,13 +1057,13 @@ def update_ClassRecord(source_ClassRecord : ClassRecord,
 # type and constructor ModulePackage
 @dataclass(frozen=True, eq=True)
 class ModulePackage:
-    module : PMap[str, type]
+    module : PMap[str, Declaration]
     class_env : PMap[str, ClassRecord]
     package : PMap[str, ModulePackage]
 
 
 def make_ModulePackage(
-    module : PMap[str, type] = m(),
+    module : PMap[str, Declaration] = m(),
     class_env : PMap[str, ClassRecord] = m(),
     package : PMap[str, ModulePackage] = m()
 ) -> ModulePackage:
@@ -1053,7 +1073,7 @@ def make_ModulePackage(
         package)
 
 def update_ModulePackage(source_ModulePackage : ModulePackage,
-    module : Union[PMap[str, type], SourceFlag] = SourceFlag(),
+    module : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
     class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
     package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag()
 ) -> ModulePackage:
@@ -1110,46 +1130,20 @@ def update_VarLen(source_VarLen : VarLen
 
     
 
-# type and constructor Provenance
-@dataclass(frozen=True, eq=True)
-class Provenance:
-    initialized : bool
-    type : type
-    decorator_types : tuple[type, ...]
-
-
-def make_Provenance(
-    initialized : bool = False,
-    type : type = AnyType(),
-    decorator_types : tuple[type, ...] = ()
-) -> Provenance:
-    return Provenance(
-        initialized,
-        type,
-        decorator_types)
-
-def update_Provenance(source_Provenance : Provenance,
-    initialized : Union[bool, SourceFlag] = SourceFlag(),
-    type : Union[type, SourceFlag] = SourceFlag(),
-    decorator_types : Union[tuple[type, ...], SourceFlag] = SourceFlag()
-) -> Provenance:
-    return Provenance(
-        source_Provenance.initialized if isinstance(initialized, SourceFlag) else initialized, 
-        source_Provenance.type if isinstance(type, SourceFlag) else type, 
-        source_Provenance.decorator_types if isinstance(decorator_types, SourceFlag) else decorator_types)
-
-    
-
 # type and constructor InherAux
 @dataclass(frozen=True, eq=True)
 class InherAux:
     package : PMap[str, ModulePackage]
     external_path : str
     internal_path : str
-    global_env : PMap[str, Provenance]
-    nonlocal_env : PMap[str, Provenance]
-    local_env : PMap[str, Provenance]
-    expr_types : tuple[type, ...]
+    in_class : bool
+    global_env : PMap[str, Declaration]
+    nonlocal_env : PMap[str, Declaration]
+    local_env : PMap[str, Declaration]
+    declared_globals : PSet[str]
+    declared_nonlocals : PSet[str]
+    usage_env : PMap[str, Usage]
+    observed_types : tuple[type, ...]
     class_env : PMap[str, ClassRecord]
 
 
@@ -1157,40 +1151,56 @@ def make_InherAux(
     package : PMap[str, ModulePackage] = m(),
     external_path : str = '',
     internal_path : str = '',
-    global_env : PMap[str, Provenance] = m(),
-    nonlocal_env : PMap[str, Provenance] = m(),
-    local_env : PMap[str, Provenance] = m(),
-    expr_types : tuple[type, ...] = (),
+    in_class : bool = False,
+    global_env : PMap[str, Declaration] = m(),
+    nonlocal_env : PMap[str, Declaration] = m(),
+    local_env : PMap[str, Declaration] = m(),
+    declared_globals : PSet[str] = s(),
+    declared_nonlocals : PSet[str] = s(),
+    usage_env : PMap[str, Usage] = m(),
+    observed_types : tuple[type, ...] = (),
     class_env : PMap[str, ClassRecord] = m()
 ) -> InherAux:
     return InherAux(
         package,
         external_path,
         internal_path,
+        in_class,
         global_env,
         nonlocal_env,
         local_env,
-        expr_types,
+        declared_globals,
+        declared_nonlocals,
+        usage_env,
+        observed_types,
         class_env)
 
 def update_InherAux(source_InherAux : InherAux,
     package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag(),
     external_path : Union[str, SourceFlag] = SourceFlag(),
     internal_path : Union[str, SourceFlag] = SourceFlag(),
-    global_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
-    nonlocal_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
-    local_env : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
-    expr_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
+    in_class : Union[bool, SourceFlag] = SourceFlag(),
+    global_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
+    nonlocal_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
+    local_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
+    declared_globals : Union[PSet[str], SourceFlag] = SourceFlag(),
+    declared_nonlocals : Union[PSet[str], SourceFlag] = SourceFlag(),
+    usage_env : Union[PMap[str, Usage], SourceFlag] = SourceFlag(),
+    observed_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag()
 ) -> InherAux:
     return InherAux(
         source_InherAux.package if isinstance(package, SourceFlag) else package, 
         source_InherAux.external_path if isinstance(external_path, SourceFlag) else external_path, 
         source_InherAux.internal_path if isinstance(internal_path, SourceFlag) else internal_path, 
+        source_InherAux.in_class if isinstance(in_class, SourceFlag) else in_class, 
         source_InherAux.global_env if isinstance(global_env, SourceFlag) else global_env, 
         source_InherAux.nonlocal_env if isinstance(nonlocal_env, SourceFlag) else nonlocal_env, 
         source_InherAux.local_env if isinstance(local_env, SourceFlag) else local_env, 
-        source_InherAux.expr_types if isinstance(expr_types, SourceFlag) else expr_types, 
+        source_InherAux.declared_globals if isinstance(declared_globals, SourceFlag) else declared_globals, 
+        source_InherAux.declared_nonlocals if isinstance(declared_nonlocals, SourceFlag) else declared_nonlocals, 
+        source_InherAux.usage_env if isinstance(usage_env, SourceFlag) else usage_env, 
+        source_InherAux.observed_types if isinstance(observed_types, SourceFlag) else observed_types, 
         source_InherAux.class_env if isinstance(class_env, SourceFlag) else class_env)
 
     
@@ -1199,11 +1209,13 @@ def update_InherAux(source_InherAux : InherAux,
 @dataclass(frozen=True, eq=True)
 class SynthAux:
     class_additions : PMap[str, ClassRecord]
-    env_subtractions : PSet[str]
-    env_additions : PMap[str, Provenance]
-    names : PSet[str]
-    method_names : tuple[str, ...]
-    expr_types : tuple[type, ...]
+    decl_subtractions : PSet[str]
+    decl_additions : PMap[str, Declaration]
+    declared_globals : PSet[str]
+    declared_nonlocals : PSet[str]
+    usage_additions : PMap[str, Usage]
+    cmp_names : tuple[str, ...]
+    observed_types : tuple[type, ...]
     kw_types : PMap[str, type]
     return_types : tuple[type, ...]
     yield_types : tuple[type, ...]
@@ -1219,11 +1231,13 @@ class SynthAux:
 
 def make_SynthAux(
     class_additions : PMap[str, ClassRecord] = m(),
-    env_subtractions : PSet[str] = s(),
-    env_additions : PMap[str, Provenance] = m(),
-    names : PSet[str] = s(),
-    method_names : tuple[str, ...] = (),
-    expr_types : tuple[type, ...] = (),
+    decl_subtractions : PSet[str] = s(),
+    decl_additions : PMap[str, Declaration] = m(),
+    declared_globals : PSet[str] = s(),
+    declared_nonlocals : PSet[str] = s(),
+    usage_additions : PMap[str, Usage] = m(),
+    cmp_names : tuple[str, ...] = (),
+    observed_types : tuple[type, ...] = (),
     kw_types : PMap[str, type] = m(),
     return_types : tuple[type, ...] = (),
     yield_types : tuple[type, ...] = (),
@@ -1238,11 +1252,13 @@ def make_SynthAux(
 ) -> SynthAux:
     return SynthAux(
         class_additions,
-        env_subtractions,
-        env_additions,
-        names,
-        method_names,
-        expr_types,
+        decl_subtractions,
+        decl_additions,
+        declared_globals,
+        declared_nonlocals,
+        usage_additions,
+        cmp_names,
+        observed_types,
         kw_types,
         return_types,
         yield_types,
@@ -1257,11 +1273,13 @@ def make_SynthAux(
 
 def update_SynthAux(source_SynthAux : SynthAux,
     class_additions : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
-    env_subtractions : Union[PSet[str], SourceFlag] = SourceFlag(),
-    env_additions : Union[PMap[str, Provenance], SourceFlag] = SourceFlag(),
-    names : Union[PSet[str], SourceFlag] = SourceFlag(),
-    method_names : Union[tuple[str, ...], SourceFlag] = SourceFlag(),
-    expr_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
+    decl_subtractions : Union[PSet[str], SourceFlag] = SourceFlag(),
+    decl_additions : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
+    declared_globals : Union[PSet[str], SourceFlag] = SourceFlag(),
+    declared_nonlocals : Union[PSet[str], SourceFlag] = SourceFlag(),
+    usage_additions : Union[PMap[str, Usage], SourceFlag] = SourceFlag(),
+    cmp_names : Union[tuple[str, ...], SourceFlag] = SourceFlag(),
+    observed_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     kw_types : Union[PMap[str, type], SourceFlag] = SourceFlag(),
     return_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     yield_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
@@ -1276,11 +1294,13 @@ def update_SynthAux(source_SynthAux : SynthAux,
 ) -> SynthAux:
     return SynthAux(
         source_SynthAux.class_additions if isinstance(class_additions, SourceFlag) else class_additions, 
-        source_SynthAux.env_subtractions if isinstance(env_subtractions, SourceFlag) else env_subtractions, 
-        source_SynthAux.env_additions if isinstance(env_additions, SourceFlag) else env_additions, 
-        source_SynthAux.names if isinstance(names, SourceFlag) else names, 
-        source_SynthAux.method_names if isinstance(method_names, SourceFlag) else method_names, 
-        source_SynthAux.expr_types if isinstance(expr_types, SourceFlag) else expr_types, 
+        source_SynthAux.decl_subtractions if isinstance(decl_subtractions, SourceFlag) else decl_subtractions, 
+        source_SynthAux.decl_additions if isinstance(decl_additions, SourceFlag) else decl_additions, 
+        source_SynthAux.declared_globals if isinstance(declared_globals, SourceFlag) else declared_globals, 
+        source_SynthAux.declared_nonlocals if isinstance(declared_nonlocals, SourceFlag) else declared_nonlocals, 
+        source_SynthAux.usage_additions if isinstance(usage_additions, SourceFlag) else usage_additions, 
+        source_SynthAux.cmp_names if isinstance(cmp_names, SourceFlag) else cmp_names, 
+        source_SynthAux.observed_types if isinstance(observed_types, SourceFlag) else observed_types, 
         source_SynthAux.kw_types if isinstance(kw_types, SourceFlag) else kw_types, 
         source_SynthAux.return_types if isinstance(return_types, SourceFlag) else return_types, 
         source_SynthAux.yield_types if isinstance(yield_types, SourceFlag) else yield_types, 
@@ -1292,6 +1312,66 @@ def update_SynthAux(source_SynthAux : SynthAux,
         source_SynthAux.kw_param_sigs if isinstance(kw_param_sigs, SourceFlag) else kw_param_sigs, 
         source_SynthAux.splat_kw_param_type if isinstance(splat_kw_param_type, SourceFlag) else splat_kw_param_type, 
         source_SynthAux.import_names if isinstance(import_names, SourceFlag) else import_names)
+
+    
+
+# type and constructor Declaration
+@dataclass(frozen=True, eq=True)
+class Declaration:
+    annotated : bool
+    constant : bool
+    initialized : bool
+    type : type
+    decorator_types : tuple[type, ...]
+
+
+def make_Declaration(
+    annotated : bool,
+    constant : bool,
+    initialized : bool = False,
+    type : type = AnyType(),
+    decorator_types : tuple[type, ...] = ()
+) -> Declaration:
+    return Declaration(
+        annotated,
+        constant,
+        initialized,
+        type,
+        decorator_types)
+
+def update_Declaration(source_Declaration : Declaration,
+    annotated : Union[bool, SourceFlag] = SourceFlag(),
+    constant : Union[bool, SourceFlag] = SourceFlag(),
+    initialized : Union[bool, SourceFlag] = SourceFlag(),
+    type : Union[type, SourceFlag] = SourceFlag(),
+    decorator_types : Union[tuple[type, ...], SourceFlag] = SourceFlag()
+) -> Declaration:
+    return Declaration(
+        source_Declaration.annotated if isinstance(annotated, SourceFlag) else annotated, 
+        source_Declaration.constant if isinstance(constant, SourceFlag) else constant, 
+        source_Declaration.initialized if isinstance(initialized, SourceFlag) else initialized, 
+        source_Declaration.type if isinstance(type, SourceFlag) else type, 
+        source_Declaration.decorator_types if isinstance(decorator_types, SourceFlag) else decorator_types)
+
+    
+
+# type and constructor Usage
+@dataclass(frozen=True, eq=True)
+class Usage:
+    updated : bool
+
+
+def make_Usage(
+    updated : bool = False
+) -> Usage:
+    return Usage(
+        updated)
+
+def update_Usage(source_Usage : Usage,
+    updated : Union[bool, SourceFlag] = SourceFlag()
+) -> Usage:
+    return Usage(
+        source_Usage.updated if isinstance(updated, SourceFlag) else updated)
 
      
     

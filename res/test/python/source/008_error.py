@@ -1,0 +1,1 @@
+words : list[int] = "hello.big.world.out.there".split(".")

@@ -550,8 +550,8 @@ def from_generic_tree_to_ExceptHandler(node) -> ExceptHandler:
 
     assert block_node
 
-    expr = util_system.map_option(from_generic_tree_to_expr, expr_node)
-    name = util_system.map_option(from_generic_tree_to_identifier, name_node)
+    expr = from_generic_tree_to_expr(expr_node) if expr_node else None
+    name = from_generic_tree_to_identifier(name_node) if name_node else None
     stmts = [
         stmt
         for stmt_node in block_node.children
@@ -583,7 +583,7 @@ def from_generic_tree_to_with_item(node) -> with_item:
     )
 
     context_expr = from_generic_tree_to_expr(context_node)
-    pattern_expr = util_system.map_option(from_generic_tree_to_expr, pattern_node)
+    pattern_expr = from_generic_tree_to_expr(pattern_node) if pattern_node else None
 
     return (
         WithItemAlias(context_expr, pattern_expr)
@@ -1310,7 +1310,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             for n in kw_nodes
         ]
 
-        dictionary_splat_param = util_system.map_option(from_generic_tree_to_Param, dictionary_splat_node)
+        dictionary_splat_param = from_generic_tree_to_Param(dictionary_splat_node) if dictionary_splat_node else None
 
 
         return to_parameters(pos_params, pos_kw_params, list_splat_param, kw_params, dictionary_splat_param)
@@ -1480,7 +1480,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
                     if typ:
                         left_expr = from_generic_tree_to_expr(left)
                         typ_expr = from_generic_tree_to_expr(typ)
-                        right_expr = util_system.map_option(from_generic_tree_to_expr, right)
+                        right_expr = from_generic_tree_to_expr(right) if right else None
                         if right_expr:
                             return [
                                 AnnoAssign(left_expr, typ_expr, right_expr)
@@ -1561,8 +1561,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators = NoD
             else (None, None)
         )
 
-        exc_expr = util_system.map_option(from_generic_tree_to_expr, exc)
-        cause_expr = util_system.map_option(from_generic_tree_to_expr, cause)
+        exc_expr = from_generic_tree_to_expr(exc) if exc else None
+        cause_expr = from_generic_tree_to_expr(cause) if cause else None
         if (exc_expr and cause_expr):
             return [ RaiseFrom(exc_expr, cause_expr) ]
         elif (exc_expr):

@@ -14,7 +14,7 @@ from lib import abstract_token_system as ats
 
 from lib import util_system as us
 
-from lib.python_ast_construct_autogen import ConsTargetExpr, SomeParamDefault, SplatKeyword, decorators
+from lib.python_ast_construct_autogen import ConsTargetExpr, ParametersAHandlers, SingleTargetExpr, SomeParamDefault, SplatKeyword, decorators, update_Attribute
 
 from lib import python_generic_tree_system as pgs 
 from lib import python_ast_system as pas
@@ -28,8 +28,8 @@ T = TypeVar('T')
 # class UnsupportedError(Exception): pass
 class AnalysisError(Exception): pass
 
-"Refer type error - field does not exist in type of object(field exists in object)"
-# class ReferTypeError(Exception): pass
+"Lookup type error - field does not exist in type of object(field exists in object)"
+class LookupTypeError(Exception): pass
 
 "Apply arg type error - types of arguments don’t match types of parameters"
 class ApplyArgTypeError(Exception): pass
@@ -41,22 +41,126 @@ class ApplyRatorTypeError(Exception): pass
 class SplatKeywordTypeError(Exception): pass
 
 "Return type error - types of return values don’t match output annotation"
-# class ReturnTypeError(Exception): pass
+class ReturnTypeError(Exception): pass
 
 "Unify type error - type of target doesn’t match type of source"
 class UnifyTypeError(Exception): pass
 
+"Assign type error - type of target doesn’t match type of source"
+class AssignTypeError(Exception): pass
+
 "Iterate type error - type of iterated object is not iterable"
 class IterateTypeError(Exception): pass
 
-"Refer environment error - name does not exist in environment"
-class ReferEnvError(Exception): pass # referred to name does not exist in environment
+"Lookup declaration error - name does not exist in environment"
+class LookupDecError(Exception): pass
 
-"Refer initialization error - name exists in environment but is possibly not initialized"
-class ReferInitError(Exception): pass # referred to name in environment is possibly not initialized
+"Lookup initialization error - name exists in environment but is possibly not initialized"
+class LookupInitError(Exception): pass
 
 "Declare error - name is declared but possibly never referenced"
-# class DeclareError(Exception): pass # declared name in environment is never referenced
+class DeclareError(Exception): pass
+
+"Update error - name is updated but not allowed to be"
+class UpdateError(Exception): pass
+
+
+def declared_and_initialized(inher_aux : InherAux, name : str) -> bool:
+    return (
+        name in inher_aux.declared_globals or
+        name in inher_aux.declared_nonlocals or
+        (
+            name in inher_aux.local_env and
+            inher_aux.local_env[name].initialized
+        ) 
+    )
+
+
+def get_self_param(params_tree : pas.parameters) -> pas.Param | None:
+    if isinstance(params_tree, pas.ParamsA):
+        ps = params_tree.content 
+        if ps:
+            return pas.match_parameters_a(ps, pas.ParametersAHandlers(
+                case_ConsPosParam = lambda x : x.head,
+                case_SinglePosParam = lambda x : x.content,
+                case_TransPosParam = lambda x : x.head
+            ))
+        else:
+            return None
+    elif isinstance(params_tree, pas.ParamsB):
+        ps = params_tree.content 
+        if ps:
+            return pas.match_parameters_b(ps, pas.ParametersBHandlers(
+                case_ConsPosKeyParam = lambda x : x.head, 
+                case_SinglePosKeyParam = lambda x : x.content, 
+                case_ParamsC = lambda _ : None 
+            ))
+        else:
+            return None
+    else:
+        return None
+ 
+
+def is_a_stub_body(tree : pas.ast) -> bool:
+    if isinstance(tree, pas.SingleStmt):
+        content = tree.content
+        if isinstance(content, pas.Expr):
+            return isinstance(content.content, pas.Ellip)
+    return False
+
+def is_a_stub_default(tree : pas.param_default) -> bool:
+    if isinstance(tree, SomeParamDefault):
+        return isinstance(tree.content, pas.Ellip)
+    else:
+        return False
+
+def check_decl_usage(dec_env : PMap[str, Declaration], usage_env : PMap[str, Usage]):
+    for dec in dec_env:
+        if dec not in usage_env:
+            raise DeclareError()
+
+def diff_usage_decl(
+    inher_aux : InherAux,
+    booting : bool, 
+    dec_env : PMap[str, Declaration],
+    usage_env : PMap[str, Usage],
+) -> PMap[str, Usage]:
+
+    usage_additions : PMap[str, Usage] = m()
+    for usage_key, usage in usage_env.items():
+        if usage_key in dec_env:
+
+            dec = dec_env[usage_key]
+            if usage.updated and dec.constant:
+                raise UpdateError()
+
+            if not booting and not dec.initialized:
+                raise LookupInitError()
+        else:
+
+            usage_additions += pmap({usage_key : usage_env[usage_key]})
+            if  not booting and not inher_aux.internal_path:
+                t = from_static_path_to_declaration(inher_aux, f"builtins.{usage_key}")
+                if isinstance(t, AnyType): 
+                    raise LookupDecError()
+    return usage_additions
+
+
+def merge_usages(a : Usage, b : Usage) -> Usage:
+    return Usage(
+        updated = a.updated or b.updated
+    )
+
+def merge_usage_additions(xs : PMap[str, Usage], ys : PMap[str, Usage]) -> PMap[str, Usage]:
+
+    overlaps = pmap({
+        yk : merge_usages(y, x)
+        for yk, y in ys.items()
+        for xk, x in xs.items()
+        if yk == xk
+    })
+
+    return xs + ys + overlaps 
 
 def unionize_all_types(ts : Iterable[type]) -> type:
     union_type = None 
@@ -87,27 +191,20 @@ def unionize_types(a : type, b : type) -> type:
         return UnionType(
             type_choices = (a,) + b.type_choices
         )
+    elif isinstance(a, TypeType):
+        assert isinstance(b, TypeType)
+        assert a.class_key == b.class_key
+        return TypeType(class_key = a.class_key, content = unionize_types(a.content, b.content))
+    elif isinstance(b, TypeType):
+        assert isinstance(a, TypeType)
+        assert a.class_key == b.class_key
+        return TypeType(class_key = a.class_key, content = unionize_types(a.content, b.content))
     else:
         return UnionType(
             type_choices = (a, b)
         )
 
 def get_type_args(t : type) -> tuple[type, ...]:
-
-    # TODO: should this return a single type annotation?
-    # type_arg = (
-    #     None
-    #     if len(spec_type_args) == 0 else
-    #     AnnoType(spec_type_args[0])
-    #     if len(spec_type_args) == 1 else
-    #     FixedTupleType(
-    #         item_types=tuple(
-    #             AnnoType(ta)
-    #             for ta in spec_type_args
-    #         )
-    #     )
-    # )
-
 
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : (t.content,),
@@ -121,15 +218,15 @@ def get_type_args(t : type) -> tuple[type, ...]:
         case_UnionType = lambda t : t.type_choices,
         case_InterType = lambda t : t.type_components,
         case_RecordType = lambda t : t.type_args,
-        case_FixedTupleType = lambda t : t.item_types,
+        case_TupleLitType = lambda t : t.item_types,
         case_VariedTupleType = lambda t : (t.item_type,),
         case_MappingType = lambda t : (t.key_type, t.value_type),
         case_DictType = lambda t : (t.key_type, t.value_type),
         case_SetType = lambda t : (t.item_type,),
         case_IterableType = lambda t : (t.item_type,),
-        case_DictKeysType = lambda t : (t.item_type,),
-        case_DictValuesType = lambda t : (t.item_type,),
-        case_DictItemsType = lambda t : (t.item_type,),
+        case_DictKeysType = lambda t : (t.key_type, t.value_type),
+        case_DictValuesType = lambda t : (t.key_type, t.value_type),
+        case_DictItemsType = lambda t : (t.key_type, t.value_type),
         case_SequenceType = lambda t : (t.item_type,),
         case_RangeType = lambda t : (t.item_type,),
         case_ListType = lambda t : (t.item_type,),
@@ -147,12 +244,12 @@ def get_type_args(t : type) -> tuple[type, ...]:
         case_SliceType = lambda t : (),
     ))
 
-from typing import Union  
 
 def get_class_key(t : type) -> str:
+    assert not isinstance(t, VarType)
     return match_type(t, TypeHandlers(
-        case_TypeType = lambda t : "typing.type",
-        case_VarType = lambda t : "typing.TypeVar",
+        case_TypeType = lambda t : t.class_key,
+        case_VarType = lambda t : "",
         case_EllipType = lambda t : "builtins.ellipsis",
         case_AnyType = lambda t : "typing.Any",
         case_ObjectType = lambda t : "builtins.object",
@@ -162,7 +259,7 @@ def get_class_key(t : type) -> str:
         case_UnionType = lambda t : "typing.Union",
         case_InterType = lambda t : "",
         case_RecordType = lambda t : t.class_key,
-        case_FixedTupleType = lambda t : "builtins.tuple",
+        case_TupleLitType = lambda t : "builtins.tuple",
         case_VariedTupleType = lambda t : "builtins.tuple",
         case_MappingType = lambda t : "_collections_abc.Mapping",
         case_DictType = lambda t : "builtins.dict",
@@ -194,15 +291,15 @@ def coerce_to_type(t) -> type:
 
 def coerce_to_TypeType(t : type) -> TypeType:
     if isinstance(t, AnyType):
-        return TypeType(AnyType())
+        return TypeType(class_key = "builtins.type", content = AnyType())
     elif isinstance(t, NoneType):
-        return TypeType(NoneType())
+        return TypeType(class_key = "builtins.type", content = NoneType())
     else:
         assert isinstance(t, TypeType)
         return t
 
-def coerce_to_FixedTupleType(t : type) -> FixedTupleType:
-    assert isinstance(t, FixedTupleType)
+def coerce_to_TupleLitType(t : type) -> TupleLitType:
+    assert isinstance(t, TupleLitType)
     return t
 
 def coerce_to_ListLitType(t : type) -> ListLitType:
@@ -223,7 +320,7 @@ def from_anno_option_to_instance_type(t : type | None) -> type:
 
 def from_anno_pair_option_to_instance_type(t : type | None) -> tuple[type, type]: 
     if t:
-        ftt = coerce_to_FixedTupleType(t)
+        ftt = coerce_to_TupleLitType(t)
         ts = from_anno_seq_to_instance_types(ftt.item_types)
         assert len(ts) == 2
         return (ts[0], ts[1])
@@ -232,19 +329,16 @@ def from_anno_pair_option_to_instance_type(t : type | None) -> tuple[type, type]
 
 def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Optional[type] = None) -> type:
 
-    if class_key == "builtins.type":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return TypeType(content = item_type)
-
-    elif class_key == "builtins.ellipsis":
+    if class_key == "builtins.ellipsis":
         assert not type_arg
         return EllipType()
-    elif class_key == "_collections_abc.Any":
-        assert not type_arg
+    elif class_key == "typing.Any":
+        # types might not be fully formed, 
+        # so type_arg may exist for unresolved type that uses Any as a placeholder
         return AnyType()
     elif class_key == "_collections_abc.Callable":
-        assert isinstance(type_arg, FixedTupleType)
-        type_args = coerce_to_FixedTupleType(type_arg).item_types
+        assert isinstance(type_arg, TupleLitType)
+        type_args = coerce_to_TupleLitType(type_arg).item_types
         assert len(type_args) == 2
         param_type_args = coerce_to_ListLitType(type_args[0]).item_types
         pos_param_types = from_anno_seq_to_instance_types(param_type_args)
@@ -255,28 +349,27 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         )
     elif class_key == "typing.Union":
         assert type_arg
-        ts = from_anno_seq_to_instance_types(coerce_to_FixedTupleType(type_arg).item_types)
+        ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types)
         return make_UnionType(type_choices=ts)
 
     elif class_key == "builtins.tuple":
-        
         if (
-            isinstance(type_arg, FixedTupleType) and
+            isinstance(type_arg, TupleLitType) and
             len(type_arg.item_types) == 2 and
             isinstance(type_arg.item_types[1], EllipType)
         ):
             return VariedTupleType(item_type = coerce_to_TypeType(type_arg.item_types[0]).content)
 
-        elif isinstance(type_arg, FixedTupleType):
+        elif isinstance(type_arg, TupleLitType):
             item_types = from_anno_seq_to_instance_types(type_arg.item_types)
-            return FixedTupleType(item_types=item_types)
+            return TupleLitType(item_types=item_types)
 
         elif type_arg:
             item_types = coerce_to_TypeType(type_arg).content,
-            return FixedTupleType(item_types=item_types)
+            return TupleLitType(item_types=item_types)
 
         else:
-            return FixedTupleType(item_types=())
+            return TupleLitType(item_types=())
 
     elif class_key == "builtins.dict":
         (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
@@ -289,16 +382,16 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         item_type = from_anno_option_to_instance_type(type_arg)
         return IterableType(item_type=item_type)
     elif class_key == "_collections_abc.dict_keys":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return DictKeysType(item_type=item_type)
+        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
+        return DictKeysType(key_type=key_type, value_type=value_type)
 
     elif class_key == "_collections_abc.dict_values":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return DictValuesType(item_type=item_type)
+        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
+        return DictValuesType(key_type=key_type, value_type=value_type)
 
     elif class_key == "_collections_abc.dict_items":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return DictItemsType(item_type=item_type)
+        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
+        return DictItemsType(key_type=key_type, value_type=value_type)
 
     elif class_key == "_collections_abc.Sequence":
         item_type = from_anno_option_to_instance_type(type_arg)
@@ -311,7 +404,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         return ListType(item_type=item_type)
     elif class_key == "_collections_abc.Generator":
         if type_arg:
-            ftt = coerce_to_FixedTupleType(type_arg)
+            ftt = coerce_to_TupleLitType(type_arg)
             ts = from_anno_seq_to_instance_types(ftt.item_types)
             assert len(ts) == 3
             return GeneratorType(yield_type=ts[0], return_type=ts[2])
@@ -328,7 +421,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
     elif class_key == "builtins.slice":
 
         if type_arg:
-            ftt = coerce_to_FixedTupleType(type_arg)
+            ftt = coerce_to_TupleLitType(type_arg)
             ts = from_anno_seq_to_instance_types(ftt.item_types)
             assert len(ts) == 3
             return SliceType(ts[0], ts[1], ts[2])
@@ -338,7 +431,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
     else:
         type_args = (
             from_anno_seq_to_instance_types(type_arg.item_types)  
-            if isinstance(type_arg, FixedTupleType) else
+            if isinstance(type_arg, TupleLitType) else
             (coerce_to_TypeType(type_arg).content,)
             if type_arg else
             ()
@@ -358,11 +451,11 @@ def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
         type_arg = (
             None
             if len(spec_type_args) == 0 else
-            TypeType(spec_type_args[0])
+            TypeType(class_key = "builtins.type", content = spec_type_args[0])
             if len(spec_type_args) == 1 else
-            FixedTupleType(
+            TupleLitType(
                 item_types=tuple(
-                    TypeType(ta)
+                    TypeType(class_key = "builtins.type", content = ta)
                     for ta in spec_type_args
                 )
             )
@@ -381,23 +474,25 @@ def coerce_to_VarType(t : type) -> VarType:
 def subsumes_RecordType(sub_type : RecordType, super_type : RecordType, inher_aux : InherAux) -> bool:
     assert sub_type.class_key == super_type.class_key 
     class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
-    assert class_record
-    type_params = class_record.type_params
+    if class_record:
+        type_params = class_record.type_params
+        assert len(type_params) == len(sub_type.type_args) == len(super_type.type_args)
+        subsumptions = [
+            (
+                subsumes(sub_type.type_args[i], super_type.type_args[i], inher_aux)
+                if isinstance(tp.variant, CoVariant) else
+                subsumes(super_type.type_args[i], sub_type.type_args[i], inher_aux)
+                if isinstance(tp.variant, ContraVariant) else
+                sub_type.type_args[i] == super_type.type_args[i]
+            )
+            for i, tp in enumerate(type_params)
+        ]
 
-    assert len(type_params) == len(sub_type.type_args) == len(super_type.type_args)
+        return us.every(subsumptions, lambda x : x)
+    else:
+        return True
 
-    subsumptions = [
-        (
-            subsumes(sub_type.type_args[i], super_type.type_args[i], inher_aux)
-            if isinstance(tp.variant, CoVariant) else
-            subsumes(super_type.type_args[i], sub_type.type_args[i], inher_aux)
-            if isinstance(tp.variant, ContraVariant) else
-            sub_type.type_args[i] == super_type.type_args[i]
-        )
-        for i, tp in enumerate(type_params)
-    ]
 
-    return us.every(subsumptions, lambda x : x)
 
 def subsumes_FunctionType(sub_type : FunctionType, super_type : FunctionType, inher_aux : InherAux) -> bool:
     param_subsumptions = [ 
@@ -420,7 +515,16 @@ def subsumes_FunctionType(sub_type : FunctionType, super_type : FunctionType, in
     return us.every(param_subsumptions, lambda x : x) and return_subsumption
 
 
-def type_args_subsume(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def types_match_args_subsume(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+    if isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
+        return types_match_args_subsume(sub_type.content, super_type.content, inher_aux)
+
+    if isinstance(sub_type, TypeType) and not isinstance(super_type, TypeType):
+        return False
+
+    if not isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
+        return False
+
     if get_class_key(sub_type) != get_class_key(super_type):
         return False
     
@@ -452,26 +556,42 @@ def type_args_subsume(sub_type : type, super_type : type, inher_aux : InherAux) 
 def subsumes(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
     return (
-        not isinstance(sub_type, VarType) or
+        not isinstance(sub_type, VarType) and 
+        not isinstance(sub_type, ModuleType) and
+        (
+            ( 
+                isinstance(sub_type, TypeType) and
+                isinstance(super_type, TypeType) and
+                subsumes(sub_type.content, super_type.content, inher_aux)
+            ) or 
 
-        not isinstance(sub_type, ModuleType) or 
+            isinstance(sub_type, AnyType) or 
 
-        isinstance(sub_type, AnyType) or 
+            isinstance(super_type, AnyType) or 
 
-        isinstance(super_type, AnyType) or 
+            (isinstance(super_type, SliceType) and
+                isinstance(super_type.stop, AnyType) and
+                isinstance(super_type.step, AnyType) and
+                subsumes(sub_type, super_type.start, inher_aux)
+            ) or
 
-        type_args_subsume(sub_type, super_type, inher_aux) or
+            types_match_args_subsume(sub_type, super_type, inher_aux) or 
 
-        sub_type == super_type or 
+            (isinstance(sub_type, InterType) and 
+                us.exists(sub_type.type_components, lambda tc : subsumes(tc, super_type, inher_aux))) or 
 
-        (isinstance(sub_type, InterType) and 
-            us.exists(sub_type.type_components, lambda tc : subsumes(tc, super_type, inher_aux))) or 
+            (isinstance(super_type, InterType) and 
+                us.every(super_type.type_components, lambda tc : subsumes(sub_type, tc, inher_aux))) or
 
-        (isinstance(super_type, UnionType) and 
-            us.exists(super_type.type_choices, lambda tc : subsumes(sub_type, tc, inher_aux))) or
+            (isinstance(super_type, UnionType) and 
+                us.exists(super_type.type_choices, lambda tc : subsumes(sub_type, tc, inher_aux))) or
 
-        (parent_type := get_parent_type(sub_type, inher_aux),
-            parent_type != None and subsumes(parent_type, super_type, inher_aux))[-1]
+            (isinstance(sub_type, UnionType) and 
+                us.every(sub_type.type_choices, lambda tc : subsumes(tc, super_type, inher_aux))) or
+
+            (parent_type := get_parent_type(sub_type, inher_aux),
+                parent_type != None and subsumes(parent_type, super_type, inher_aux))[-1]
+        )
     )
 
 
@@ -509,15 +629,15 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
         case_UnionType = lambda t : ObjectType(),
         case_InterType = lambda t : ObjectType(),
         case_RecordType = lambda t : instance_parent_type(t, inher_aux),
-        case_FixedTupleType = lambda t : VariedTupleType(unionize_all_types(t.item_types)),
+        case_TupleLitType = lambda t : VariedTupleType(unionize_all_types(t.item_types)),
         case_VariedTupleType = lambda t : SequenceType(t.item_type),
         case_MappingType = lambda t : ObjectType(),
         case_DictType = lambda t : MappingType(t.key_type, t.value_type),
         case_SetType = lambda t : IterableType(t.item_type),
         case_IterableType = lambda t : ObjectType(),
-        case_DictKeysType = lambda t : IterableType(t.item_type),
-        case_DictValuesType = lambda t : IterableType(t.item_type),
-        case_DictItemsType = lambda t : IterableType(t.item_type),
+        case_DictKeysType = lambda t : IterableType(t.key_type),
+        case_DictValuesType = lambda t : IterableType(t.value_type),
+        case_DictItemsType = lambda t : IterableType(TupleLitType((t.key_type, t.value_type))),
         case_SequenceType = lambda t : IterableType(t.item_type),
         case_RangeType = lambda t : SequenceType(t.item_type),
         case_ListType = lambda t : SequenceType(t.item_type),
@@ -545,6 +665,9 @@ def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
             for i, tp in enumerate(class_record.type_params) 
         })
 
+        # print(f"### class_record.key : {class_record.key}")
+        # print(f"### subst_map : {subst_map}")
+        # print(f"### class_record.static_fields : {class_record.static_fields}")
         return update_ClassRecord(class_record,
             static_fields = pmap({
                 k : substitute_type_args(t, subst_map)  
@@ -582,11 +705,10 @@ def lookup_static_field_type(class_record : ClassRecord, field_name : str, inher
             
 
 def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> type | None:
-
     if isinstance(anchor_type, ModuleType):
         assert anchor_type.key
         path = f"{anchor_type.key}.{field_name}" 
-        return from_static_path_to_type(inher_aux, path)
+        return from_static_path_to_declaration(inher_aux, path).type
 
     elif isinstance(anchor_type, TypeType) or isinstance(anchor_type, TypeType):
         content_class_record = infer_class_record(anchor_type.content, inher_aux)
@@ -604,7 +726,7 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
                 return result 
             else:
                 for super_type in reversed(class_record.super_types):
-                    result = lookup_field_type(super_type, field_name, inher_aux)
+                    result = lookup_field_type(super_type.content, field_name, inher_aux)
                     if result:
                         return result
         return AnyType()
@@ -683,8 +805,8 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
                 )
             )
         ),
-        case_FixedTupleType = lambda t : (
-            update_FixedTupleType(t,
+        case_TupleLitType = lambda t : (
+            update_TupleLitType(t,
                 item_types = tuple(
                     substitute_type_args(item_type, subst_map)
                     for item_type in t.item_types
@@ -721,17 +843,20 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
 
         case_DictKeysType = lambda t : (
             DictKeysType(
-                item_type = substitute_type_args(t.item_type, subst_map)
+                key_type = substitute_type_args(t.key_type, subst_map),
+                value_type = substitute_type_args(t.value_type, subst_map),
             )
         ),
         case_DictValuesType = lambda t : (
             DictValuesType(
-                item_type = substitute_type_args(t.item_type, subst_map)
+                key_type = substitute_type_args(t.key_type, subst_map),
+                value_type = substitute_type_args(t.value_type, subst_map),
             )
         ),
         case_DictItemsType = lambda t : (
             DictItemsType(
-                item_type = substitute_type_args(t.item_type, subst_map)
+                key_type = substitute_type_args(t.key_type, subst_map),
+                value_type = substitute_type_args(t.value_type, subst_map),
             )
         ),
 
@@ -846,15 +971,15 @@ def get_iterable_item_type(t : type, inher_aux : InherAux) -> type:
         case_UnionType = lambda t : get_iterable_item_type_from_UnionType(t, inher_aux),
         case_InterType = lambda t : fail(),
         case_RecordType = lambda t : get_iterable_item_type_from_RecordType(t, inher_aux),
-        case_FixedTupleType = lambda t : unionize_all_types(t.item_types),
+        case_TupleLitType = lambda t : unionize_all_types(t.item_types),
         case_VariedTupleType = lambda t : t.item_type,
         case_MappingType = lambda t : fail(),
         case_DictType = lambda t : t.key_type,
         case_SetType = lambda t : t.item_type,
         case_IterableType = lambda t : t.item_type,
-        case_DictKeysType = lambda t : t.item_type,
-        case_DictValuesType = lambda t : t.item_type,
-        case_DictItemsType = lambda t : t.item_type,
+        case_DictKeysType = lambda t : t.key_type,
+        case_DictValuesType = lambda t : t.value_type,
+        case_DictItemsType = lambda t : TupleLitType((t.key_type, t.value_type)),
         case_SequenceType = lambda t : t.item_type,
         case_RangeType = lambda t : t.item_type,
         case_ListType = lambda t : t.item_type,
@@ -898,7 +1023,7 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
 
         return type_env 
     elif isinstance(pattern, pas.Tuple):
-        if isinstance(type, FixedTupleType):
+        if isinstance(type, TupleLitType):
 
             type_env : PMap[str, type] = m()
             assert pattern.content
@@ -947,27 +1072,32 @@ def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRe
 
     return None
 
-def from_static_path_to_type(inher_aux : InherAux, path : str) -> type:
+def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declaration:
 
     if path == inher_aux.external_path:
-        return  ModuleType(inher_aux.external_path) 
+         
+        return make_Declaration(
+            annotated = True, initialized = True, constant = True, 
+            type = ModuleType(inher_aux.external_path)
+        )
 
     elif path.startswith(inher_aux.external_path + "."):
         name = path[len(inher_aux.external_path + "."):]
         if not inher_aux.internal_path: 
             if inher_aux.local_env.get(name):
-                return inher_aux.local_env[name].type
+                return inher_aux.local_env[name]
             else:
-                return AnyType()
+                return make_Declaration(annotated = True, initialized = True, constant = True, type = AnyType())
         elif inher_aux.global_env.get(name): 
-            return inher_aux.global_env[name].type
+            return inher_aux.global_env[name]
         else:
-            return AnyType()
+            return make_Declaration(annotated = True, initialized = True, constant = True, type = AnyType())
+
 
     sep = "."
     levels = path.split(sep)
     l = len(levels)
-    package : PMap[str, ModulePackage] = pmap(inher_aux.package)
+    package : PMap[str, ModulePackage] = inher_aux.package
 
     for i, level in enumerate(levels):
         if package.get(level):
@@ -980,21 +1110,28 @@ def from_static_path_to_type(inher_aux : InherAux, path : str) -> type:
                 module_level = levels[i + 1]
                 return module[module_level]
         else:
-            return AnyType()
+            return make_Declaration(annotated = True, initialized = True, constant = True, type = AnyType())
     
-    return ModuleType(key = path)
+    return make_Declaration(
+        annotated = True, initialized = True, constant = True, 
+        type = ModuleType(key = path)
+    )
 
-
-
-
-def lookup(inher_aux : InherAux, key : str) -> Provenance:
+def lookup_declaration(inher_aux : InherAux, key : str, builtins = True) -> Declaration | None:
 
     if inher_aux.local_env.get(key):
-        return inher_aux.local_env[key]
+        t = inher_aux.local_env[key]
+        return t
+    elif inher_aux.nonlocal_env.get(key):
+        return inher_aux.nonlocal_env[key]
+    elif inher_aux.global_env.get(key):
+        return inher_aux.global_env[key]
+    elif key == "Ellipsis": # don't expose the type of builtins.Ellipsis
+        return Declaration(annotated=True, initialized = True, constant=True, type = AnyType(), decorator_types=())
+    elif builtins:
+        return from_static_path_to_declaration(inher_aux, f"builtins.{key}")
     else:
-        t = from_static_path_to_type(inher_aux, f"builtins.{key}")
-        return make_Provenance(initialized=True, type=t)
-
+        return None 
 
 from typing import Sequence
 def check_application_args(
@@ -1005,25 +1142,20 @@ def check_application_args(
 ) -> bool:
 
     pos_param_compat : Iterable[bool] = [
-        (
-            i < len(pos_arg_types) and
-            subsumes(pos_arg_types[i], param_type, inher_aux)
-        )
+        subsumes(pos_arg_types[i], param_type, inher_aux)
         for i, param_type in enumerate(function_type.pos_param_types) 
+        if i < len(pos_arg_types)
     ] + [
-        (
-            j < len(pos_arg_types) and
-            subsumes(pos_arg_types[j], param_sig.type, inher_aux)
-        )
+        subsumes(pos_arg_types[j], param_sig.type, inher_aux)
         for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
         for j in [i + len(function_type.pos_param_types)]
+        if j < len(pos_arg_types)
     ] + [
         subsumes(pos_type_arg, function_type.splat_pos_param_type, inher_aux)
         for i, pos_type_arg in enumerate(pos_arg_types)
         if i >= len(function_type.pos_param_types) + len(function_type.pos_kw_param_sigs)
         if function_type.splat_pos_param_type != None
     ]
-
 
     kw_param_compat : Iterable[bool] = [
         param_sig.optional or
@@ -1056,7 +1188,6 @@ def check_application_args(
         us.every(kw_param_compat, lambda x : x)
     )
 
-
     if not compatible:
         # TODO: this could be due to overloaded methods, which isn't currently supported
         raise ApplyArgTypeError()
@@ -1074,10 +1205,11 @@ def is_literal_string(content : str) -> bool:
 
 def from_inher_aux_to_primitive(inher_aux : InherAux):
     return ['A', 
-        [from_type_to_primitive(t) for t in inher_aux.expr_types], 
+        [from_type_to_primitive(t) for t in inher_aux.observed_types], 
         from_env_to_primitive(inher_aux.local_env), 
         from_env_to_primitive(inher_aux.nonlocal_env), 
-        from_env_to_primitive(inher_aux.global_env)
+        from_env_to_primitive(inher_aux.global_env),
+        # from_class_env_to_primitive(inher_aux.class_env), 
     ]
 
 
@@ -1089,10 +1221,19 @@ def from_variant_to_primitive(v : variant) -> str:
     ))
 
 
-def from_module_to_primitive(module : PMap[str, type]) -> dict[str, list]:
+def from_declaration_to_primitive(dec : Declaration) -> list: 
+    return [
+        dec.annotated,
+        dec.initialized,
+        dec.constant,
+        from_type_to_primitive(dec.type)
+    ]
+
+
+def from_module_to_primitive(module : PMap[str, Declaration]) -> dict[str, list]:
     return {
-        k : from_type_to_primitive(t) 
-        for k, t in module.items()
+        k : from_declaration_to_primitive(dec) 
+        for k, dec in module.items()
     }
 
 def from_package_to_primitive(package : PMap[str, ModulePackage]) -> dict[str, list]:
@@ -1131,15 +1272,15 @@ def from_type_to_primitive(t : type) -> list:
             from_type_to_primitive(ta)
             for ta in t.type_args
         ]],
-        case_FixedTupleType = lambda t : ["FixedTupleType", [from_type_to_primitive(it) for it in t.item_types]],
+        case_TupleLitType = lambda t : ["TupleLitType", [from_type_to_primitive(it) for it in t.item_types]],
         case_VariedTupleType = lambda t : ["VariedTupleType", from_type_to_primitive(t.item_type)],
         case_MappingType = lambda t : ["MappingType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
         case_DictType = lambda t : ["DictType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
         case_SetType = lambda t : ["SetType", from_type_to_primitive(t.item_type)],
         case_IterableType = lambda t : ["IterableType", from_type_to_primitive(t.item_type)],
-        case_DictKeysType = lambda t : ["DictKeysType", from_type_to_primitive(t.item_type)],
-        case_DictValuesType = lambda t : ["DictValuesType", from_type_to_primitive(t.item_type)],
-        case_DictItemsType = lambda t : ["DictItemsType", from_type_to_primitive(t.item_type)],
+        case_DictKeysType = lambda t : ["DictKeysType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
+        case_DictValuesType = lambda t : ["DictValuesType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
+        case_DictItemsType = lambda t : ["DictItemsType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
         case_SequenceType = lambda t : ["SequenceType", from_type_to_primitive(t.item_type)],
         case_RangeType = lambda t : ["RangeType", from_type_to_primitive(t.item_type)],
         case_ListType = lambda t : ["ListType", from_type_to_primitive(t.item_type)],
@@ -1162,41 +1303,17 @@ def from_type_to_primitive(t : type) -> list:
     ))
 
 
-
-def analyze_code(
-    package : PMap[str, ModulePackage], 
-    module_name, 
-    code : str
-) -> PMap[str, ModulePackage]:
-    client : Client = spawn_analysis(package, module_name)
-
-    gnode = pgs.parse(code)
-    mod = pas.parse_from_generic_tree(gnode)
-    abstract_tokens = pas.serialize(mod)
-
-    last_inher_aux : InherAux = client.init
-    a_keys_len = len(last_inher_aux.package.keys())
-    for token in abstract_tokens:
-        result = client.next(token)
-        last_inher_aux = result
-
-    b_keys_len = len(last_inher_aux.package.keys())
-    assert b_keys_len >= a_keys_len
-
-    return last_inher_aux.package 
-
-
 from os import path
 def analyze_modules_once(
     root_dir : str, 
-    module_paths : Sequence[str], 
+    file_paths : Sequence[str], 
     package : PMap[str, ModulePackage],
 ) -> PMap[str, ModulePackage]:
 
     root_dir = path.abspath(root_dir)
     package_start = len(root_dir) + 1 
 
-    file_paths = sorted(list(module_paths))
+    file_paths = sorted(list(file_paths))
     success_count = 0
     for i, file_path in enumerate(file_paths):
 
@@ -1210,21 +1327,17 @@ def analyze_modules_once(
         )
         assert path.isfile(file_path)
 
-        # print(f"###############################")
-        # print(f"## file_path : {file_path}")
-        # print(f"## module_path : {module_path}")
-        # print(f"###############################")
-
         try:
             with open(file_path) as f:
                 code = f.read().strip()
                 if code:
-                    inher_aux = analyze_code(package, module_path, code)
+                    package = analyze_code(package, module_path, code, booting = True)
                 else:
-                    package = insert_module(package, module_path, m())
+                    package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            raise ex
+            # raise ex
+            return package 
         finally:
             print("")
             print("")
@@ -1259,20 +1372,21 @@ def analyze_modules_fixpoint(
     package : PMap[str, ModulePackage],
 ) -> PMap[str, ModulePackage]:
 
-    # print(f"fixpoint iteration count: {0}")
+    print(f"fixpoint iteration count: {0}")
     in_package = package 
     in_package_prim = from_package_to_primitive(package)
     out_package = analyze_modules_once(root_dir, module_paths, in_package) 
     out_package_prim = from_package_to_primitive(out_package)
+
     count = 1
-    # print(f"fixpoint iteration count: {count}")
-    while out_package_prim != in_package_prim:
+    print(f"fixpoint iteration count: {count}")
+    while count < 1 and out_package_prim != in_package_prim:
         in_package = out_package
         in_package_prim = out_package_prim 
         out_package = analyze_modules_once(root_dir, module_paths, in_package) 
         out_package_prim = from_package_to_primitive(out_package)
         count += 1
-        # print(f"fixpoint iteration count: {count}")
+        print(f"fixpoint iteration count: {count}")
 
     return out_package
 
@@ -1288,60 +1402,88 @@ def analyze_typeshed() -> PMap[str, ModulePackage]:
     # package = analyze_modules_fixpoint(other_libs_dirpath, other_module_paths, package, limit) 
     return package 
 
-def make_demo(
+def analyze_in_steps(
     module_name : str, code : 
     str, 
     package : PMap[str, ModulePackage],
+    booting = False
 ) -> Iterator[tuple[pats.abstract_token, str, InherAux]]:
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
 
     partial_tokens = () 
-    client : Client = spawn_analysis(package, module_name)
+    client : Client = spawn_analysis(package, module_name, booting)
 
+    last_inher_aux : InherAux = client.init
+    a_keys_len = len(last_inher_aux.package.keys())
     for token in abstract_tokens:
-        result = client.next(token)
-        if isinstance(result, Exception):
-            raise result
-        else:
-            inher_aux = result
-            partial_tokens += (token,)
+        inher_aux = client.next(token)
+        partial_tokens += (token,)
 
-            yield (token, pats.concretize(partial_tokens), inher_aux)
+        yield (token, pats.concretize(partial_tokens), inher_aux)
+    b_keys_len = len(last_inher_aux.package.keys())
+    assert b_keys_len >= a_keys_len
+
+def analyze_code(
+    package : PMap[str, ModulePackage], 
+    module_name, 
+    code : str,
+    booting : bool = False
+) -> PMap[str, ModulePackage]:
+
+    gnode = pgs.parse(code)
+    mod = pas.parse_from_generic_tree(gnode)
+    abstract_tokens = pas.serialize(mod)
+
+    client : Client = spawn_analysis(package, module_name, booting)
+
+    last_inher_aux : InherAux = client.init
+    a_keys_len = len(last_inher_aux.package.keys())
+    for token in abstract_tokens:
+        last_inher_aux = client.next(token)
+
+    b_keys_len = len(last_inher_aux.package.keys())
+    assert b_keys_len >= a_keys_len
+
+    return last_inher_aux.package
 
 
 
-def from_env_to_primitive(env : PMap[str, Provenance]) -> dict:
+
+def from_class_env_to_primitive(env : PMap[str, ClassRecord]) -> dict:
+
+    return {
+        symbol : [p.key, 
+            [from_type_to_primitive(t) for t in p.type_params],
+            [from_type_to_primitive(t) for t in p.super_types],
+            [[k, from_type_to_primitive(t)] for k, t in p.static_fields.items()],
+            [[k, from_type_to_primitive(t)] for k, t in p.instance_fields.items()]
+        ]
+
+        for symbol, p in env.items()
+    }
+
+
+def from_env_to_primitive(env : PMap[str, Declaration]) -> dict:
     return {
         symbol : [p.initialized, from_type_to_primitive(p.type)]
         for symbol, p in env.items()
     }
 
 
-def copy_env(inher_aux : InherAux, path_extension : str) -> InherAux:
-    if not inher_aux.internal_path:
-        return update_InherAux(inher_aux,
-            # copy local_decl into global_decl
-            global_env = inher_aux.local_env,
-            internal_path = path_extension 
-        )
-    else:
-        return update_InherAux(inher_aux,
-            # copy local_decl into nonlocal_decl
-            nonlocal_env = inher_aux.nonlocal_env + inher_aux.local_env, 
-            internal_path = f"{inher_aux.internal_path}.{path_extension}"
-        )
 
 
-def shift_env(inher_aux : InherAux, path_extension : str) -> InherAux:
+def traverse_function_body(inher_aux : InherAux, path_extension : str) -> InherAux:
+
     if not inher_aux.internal_path:
         return update_InherAux(inher_aux,
             # move local_decl into global_decl
             global_env = inher_aux.local_env,
             # reset local_decl
             local_env = m(), 
-            internal_path = path_extension 
+            internal_path = path_extension,
+            in_class = False 
         )
     else:
         return update_InherAux(inher_aux,
@@ -1349,42 +1491,65 @@ def shift_env(inher_aux : InherAux, path_extension : str) -> InherAux:
             nonlocal_env = inher_aux.nonlocal_env + inher_aux.local_env, 
             # reset local_decl
             local_env = m(), 
-            internal_path = f"{inher_aux.internal_path}.{path_extension}"
+            internal_path = f"{inher_aux.internal_path}.{path_extension}",
+            in_class = False 
         )
 
 
 def traverse_aux(inher_aux : InherAux, synth_aux : SynthAux) -> InherAux:
     local_env = inher_aux.local_env 
-    for sub in synth_aux.env_subtractions:
+    for sub in synth_aux.decl_subtractions:
         local_env.remove(sub)
 
     return update_InherAux(inher_aux, 
-        local_env = local_env + synth_aux.env_additions,
+        local_env = local_env + synth_aux.decl_additions,
+        declared_globals = inher_aux.declared_globals.update(synth_aux.declared_globals),
+        declared_nonlocals = inher_aux.declared_nonlocals.update(synth_aux.declared_nonlocals),
         class_env = inher_aux.class_env + synth_aux.class_additions,
-        expr_types = synth_aux.expr_types
+        observed_types = synth_aux.observed_types
     )
 
 def cross_join_aux(true_body_aux : SynthAux, false_body_aux : SynthAux) -> SynthAux:
 
     subtractions : PSet[str] = s()
-    for sub in true_body_aux.env_subtractions:
-        if sub in false_body_aux.env_subtractions:
+    for sub in true_body_aux.decl_subtractions:
+        if sub in false_body_aux.decl_subtractions:
             subtractions = subtractions.add(sub)
 
-    body_additions : PMap[str, Provenance] = m()
-    for target, dec in true_body_aux.env_additions.items():
-        if (
-            dec and 
-            dec.initialized and 
-            target in false_body_aux.env_additions.keys() and 
-            (not false_body_aux.env_additions[target] or
-                (false_body_aux.env_additions[target]).initialized)
-        ):
-            body_additions = body_additions.set(target, dec)
+    body_additions : PMap[str, Declaration] = m()
+    for target, dec in true_body_aux.decl_additions.items():
+        if target in false_body_aux.decl_additions:
+            false_body_dec = false_body_aux.decl_additions[target]   
+            initialized = dec.initialized and false_body_dec.initialized
+            annotated = dec.annotated or false_body_dec.annotated
+            constant = dec.constant or false_body_dec.constant
+            decorator_types = (
+                dec.decorator_types 
+                if dec.annotated else
+                false_body_dec.decorator_types
+            )
+
+            type = (
+                dec.type
+                if dec.annotated else
+                false_body_dec.type
+                if false_body_dec.annotated else
+                unionize_types(dec.type, false_body_dec.type)
+            )
+
+            new_declaration = Declaration(
+                annotated=annotated,
+                initialized=initialized,
+                constant = constant,
+                type = type,
+                decorator_types=decorator_types
+            ) 
+            body_additions = body_additions + pmap({target : new_declaration})
+
 
     return make_SynthAux(
-        env_subtractions = subtractions,
-        env_additions = body_additions
+        decl_subtractions = subtractions,
+        decl_additions = body_additions
     )
 
 
@@ -1399,7 +1564,20 @@ class Client:
     next_prim : Callable[[list], list | None]
 
 
-def insert_module(package : PMap[str, ModulePackage], rpath : Sequence[str], module : PMap[str, type]) -> PMap[str, ModulePackage]:
+def insert_module_class_env_dotpath(
+    package : PMap[str, ModulePackage], dotpath : str,
+    module : PMap[str, Declaration], 
+    class_env : PMap[str, ClassRecord]
+) -> PMap[str, ModulePackage]:
+    rpath = [s for s in reversed(dotpath.split("."))]
+    return insert_module_class_env_rpath(package, rpath, module, class_env) 
+
+def insert_module_class_env_rpath(
+    package : PMap[str, ModulePackage], 
+    rpath : Sequence[str], 
+    module : PMap[str, Declaration], 
+    class_env : PMap[str, ClassRecord]
+) -> PMap[str, ModulePackage]:
 
     assert len(rpath) > 0 
     hd = rpath[-1]
@@ -1407,20 +1585,28 @@ def insert_module(package : PMap[str, ModulePackage], rpath : Sequence[str], mod
 
     if not tl:
         new_module_package = (
-            update_ModulePackage(package[hd], module = module) 
+            update_ModulePackage(package[hd], module = module, class_env = class_env) 
             if package.get(hd) else
-            make_ModulePackage(module = module)
+            make_ModulePackage(module = module, class_env = class_env)
         )
 
         return package + pmap({hd : new_module_package})
     else:
         empty_package : PMap[str, ModulePackage] = m()
-        next_package : PMap[str, ModulePackage] = (
-            package[hd].package
+
+        hd_module_package = (
+            update_ModulePackage(package[hd],
+                package = insert_module_class_env_rpath(package[hd].package, tl, module, class_env)
+            )
             if package.get(hd) else
-            empty_package
+            make_ModulePackage(
+                package = insert_module_class_env_rpath(empty_package, tl, module, class_env)
+            )
         )
-        return package + insert_module(next_package, tl, module)
+
+        return package + pmap({hd : hd_module_package})
+        
+        
 
 
 def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_path : str) -> ModulePackage | None:
@@ -1439,20 +1625,23 @@ def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_
     return result
 
 
-
-def spawn_analysis(package : PMap[str, ModulePackage], module_name : str) -> Client:
+def spawn_analysis(package : PMap[str, ModulePackage], module_name : str, booting : bool = False) -> Client:
 
     in_stream : Queue[abstract_token] = Queue()
     out_stream : Queue[Union[InherAux, Exception]] = Queue()
 
-    server : Server = Server(in_stream, out_stream)
+    server : Server = Server(in_stream, out_stream, booting)
 
     mp = from_package_get_ModulePackage(package, module_name)
+
     inher_aux = (
         make_InherAux(
             external_path = module_name, 
             package = package,
-            local_env = pmap((sym, make_Provenance(initialized=True, type=t)) for sym, t in mp.module.items()),
+            local_env = pmap(
+                (sym, update_Declaration(dec, initialized=False)) 
+                for sym, dec in mp.module.items()
+            ),
             class_env = mp.class_env
         )
         if mp else
@@ -1465,19 +1654,23 @@ def spawn_analysis(package : PMap[str, ModulePackage], module_name : str) -> Cli
             token = in_stream.get()
             synth = server.crawl_module(token, inher_aux)
 
-            module : PMap[str, type] = pmap({
-                k : p.type
-                for k, p in synth.aux.env_additions.items()
+            module : PMap[str, Declaration] = pmap({
+                k : dec
+                for k, dec in synth.aux.decl_additions.items()
             })
 
-            rpath = [s for s in reversed(inher_aux.external_path.split("."))]
+            class_env : PMap[str, ClassRecord] = pmap({
+                k : cr 
+                for k, cr in synth.aux.class_additions.items()
+            })
+
             final_inher_aux = update_InherAux(inher_aux,
                 external_path = "",
                 global_env = m(),
                 nonlocal_env = m(),
                 local_env = m(),
                 class_env = m(), 
-                package = insert_module(inher_aux.package, rpath, module)
+                package = insert_module_class_env_dotpath(inher_aux.package, inher_aux.external_path, module, class_env)
             )
             out_stream.put(final_inher_aux)
         except Exception as ex:
@@ -1523,8 +1716,8 @@ def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) 
     item_type = get_iterable_item_type(iter_type, inher_aux)
     target_types = unify(pattern, item_type, inher_aux)
     for k, t in target_types.items():
-        prov = lookup(inher_aux, k)
-        assert subsumes(t, prov.type, inher_aux)
+        dec = lookup_declaration(inher_aux, k)
+        if dec: assert subsumes(t, dec.type, inher_aux)
     return target_types
 
 
@@ -1594,8 +1787,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
     def __init__(self, 
         in_stream : Queue[abstract_token], 
         out_stream : Queue[Union[InherAux, Exception]],
+        booting : bool = False
     ):  
         super().__init__(in_stream, out_stream)
+        self.booting = booting
 
     # override parent class method
     def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux]) -> InherAux:
@@ -1613,12 +1808,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
     def synthesize_auxes(self, auxes : tuple[SynthAux]) -> SynthAux:
 
         class_additions : PMap[str, ClassRecord] = m()
-        env_subtractions : PSet[str] = s()
-        env_additions : PMap[str, Provenance] = m()
-        names : PSet[str] = s()
+        decl_subtractions : PSet[str] = s()
+        decl_additions : PMap[str, Declaration] = m()
+        declared_globals : PSet[str] = s()
+        declared_nonlocals : PSet[str] = s()
+        usage_additions : PMap[str, Usage] = m()
 
         method_names : tuple[str, ...] = ()
-        expr_types : tuple[type, ...] = ()
+        observed_types : tuple[type, ...] = ()
 
         kw_types : PMap[str, type] = m()
 
@@ -1641,17 +1838,19 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
             class_additions = class_additions + aux.class_additions
 
-            for sub in aux.env_subtractions:
-                if env_additions.get(sub):
-                    env_additions = env_additions.remove(sub)
+            for sub in aux.decl_subtractions:
+                if decl_additions.get(sub):
+                    decl_additions = decl_additions.remove(sub)
 
-            env_subtractions = env_subtractions.update(aux.env_subtractions)
-            env_additions = env_additions + aux.env_additions
-            names = names.update(aux.names)
+            decl_subtractions = decl_subtractions.update(aux.decl_subtractions)
+            decl_additions = decl_additions + aux.decl_additions
+            declared_globals = declared_globals.update(aux.declared_globals)
+            declared_nonlocals = declared_nonlocals.update(aux.declared_nonlocals)
+            usage_additions = merge_usage_additions(usage_additions, aux.usage_additions)
 
-            method_names = method_names + aux.method_names
+            method_names = method_names + aux.cmp_names
 
-            expr_types = expr_types + aux.expr_types
+            observed_types = observed_types + aux.observed_types
 
             kw_types = kw_types + aux.kw_types
 
@@ -1672,10 +1871,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         return SynthAux(
             class_additions,
-            env_subtractions, env_additions, 
-            names, 
+            decl_subtractions, decl_additions, 
+            declared_globals, declared_nonlocals, 
+            usage_additions, 
             method_names,
-            expr_types, 
+            observed_types, 
             kw_types,
             return_types,
             yield_types,
@@ -1701,7 +1901,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         synth_aux = update_SynthAux(
             self.synthesize_auxes(tuple([left_aux, rator_aux, right_aux])),
-            expr_types = (bool_type,)
+            observed_types = (bool_type,)
         )
 
         return crawler.Synth[SynthAux](
@@ -1719,17 +1919,28 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        # TODO: if source is of AnnoType(VarType), check that target symbol matches VarType's symbol
+        # TODO: if source is of TypeType(VarType), check that target symbol matches VarType's symbol
 
         # check name compatability between target and source expressions 
-        for name in content_aux.names:
-            assert (
-                not (name in target_aux.names) or (
-                    name in inher_aux.local_env
-                )
-            )
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        for name in content_aux.usage_additions:
+           if (
+               name in target_aux.usage_additions and 
+               name not in inher_aux.declared_globals and 
+               name not in inher_aux.declared_nonlocals and 
+               name not in inher_aux.local_env
+           ):
+               raise UpdateError()  
+
+
+        updated_usage_additions : PMap[str, Usage] = m()
+        for name, usage in target_aux.usage_additions.items():
+            if declared_and_initialized(inher_aux, name):
+                updated_usage_additions = updated_usage_additions + pmap({name : update_Usage(usage, updated = True)})
+            else:
+                updated_usage_additions = updated_usage_additions + pmap({name : usage})
+
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
 
         unified_env = unify(target_tree, content_type, inher_aux)
@@ -1737,13 +1948,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.AssignExpr(target_tree, content_tree),
             aux = update_SynthAux(content_aux,
-                env_additions = (
-                    content_aux.env_additions +
+                decl_additions = (
+                    content_aux.decl_additions +
                     pmap({
-                        k : make_Provenance(initialized=True, type = t)
+                        k : make_Declaration(annotated = False, constant=False, initialized=True, type = t)
                         for k, t in unified_env.items() 
                     })
                 ),
+                usage_additions = merge_usage_additions(updated_usage_additions, content_aux.usage_additions)
+                
             )
         )
 
@@ -1759,10 +1972,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
         right_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(left_aux.expr_types) == 1
-        left_type = left_aux.expr_types[0]
-        assert len(right_aux.expr_types) == 1
-        right_type = right_aux.expr_types[0]
+        assert len(left_aux.observed_types) == 1
+        left_type = left_aux.observed_types[0]
+        assert len(right_aux.observed_types) == 1
+        right_type = right_aux.observed_types[0]
 
         expr_type = AnyType()
         if (
@@ -1772,7 +1985,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
             left_instance_type = coerce_to_TypeType(left_type).content
             right_instance_type = coerce_to_TypeType(right_type).content
             union_type = unionize_types(left_instance_type, right_instance_type)
-            expr_type = TypeType(union_type)
+            expr_type = TypeType(class_key = "builtins.type", content = union_type)
         else:
 
             method_name = pas.from_bin_rator_to_method_name(rator_tree)
@@ -1788,7 +2001,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.BinOp(left_tree, rator_tree, right_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([left_aux, right_aux])),
-                expr_types = (expr_type,)
+                observed_types = (expr_type,)
             )
         )
     
@@ -1801,8 +2014,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         rand_tree : pas.expr, 
         rand_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(rand_aux.expr_types) == 1
-        rand_type = rand_aux.expr_types[0]
+        assert len(rand_aux.observed_types) == 1
+        rand_type = rand_aux.observed_types[0]
         method_name = pas.from_unary_rator_to_method_name(rator_tree)
         method_type = lookup_field_type(rand_type, method_name, inher_aux)
         return_type = AnyType()
@@ -1817,7 +2030,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.UnaryOp(rator_tree, rand_tree),
             aux = update_SynthAux(rand_aux, 
-                expr_types = (return_type,)
+                observed_types = (return_type,)
             )
         )
 
@@ -1829,15 +2042,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_tree : pas.expr, 
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(body_aux.expr_types) == 1
+        assert len(body_aux.observed_types) == 1
         inferred_type = make_FunctionType(
             pos_param_types = params_aux.pos_param_types,
-            return_type = body_aux.expr_types[0]
+            return_type = body_aux.observed_types[0]
         )
         return crawler.Synth[SynthAux](
             tree = pas.Lambda(params_tree, body_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([params_aux, body_aux])),
-                expr_types = (inferred_type,)
+                observed_types = (inferred_type,)
             )  
         )
     
@@ -1851,14 +2064,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
         orelse_tree : pas.expr, 
         orelse_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(body_aux.expr_types) == 1
-        body_type = body_aux.expr_types[0]
-        assert len(orelse_aux.expr_types) == 1
-        orelse_type = orelse_aux.expr_types[0]
+        assert len(body_aux.observed_types) == 1
+        body_type = body_aux.observed_types[0]
+        assert len(orelse_aux.observed_types) == 1
+        orelse_type = orelse_aux.observed_types[0]
         return crawler.Synth[SynthAux](
             tree = pas.IfExp(body_tree, test_tree, orelse_tree),
             aux = update_SynthAux(test_aux,
-                expr_types=(unionize_types(body_type, orelse_type),)
+                observed_types=(unionize_types(body_type, orelse_type),)
             )
         )
 
@@ -1871,14 +2084,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(key_aux.expr_types) == 1
-        key_type = key_aux.expr_types[0]
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(key_aux.observed_types) == 1
+        key_type = key_aux.observed_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
         return crawler.Synth[SynthAux](
             tree = pas.Field(key_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([key_aux, content_aux])),
-                expr_types = (key_type, content_type)
+                observed_types = (key_type, content_type)
             ) 
         )
 
@@ -1890,14 +2103,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
         tail_tree : pas.dictionary_content, 
         tail_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(head_aux.expr_types) == 2
-        assert len(tail_aux.expr_types) == 2
+        assert len(head_aux.observed_types) == 2
+        assert len(tail_aux.observed_types) == 2
 
-        head_key_type = head_aux.expr_types[0]
-        head_value_type = head_aux.expr_types[1]
+        head_key_type = head_aux.observed_types[0]
+        head_value_type = head_aux.observed_types[1]
 
-        tail_key_type = head_aux.expr_types[0]
-        tail_value_type = head_aux.expr_types[1]
+        tail_key_type = head_aux.observed_types[0]
+        tail_value_type = head_aux.observed_types[1]
 
         key_type = head_key_type
         if head_key_type != tail_key_type:
@@ -1910,7 +2123,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.ConsDictionaryItem(head_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
-                expr_types = (key_type, value_type)
+                observed_types = (key_type, value_type)
             )
         )
     
@@ -1920,17 +2133,17 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.dictionary_content, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(content_aux.expr_types) == 2
+        assert len(content_aux.observed_types) == 2
 
         dict_type = DictType(
-            key_type = content_aux.expr_types[0],
-            value_type = content_aux.expr_types[1]
+            key_type = content_aux.observed_types[0],
+            value_type = content_aux.observed_types[1]
         )
 
         return crawler.Synth[SynthAux](
             tree = pas.Dictionary(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = (dict_type,)
+                observed_types = (dict_type,)
             )
         )
     
@@ -1948,7 +2161,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.EmptyDictionary(),
             aux = make_SynthAux(
-                expr_types = (dict_type,) 
+                observed_types = (dict_type,) 
             )
         )
 
@@ -1959,10 +2172,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.comma_exprs, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(content_aux.expr_types) > 0
+        assert len(content_aux.observed_types) > 0
 
-        item_type = content_aux.expr_types[0] 
-        for t in content_aux.expr_types[1:]:
+        item_type = content_aux.observed_types[0] 
+        for t in content_aux.observed_types[1:]:
             item_type = unionize_types(t, item_type)
 
         set_type = make_SetType(
@@ -1972,7 +2185,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Set(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = (set_type,)
+                observed_types = (set_type,)
             )
         )
 
@@ -1986,15 +2199,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         filts_tree : pas.constraint_filters, 
         filts_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(search_space_aux.expr_types) == 1
-        search_space_type = search_space_aux.expr_types[0]
+        assert len(search_space_aux.observed_types) == 1
+        search_space_type = search_space_aux.observed_types[0]
 
         item_env = unify_iteration(inher_aux, target_tree, search_space_type)
         return crawler.Synth[SynthAux](
             tree = pas.AsyncConstraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, search_space_aux, filts_aux])),
-                env_additions = pmap({
-                    k : make_Provenance(initialized=True, type=t)
+                decl_additions = pmap({
+                    k : make_Declaration(annotated = False, constant=True, initialized=True, type=t)
                     for k, t in item_env.items()
                 })
             )
@@ -2010,14 +2223,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
         filts_tree : pas.constraint_filters, 
         filts_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(search_space_aux.expr_types) == 1
-        search_space_type = search_space_aux.expr_types[0]
+        assert len(search_space_aux.observed_types) == 1
+        search_space_type = search_space_aux.observed_types[0]
         item_env = unify_iteration(inher_aux, target_tree, search_space_type)
         return crawler.Synth[SynthAux](
             tree = pas.Constraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, search_space_aux, filts_aux])),
-                env_additions = pmap({
-                    k : make_Provenance(initialized=True, type=t)
+                decl_additions = pmap({
+                    k : make_Declaration(annotated = False, constant=True, initialized=True, type=t)
                     for k, t in item_env.items()
                 })
             )
@@ -2034,13 +2247,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
         # analysis needs to pass information from right to left, so must reanalyze left element
         content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
         return crawler.Synth[SynthAux](
             tree = pas.ListComp(content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, constraints_aux])),
-                expr_types = (ListType(
+                observed_types = (ListType(
                     item_type = content_type
                 ),)
             )
@@ -2057,13 +2270,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
         # analysis needs to pass information from right to left, so must reanalyze left element
         # TODO: replace this second pass with propogating expectations from left to right
         # content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
         return crawler.Synth[SynthAux](
             tree = pas.SetComp(content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, constraints_aux])),
-                expr_types = (SetType(
+                observed_types = (SetType(
                     item_type = content_type
                 ),)
             )
@@ -2084,15 +2297,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         # TODO: replace this second pass with propogating expectations from left to right
         # key_aux = analyze_expr(key_tree, traverse_aux(inher_aux, constraints_aux))
         # content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
-        assert len(key_aux.expr_types) == 1
-        key_type = key_aux.expr_types[0]
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(key_aux.observed_types) == 1
+        key_type = key_aux.observed_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
         return crawler.Synth[SynthAux](
             tree = pas.DictionaryComp(key_tree, content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([key_aux, content_aux, constraints_aux])),
-                expr_types = (DictType(
+                observed_types = (DictType(
                     key_type = key_type,
                     value_type = content_type,
                 ),)
@@ -2109,13 +2322,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
         # analysis needs to pass information from right to left, so must reanalyze left element
         content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
         return crawler.Synth[SynthAux](
             tree = pas.GeneratorExp(content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, constraints_aux])),
-                expr_types = (GeneratorType(
+                observed_types = (GeneratorType(
                     yield_type = content_type,
                     return_type = NoneType()
                 ),)
@@ -2159,8 +2372,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
         # at function definition record return type as be a Generator <: Iterator <: Iterable 
-        assert len(content_aux.expr_types) == 1
-        expr_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        expr_type = content_aux.observed_types[0]
         return crawler.Synth[SynthAux](
             tree = pas.Yield(content_tree),
             aux = update_SynthAux(content_aux,
@@ -2174,8 +2387,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(content_aux.expr_types) == 1
-        expr_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        expr_type = content_aux.observed_types[0]
         item_type = get_iterable_item_type(expr_type, inher_aux)
         return crawler.Synth[SynthAux](
             tree = pas.YieldFrom(content_tree),
@@ -2192,11 +2405,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
         rand_tree : pas.expr, 
         rand_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        method_name = pas.from_cmp_rator_to_method_name(rator_tree)
+        cmp_name = pas.from_cmp_rator_to_method_name(rator_tree)
         return crawler.Synth[SynthAux](
             tree = crawler.CompareRight(rator_tree, rand_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([rator_aux, rand_aux])), 
-                method_names = tuple([method_name])
+                cmp_names = tuple([cmp_name])
             )
         )
     
@@ -2209,13 +2422,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
         comps_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(left_aux.expr_types) == 1
-        left_type = left_aux.expr_types[0]
+        assert len(left_aux.observed_types) == 1
+        left_type = left_aux.observed_types[0]
 
-        assert len(comps_aux.expr_types) == len(comps_aux.method_names) 
-        for i, method_name in enumerate(comps_aux.method_names):
-            right_type = comps_aux.expr_types[i]
+        assert len(comps_aux.observed_types) == len(comps_aux.cmp_names) 
+        for i, method_name in enumerate(comps_aux.cmp_names):
+            right_type = comps_aux.observed_types[i]
             method_type = lookup_field_type(left_type, method_name, inher_aux)
+
             if isinstance(method_type, FunctionType):
                 assert check_application_args(
                     [right_type], {}, 
@@ -2227,8 +2441,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Compare(left_tree, comps_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([left_aux, comps_aux])),
-                expr_types= tuple([BoolType()]),
-                method_names = () 
+                observed_types= tuple([BoolType()]),
+                cmp_names = () 
             )
         )
     
@@ -2240,8 +2454,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
 
         inferred_type : type
-        assert len(func_aux.expr_types) == 1
-        func_type = func_aux.expr_types[0]
+        assert len(func_aux.observed_types) == 1
+        func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
             inferred_type = func_type.return_type
         elif isinstance(func_type, TypeType):
@@ -2254,7 +2468,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Call(func_tree),
             aux = update_SynthAux(func_aux,
-                expr_types = tuple([inferred_type])
+                observed_types = tuple([inferred_type])
             )
         )
 
@@ -2267,8 +2481,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
         return crawler.Synth[SynthAux](
             tree = crawler.NamedKeyword(name_tree, content_tree),
@@ -2283,8 +2497,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
         (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
         if not isinstance(key_type, StrType):
@@ -2308,11 +2522,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         expr_type = None
 
-        assert len(func_aux.expr_types) == 1
-        func_type = func_aux.expr_types[0]
+        assert len(func_aux.observed_types) == 1
+        func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
             assert check_application_args(
-                args_aux.expr_types,
+                args_aux.observed_types,
                 args_aux.kw_types, 
                 func_type, inher_aux
             )
@@ -2323,7 +2537,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
             if class_key == "typing.TypeVar": 
 
-                pos_arg_types = args_aux.expr_types
+                pos_arg_types = args_aux.observed_types
                 kw_arg_types = args_aux.kw_types
 
                 name = ""
@@ -2348,7 +2562,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                 elif isinstance(kw_arg_types.get("contravariant"), TrueType):
                     variant = ContraVariant()
             
-                expr_type = TypeType(VarType(name = name, variant = variant))
+                expr_type = TypeType(class_key = "typing.TypeVar", content = VarType(name = name, variant = variant))
             else:
 
                 class_key = get_class_key(func_type.content)
@@ -2359,7 +2573,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                     assert isinstance(init_type, FunctionType)
 
                     assert check_application_args(
-                        args_aux.expr_types,
+                        args_aux.observed_types,
                         args_aux.kw_types, 
                         init_type, inher_aux
                     )
@@ -2373,7 +2587,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.CallArgs(func_tree, args_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([func_aux, args_aux])),
-                expr_types = tuple([expr_type])
+                observed_types = tuple([expr_type])
             )
         )
     
@@ -2386,7 +2600,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Integer(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = tuple([IntLitType(literal = content_tree)])
+                observed_types = tuple([IntLitType(literal = content_tree)])
             )
         )
     
@@ -2399,7 +2613,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Float(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = tuple([FloatLitType(literal = content_tree)])
+                observed_types = tuple([FloatLitType(literal = content_tree)])
             )
         )
 
@@ -2421,7 +2635,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.ConsStr(head_tree, tail_tree),
             aux = make_SynthAux(
-                expr_types = tuple([expr_type]) + tail_aux.expr_types
+                observed_types = tuple([expr_type]) + tail_aux.observed_types
             )
         )
     
@@ -2440,7 +2654,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.SingleStr(content_tree),
             aux = make_SynthAux(
-                expr_types = tuple([expr_type])
+                observed_types = tuple([expr_type])
             ) 
         )
     
@@ -2451,19 +2665,19 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(content_aux.expr_types) > 0
-        index_0_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) > 0
+        index_0_type = content_aux.observed_types[0]
 
         expr_type = (
-            content_aux.expr_types[0]
-            if len(content_aux.expr_types) == 1 else 
+            content_aux.observed_types[0]
+            if len(content_aux.observed_types) == 1 else 
             StrType()
         )
 
         return crawler.Synth[SynthAux](
             tree = pas.ConcatString(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = tuple([expr_type])
+                observed_types = tuple([expr_type])
             )
         )
     
@@ -2474,7 +2688,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.True_(),
             aux = make_SynthAux(
-                expr_types = tuple([TrueType()])
+                observed_types = tuple([TrueType()])
             )
         )
     
@@ -2485,7 +2699,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.False_(),
             aux = make_SynthAux(
-                expr_types = tuple([FalseType()])
+                observed_types = tuple([FalseType()])
             )
         )
     
@@ -2496,7 +2710,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.None_(),
             aux = make_SynthAux(
-                expr_types = tuple([NoneType()])
+                observed_types = tuple([NoneType()])
             )
         )
 
@@ -2507,7 +2721,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Ellip(),
             aux = make_SynthAux(
-                expr_types = tuple([AnyType()]),
+                observed_types = (EllipType(),)
             )
         )
     
@@ -2519,11 +2733,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
-        
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
-        expr_type = None
         if isinstance(content_type, ModuleType) and not content_type.key:
             if inher_aux.global_env.get(name_tree):
                 if not inher_aux.internal_path:
@@ -2535,13 +2747,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
         else: 
             expr_type = lookup_field_type(content_type, name_tree, inher_aux)
 
-
         if not expr_type:
             expr_type = AnyType()
+
         return crawler.Synth[SynthAux](
             tree = pas.Attribute(content_tree, name_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, name_aux])),
-                expr_types = tuple([expr_type])
+                observed_types = tuple([expr_type])
             )
         )
 
@@ -2554,19 +2766,20 @@ class Server(crawler.Server[InherAux, SynthAux]):
         slice_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
-        assert len(slice_aux.expr_types) == 1
-        slice_type = slice_aux.expr_types[0]
+        assert len(slice_aux.observed_types) == 1
+        slice_type = slice_aux.observed_types[0]
 
         var_types : tuple[VarType, ...]= ()
         expr_types = ()
 
         if isinstance(content_type, TypeType):
             class_key = get_class_key(content_type.content)
+            # ## TODO: Use a special type for Generic base class
             if class_key == "typing.Generic":
-                if isinstance(slice_type, FixedTupleType):
+                if isinstance(slice_type, TupleLitType):
                     for anno_vt in slice_type.item_types:
                         assert isinstance(anno_vt, TypeType)
                         vt = anno_vt.content
@@ -2578,14 +2791,23 @@ class Server(crawler.Server[InherAux, SynthAux]):
                     vt = anno_vt.content
                     assert isinstance(vt, VarType)
                     var_types += (vt,) 
-            else:
-                expr_types = (TypeType(from_class_key_to_type(inher_aux, class_key, slice_type)),)
 
-        elif isinstance(content_type, TypeType):
-            expr_types = tuple([AnyType()])
+            else:
+                expr_types = (TypeType(
+                    class_key = "builtins.type",
+                    content = from_class_key_to_type(inher_aux, class_key, slice_type)
+                ),)
+
         else:
             method_type = lookup_field_type(content_type, "__getitem__", inher_aux)
             if isinstance(method_type, FunctionType): 
+
+                print(f"### content_tree : {content_tree}")
+                print(f"### slice_tree : {slice_tree}")
+                print(f"### method_name : __getitem__")
+                print(f"### slice_type : {slice_type}")
+                print(f"### slice_type : {method_type}")
+
                 assert check_application_args(
                     [slice_type], {}, 
                     method_type, inher_aux
@@ -2601,7 +2823,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Subscript(content_tree, slice_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, slice_aux])),
-                expr_types = expr_types, 
+                observed_types = expr_types, 
                 var_types = var_types, 
             )
         )
@@ -2620,10 +2842,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Slice(lower_tree, upper_tree, step_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([lower_aux, upper_aux, step_aux])),
-                expr_types = tuple([SliceType(
-                    start = lower_aux.expr_types[0] if lower_aux.expr_types else NoneType(),
-                    stop = upper_aux.expr_types[0] if upper_aux.expr_types else NoneType(),
-                    step = step_aux.expr_types[0] if step_aux.expr_types else NoneType()
+                observed_types = tuple([SliceType(
+                    start = lower_aux.observed_types[0] if lower_aux.observed_types else NoneType(),
+                    stop = upper_aux.observed_types[0] if upper_aux.observed_types else NoneType(),
+                    step = step_aux.observed_types[0] if step_aux.observed_types else NoneType()
                 )])
             )
         )
@@ -2638,17 +2860,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         # TODO: update to apply decorators from environment when inferring type
         id = content_tree
-        prov = lookup(inher_aux, id)
-        expr_type = (
-            prov.type
-            if prov else
-            AnyType()
-        )
+        expr_dec = lookup_declaration(inher_aux, id)
+        assert expr_dec
 
         return crawler.Synth[SynthAux](
             tree = pas.Name(content_tree),
             aux = make_SynthAux(
-                expr_types = tuple([expr_type]),
+                observed_types = (expr_dec.type,),
+                usage_additions = pmap({content_tree : make_Usage()})
             )
         )
     
@@ -2659,11 +2878,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(content_aux.expr_types) > 0
+        assert len(content_aux.observed_types) > 0
 
-        item_type = content_aux.expr_types[0] 
-        for t in content_aux.expr_types[1:]:
-            item_type = unionize_types(t, item_type)
+        item_type = generalize_type(inher_aux, content_aux.observed_types[0])
+        for t in content_aux.observed_types[1:]:
+            gt = generalize_type(inher_aux, t)
+            item_type = unionize_types(item_type, gt)
 
         list_type = make_ListType(
             item_type = item_type
@@ -2671,7 +2891,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.List(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = tuple([list_type]),
+                observed_types = tuple([list_type]),
             )
         )
     
@@ -2682,7 +2902,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.EmptyList(),
             aux = make_SynthAux(
-                expr_types = tuple([ListType(
+                observed_types = tuple([ListType(
                     item_type=AnyType()
                 )])
             )
@@ -2695,15 +2915,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        content_types = content_aux.expr_types
+        content_types = content_aux.observed_types
         assert len(content_types) > 0
-        tuple_type = make_FixedTupleType(
+        tuple_type = make_TupleLitType(
             item_types = content_types 
         )
         return crawler.Synth[SynthAux](
             tree = pas.Tuple(content_tree),
             aux = update_SynthAux(content_aux,
-                expr_types = tuple([tuple_type]),
+                observed_types = tuple([tuple_type]),
             )
         )
     
@@ -2714,7 +2934,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.EmptyTuple(),
             aux = make_SynthAux(
-                expr_types = tuple([FixedTupleType(
+                observed_types = tuple([TupleLitType(
                     item_types=()
                 )])
             )
@@ -2727,8 +2947,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
         item_type = get_iterable_item_type(content_type, inher_aux)
         return crawler.Synth[SynthAux](
             tree = pas.Starred(content_tree),
@@ -2743,8 +2963,26 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
+
+        diff_usage_decl(inher_aux, self.booting, body_aux.decl_additions, body_aux.usage_additions)
+
         return crawler.Synth[SynthAux](
             tree = pas.FutureMod(names_tree, body_tree),
+            aux = body_aux 
+        )
+        
+
+    # synthesize: module <-- SimpleMod
+    def synthesize_for_module_SimpleMod(self, 
+        inher_aux : InherAux,
+        body_tree : pas.statements, 
+        body_aux : SynthAux
+    ) -> crawler.Synth[SynthAux]:
+
+        diff_usage_decl(inher_aux, self.booting, body_aux.decl_additions, body_aux.usage_additions)
+
+        return crawler.Synth[SynthAux](
+            tree = pas.SimpleMod(body_tree),
             aux = body_aux 
         )
 
@@ -2757,10 +2995,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
         tail_tree : pas.decorators, 
         tail_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(head_aux.expr_types) == 1
-        head_type = head_aux.expr_types[0]
+        assert len(head_aux.observed_types) == 1
+        head_type = head_aux.observed_types[0]
         synth_aux = make_SynthAux(
-            expr_types = tuple([head_type]) + tail_aux.expr_types
+            observed_types = tuple([head_type]) + tail_aux.observed_types
         )
         return crawler.Synth[SynthAux](
             tree = pas.ConsDec(head_tree, tail_tree),
@@ -2777,17 +3015,19 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
 
         env_additions = pmap({
-            name : make_Provenance(
-                initialized = prov.initialized, 
-                type = prov.type,
-                decorator_types = decs_aux.expr_types   
+            name : make_Declaration(
+                annotated = dec.annotated,
+                constant = dec.constant,
+                initialized = dec.initialized, 
+                type = dec.type,
+                decorator_types = decs_aux.observed_types   
             )
-            for name, prov in class_def_aux.env_additions.items()
+            for name, dec in class_def_aux.decl_additions.items()
         })  
         return crawler.Synth[SynthAux](
             tree = pas.DecClassDef(decs_tree, class_def_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([decs_aux, class_def_aux])),
-                env_additions = env_additions
+                decl_additions = env_additions
             ) 
         )
 
@@ -2797,12 +3037,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(content_aux.expr_types) == 1
-        expr_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        expr_type = content_aux.observed_types[0]
 
         return crawler.Synth[SynthAux](
             tree = pas.ReturnSomething(content_tree),
-            aux = make_SynthAux(
+            aux = update_SynthAux(content_aux,
                 return_types = tuple([expr_type])
             )
         )
@@ -2826,7 +3066,20 @@ class Server(crawler.Server[InherAux, SynthAux]):
         bs_tree : pas.bases, 
         bs_aux : SynthAux
     ) -> InherAux:
-        return copy_env(inher_aux, name_tree)
+        if not inher_aux.internal_path:
+            return update_InherAux(inher_aux,
+                # copy local_decl into global_decl
+                global_env = inher_aux.local_env,
+                internal_path = name_tree,
+                in_class = True
+            )
+        else:
+            return update_InherAux(inher_aux,
+                # copy local_decl into nonlocal_decl
+                nonlocal_env = inher_aux.nonlocal_env + inher_aux.local_env, 
+                internal_path = f"{inher_aux.internal_path}.{name_tree}",
+                in_class = True
+            )
     
     # synthesize: ClassDef
     def synthesize_for_ClassDef(self, 
@@ -2841,12 +3094,19 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         type_params : tuple[VarType, ...] = bs_aux.var_types
 
-        super_types : tuple[type, ...] = bs_aux.expr_types
-        assert inher_aux.internal_path.endswith(name_tree)
+        super_types : tuple[TypeType, ...] = tuple(
+            coerce_to_TypeType(t)
+            for t in bs_aux.observed_types
+        )
 
-        class_key = f"{inher_aux.external_path}.{inher_aux.internal_path}"
+        internal_class_key = (
+            f"{inher_aux.internal_path}.{name_tree}"
+            if inher_aux.internal_path else
+            name_tree
+        )
+        class_key = f"{inher_aux.external_path}.{internal_class_key}"
 
-        def expose_static_method_type(name : str, p : Provenance) -> type:
+        def expose_static_method_type(name : str, p : Declaration) -> type:
             if not isinstance(p.type, FunctionType):
                 return p.type
 
@@ -2874,9 +3134,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
                 # check if type has been partially resolved in previous iteration of analysis
                 type_arg = (
-                    TypeType(type_params[0])
+                    TypeType("builtins.type", type_params[0])
                     if len(type_params) == 1 else 
-                    FixedTupleType(tuple(TypeType(t) for t in type_params))
+                    TupleLitType(tuple(TypeType("builtins.type", t) for t in type_params))
                     if len(type_params) > 1 else
                     None
                 ) 
@@ -2888,7 +3148,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
                     pos_kw_param_sigs=tuple([self_instance_param_sig]) + p.type.pos_kw_param_sigs[1:]
                 )
 
-        def expose_instance_method_type(p : Provenance) -> Optional[type]:
+        def expose_instance_method_type(p : Declaration) -> Optional[type]:
             if not isinstance(p.type, FunctionType):
                 return None 
 
@@ -2910,12 +3170,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         static_fields : PMap[str, type] = pmap({
             name : expose_static_method_type(name, p)
-            for name, p in body_aux.env_additions.items()
+            for name, p in body_aux.decl_additions.items()
         })
 
         instance_fields : PMap[str, type] = pmap({
             k : t 
-            for k, p in body_aux.env_additions.items()
+            for k, p in body_aux.decl_additions.items()
             for t in [expose_instance_method_type(p)]
             if t 
         })
@@ -2928,26 +3188,30 @@ class Server(crawler.Server[InherAux, SynthAux]):
         class_record = ClassRecord(
             key = class_key,
             type_params = type_params,
-            super_types = super_types, # tuple[ClassType, ...]
+            super_types = super_types, # tuple[TypeType, ...]
 
             static_fields = static_fields, #, PMap[str, type]
             instance_fields = instance_fields # PMap[str, type]
         )
 
+        instance_type = from_class_key_to_type(inher_aux, class_record.key)
 
-        
-        instance_type = from_static_path_to_type(inher_aux, class_record.key)
+        usage_additions = diff_usage_decl(inher_aux, self.booting, body_aux.decl_additions, body_aux.usage_additions)
+
         return crawler.Synth[SynthAux](
             tree = pas.ClassDef(name_tree, bs_tree, body_tree),
             aux = update_SynthAux(body_aux,
-                env_subtractions=s(),
-                env_additions=pmap({
-                    name_tree : make_Provenance(
+                decl_subtractions=s(),
+                decl_additions=pmap({
+                    name_tree : make_Declaration(
+                        annotated=True,
+                        constant=True,
                         initialized=True, 
-                        type=TypeType(instance_type)
+                        type=TypeType("builtins.type", instance_type)
                     )
                 }),
-                class_additions=pmap({inher_aux.internal_path : class_record}) + body_aux.class_additions
+                class_additions=pmap({internal_class_key : class_record}) + body_aux.class_additions,
+                usage_additions=usage_additions
             ) 
         )
 
@@ -2961,19 +3225,31 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
 
         env_additions = pmap({
-            name : make_Provenance(
-                initialized = prov.initialized, 
-                type = prov.type,
-                decorator_types = decs_aux.expr_types   
+            name : make_Declaration(
+                annotated=dec.annotated,
+                constant = dec.constant,
+                initialized = dec.initialized, 
+                type = dec.type,
+                decorator_types = decs_aux.observed_types   
             )
-            for name, prov in fun_def_aux.env_additions.items()
+            for name, dec in fun_def_aux.decl_additions.items()
         })  
         return crawler.Synth[SynthAux](
             tree = pas.DecFunctionDef(decs_tree, fun_def_tree),
             aux = make_SynthAux(
-                env_additions = env_additions
+                decl_additions = env_additions
             ) 
         )
+
+    # traverse function_def <-- FunctionDef"
+    def traverse_function_def_FunctionDef_ret_anno(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        params_tree : pas.parameters, 
+        params_aux : SynthAux
+    ) -> InherAux:
+        return inher_aux 
 
     # traverse: function_def <-- FunctionDef
     def traverse_function_def_FunctionDef_body(self, 
@@ -2985,9 +3261,19 @@ class Server(crawler.Server[InherAux, SynthAux]):
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        assert len(params_aux.env_subtractions) == 0
-        inher_aux = shift_env(inher_aux, name_tree)
-        return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.env_additions) 
+        assert len(params_aux.decl_subtractions) == 0
+        inher_aux = traverse_function_body(inher_aux, name_tree)
+        return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.decl_additions) 
+
+    # traverse function_def <-- AsyncFunctionDef"
+    def traverse_function_def_AsyncFunctionDef_ret_anno(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        params_tree : pas.parameters, 
+        params_aux : SynthAux
+    ) -> InherAux:
+        return inher_aux 
 
     # traverse: function_def <-- AsyncFunctionDef
     def traverse_function_def_AsyncFunctionDef_body(self, 
@@ -2999,9 +3285,9 @@ class Server(crawler.Server[InherAux, SynthAux]):
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        assert len(params_aux.env_subtractions) == 0
-        inher_aux = shift_env(inher_aux, name_tree)
-        return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.env_additions) 
+        assert len(params_aux.decl_subtractions) == 0
+        inher_aux = traverse_function_body(inher_aux, name_tree)
+        return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.decl_additions) 
 
     
 
@@ -3034,13 +3320,17 @@ class Server(crawler.Server[InherAux, SynthAux]):
             NoneType()
         )
 
+
         if isinstance(ret_anno_tree, pas.SomeReturnAnno): 
-            function_sig_return_type = (
-                coerce_to_TypeType(ret_anno_aux.expr_types[0]).content
-                if len(ret_anno_aux.expr_types) == 1 else
-                AnyType()
-            )
-            assert subsumes(function_body_return_type, function_sig_return_type, inher_aux)
+            assert len(ret_anno_aux.observed_types) == 1
+            function_sig_return_type = coerce_to_TypeType(ret_anno_aux.observed_types[0]).content
+
+            if self.booting and is_a_stub_body(body_tree):
+                pass
+            else:
+                if not subsumes(function_body_return_type, function_sig_return_type, inher_aux):
+                    raise ReturnTypeError()
+
             function_return_type = function_sig_return_type
         else:
             function_return_type = function_body_return_type
@@ -3054,11 +3344,24 @@ class Server(crawler.Server[InherAux, SynthAux]):
             return_type = function_return_type 
         )
 
+        self_param = get_self_param(params_tree)
+        decls = (
+            params_aux.decl_additions.remove(self_param.name)
+            if self_param and inher_aux.in_class and len(params_aux.decl_additions) > 0 else
+            params_aux.decl_additions
+        ) + body_aux.decl_additions
+        if not self.booting: check_decl_usage(decls, body_aux.usage_additions)
+        usage_additions = diff_usage_decl(inher_aux, self.booting, decls, body_aux.usage_additions)
+
         return crawler.Synth[SynthAux](
             tree = pas.FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
             aux = make_SynthAux(
-                env_subtractions = s(),
-                env_additions = pmap({name_tree : make_Provenance(initialized = True, type = type)})
+                decl_subtractions = s(),
+                decl_additions = pmap({name_tree : make_Declaration(
+                    annotated = isinstance(ret_anno_tree, pas.SomeReturnAnno),# this refers to the return annotation
+                    constant = True, initialized = True, type = type)
+                }),
+                usage_additions=usage_additions
             )
         )
 
@@ -3075,11 +3378,27 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
         # TODO: follow FunctionDef but return a CoroutineType 
+
+        self_param = get_self_param(params_tree)
+
+
+        decls = (
+            params_aux.decl_additions.remove(self_param.name)
+            if self_param and inher_aux.in_class and len(params_aux.decl_additions) > 0 else
+            params_aux.decl_additions
+        ) + body_aux.decl_additions
+        if not self.booting : check_decl_usage(decls, body_aux.usage_additions)
+        usage_additions = diff_usage_decl(inher_aux, self.booting, decls, body_aux.usage_additions)
+
         return crawler.Synth[SynthAux](
             tree = pas.AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
             aux = make_SynthAux(
-                env_subtractions = s(),
-                env_additions = pmap({name_tree : make_Provenance(initialized=True)})
+                decl_subtractions = s(),
+                decl_additions = pmap({name_tree : make_Declaration(
+                    annotated = isinstance(ret_anno_tree, pas.SomeReturnAnno),# this refers to the return annotation
+                    constant = True, initialized=True
+                )}),
+                usage_additions=usage_additions
             ) 
         )
 
@@ -3095,19 +3414,26 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
 
         sig_type = (
-            coerce_to_TypeType(anno_aux.expr_types[0]).content
-            if len(anno_aux.expr_types) == 1 else 
+            coerce_to_TypeType(anno_aux.observed_types[0]).content
+            if len(anno_aux.observed_types) == 1 else 
             AnyType()
         )
-        if len(default_aux.expr_types) > 0:
-            default_type = default_aux.expr_types[0]
-            assert subsumes(default_type, sig_type, inher_aux)
+        if len(default_aux.observed_types) > 0:
+            default_type = default_aux.observed_types[0]
+
+            if self.booting and is_a_stub_default(default_tree):
+                pass
+            else:
+                assert subsumes(default_type, sig_type, inher_aux)
 
         return crawler.Synth[SynthAux](
             tree = pas.Param(name_tree, anno_tree, default_tree),
 
             aux = make_SynthAux(
-                env_additions = pmap({name_tree : make_Provenance(initialized=True, type=sig_type)}),
+                decl_additions = pmap({name_tree : make_Declaration(
+                    annotated = isinstance(anno_tree, pas.SomeParamAnno),
+                    constant = False, initialized=True, type=sig_type
+                )}),
 
                 param_sig = ParamSig(
                     key = name_tree, 
@@ -3278,7 +3604,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.Delete(targets_tree),
             aux = make_SynthAux(
-                env_subtractions = targets_aux.names
+                decl_subtractions = pset(targets_aux.usage_additions.keys())
             ) 
         )
     # stmt <-- Assign
@@ -3290,16 +3616,27 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        # TODO: if source is of AnnoType(VarType), check that target symbol matches VarType's symbol
+        # TODO: if source is of TypeType(VarType), check that target symbol matches VarType's symbol
 
         # check name compatability between target and source expressions 
-        for name in content_aux.names:
+        for name in content_aux.usage_additions:
+           if (
+               name in targets_aux.usage_additions and 
+               name not in inher_aux.declared_globals and 
+               name not in inher_aux.declared_nonlocals and 
+               name not in inher_aux.local_env
+           ):
+               raise UpdateError()  
 
-            assert (
-                not (name in targets_aux.names) or (
-                    name in inher_aux.local_env
-                )
-            )
+
+
+        updated_usage_additions : PMap[str, Usage] = m()
+        for name, usage in targets_aux.usage_additions.items():
+            if declared_and_initialized(inher_aux, name):
+                updated_usage_additions = updated_usage_additions + pmap({name : update_Usage(usage, updated = True)})
+            else:
+                updated_usage_additions = updated_usage_additions + pmap({name : usage})
+
 
         def patterns() -> Iterator[pas.expr]:
             tail = targets_tree
@@ -3310,20 +3647,58 @@ class Server(crawler.Server[InherAux, SynthAux]):
             assert isinstance(tail, pas.SingleTargetExpr)
             yield tail.content
 
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
         env_types : PMap[str, type] = m()
         for pattern in patterns():
             next_env_types = unify(pattern, content_type, inher_aux)
             env_types += next_env_types 
 
+        # check observed type with declared type
+        for sym, observed_type in env_types.items():
+            dec = lookup_declaration(inher_aux, sym, builtins = False)
+            if not self.booting and dec and dec.annotated and not subsumes(observed_type, dec.type, inher_aux):
+                raise AssignTypeError()
+
+
+        decl_additions : PMap[str, Declaration] = m() 
+        decl_additions = pmap({
+            k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
+            for k, t in env_types.items()
+        })
+
+        # special consideration for declaration of Any used for type annotation
+        if (
+            inher_aux.external_path == "typing" and
+            len(env_types) == 1 and
+            'Any' in env_types
+        ):
+            original_type = env_types['Any']
+            if (
+                isinstance(original_type, RecordType) and
+                original_type.class_key == "builtins.object"
+            ):
+                decl_additions = pmap({
+                    'Any' : make_Declaration(annotated = True, constant=True, initialized=True, type=TypeType("builtins.object", AnyType()))
+                })
+
+        elif (len(env_types) == 1):
+            (symbol, original_type) = next((k, env_types[k]) for k in env_types)
+            if (
+                isinstance(original_type, RecordType) and
+                original_type.class_key == "typing.NewType"
+            ):
+                t = TypeType(original_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                })
+
+
         return crawler.Synth[SynthAux](
             tree = pas.Assign(targets_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([targets_aux, content_aux])),
-                env_additions = pmap({
-                    k : make_Provenance(initialized=True, type=t)
-                    for k, t in env_types.items()
-                })
+                usage_additions = merge_usage_additions(updated_usage_additions, content_aux.usage_additions),
+                decl_additions = decl_additions
             ) 
         )
     
@@ -3337,12 +3712,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(target_aux.expr_types) == 1
-        target_type = target_aux.expr_types[0]
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(target_aux.observed_types) == 1
+        target_type = target_aux.observed_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
 
-        content_type = content_aux.expr_types[0]
+        content_type = content_aux.observed_types[0]
         method_name = pas.from_bin_rator_to_aug_method_name(rator_tree)
         method_type = lookup_field_type(target_type, method_name, inher_aux)
 
@@ -3356,16 +3731,34 @@ class Server(crawler.Server[InherAux, SynthAux]):
 
         if isinstance(target_tree, pas.Name):
             symbol = target_tree.content
-            assert symbol in inher_aux.local_env
+            if (
+                symbol not in inher_aux.declared_globals and 
+                symbol not in inher_aux.declared_nonlocals and 
+                symbol not in inher_aux.local_env
+            ):
+                raise UpdateError()  
+
         else:
-            assert (
-                isinstance(target_tree, pas.Subscript) or
-                isinstance(target_tree, pas.Attribute) 
-            )
+            if (
+                not isinstance(target_tree, pas.Subscript) and 
+                not isinstance(target_tree, pas.Attribute) 
+            ):
+                raise UpdateError()  
+
+        updated_usage_additions : PMap[str, Usage] = m()
+        for name, usage in target_aux.usage_additions.items():
+            if declared_and_initialized(inher_aux, name):
+                updated_usage_additions = updated_usage_additions + pmap({name : update_Usage(usage, updated = True)})
+            else:
+                updated_usage_additions = updated_usage_additions + pmap({name : usage})
+
+
 
         return crawler.Synth[SynthAux](
             tree = pas.AugAssign(target_tree, rator_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, rator_aux, content_aux]))
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, rator_aux, content_aux])),
+                usage_additions = merge_usage_additions(updated_usage_additions, content_aux.usage_additions)
+            )
         )
 
 
@@ -3380,24 +3773,54 @@ class Server(crawler.Server[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
-        sig_type = coerce_to_TypeType(anno_aux.expr_types[0]).content
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
+        sig_type = coerce_to_TypeType(anno_aux.observed_types[0]).content
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
-        subsumes(content_type, sig_type, inher_aux)
+        if not self.booting:
+            subs = subsumes(content_type, sig_type, inher_aux)
+            if not subs:
+                raise AssignTypeError()
+
+        decl_additions: PMap[str, Declaration] = m() 
+        # special consideration for declaration of special_form types
+        if (
+            (inher_aux.external_path == "typing" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing._SpecialForm") or
+            (inher_aux.external_path == "typing_extensions" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing_extensions._SpecialForm")
+        ):
+            t = TypeType(sig_type.class_key, AnyType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
+            inher_aux.external_path == "typing" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing.NewType"
+        ):
+            t = TypeType(sig_type.class_key, AnyType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        else:
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=False, initialized=True, type=sig_type)
+            })
+
 
         return crawler.Synth[SynthAux](
             tree = pas.AnnoAssign(target_tree, anno_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, anno_aux, content_aux])),
-                env_additions = pmap({
-                    symbol : make_Provenance(initialized=True, type=sig_type)
-                })
+                decl_additions = decl_additions
             ) 
         )
 
-    # stmt <-- AnnoDeclar
+    # synthesize: stmt <-- AnnoDeclar
     def synthesize_for_stmt_AnnoDeclar(self, 
         inher_aux : InherAux,
         target_tree : pas.expr, 
@@ -3405,17 +3828,56 @@ class Server(crawler.Server[InherAux, SynthAux]):
         anno_tree : pas.expr, 
         anno_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(anno_aux.expr_types) > 0
-        sig_type = coerce_to_TypeType( anno_aux.expr_types[0]).content
+
+        assert len(anno_aux.observed_types) > 0
+        sig_type = coerce_to_TypeType(anno_aux.observed_types[0]).content
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
+
+        decl_additions: PMap[str, Declaration] = m() 
+        # special consideration for declaration of special_form types
+        if (
+            (inher_aux.external_path == "typing" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing._SpecialForm") or
+            (inher_aux.external_path == "typing_extensions" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing_extensions._SpecialForm")
+        ):
+            t = TypeType(sig_type.class_key, AnyType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
+            inher_aux.external_path == "typing" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing.NewType"
+        ):
+            t = TypeType(sig_type.class_key, AnyType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
+            inher_aux.external_path == "builtins" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "builtins._NotImplementedType" and
+            symbol == "NotImplemented"
+        ):
+            t = TypeType(sig_type.class_key, AnyType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        else:
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=False, initialized=False, type=sig_type)
+            })
+
+
         return crawler.Synth[SynthAux](
             tree = pas.AnnoDeclar(target_tree, anno_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, anno_aux])),
-                env_additions = pmap({
-                    symbol : make_Provenance(initialized=False, type=sig_type)
-                })
+            aux = make_SynthAux(
+                decl_additions = decl_additions 
             ) 
         )
 
@@ -3427,13 +3889,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
         iter_tree : pas.expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        assert len(iter_aux.expr_types) == 1
-        iter_type = iter_aux.expr_types[0]
+        assert len(iter_aux.observed_types) == 1
+        iter_type = iter_aux.observed_types[0]
         return update_InherAux(inher_aux, local_env = (
             inher_aux.local_env + 
-            iter_aux.env_additions +
+            iter_aux.decl_additions +
             pmap({
-                k : make_Provenance(initialized=True, type=t)
+                k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                 for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
@@ -3451,18 +3913,18 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        assert len(iter_aux.expr_types) == 1
-        iter_type = iter_aux.expr_types[0]
+        assert len(iter_aux.observed_types) == 1
+        iter_type = iter_aux.observed_types[0]
 
         new_synth_aux = self.synthesize_auxes(tuple([iter_aux, body_aux]))
         return crawler.Synth[SynthAux](
             tree = pas.For(target_tree, iter_tree, body_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux])),
-                env_subtractions = new_synth_aux.env_subtractions, 
-                env_additions= (
-                    new_synth_aux.env_additions +
+                decl_subtractions = new_synth_aux.decl_subtractions, 
+                decl_additions= (
+                    new_synth_aux.decl_additions +
                     pmap({
-                        k : make_Provenance(initialized=True, type=t)
+                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 )
@@ -3477,13 +3939,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
         iter_tree : pas.expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        assert len(iter_aux.expr_types) == 1
-        iter_type = iter_aux.expr_types[0]
+        assert len(iter_aux.observed_types) == 1
+        iter_type = iter_aux.observed_types[0]
         return update_InherAux(inher_aux, local_env = (
             inher_aux.local_env + 
-            iter_aux.env_additions +
+            iter_aux.decl_additions +
             pmap({
-                k : make_Provenance(initialized=True, type=t)
+                k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                 for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
@@ -3500,8 +3962,8 @@ class Server(crawler.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(iter_aux.expr_types) == 1
-        iter_type = iter_aux.expr_types[0]
+        assert len(iter_aux.observed_types) == 1
+        iter_type = iter_aux.observed_types[0]
         cross_joined_aux : SynthAux = cross_join_aux(body_aux, orelse_aux)
 
         new_synth_aux = self.synthesize_auxes(tuple([iter_aux, cross_joined_aux]))
@@ -3509,11 +3971,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
         return crawler.Synth[SynthAux](
             tree = pas.ForElse(target_tree, iter_tree, body_tree, orelse_tree),
             aux = make_SynthAux(
-                env_subtractions = new_synth_aux.env_subtractions, 
-                env_additions = (
-                    new_synth_aux.env_additions +
+                decl_subtractions = new_synth_aux.decl_subtractions, 
+                decl_additions = (
+                    new_synth_aux.decl_additions +
                     pmap({
-                        k : make_Provenance(initialized=True, type=t)
+                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 )
@@ -3548,17 +4010,17 @@ class Server(crawler.Server[InherAux, SynthAux]):
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(iter_aux.expr_types) == 1
-        iter_type = iter_aux.expr_types[0]
+        assert len(iter_aux.observed_types) == 1
+        iter_type = iter_aux.observed_types[0]
         new_synth_aux = self.synthesize_auxes(tuple([iter_aux, body_aux]))
         return crawler.Synth[SynthAux](
             tree = pas.AsyncFor(target_tree, iter_tree, body_tree),
             aux = make_SynthAux(
-                env_subtractions = new_synth_aux.env_subtractions, 
-                env_additions= (
-                    new_synth_aux.env_additions +
+                decl_subtractions = new_synth_aux.decl_subtractions, 
+                decl_additions= (
+                    new_synth_aux.decl_additions +
                     pmap({
-                        k : make_Provenance(initialized=True, type=t)
+                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 )
@@ -3591,18 +4053,18 @@ class Server(crawler.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert len(iter_aux.expr_types) == 1
-        iter_type = iter_aux.expr_types[0]
+        assert len(iter_aux.observed_types) == 1
+        iter_type = iter_aux.observed_types[0]
         cross_joined_aux : SynthAux = cross_join_aux(body_aux, orelse_aux)
         new_synth_aux = self.synthesize_auxes(tuple([iter_aux, cross_joined_aux]))
         return crawler.Synth[SynthAux](
             tree = pas.AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
             aux = make_SynthAux(
-                env_subtractions = new_synth_aux.env_subtractions, 
-                env_additions= (
-                    new_synth_aux.env_additions +
+                decl_subtractions = new_synth_aux.decl_subtractions, 
+                decl_additions= (
+                    new_synth_aux.decl_additions +
                     pmap({
-                        k : make_Provenance(initialized=True, type=t)
+                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 )
@@ -3647,15 +4109,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        env_additions : PMap[str, Provenance] = pmap({
-            alias : make_Provenance(initialized=True, type=from_static_path_to_type(inher_aux, source_path))
+        env_additions : PMap[str, Declaration] = pmap({
+            alias : from_static_path_to_declaration(inher_aux, source_path)
             for alias, source_path in names_aux.import_names.items()
         })
 
         return crawler.Synth[SynthAux](
             tree = pas.Import(names_tree),
             aux = make_SynthAux(
-                env_additions=env_additions
+                decl_additions=env_additions
             ) 
         )
 
@@ -3668,15 +4130,15 @@ class Server(crawler.Server[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        env_additions : PMap[str, Provenance] = pmap({
-            alias : make_Provenance(initialized=True, type=from_static_path_to_type(inher_aux, f'{module_tree}.{source_path}'))
+        env_additions : PMap[str, Declaration] = pmap({
+            alias : from_static_path_to_declaration(inher_aux, f'{module_tree}.{source_path}')
             for alias, source_path in names_aux.import_names.items()
         })
 
         return crawler.Synth[SynthAux](
             tree = pas.ImportFrom(module_tree, names_tree),
             aux = make_SynthAux(
-                env_additions=env_additions
+                decl_additions=env_additions
             ) 
         )
 
@@ -3698,15 +4160,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
         names_tree : pas.sequence_name, 
         names_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        env_additions : PMap[str, Provenance] = m()
-        for name in names_aux.names:
-            # TODO: don't do assertion here. global name might be a forward reference. must wait until end of module to make assertion
-            # Make the following assertion at the top module level to capture forward references: assert name in inher_aux.global_env
-            env_additions = env_additions.set(name, inher_aux.global_env[name] if inher_aux.global_env.get(name) else make_Provenance(False))
-        
         return crawler.Synth[SynthAux](
             tree = pas.Global(names_tree),
-            aux = make_SynthAux(env_additions=env_additions)
+            aux = make_SynthAux(
+                declared_globals = pset(names_aux.usage_additions.keys())
+            )
         )
 
     # synthesize: stmt <-- Nonlocal 
@@ -3715,17 +4173,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
         names_tree : pas.sequence_name, 
         names_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
-        assert names_aux
-
-        env_additions : PMap[str, Provenance] = m()
-        for name in names_aux.names:
-            env_additions = env_additions.set(name, inher_aux.nonlocal_env[name])
-        
         return crawler.Synth[SynthAux](
             tree = pas.Nonlocal(names_tree),
-            aux = make_SynthAux(env_additions=env_additions)
+            aux = make_SynthAux(
+                declared_nonlocals = pset(names_aux.usage_additions.keys())
+            )
         )
-
 
     
     # synthesize: stmt <-- While
@@ -3738,7 +4191,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
         return crawler.Synth[SynthAux](
             tree = pas.While(test_tree, body_tree),
-            aux = make_SynthAux(env_additions=test_aux.env_additions)
+            aux = make_SynthAux(decl_additions=test_aux.decl_additions)
         )
     
     # traverse: stmt <-- WhileElse
@@ -3764,7 +4217,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
         return crawler.Synth[SynthAux](
             tree = pas.WhileElse(test_tree, body_tree, orelse_tree),
-            aux = make_SynthAux(env_additions = test_aux.env_additions)
+            aux = make_SynthAux(decl_additions = test_aux.decl_additions)
         )
 
     # traverse: stmt <-- If
@@ -3800,6 +4253,14 @@ class Server(crawler.Server[InherAux, SynthAux]):
             )
         )
 
+    # traverse conditions <-- ElifCond
+    def traverse_conditions_ElifCond_tail(self, 
+        inher_aux : InherAux,
+        content_tree : pas.ElifBlock, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return inher_aux
+
     # synthesize: conditions <-- ElifCond
     def synthesize_for_conditions_ElifCond(self, 
         inher_aux : InherAux,
@@ -3826,7 +4287,7 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
         return crawler.Synth[SynthAux](
             tree = pas.ElifBlock(test_tree, body_tree), 
-            aux = make_SynthAux(
+            aux = update_SynthAux(body_aux,
                 return_types = body_aux.return_types, 
                 yield_types = body_aux.yield_types, 
             )
@@ -3841,14 +4302,21 @@ class Server(crawler.Server[InherAux, SynthAux]):
         name_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
 
-        name_aux = make_SynthAux(env_additions = pmap({name_tree : make_Provenance(initialized=False)}))
+
+        assert len(content_aux.observed_types) == 1
+        type_type = coerce_to_TypeType(content_aux.observed_types[0])
+        t = type_type.content
+
+        name_aux = make_SynthAux(decl_additions = pmap({
+            name_tree : make_Declaration(annotated = True, constant=False, initialized=False, type=t)
+        }))
 
         return crawler.Synth[SynthAux](
             tree = pas.SomeExceptArgName(content_tree, name_tree),
             aux = make_SynthAux(
-                env_additions = (
-                    content_aux.env_additions + 
-                    name_aux.env_additions
+                decl_additions = (
+                    content_aux.decl_additions + 
+                    name_aux.decl_additions
                 )
             )
         )
@@ -3863,26 +4331,24 @@ class Server(crawler.Server[InherAux, SynthAux]):
         alias_aux : SynthAux
     ) -> crawler.Synth[SynthAux]:
         # check name compatability between target and source expressions 
-        for name in content_aux.names:
+        for name in content_aux.usage_additions:
             assert (
-                not (name in alias_aux.names) or (
+                not (name in alias_aux.usage_additions) or (
                     name in inher_aux.local_env
                 )
-
             )
 
-        assert len(content_aux.expr_types) == 1
-        content_type = content_aux.expr_types[0]
+        assert len(content_aux.observed_types) == 1
+        content_type = content_aux.observed_types[0]
         return crawler.Synth[SynthAux](
             tree = pas.WithItemAlias(content_tree, alias_tree),
             aux = make_SynthAux(
-                env_additions = (
-                    content_aux.env_additions +
+                decl_additions = (
+                    content_aux.decl_additions +
                     pmap({
-                        k : make_Provenance(initialized=True, type = t)
+                        k : make_Declaration(annotated = False, constant=False, initialized=True, type = t)
                         for k, t in unify(alias_tree, content_type, inher_aux).items() 
                     })
                 )
-                
             )
         )

@@ -627,9 +627,9 @@ for k, v in pmap({"hello" : "world", "alpha" : "beta", "good" : "bye"}).items():
 
 # x : _Mismatch[_T]
 
-xy = {"x" : "y", "b" : "d"}
-for item in xy:
-    print(item)
+# xy = {"x" : "y", "b" : "d"}
+# for item in xy:
+#     print(item)
 
 
 # xy = {"x" : "y", "b" : "d"}
@@ -638,14 +638,74 @@ for item in xy:
 
 
 
-from lib import python_analysis_construct_def as pacd
-vocab = set({})
+# from lib import python_analysis_construct_def as pacd
+# vocab = set({})
 
-for cons in pacd.choices.values():
-    for con in cons:
-        vocab.add(con.name)
+# for cons in pacd.choices.values():
+#     for con in cons:
+#         vocab.add(con.name)
 
-for con in pacd.singles:
-    vocab.add(con.name)
+# for con in pacd.singles:
+#     vocab.add(con.name)
 
-print(vocab)
+# print(vocab)
+
+# x : int = 0
+# z = x
+# x = x + 1
+# print(z)
+
+# x : type
+# x = str
+
+
+# from typing import Generic, TypeVar
+# X = TypeVar('X')
+# Z = Generic
+# class B(Z[X]): pass
+
+
+# from typing import Generic, TypeVar
+# P = Generic
+# X = TypeVar('X')
+
+# class G(Generic[X]): pass
+# class H(P[X): pass
+# class H(P[X], Generic[X]): pass
+
+from typing import Callable
+c : Callable = lambda x : 1
+
+def foo() -> int:
+    return 1 
+
+foo.__dict__
+
+class Boo: pass
+
+
+# if 4 * 25 == 100:
+#     x = 0
+# elif 4 * 26 == 100:
+#     x = "bye"
+# else:
+#     x = "juice"
+
+# from typing import Union
+
+# y : Union[str, int] = x
+# x = 4.5
+
+# class A: pass
+
+# class B(A): pass
+
+
+# from typing import Callable
+if 4 * 25 == 100:
+    Goo = 4 
+else:
+    class Goo: pass
+
+
+

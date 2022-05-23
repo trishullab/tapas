@@ -1,4 +1,3 @@
-
 from typing import Callable, Any
 
 from tree_sitter import Language

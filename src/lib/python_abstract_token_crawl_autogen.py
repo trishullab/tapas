@@ -1758,12 +1758,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: return_annotation <-- SomeReturnAnno"
     def inspect_return_annotation_SomeReturnAnno(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_return_annotation_SomeReturnAnno_content(
+        child_inher_aux = self.traverse_return_annotation_SomeReturnAnno_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -1774,6 +1775,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: return_annotation <-- NoReturnAnno"
     def inspect_return_annotation_NoReturnAnno(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_return_annotation_NoReturnAnno(inher_aux)
@@ -1781,12 +1783,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: except_arg <-- SomeExceptArg"
     def inspect_except_arg_SomeExceptArg(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_except_arg_SomeExceptArg_content(
+        child_inher_aux = self.traverse_except_arg_SomeExceptArg_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -1797,23 +1800,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: except_arg <-- SomeExceptArgName"
     def inspect_except_arg_SomeExceptArgName(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_except_arg_SomeExceptArgName_content(
+        child_inher_aux = self.traverse_except_arg_SomeExceptArgName_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
         
-        inher_aux = self.traverse_except_arg_SomeExceptArgName_name(
+        child_inher_aux = self.traverse_except_arg_SomeExceptArgName_name(
             inher_aux,
             content_tree, 
             content_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
@@ -1824,6 +1828,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: except_arg <-- NoExceptArg"
     def inspect_except_arg_NoExceptArg(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_except_arg_NoExceptArg(inher_aux)
@@ -1831,12 +1836,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: param_annotation <-- SomeParamAnno"
     def inspect_param_annotation_SomeParamAnno(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_param_annotation_SomeParamAnno_content(
+        child_inher_aux = self.traverse_param_annotation_SomeParamAnno_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -1847,6 +1853,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: param_annotation <-- NoParamAnno"
     def inspect_param_annotation_NoParamAnno(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_param_annotation_NoParamAnno(inher_aux)
@@ -1854,12 +1861,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: param_default <-- SomeParamDefault"
     def inspect_param_default_SomeParamDefault(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_param_default_SomeParamDefault_content(
+        child_inher_aux = self.traverse_param_default_SomeParamDefault_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -1869,6 +1877,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: param_default <-- NoParamDefault"
     def inspect_param_default_NoParamDefault(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -1908,11 +1917,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_d_ConsKwParam_head(
+            child_inher_aux = self.traverse_parameters_d_ConsKwParam_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_d", "ConsKwParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -1964,11 +1973,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_d_SingleKwParam_content(
+            child_inher_aux = self.traverse_parameters_d_SingleKwParam_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_d", "SingleKwParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2003,11 +2012,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_d_DictionarySplatParam_content(
+            child_inher_aux = self.traverse_parameters_d_DictionarySplatParam_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_d", "DictionarySplatParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2019,12 +2028,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: parameters_c <-- SingleListSplatParam"
     def inspect_parameters_c_SingleListSplatParam(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_parameters_c_SingleListSplatParam_content(
+        child_inher_aux = self.traverse_parameters_c_SingleListSplatParam_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_Param(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_Param(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, Param)
         content_aux = synth.aux
@@ -2035,23 +2045,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: parameters_c <-- TransListSplatParam"
     def inspect_parameters_c_TransListSplatParam(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_parameters_c_TransListSplatParam_head(
+        child_inher_aux = self.traverse_parameters_c_TransListSplatParam_head(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_Param(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_Param(child_token, child_inher_aux)
         head_tree = synth.tree
         assert isinstance(head_tree, Param)
         head_aux = synth.aux
         
-        inher_aux = self.traverse_parameters_c_TransListSplatParam_tail(
+        child_inher_aux = self.traverse_parameters_c_TransListSplatParam_tail(
             inher_aux,
             head_tree, 
             head_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_parameters_d(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_parameters_d(child_token, child_inher_aux)
         tail_tree = synth.tree
         assert isinstance(tail_tree, parameters_d)
         tail_aux = synth.aux
@@ -2062,12 +2073,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: parameters_c <-- ParamsD"
     def inspect_parameters_c_ParamsD(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_parameters_c_ParamsD_content(
+        child_inher_aux = self.traverse_parameters_c_ParamsD_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_parameters_d(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_parameters_d(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, parameters_d)
         content_aux = synth.aux
@@ -2109,11 +2121,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_b_ConsPosKeyParam_head(
+            child_inher_aux = self.traverse_parameters_b_ConsPosKeyParam_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2165,11 +2177,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_b_SinglePosKeyParam_content(
+            child_inher_aux = self.traverse_parameters_b_SinglePosKeyParam_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_b", "SinglePosKeyParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2204,11 +2216,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_b_ParamsC_content(
+            child_inher_aux = self.traverse_parameters_b_ParamsC_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_parameters_c(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_parameters_c(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_b", "ParamsC"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2251,11 +2263,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_a_ConsPosParam_head(
+            child_inher_aux = self.traverse_parameters_a_ConsPosParam_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_a", "ConsPosParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2307,11 +2319,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_a_SinglePosParam_content(
+            child_inher_aux = self.traverse_parameters_a_SinglePosParam_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_a", "SinglePosParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2350,11 +2362,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_parameters_a_TransPosParam_head(
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_Param(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2368,13 +2380,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             head_aux = children[0].aux
 
 
-            inher_aux = self.traverse_parameters_a_TransPosParam_tail(
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_tail(
                 inher_aux,
                 head_tree, 
                 head_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_parameters_b(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_parameters_b(child_token, child_inher_aux)
 
             stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2386,12 +2398,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: parameters <-- ParamsA"
     def inspect_parameters_ParamsA(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_parameters_ParamsA_content(
+        child_inher_aux = self.traverse_parameters_ParamsA_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_parameters_a(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_parameters_a(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, parameters_a)
         content_aux = synth.aux
@@ -2402,12 +2415,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: parameters <-- ParamsB"
     def inspect_parameters_ParamsB(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_parameters_ParamsB_content(
+        child_inher_aux = self.traverse_parameters_ParamsB_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_parameters_b(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_parameters_b(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, parameters_b)
         content_aux = synth.aux
@@ -2418,6 +2432,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: parameters <-- NoParam"
     def inspect_parameters_NoParam(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_parameters_NoParam(inher_aux)
@@ -2425,23 +2440,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: keyword <-- NamedKeyword"
     def inspect_keyword_NamedKeyword(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_keyword_NamedKeyword_name(
+        child_inher_aux = self.traverse_keyword_NamedKeyword_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
         
-        inher_aux = self.traverse_keyword_NamedKeyword_content(
+        child_inher_aux = self.traverse_keyword_NamedKeyword_content(
             inher_aux,
             name_tree, 
             name_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -2452,12 +2468,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: keyword <-- SplatKeyword"
     def inspect_keyword_SplatKeyword(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_keyword_SplatKeyword_content(
+        child_inher_aux = self.traverse_keyword_SplatKeyword_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -2468,23 +2485,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: import_name <-- ImportNameAlias"
     def inspect_import_name_ImportNameAlias(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_import_name_ImportNameAlias_name(
+        child_inher_aux = self.traverse_import_name_ImportNameAlias_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
         
-        inher_aux = self.traverse_import_name_ImportNameAlias_alias(
+        child_inher_aux = self.traverse_import_name_ImportNameAlias_alias(
             inher_aux,
             name_tree, 
             name_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         alias_tree = synth.tree
         assert isinstance(alias_tree, str)
         alias_aux = synth.aux
@@ -2495,12 +2513,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: import_name <-- ImportNameOnly"
     def inspect_import_name_ImportNameOnly(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_import_name_ImportNameOnly_name(
+        child_inher_aux = self.traverse_import_name_ImportNameOnly_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
@@ -2511,23 +2530,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: with_item <-- WithItemAlias"
     def inspect_with_item_WithItemAlias(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_with_item_WithItemAlias_content(
+        child_inher_aux = self.traverse_with_item_WithItemAlias_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
         
-        inher_aux = self.traverse_with_item_WithItemAlias_alias(
+        child_inher_aux = self.traverse_with_item_WithItemAlias_alias(
             inher_aux,
             content_tree, 
             content_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         alias_tree = synth.tree
         assert isinstance(alias_tree, expr)
         alias_aux = synth.aux
@@ -2538,12 +2558,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: with_item <-- WithItemOnly"
     def inspect_with_item_WithItemOnly(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_with_item_WithItemOnly_content(
+        child_inher_aux = self.traverse_with_item_WithItemOnly_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -2554,12 +2575,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bases <-- SomeBases"
     def inspect_bases_SomeBases(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_bases_SomeBases_bases(
+        child_inher_aux = self.traverse_bases_SomeBases_bases(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_bases_a(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_bases_a(child_token, child_inher_aux)
         bases_tree = synth.tree
         assert isinstance(bases_tree, bases_a)
         bases_aux = synth.aux
@@ -2569,6 +2591,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: bases <-- NoBases"
     def inspect_bases_NoBases(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -2608,11 +2631,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_bases_a_ConsBase_head(
+            child_inher_aux = self.traverse_bases_a_ConsBase_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("bases_a", "ConsBase"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2664,11 +2687,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_bases_a_SingleBase_content(
+            child_inher_aux = self.traverse_bases_a_SingleBase_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("bases_a", "SingleBase"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2703,11 +2726,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_bases_a_KeywordBases_kws(
+            child_inher_aux = self.traverse_bases_a_KeywordBases_kws(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_keywords(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_keywords(child_token, child_inher_aux)
 
             stack.append((Grammar("bases_a", "KeywordBases"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2750,11 +2773,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_keywords_ConsKeyword_head(
+            child_inher_aux = self.traverse_keywords_ConsKeyword_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_keyword(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_keyword(child_token, child_inher_aux)
 
             stack.append((Grammar("keywords", "ConsKeyword"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2806,11 +2829,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_keywords_SingleKeyword_content(
+            child_inher_aux = self.traverse_keywords_SingleKeyword_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_keyword(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_keyword(child_token, child_inher_aux)
 
             stack.append((Grammar("keywords", "SingleKeyword"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2853,11 +2876,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_comparisons_ConsCompareRight_head(
+            child_inher_aux = self.traverse_comparisons_ConsCompareRight_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_CompareRight(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_CompareRight(child_token, child_inher_aux)
 
             stack.append((Grammar("comparisons", "ConsCompareRight"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2909,11 +2932,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_comparisons_SingleCompareRight_content(
+            child_inher_aux = self.traverse_comparisons_SingleCompareRight_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_CompareRight(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_CompareRight(child_token, child_inher_aux)
 
             stack.append((Grammar("comparisons", "SingleCompareRight"), inher_aux, children + tuple([child_synth])))
             return None
@@ -2925,12 +2948,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: option_expr <-- SomeExpr"
     def inspect_option_expr_SomeExpr(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_option_expr_SomeExpr_content(
+        child_inher_aux = self.traverse_option_expr_SomeExpr_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -2940,6 +2964,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: option_expr <-- NoExpr"
     def inspect_option_expr_NoExpr(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -2979,11 +3004,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_comma_exprs_ConsExpr_head(
+            child_inher_aux = self.traverse_comma_exprs_ConsExpr_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("comma_exprs", "ConsExpr"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3035,11 +3060,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_comma_exprs_SingleExpr_content(
+            child_inher_aux = self.traverse_comma_exprs_SingleExpr_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("comma_exprs", "SingleExpr"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3082,11 +3107,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_target_exprs_ConsTargetExpr_head(
+            child_inher_aux = self.traverse_target_exprs_ConsTargetExpr_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3138,11 +3163,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_target_exprs_SingleTargetExpr_content(
+            child_inher_aux = self.traverse_target_exprs_SingleTargetExpr_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("target_exprs", "SingleTargetExpr"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3185,11 +3210,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_decorators_ConsDec_head(
+            child_inher_aux = self.traverse_decorators_ConsDec_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("decorators", "ConsDec"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3270,11 +3295,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_constraint_filters_ConsFilter_head(
+            child_inher_aux = self.traverse_constraint_filters_ConsFilter_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("constraint_filters", "ConsFilter"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3326,11 +3351,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_constraint_filters_SingleFilter_content(
+            child_inher_aux = self.traverse_constraint_filters_SingleFilter_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("constraint_filters", "SingleFilter"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3394,11 +3419,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_string_ConsStr_head(
+            child_inher_aux = self.traverse_sequence_string_ConsStr_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_string", "ConsStr"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3450,11 +3475,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_string_SingleStr_content(
+            child_inher_aux = self.traverse_sequence_string_SingleStr_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_string", "SingleStr"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3497,11 +3522,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_arguments_ConsArg_head(
+            child_inher_aux = self.traverse_arguments_ConsArg_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("arguments", "ConsArg"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3553,11 +3578,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_arguments_SingleArg_content(
+            child_inher_aux = self.traverse_arguments_SingleArg_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("arguments", "SingleArg"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3592,11 +3617,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_arguments_KeywordsArg_kws(
+            child_inher_aux = self.traverse_arguments_KeywordsArg_kws(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_keywords(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_keywords(child_token, child_inher_aux)
 
             stack.append((Grammar("arguments", "KeywordsArg"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3608,23 +3633,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: dictionary_item <-- Field"
     def inspect_dictionary_item_Field(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_dictionary_item_Field_key(
+        child_inher_aux = self.traverse_dictionary_item_Field_key(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         key_tree = synth.tree
         assert isinstance(key_tree, expr)
         key_aux = synth.aux
         
-        inher_aux = self.traverse_dictionary_item_Field_content(
+        child_inher_aux = self.traverse_dictionary_item_Field_content(
             inher_aux,
             key_tree, 
             key_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -3635,12 +3661,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: dictionary_item <-- DictionarySplatFields"
     def inspect_dictionary_item_DictionarySplatFields(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_dictionary_item_DictionarySplatFields_content(
+        child_inher_aux = self.traverse_dictionary_item_DictionarySplatFields_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -3682,11 +3709,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_dictionary_content_ConsDictionaryItem_head(
+            child_inher_aux = self.traverse_dictionary_content_ConsDictionaryItem_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_dictionary_item(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_dictionary_item(child_token, child_inher_aux)
 
             stack.append((Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3738,11 +3765,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_dictionary_content_SingleDictionaryItem_content(
+            child_inher_aux = self.traverse_dictionary_content_SingleDictionaryItem_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_dictionary_item(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_dictionary_item(child_token, child_inher_aux)
 
             stack.append((Grammar("dictionary_content", "SingleDictionaryItem"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3785,11 +3812,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_name_ConsId_head(
+            child_inher_aux = self.traverse_sequence_name_ConsId_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_name", "ConsId"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3841,11 +3868,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_name_SingleId_content(
+            child_inher_aux = self.traverse_sequence_name_SingleId_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_name", "SingleId"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3888,11 +3915,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_import_name_ConsImportName_head(
+            child_inher_aux = self.traverse_sequence_import_name_ConsImportName_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_import_name(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_import_name(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3944,11 +3971,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_import_name_SingleImportName_content(
+            child_inher_aux = self.traverse_sequence_import_name_SingleImportName_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_import_name(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_import_name(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + tuple([child_synth])))
             return None
@@ -3991,11 +4018,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_with_item_ConsWithItem_head(
+            child_inher_aux = self.traverse_sequence_with_item_ConsWithItem_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_with_item(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_with_item(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4047,11 +4074,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_with_item_SingleWithItem_content(
+            child_inher_aux = self.traverse_sequence_with_item_SingleWithItem_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_with_item(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_with_item(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_with_item", "SingleWithItem"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4063,23 +4090,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: module <-- FutureMod"
     def inspect_module_FutureMod(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_module_FutureMod_names(
+        child_inher_aux = self.traverse_module_FutureMod_names(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_import_name(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_import_name(child_token, child_inher_aux)
         names_tree = synth.tree
         assert isinstance(names_tree, sequence_import_name)
         names_aux = synth.aux
         
-        inher_aux = self.traverse_module_FutureMod_body(
+        child_inher_aux = self.traverse_module_FutureMod_body(
             inher_aux,
             names_tree, 
             names_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -4090,12 +4118,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: module <-- SimpleMod"
     def inspect_module_SimpleMod(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_module_SimpleMod_body(
+        child_inher_aux = self.traverse_module_SimpleMod_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -4137,11 +4166,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_statements_ConsStmt_head(
+            child_inher_aux = self.traverse_statements_ConsStmt_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_stmt(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_stmt(child_token, child_inher_aux)
 
             stack.append((Grammar("statements", "ConsStmt"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4193,11 +4222,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_statements_SingleStmt_content(
+            child_inher_aux = self.traverse_statements_SingleStmt_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_stmt(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_stmt(child_token, child_inher_aux)
 
             stack.append((Grammar("statements", "SingleStmt"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4240,11 +4269,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_comprehension_constraints_ConsConstraint_head(
+            child_inher_aux = self.traverse_comprehension_constraints_ConsConstraint_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_constraint(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_constraint(child_token, child_inher_aux)
 
             stack.append((Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4296,11 +4325,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_comprehension_constraints_SingleConstraint_content(
+            child_inher_aux = self.traverse_comprehension_constraints_SingleConstraint_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_constraint(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_constraint(child_token, child_inher_aux)
 
             stack.append((Grammar("comprehension_constraints", "SingleConstraint"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4343,11 +4372,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_ExceptHandler_ConsExceptHandler_head(
+            child_inher_aux = self.traverse_sequence_ExceptHandler_ConsExceptHandler_head(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_ExceptHandler(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4399,11 +4428,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_sequence_ExceptHandler_SingleExceptHandler_content(
+            child_inher_aux = self.traverse_sequence_ExceptHandler_SingleExceptHandler_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_ExceptHandler(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
 
             stack.append((Grammar("sequence_ExceptHandler", "SingleExceptHandler"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4446,11 +4475,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_conditions_ElifCond_content(
+            child_inher_aux = self.traverse_conditions_ElifCond_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_ElifBlock(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_ElifBlock(child_token, child_inher_aux)
 
             stack.append((Grammar("conditions", "ElifCond"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4502,11 +4531,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_conditions_ElseCond_content(
+            child_inher_aux = self.traverse_conditions_ElseCond_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_ElseBlock(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_ElseBlock(child_token, child_inher_aux)
 
             stack.append((Grammar("conditions", "ElseCond"), inher_aux, children + tuple([child_synth])))
             return None
@@ -4539,41 +4568,42 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: function_def <-- FunctionDef"
     def inspect_function_def_FunctionDef(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_function_def_FunctionDef_name(
+        child_inher_aux = self.traverse_function_def_FunctionDef_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
         
-        inher_aux = self.traverse_function_def_FunctionDef_params(
+        child_inher_aux = self.traverse_function_def_FunctionDef_params(
             inher_aux,
             name_tree, 
             name_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_parameters(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_parameters(child_token, child_inher_aux)
         params_tree = synth.tree
         assert isinstance(params_tree, parameters)
         params_aux = synth.aux
         
-        inher_aux = self.traverse_function_def_FunctionDef_ret_anno(
+        child_inher_aux = self.traverse_function_def_FunctionDef_ret_anno(
             inher_aux,
             name_tree, 
             name_aux,
             params_tree, 
             params_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_return_annotation(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_return_annotation(child_token, child_inher_aux)
         ret_anno_tree = synth.tree
         assert isinstance(ret_anno_tree, return_annotation)
         ret_anno_aux = synth.aux
         
-        inher_aux = self.traverse_function_def_FunctionDef_body(
+        child_inher_aux = self.traverse_function_def_FunctionDef_body(
             inher_aux,
             name_tree, 
             name_aux,
@@ -4582,8 +4612,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             ret_anno_tree, 
             ret_anno_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -4594,41 +4624,42 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: function_def <-- AsyncFunctionDef"
     def inspect_function_def_AsyncFunctionDef(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_function_def_AsyncFunctionDef_name(
+        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
         
-        inher_aux = self.traverse_function_def_AsyncFunctionDef_params(
+        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_params(
             inher_aux,
             name_tree, 
             name_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_parameters(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_parameters(child_token, child_inher_aux)
         params_tree = synth.tree
         assert isinstance(params_tree, parameters)
         params_aux = synth.aux
         
-        inher_aux = self.traverse_function_def_AsyncFunctionDef_ret_anno(
+        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_ret_anno(
             inher_aux,
             name_tree, 
             name_aux,
             params_tree, 
             params_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_return_annotation(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_return_annotation(child_token, child_inher_aux)
         ret_anno_tree = synth.tree
         assert isinstance(ret_anno_tree, return_annotation)
         ret_anno_aux = synth.aux
         
-        inher_aux = self.traverse_function_def_AsyncFunctionDef_body(
+        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_body(
             inher_aux,
             name_tree, 
             name_aux,
@@ -4637,8 +4668,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             ret_anno_tree, 
             ret_anno_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -4649,23 +4680,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- DecFunctionDef"
     def inspect_stmt_DecFunctionDef(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_DecFunctionDef_decs(
+        child_inher_aux = self.traverse_stmt_DecFunctionDef_decs(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_decorators(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_decorators(child_token, child_inher_aux)
         decs_tree = synth.tree
         assert isinstance(decs_tree, decorators)
         decs_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_DecFunctionDef_fun_def(
+        child_inher_aux = self.traverse_stmt_DecFunctionDef_fun_def(
             inher_aux,
             decs_tree, 
             decs_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_function_def(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_function_def(child_token, child_inher_aux)
         fun_def_tree = synth.tree
         assert isinstance(fun_def_tree, function_def)
         fun_def_aux = synth.aux
@@ -4676,23 +4708,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- DecClassDef"
     def inspect_stmt_DecClassDef(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_DecClassDef_decs(
+        child_inher_aux = self.traverse_stmt_DecClassDef_decs(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_decorators(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_decorators(child_token, child_inher_aux)
         decs_tree = synth.tree
         assert isinstance(decs_tree, decorators)
         decs_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_DecClassDef_class_def(
+        child_inher_aux = self.traverse_stmt_DecClassDef_class_def(
             inher_aux,
             decs_tree, 
             decs_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_ClassDef(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_ClassDef(child_token, child_inher_aux)
         class_def_tree = synth.tree
         assert isinstance(class_def_tree, ClassDef)
         class_def_aux = synth.aux
@@ -4703,12 +4736,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- ReturnSomething"
     def inspect_stmt_ReturnSomething(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_ReturnSomething_content(
+        child_inher_aux = self.traverse_stmt_ReturnSomething_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -4719,6 +4753,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Return"
     def inspect_stmt_Return(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_stmt_Return(inher_aux)
@@ -4726,12 +4761,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Delete"
     def inspect_stmt_Delete(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Delete_targets(
+        child_inher_aux = self.traverse_stmt_Delete_targets(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_comma_exprs(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_comma_exprs(child_token, child_inher_aux)
         targets_tree = synth.tree
         assert isinstance(targets_tree, comma_exprs)
         targets_aux = synth.aux
@@ -4742,23 +4778,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Assign"
     def inspect_stmt_Assign(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Assign_targets(
+        child_inher_aux = self.traverse_stmt_Assign_targets(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_target_exprs(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_target_exprs(child_token, child_inher_aux)
         targets_tree = synth.tree
         assert isinstance(targets_tree, target_exprs)
         targets_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_Assign_content(
+        child_inher_aux = self.traverse_stmt_Assign_content(
             inher_aux,
             targets_tree, 
             targets_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -4769,36 +4806,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AugAssign"
     def inspect_stmt_AugAssign(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AugAssign_target(
+        child_inher_aux = self.traverse_stmt_AugAssign_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AugAssign_op(
+        child_inher_aux = self.traverse_stmt_AugAssign_op(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_bin_rator(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_bin_rator(child_token, child_inher_aux)
         op_tree = synth.tree
         assert isinstance(op_tree, bin_rator)
         op_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AugAssign_content(
+        child_inher_aux = self.traverse_stmt_AugAssign_content(
             inher_aux,
             target_tree, 
             target_aux,
             op_tree, 
             op_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -4809,36 +4847,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AnnoAssign"
     def inspect_stmt_AnnoAssign(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AnnoAssign_target(
+        child_inher_aux = self.traverse_stmt_AnnoAssign_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AnnoAssign_anno(
+        child_inher_aux = self.traverse_stmt_AnnoAssign_anno(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         anno_tree = synth.tree
         assert isinstance(anno_tree, expr)
         anno_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AnnoAssign_content(
+        child_inher_aux = self.traverse_stmt_AnnoAssign_content(
             inher_aux,
             target_tree, 
             target_aux,
             anno_tree, 
             anno_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -4849,23 +4888,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AnnoDeclar"
     def inspect_stmt_AnnoDeclar(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AnnoDeclar_target(
+        child_inher_aux = self.traverse_stmt_AnnoDeclar_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AnnoDeclar_anno(
+        child_inher_aux = self.traverse_stmt_AnnoDeclar_anno(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         anno_tree = synth.tree
         assert isinstance(anno_tree, expr)
         anno_aux = synth.aux
@@ -4876,36 +4916,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- For"
     def inspect_stmt_For(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_For_target(
+        child_inher_aux = self.traverse_stmt_For_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_For_iter(
+        child_inher_aux = self.traverse_stmt_For_iter(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         iter_tree = synth.tree
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_For_body(
+        child_inher_aux = self.traverse_stmt_For_body(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -4916,41 +4957,42 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- ForElse"
     def inspect_stmt_ForElse(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_ForElse_target(
+        child_inher_aux = self.traverse_stmt_ForElse_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_ForElse_iter(
+        child_inher_aux = self.traverse_stmt_ForElse_iter(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         iter_tree = synth.tree
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_ForElse_body(
+        child_inher_aux = self.traverse_stmt_ForElse_body(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_ForElse_orelse(
+        child_inher_aux = self.traverse_stmt_ForElse_orelse(
             inher_aux,
             target_tree, 
             target_aux,
@@ -4959,8 +5001,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_ElseBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_ElseBlock(child_token, child_inher_aux)
         orelse_tree = synth.tree
         assert isinstance(orelse_tree, ElseBlock)
         orelse_aux = synth.aux
@@ -4971,36 +5013,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AsyncFor"
     def inspect_stmt_AsyncFor(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AsyncFor_target(
+        child_inher_aux = self.traverse_stmt_AsyncFor_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AsyncFor_iter(
+        child_inher_aux = self.traverse_stmt_AsyncFor_iter(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         iter_tree = synth.tree
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AsyncFor_body(
+        child_inher_aux = self.traverse_stmt_AsyncFor_body(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -5011,41 +5054,42 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AsyncForElse"
     def inspect_stmt_AsyncForElse(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AsyncForElse_target(
+        child_inher_aux = self.traverse_stmt_AsyncForElse_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AsyncForElse_iter(
+        child_inher_aux = self.traverse_stmt_AsyncForElse_iter(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         iter_tree = synth.tree
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AsyncForElse_body(
+        child_inher_aux = self.traverse_stmt_AsyncForElse_body(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AsyncForElse_orelse(
+        child_inher_aux = self.traverse_stmt_AsyncForElse_orelse(
             inher_aux,
             target_tree, 
             target_aux,
@@ -5054,8 +5098,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_ElseBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_ElseBlock(child_token, child_inher_aux)
         orelse_tree = synth.tree
         assert isinstance(orelse_tree, ElseBlock)
         orelse_aux = synth.aux
@@ -5066,23 +5110,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- While"
     def inspect_stmt_While(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_While_test(
+        child_inher_aux = self.traverse_stmt_While_test(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         test_tree = synth.tree
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_While_body(
+        child_inher_aux = self.traverse_stmt_While_body(
             inher_aux,
             test_tree, 
             test_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -5093,36 +5138,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- WhileElse"
     def inspect_stmt_WhileElse(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_WhileElse_test(
+        child_inher_aux = self.traverse_stmt_WhileElse_test(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         test_tree = synth.tree
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_WhileElse_body(
+        child_inher_aux = self.traverse_stmt_WhileElse_body(
             inher_aux,
             test_tree, 
             test_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_WhileElse_orelse(
+        child_inher_aux = self.traverse_stmt_WhileElse_orelse(
             inher_aux,
             test_tree, 
             test_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_ElseBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_ElseBlock(child_token, child_inher_aux)
         orelse_tree = synth.tree
         assert isinstance(orelse_tree, ElseBlock)
         orelse_aux = synth.aux
@@ -5133,36 +5179,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- If"
     def inspect_stmt_If(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_If_test(
+        child_inher_aux = self.traverse_stmt_If_test(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         test_tree = synth.tree
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_If_body(
+        child_inher_aux = self.traverse_stmt_If_body(
             inher_aux,
             test_tree, 
             test_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_If_orelse(
+        child_inher_aux = self.traverse_stmt_If_orelse(
             inher_aux,
             test_tree, 
             test_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_conditions(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_conditions(child_token, child_inher_aux)
         orelse_tree = synth.tree
         assert isinstance(orelse_tree, conditions)
         orelse_aux = synth.aux
@@ -5173,23 +5220,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- With"
     def inspect_stmt_With(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_With_items(
+        child_inher_aux = self.traverse_stmt_With_items(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_with_item(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_with_item(child_token, child_inher_aux)
         items_tree = synth.tree
         assert isinstance(items_tree, sequence_with_item)
         items_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_With_body(
+        child_inher_aux = self.traverse_stmt_With_body(
             inher_aux,
             items_tree, 
             items_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -5200,23 +5248,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AsyncWith"
     def inspect_stmt_AsyncWith(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AsyncWith_items(
+        child_inher_aux = self.traverse_stmt_AsyncWith_items(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_with_item(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_with_item(child_token, child_inher_aux)
         items_tree = synth.tree
         assert isinstance(items_tree, sequence_with_item)
         items_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AsyncWith_body(
+        child_inher_aux = self.traverse_stmt_AsyncWith_body(
             inher_aux,
             items_tree, 
             items_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -5227,6 +5276,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Raise"
     def inspect_stmt_Raise(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_stmt_Raise(inher_aux)
@@ -5234,12 +5284,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- RaiseExc"
     def inspect_stmt_RaiseExc(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_RaiseExc_exc(
+        child_inher_aux = self.traverse_stmt_RaiseExc_exc(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         exc_tree = synth.tree
         assert isinstance(exc_tree, expr)
         exc_aux = synth.aux
@@ -5250,23 +5301,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- RaiseFrom"
     def inspect_stmt_RaiseFrom(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_RaiseFrom_exc(
+        child_inher_aux = self.traverse_stmt_RaiseFrom_exc(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         exc_tree = synth.tree
         assert isinstance(exc_tree, expr)
         exc_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_RaiseFrom_caus(
+        child_inher_aux = self.traverse_stmt_RaiseFrom_caus(
             inher_aux,
             exc_tree, 
             exc_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         caus_tree = synth.tree
         assert isinstance(caus_tree, expr)
         caus_aux = synth.aux
@@ -5277,23 +5329,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Try"
     def inspect_stmt_Try(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Try_body(
+        child_inher_aux = self.traverse_stmt_Try_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_Try_handlers(
+        child_inher_aux = self.traverse_stmt_Try_handlers(
             inher_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_ExceptHandler(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_ExceptHandler(child_token, child_inher_aux)
         handlers_tree = synth.tree
         assert isinstance(handlers_tree, sequence_ExceptHandler)
         handlers_aux = synth.aux
@@ -5304,36 +5357,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- TryElse"
     def inspect_stmt_TryElse(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_TryElse_body(
+        child_inher_aux = self.traverse_stmt_TryElse_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryElse_handlers(
+        child_inher_aux = self.traverse_stmt_TryElse_handlers(
             inher_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_ExceptHandler(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_ExceptHandler(child_token, child_inher_aux)
         handlers_tree = synth.tree
         assert isinstance(handlers_tree, sequence_ExceptHandler)
         handlers_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryElse_orelse(
+        child_inher_aux = self.traverse_stmt_TryElse_orelse(
             inher_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
             handlers_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_ElseBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_ElseBlock(child_token, child_inher_aux)
         orelse_tree = synth.tree
         assert isinstance(orelse_tree, ElseBlock)
         orelse_aux = synth.aux
@@ -5344,36 +5398,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- TryExceptFin"
     def inspect_stmt_TryExceptFin(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_TryExceptFin_body(
+        child_inher_aux = self.traverse_stmt_TryExceptFin_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryExceptFin_handlers(
+        child_inher_aux = self.traverse_stmt_TryExceptFin_handlers(
             inher_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_ExceptHandler(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_ExceptHandler(child_token, child_inher_aux)
         handlers_tree = synth.tree
         assert isinstance(handlers_tree, sequence_ExceptHandler)
         handlers_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryExceptFin_fin(
+        child_inher_aux = self.traverse_stmt_TryExceptFin_fin(
             inher_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
             handlers_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_FinallyBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_FinallyBlock(child_token, child_inher_aux)
         fin_tree = synth.tree
         assert isinstance(fin_tree, FinallyBlock)
         fin_aux = synth.aux
@@ -5384,23 +5439,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- TryFin"
     def inspect_stmt_TryFin(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_TryFin_body(
+        child_inher_aux = self.traverse_stmt_TryFin_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryFin_fin(
+        child_inher_aux = self.traverse_stmt_TryFin_fin(
             inher_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_FinallyBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_FinallyBlock(child_token, child_inher_aux)
         fin_tree = synth.tree
         assert isinstance(fin_tree, FinallyBlock)
         fin_aux = synth.aux
@@ -5411,41 +5467,42 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- TryElseFin"
     def inspect_stmt_TryElseFin(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_TryElseFin_body(
+        child_inher_aux = self.traverse_stmt_TryElseFin_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryElseFin_handlers(
+        child_inher_aux = self.traverse_stmt_TryElseFin_handlers(
             inher_aux,
             body_tree, 
             body_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_ExceptHandler(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_ExceptHandler(child_token, child_inher_aux)
         handlers_tree = synth.tree
         assert isinstance(handlers_tree, sequence_ExceptHandler)
         handlers_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryElseFin_orelse(
+        child_inher_aux = self.traverse_stmt_TryElseFin_orelse(
             inher_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
             handlers_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_ElseBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_ElseBlock(child_token, child_inher_aux)
         orelse_tree = synth.tree
         assert isinstance(orelse_tree, ElseBlock)
         orelse_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_TryElseFin_fin(
+        child_inher_aux = self.traverse_stmt_TryElseFin_fin(
             inher_aux,
             body_tree, 
             body_aux,
@@ -5454,8 +5511,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             orelse_tree, 
             orelse_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_FinallyBlock(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_FinallyBlock(child_token, child_inher_aux)
         fin_tree = synth.tree
         assert isinstance(fin_tree, FinallyBlock)
         fin_aux = synth.aux
@@ -5466,12 +5523,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Assert"
     def inspect_stmt_Assert(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Assert_test(
+        child_inher_aux = self.traverse_stmt_Assert_test(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         test_tree = synth.tree
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
@@ -5482,23 +5540,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- AssertMsg"
     def inspect_stmt_AssertMsg(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_AssertMsg_test(
+        child_inher_aux = self.traverse_stmt_AssertMsg_test(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         test_tree = synth.tree
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_AssertMsg_msg(
+        child_inher_aux = self.traverse_stmt_AssertMsg_msg(
             inher_aux,
             test_tree, 
             test_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         msg_tree = synth.tree
         assert isinstance(msg_tree, expr)
         msg_aux = synth.aux
@@ -5509,12 +5568,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Import"
     def inspect_stmt_Import(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Import_names(
+        child_inher_aux = self.traverse_stmt_Import_names(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_import_name(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_import_name(child_token, child_inher_aux)
         names_tree = synth.tree
         assert isinstance(names_tree, sequence_import_name)
         names_aux = synth.aux
@@ -5525,23 +5585,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- ImportFrom"
     def inspect_stmt_ImportFrom(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_ImportFrom_module(
+        child_inher_aux = self.traverse_stmt_ImportFrom_module(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         module_tree = synth.tree
         assert isinstance(module_tree, str)
         module_aux = synth.aux
         
-        inher_aux = self.traverse_stmt_ImportFrom_names(
+        child_inher_aux = self.traverse_stmt_ImportFrom_names(
             inher_aux,
             module_tree, 
             module_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_import_name(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_import_name(child_token, child_inher_aux)
         names_tree = synth.tree
         assert isinstance(names_tree, sequence_import_name)
         names_aux = synth.aux
@@ -5552,12 +5613,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- ImportWildCard"
     def inspect_stmt_ImportWildCard(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_ImportWildCard_module(
+        child_inher_aux = self.traverse_stmt_ImportWildCard_module(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         module_tree = synth.tree
         assert isinstance(module_tree, str)
         module_aux = synth.aux
@@ -5568,12 +5630,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Global"
     def inspect_stmt_Global(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Global_names(
+        child_inher_aux = self.traverse_stmt_Global_names(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_name(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_name(child_token, child_inher_aux)
         names_tree = synth.tree
         assert isinstance(names_tree, sequence_name)
         names_aux = synth.aux
@@ -5584,12 +5647,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Nonlocal"
     def inspect_stmt_Nonlocal(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Nonlocal_names(
+        child_inher_aux = self.traverse_stmt_Nonlocal_names(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_sequence_name(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_sequence_name(child_token, child_inher_aux)
         names_tree = synth.tree
         assert isinstance(names_tree, sequence_name)
         names_aux = synth.aux
@@ -5600,12 +5664,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Expr"
     def inspect_stmt_Expr(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_stmt_Expr_content(
+        child_inher_aux = self.traverse_stmt_Expr_content(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         content_tree = synth.tree
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
@@ -5616,6 +5681,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Pass"
     def inspect_stmt_Pass(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_stmt_Pass(inher_aux)
@@ -5623,12 +5689,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: stmt <-- Break"
     def inspect_stmt_Break(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_stmt_Break(inher_aux)
     
     # inspect: stmt <-- Continue"
     def inspect_stmt_Continue(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -5675,13 +5743,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_BoolOp_op(
+            child_inher_aux = self.traverse_expr_BoolOp_op(
                 inher_aux,
                 left_tree, 
                 left_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_bool_rator(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_bool_rator(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "BoolOp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -5829,13 +5897,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_BinOp_rator(
+            child_inher_aux = self.traverse_expr_BinOp_rator(
                 inher_aux,
                 left_tree, 
                 left_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_bin_rator(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_bin_rator(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "BinOp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -5913,11 +5981,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_UnaryOp_rator(
+            child_inher_aux = self.traverse_expr_UnaryOp_rator(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_unary_rator(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_unary_rator(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "UnaryOp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -5977,11 +6045,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Lambda_params(
+            child_inher_aux = self.traverse_expr_Lambda_params(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_parameters(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_parameters(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Lambda"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6123,11 +6191,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Dictionary_content(
+            child_inher_aux = self.traverse_expr_Dictionary_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_dictionary_content(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_dictionary_content(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Dictionary"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6183,11 +6251,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Set_content(
+            child_inher_aux = self.traverse_expr_Set_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comma_exprs(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Set"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6233,13 +6301,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_ListComp_constraints(
+            child_inher_aux = self.traverse_expr_ListComp_constraints(
                 inher_aux,
                 content_tree, 
                 content_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comprehension_constraints(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "ListComp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6297,13 +6365,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_SetComp_constraints(
+            child_inher_aux = self.traverse_expr_SetComp_constraints(
                 inher_aux,
                 content_tree, 
                 content_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comprehension_constraints(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "SetComp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6368,15 +6436,15 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_aux = children[1].aux
 
 
-            inher_aux = self.traverse_expr_DictionaryComp_constraints(
+            child_inher_aux = self.traverse_expr_DictionaryComp_constraints(
                 inher_aux,
                 key_tree, 
                 key_aux,
                 content_tree, 
                 content_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comprehension_constraints(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "DictionaryComp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6452,13 +6520,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_GeneratorExp_constraints(
+            child_inher_aux = self.traverse_expr_GeneratorExp_constraints(
                 inher_aux,
                 content_tree, 
                 content_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comprehension_constraints(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "GeneratorExp"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6660,13 +6728,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_Compare_comps(
+            child_inher_aux = self.traverse_expr_Compare_comps(
                 inher_aux,
                 left_tree, 
                 left_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comparisons(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comparisons(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Compare"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6765,13 +6833,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             func_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_CallArgs_args(
+            child_inher_aux = self.traverse_expr_CallArgs_args(
                 inher_aux,
                 func_tree, 
                 func_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_arguments(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_arguments(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "CallArgs"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6818,11 +6886,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Integer_content(
+            child_inher_aux = self.traverse_expr_Integer_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Integer"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6857,11 +6925,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Float_content(
+            child_inher_aux = self.traverse_expr_Float_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Float"), inher_aux, children + tuple([child_synth])))
             return None
@@ -6896,11 +6964,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_ConcatString_content(
+            child_inher_aux = self.traverse_expr_ConcatString_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_sequence_string(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_sequence_string(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "ConcatString"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7030,13 +7098,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_Attribute_name(
+            child_inher_aux = self.traverse_expr_Attribute_name(
                 inher_aux,
                 content_tree, 
                 content_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Attribute"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7187,11 +7255,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Name_content(
+            child_inher_aux = self.traverse_expr_Name_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_str(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Name"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7226,11 +7294,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_List_content(
+            child_inher_aux = self.traverse_expr_List_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comma_exprs(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "List"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7286,11 +7354,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Tuple_content(
+            child_inher_aux = self.traverse_expr_Tuple_content(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_comma_exprs(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Tuple"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7354,11 +7422,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-            inher_aux = self.traverse_expr_Slice_lower(
+            child_inher_aux = self.traverse_expr_Slice_lower(
                 inher_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_option_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Slice"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7372,13 +7440,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             lower_aux = children[0].aux
 
 
-            inher_aux = self.traverse_expr_Slice_upper(
+            child_inher_aux = self.traverse_expr_Slice_upper(
                 inher_aux,
                 lower_tree, 
                 lower_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_option_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Slice"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7395,15 +7463,15 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             upper_aux = children[1].aux
 
 
-            inher_aux = self.traverse_expr_Slice_step(
+            child_inher_aux = self.traverse_expr_Slice_step(
                 inher_aux,
                 lower_tree, 
                 lower_aux,
                 upper_tree, 
                 upper_aux
             )
-            child_token = self.next(inher_aux)
-            child_synth = self.crawl_option_expr(child_token, inher_aux)
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
             stack.append((Grammar("expr", "Slice"), inher_aux, children + tuple([child_synth])))
             return None
@@ -7415,12 +7483,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bool_rator <-- And"
     def inspect_bool_rator_And(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bool_rator_And(inher_aux)
     
     # inspect: bool_rator <-- Or"
     def inspect_bool_rator_Or(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7429,12 +7499,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- Add"
     def inspect_bin_rator_Add(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_Add(inher_aux)
     
     # inspect: bin_rator <-- Sub"
     def inspect_bin_rator_Sub(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7443,12 +7515,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- Mult"
     def inspect_bin_rator_Mult(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_Mult(inher_aux)
     
     # inspect: bin_rator <-- MatMult"
     def inspect_bin_rator_MatMult(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7457,12 +7531,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- Div"
     def inspect_bin_rator_Div(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_Div(inher_aux)
     
     # inspect: bin_rator <-- Mod"
     def inspect_bin_rator_Mod(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7471,12 +7547,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- Pow"
     def inspect_bin_rator_Pow(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_Pow(inher_aux)
     
     # inspect: bin_rator <-- LShift"
     def inspect_bin_rator_LShift(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7485,12 +7563,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- RShift"
     def inspect_bin_rator_RShift(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_RShift(inher_aux)
     
     # inspect: bin_rator <-- BitOr"
     def inspect_bin_rator_BitOr(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7499,12 +7579,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- BitXor"
     def inspect_bin_rator_BitXor(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_BitXor(inher_aux)
     
     # inspect: bin_rator <-- BitAnd"
     def inspect_bin_rator_BitAnd(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7513,12 +7595,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: bin_rator <-- FloorDiv"
     def inspect_bin_rator_FloorDiv(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_bin_rator_FloorDiv(inher_aux)
     
     # inspect: unary_rator <-- Invert"
     def inspect_unary_rator_Invert(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7527,12 +7611,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: unary_rator <-- Not"
     def inspect_unary_rator_Not(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_unary_rator_Not(inher_aux)
     
     # inspect: unary_rator <-- UAdd"
     def inspect_unary_rator_UAdd(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7541,12 +7627,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: unary_rator <-- USub"
     def inspect_unary_rator_USub(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_unary_rator_USub(inher_aux)
     
     # inspect: cmp_rator <-- Eq"
     def inspect_cmp_rator_Eq(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7555,12 +7643,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: cmp_rator <-- NotEq"
     def inspect_cmp_rator_NotEq(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_cmp_rator_NotEq(inher_aux)
     
     # inspect: cmp_rator <-- Lt"
     def inspect_cmp_rator_Lt(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7569,12 +7659,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: cmp_rator <-- LtE"
     def inspect_cmp_rator_LtE(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_cmp_rator_LtE(inher_aux)
     
     # inspect: cmp_rator <-- Gt"
     def inspect_cmp_rator_Gt(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7583,12 +7675,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: cmp_rator <-- GtE"
     def inspect_cmp_rator_GtE(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_cmp_rator_GtE(inher_aux)
     
     # inspect: cmp_rator <-- Is"
     def inspect_cmp_rator_Is(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7597,12 +7691,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: cmp_rator <-- IsNot"
     def inspect_cmp_rator_IsNot(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_cmp_rator_IsNot(inher_aux)
     
     # inspect: cmp_rator <-- In"
     def inspect_cmp_rator_In(self, inher_aux : InherAux) -> Synth[SynthAux]:
+
 
         
 
@@ -7611,6 +7707,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: cmp_rator <-- NotIn"
     def inspect_cmp_rator_NotIn(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
 
         return self.synthesize_for_cmp_rator_NotIn(inher_aux)
@@ -7618,36 +7715,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: constraint <-- AsyncConstraint"
     def inspect_constraint_AsyncConstraint(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_constraint_AsyncConstraint_target(
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_constraint_AsyncConstraint_search_space(
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_search_space(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         search_space_tree = synth.tree
         assert isinstance(search_space_tree, expr)
         search_space_aux = synth.aux
         
-        inher_aux = self.traverse_constraint_AsyncConstraint_filts(
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_filts(
             inher_aux,
             target_tree, 
             target_aux,
             search_space_tree, 
             search_space_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_constraint_filters(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_constraint_filters(child_token, child_inher_aux)
         filts_tree = synth.tree
         assert isinstance(filts_tree, constraint_filters)
         filts_aux = synth.aux
@@ -7658,36 +7756,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # inspect: constraint <-- Constraint"
     def inspect_constraint_Constraint(self, inher_aux : InherAux) -> Synth[SynthAux]:
 
+
         
-        inher_aux = self.traverse_constraint_Constraint_target(
+        child_inher_aux = self.traverse_constraint_Constraint_target(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         target_tree = synth.tree
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        inher_aux = self.traverse_constraint_Constraint_search_space(
+        child_inher_aux = self.traverse_constraint_Constraint_search_space(
             inher_aux,
             target_tree, 
             target_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         search_space_tree = synth.tree
         assert isinstance(search_space_tree, expr)
         search_space_aux = synth.aux
         
-        inher_aux = self.traverse_constraint_Constraint_filts(
+        child_inher_aux = self.traverse_constraint_Constraint_filts(
             inher_aux,
             target_tree, 
             target_aux,
             search_space_tree, 
             search_space_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_constraint_filters(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_constraint_filters(child_token, child_inher_aux)
         filts_tree = synth.tree
         assert isinstance(filts_tree, constraint_filters)
         filts_aux = synth.aux
@@ -7701,23 +7800,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "CompareRight"
         
 
-        inher_aux = self.traverse_CompareRight_rator(
+        child_inher_aux = self.traverse_CompareRight_rator(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_cmp_rator(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_cmp_rator(child_token, child_inher_aux)
         rator_tree = synth.tree
         assert isinstance(rator_tree, cmp_rator)
         rator_aux = synth.aux
             
 
-        inher_aux = self.traverse_CompareRight_rand(
+        child_inher_aux = self.traverse_CompareRight_rand(
             inher_aux,
             rator_tree, 
             rator_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         rand_tree = synth.tree
         assert isinstance(rand_tree, expr)
         rand_aux = synth.aux
@@ -7731,23 +7830,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "ExceptHandler"
         
 
-        inher_aux = self.traverse_ExceptHandler_arg(
+        child_inher_aux = self.traverse_ExceptHandler_arg(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_except_arg(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_except_arg(child_token, child_inher_aux)
         arg_tree = synth.tree
         assert isinstance(arg_tree, except_arg)
         arg_aux = synth.aux
             
 
-        inher_aux = self.traverse_ExceptHandler_body(
+        child_inher_aux = self.traverse_ExceptHandler_body(
             inher_aux,
             arg_tree, 
             arg_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -7761,37 +7860,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "Param"
         
 
-        inher_aux = self.traverse_Param_name(
+        child_inher_aux = self.traverse_Param_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
             
 
-        inher_aux = self.traverse_Param_anno(
+        child_inher_aux = self.traverse_Param_anno(
             inher_aux,
             name_tree, 
             name_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_param_annotation(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_param_annotation(child_token, child_inher_aux)
         anno_tree = synth.tree
         assert isinstance(anno_tree, param_annotation)
         anno_aux = synth.aux
             
 
-        inher_aux = self.traverse_Param_default(
+        child_inher_aux = self.traverse_Param_default(
             inher_aux,
             name_tree, 
             name_aux,
             anno_tree, 
             anno_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_param_default(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_param_default(child_token, child_inher_aux)
         default_tree = synth.tree
         assert isinstance(default_tree, param_default)
         default_aux = synth.aux
@@ -7805,37 +7904,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "ClassDef"
         
 
-        inher_aux = self.traverse_ClassDef_name(
+        child_inher_aux = self.traverse_ClassDef_name(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_str(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
         name_tree = synth.tree
         assert isinstance(name_tree, str)
         name_aux = synth.aux
             
 
-        inher_aux = self.traverse_ClassDef_bs(
+        child_inher_aux = self.traverse_ClassDef_bs(
             inher_aux,
             name_tree, 
             name_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_bases(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_bases(child_token, child_inher_aux)
         bs_tree = synth.tree
         assert isinstance(bs_tree, bases)
         bs_aux = synth.aux
             
 
-        inher_aux = self.traverse_ClassDef_body(
+        child_inher_aux = self.traverse_ClassDef_body(
             inher_aux,
             name_tree, 
             name_aux,
             bs_tree, 
             bs_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -7849,23 +7948,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "ElifBlock"
         
 
-        inher_aux = self.traverse_ElifBlock_test(
+        child_inher_aux = self.traverse_ElifBlock_test(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_expr(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
         test_tree = synth.tree
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
             
 
-        inher_aux = self.traverse_ElifBlock_body(
+        child_inher_aux = self.traverse_ElifBlock_body(
             inher_aux,
             test_tree, 
             test_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -7879,11 +7978,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "ElseBlock"
         
 
-        inher_aux = self.traverse_ElseBlock_body(
+        child_inher_aux = self.traverse_ElseBlock_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
@@ -7897,11 +7996,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert token.selection == "FinallyBlock"
         
 
-        inher_aux = self.traverse_FinallyBlock_body(
+        child_inher_aux = self.traverse_FinallyBlock_body(
             inher_aux
         )
-        child_token = self.next(inher_aux)
-        synth = self.crawl_statements(child_token, inher_aux)
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
