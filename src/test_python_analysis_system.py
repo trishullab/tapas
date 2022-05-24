@@ -8,6 +8,7 @@ from lib import abstract_token_system as ats
 from lib import util_system as us
 
 import json
+import pytest
 
 
 def test_analyze_typeshed():
@@ -44,7 +45,7 @@ def analyze(module_name : str):
 
     code = load_source(module_name) 
     print(f"***************************************")
-    print(f"OOGA: {module_name}")
+    print(f"module: {module_name}")
     print(f"-------------------------------------")
     tokens = pas.serialize(pas.parse(code))
     print(pats.dump(tokens))
@@ -150,6 +151,6 @@ def test_021_error():
     with pytest.raises(pals.UpdateError):
         analyze("021_error")
 
-import pytest
 if __name__ == "__main__":
+    # analyze("020_ok")
     pass

@@ -569,6 +569,8 @@ def subsumes(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
             isinstance(super_type, AnyType) or 
 
+            isinstance(super_type, VarType) or # if VarType hasn't been subbed, then it can't be inferred.
+
             (isinstance(super_type, SliceType) and
                 isinstance(super_type.stop, AnyType) and
                 isinstance(super_type.step, AnyType) and
@@ -666,8 +668,12 @@ def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
         })
 
         # print(f"### class_record.key : {class_record.key}")
+        # print(f"### class_record.type_params : {class_record.type_params}")
+        # print(f"### type_args : {type_args}")
         # print(f"### subst_map : {subst_map}")
-        # print(f"### class_record.static_fields : {class_record.static_fields}")
+        # for (k, v) in class_record.static_fields.items():
+        #     print(f"### class_record.static_field key : {k}")
+        #     print(f"### class_record.static_field type : {v}")
         return update_ClassRecord(class_record,
             static_fields = pmap({
                 k : substitute_type_args(t, subst_map)  
@@ -737,7 +743,7 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
 def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     return match_type(t, TypeHandlers(
         case_TypeType = lambda t : substitute_type_args(t.content, subst_map),
-        case_VarType = lambda t : subst_map[t.name],
+        case_VarType = lambda t : subst_map[t.name] if subst_map.get(t.name) else t,
         case_EllipType = lambda t : t,
         case_AnyType = lambda t : t,
         case_ObjectType = lambda t : t,
@@ -1380,7 +1386,7 @@ def analyze_modules_fixpoint(
 
     count = 1
     print(f"fixpoint iteration count: {count}")
-    while count < 1 and out_package_prim != in_package_prim:
+    while count < 2 and out_package_prim != in_package_prim:
         in_package = out_package
         in_package_prim = out_package_prim 
         out_package = analyze_modules_once(root_dir, module_paths, in_package) 
@@ -1989,7 +1995,12 @@ class Server(crawler.Server[InherAux, SynthAux]):
         else:
 
             method_name = pas.from_bin_rator_to_method_name(rator_tree)
+            # print(f"@@## left_tree : {left_tree}")
+            # print(f"@@## left_type : {left_type}")
+            # print(f"@@## rator_tree : {rator_tree}")
+            # print(f"@@## method_name : {method_name}")
             method_type = lookup_field_type(left_type, method_name, inher_aux)
+
 
             if isinstance(method_type, FunctionType):
                 assert check_application_args(
@@ -2430,6 +2441,13 @@ class Server(crawler.Server[InherAux, SynthAux]):
             right_type = comps_aux.observed_types[i]
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
+            # print(f"##@@ left_tree {left_tree}") 
+            # print(f"##@@ left_type {left_type}") 
+            # print(f"##@@ comps_tree {comps_tree}") 
+            # print(f"##@@ right_type {right_type}") 
+            # print(f"##@@ method_name {method_name}") 
+            # print(f"##@@ method_type {method_type}") 
+
             if isinstance(method_type, FunctionType):
                 assert check_application_args(
                     [right_type], {}, 
@@ -2802,11 +2820,11 @@ class Server(crawler.Server[InherAux, SynthAux]):
             method_type = lookup_field_type(content_type, "__getitem__", inher_aux)
             if isinstance(method_type, FunctionType): 
 
-                print(f"### content_tree : {content_tree}")
-                print(f"### slice_tree : {slice_tree}")
-                print(f"### method_name : __getitem__")
-                print(f"### slice_type : {slice_type}")
-                print(f"### slice_type : {method_type}")
+                # print(f"### content_tree : {content_tree}")
+                # print(f"### slice_tree : {slice_tree}")
+                # print(f"### method_name : __getitem__")
+                # print(f"### slice_type : {slice_type}")
+                # print(f"### slice_type : {method_type}")
 
                 assert check_application_args(
                     [slice_type], {}, 
@@ -3093,6 +3111,10 @@ class Server(crawler.Server[InherAux, SynthAux]):
     ) -> crawler.Synth[SynthAux]:
 
         type_params : tuple[VarType, ...] = bs_aux.var_types
+
+        # print(f"##@@ ClassDef")
+        # print(f"##@@ name_tree : {name_tree}")
+        # print(f"##@@ bs_aux.observed_types : {bs_aux.observed_types}")
 
         super_types : tuple[TypeType, ...] = tuple(
             coerce_to_TypeType(t)
@@ -3863,6 +3885,16 @@ class Server(crawler.Server[InherAux, SynthAux]):
             isinstance(sig_type, RecordType) and
             sig_type.class_key == "builtins._NotImplementedType" and
             symbol == "NotImplemented"
+        ):
+            t = TypeType(sig_type.class_key, AnyType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
+            inher_aux.external_path == "typing_extensions" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "builtins.object" and
+            symbol == "TypedDict"
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
