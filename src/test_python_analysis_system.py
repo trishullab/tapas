@@ -143,14 +143,13 @@ def test_019_error():
     with pytest.raises(pals.LookupTypeError):
         analyze("019_error")
 
+def test_020_ok():
+    analyze("020_ok")
+
+def test_021_error():
+    with pytest.raises(pals.UpdateError):
+        analyze("021_error")
+
 import pytest
 if __name__ == "__main__":
-    # analyze("012_ok")
-    # analyze("017_ok")
-    # analyze("020_ok")
-    # analyze("021_error")
-    # translate("012_ok")
-    # translate("017_ok")
-    # translate("020_ok")
-    # translate("021_error")
     pass
