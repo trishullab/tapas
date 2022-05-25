@@ -105,7 +105,7 @@ def generate_inspect_inductive_choice_rule(type_name : str, rule : Rule):
             if rule_system.type_from_item(item, "") == type_name
         ])}
         else:
-            raise Error()
+            raise SyntaxError()
     """
 
 def generate_traverse_choice_rule(type_name : str, rule : Rule) -> str:
@@ -162,7 +162,7 @@ def generate_crawl_inductive_choice_rules(
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "{type_name}"
+        if token.options != "{type_name}": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -175,7 +175,7 @@ def generate_crawl_inductive_choice_rules(
             for rule in rules
         ])}
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -188,7 +188,7 @@ def generate_crawl_inductive_choice_rules(
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_{type_name}(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -230,7 +230,7 @@ def generate_crawl_noninduct_choice_rules(type_name : str, rules : list[Rule]) -
     return (f"""
     # crawl {type_name}"
     def inspect_{type_name}(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "{type_name}"
+        if token.options != "{type_name}": raise SyntaxError()
 
         if False:
             pass
@@ -242,10 +242,10 @@ def generate_crawl_noninduct_choice_rules(type_name : str, rules : list[Rule]) -
             for rule in rules
         ])}
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_{type_name}(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_{type_name}(token, inher_aux)
 
     """)
@@ -255,8 +255,8 @@ def generate_crawl_single_rule(rule : Rule) -> str:
     return (f"""
     # crawl {rule.name}" +
     def crawl_{rule.name}(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "{rule.name}"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "{rule.name}": raise SyntaxError()
 
         return self.inspect_{rule.name}(token, inher_aux)
     """)
@@ -268,7 +268,7 @@ def generate_inspect_single_rule(rule : Rule) -> str:
     return (f"""
     # inspect: {rule.name}"
     def inspect_{rule.name}(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "{rule.name}"
+        if token.selection != "{rule.name}": raise SyntaxError()
         {''.join([
             f'''
 
@@ -393,7 +393,7 @@ def generate_content(
 InherAux = TypeVar('InherAux') 
 SynthAux = TypeVar('SynthAux') 
 
-class Error(Exception):
+class SyntaxError(Exception):
     pass
 
 @dataclass(frozen=True, eq=True)
@@ -458,7 +458,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ) 
 
     def crawl_str(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Vocab)
+        if not isinstance(token, Vocab): raise SyntaxError()
         return self.inspect_str(token, inher_aux)
 
     @abstractmethod

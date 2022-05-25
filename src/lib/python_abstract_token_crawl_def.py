@@ -12,7 +12,7 @@ from lib import abstract_token_crawl_def
 def generate_content():
 
     return abstract_token_crawl_def.generate_content(f'''
-from lib.python_ast_system import * 
+from lib.python_ast_construct_autogen import * 
         ''', 
         singles = python_schema_system.singles_schema, 
         choices = python_schema_system.choices_schema

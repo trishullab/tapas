@@ -16,14 +16,14 @@ from lib import python_schema_system
 from lib import ast_serialize_def
 write_code("python_ast_serialize",
     ast_serialize_def.generate_content("""
-from lib.python_ast_system import *
+from lib.python_ast_construct_autogen import *
     """, python_schema_system.singles_schema, python_schema_system.choices_schema)
 )
 
 from lib import ast_reconstitute_def
 write_code("python_ast_reconstitute",
     ast_reconstitute_def.generate_content("""
-from lib.python_ast_system import *
+from lib.python_ast_construct_autogen import *
     """,python_schema_system.singles_schema, python_schema_system.choices_schema)
 )
 

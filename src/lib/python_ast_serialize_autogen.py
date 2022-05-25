@@ -10,7 +10,7 @@ from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
 
 
 
-from lib.python_ast_system import *
+from lib.python_ast_construct_autogen import *
     
 
 

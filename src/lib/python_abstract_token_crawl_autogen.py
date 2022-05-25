@@ -17,13 +17,13 @@ from lib.abstract_token_system import abstract_token
 
 
 
-from lib.python_ast_system import * 
+from lib.python_ast_construct_autogen import * 
         
 
 InherAux = TypeVar('InherAux') 
 SynthAux = TypeVar('SynthAux') 
 
-class Error(Exception):
+class SyntaxError(Exception):
     pass
 
 @dataclass(frozen=True, eq=True)
@@ -46,7 +46,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl return_annotation"
     def inspect_return_annotation(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "return_annotation"
+        if token.options != "return_annotation": raise SyntaxError()
 
         if False:
             pass
@@ -59,16 +59,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_return_annotation_NoReturnAnno(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_return_annotation(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_return_annotation(token, inher_aux)
 
     
     # crawl except_arg"
     def inspect_except_arg(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "except_arg"
+        if token.options != "except_arg": raise SyntaxError()
 
         if False:
             pass
@@ -85,16 +85,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_except_arg_NoExceptArg(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_except_arg(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_except_arg(token, inher_aux)
 
     
     # crawl param_annotation"
     def inspect_param_annotation(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "param_annotation"
+        if token.options != "param_annotation": raise SyntaxError()
 
         if False:
             pass
@@ -107,16 +107,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_param_annotation_NoParamAnno(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_param_annotation(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_param_annotation(token, inher_aux)
 
     
     # crawl param_default"
     def inspect_param_default(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "param_default"
+        if token.options != "param_default": raise SyntaxError()
 
         if False:
             pass
@@ -129,10 +129,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_param_default_NoParamDefault(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_param_default(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_param_default(token, inher_aux)
 
      # crawl: parameters_d
@@ -141,7 +141,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "parameters_d"
+        if token.options != "parameters_d": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -159,7 +159,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_parameters_d_DictionarySplatParam(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -172,7 +172,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_parameters_d(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -181,7 +181,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl parameters_c"
     def inspect_parameters_c(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "parameters_c"
+        if token.options != "parameters_c": raise SyntaxError()
 
         if False:
             pass
@@ -198,10 +198,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_parameters_c_ParamsD(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_parameters_c(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_parameters_c(token, inher_aux)
 
      # crawl: parameters_b
@@ -210,7 +210,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "parameters_b"
+        if token.options != "parameters_b": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -228,7 +228,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_parameters_b_ParamsC(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -241,7 +241,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_parameters_b(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -253,7 +253,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "parameters_a"
+        if token.options != "parameters_a": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -271,7 +271,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_parameters_a_TransPosParam(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -284,7 +284,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_parameters_a(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -293,7 +293,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl parameters"
     def inspect_parameters(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "parameters"
+        if token.options != "parameters": raise SyntaxError()
 
         if False:
             pass
@@ -310,16 +310,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_parameters_NoParam(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_parameters(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_parameters(token, inher_aux)
 
     
     # crawl keyword"
     def inspect_keyword(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "keyword"
+        if token.options != "keyword": raise SyntaxError()
 
         if False:
             pass
@@ -332,16 +332,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_keyword_SplatKeyword(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_keyword(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_keyword(token, inher_aux)
 
     
     # crawl import_name"
     def inspect_import_name(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "import_name"
+        if token.options != "import_name": raise SyntaxError()
 
         if False:
             pass
@@ -354,16 +354,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_import_name_ImportNameOnly(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_import_name(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_import_name(token, inher_aux)
 
     
     # crawl with_item"
     def inspect_with_item(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "with_item"
+        if token.options != "with_item": raise SyntaxError()
 
         if False:
             pass
@@ -376,16 +376,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_with_item_WithItemOnly(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_with_item(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_with_item(token, inher_aux)
 
     
     # crawl bases"
     def inspect_bases(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "bases"
+        if token.options != "bases": raise SyntaxError()
 
         if False:
             pass
@@ -398,10 +398,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_bases_NoBases(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_bases(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_bases(token, inher_aux)
 
      # crawl: bases_a
@@ -410,7 +410,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "bases_a"
+        if token.options != "bases_a": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -428,7 +428,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_bases_a_KeywordBases(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -441,7 +441,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_bases_a(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -453,7 +453,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "keywords"
+        if token.options != "keywords": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -467,7 +467,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_keywords_SingleKeyword(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -480,7 +480,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_keywords(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -492,7 +492,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "comparisons"
+        if token.options != "comparisons": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -506,7 +506,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_comparisons_SingleCompareRight(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -519,7 +519,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_comparisons(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -528,7 +528,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl option_expr"
     def inspect_option_expr(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "option_expr"
+        if token.options != "option_expr": raise SyntaxError()
 
         if False:
             pass
@@ -541,10 +541,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_option_expr_NoExpr(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_option_expr(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_option_expr(token, inher_aux)
 
      # crawl: comma_exprs
@@ -553,7 +553,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "comma_exprs"
+        if token.options != "comma_exprs": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -567,7 +567,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_comma_exprs_SingleExpr(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -580,7 +580,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_comma_exprs(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -592,7 +592,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "target_exprs"
+        if token.options != "target_exprs": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -606,7 +606,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_target_exprs_SingleTargetExpr(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -619,7 +619,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_target_exprs(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -631,7 +631,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "decorators"
+        if token.options != "decorators": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -645,7 +645,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_decorators_NoDec(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -658,7 +658,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_decorators(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -670,7 +670,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "constraint_filters"
+        if token.options != "constraint_filters": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -688,7 +688,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_constraint_filters_NoFilter(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -701,7 +701,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_constraint_filters(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -713,7 +713,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "sequence_string"
+        if token.options != "sequence_string": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -727,7 +727,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_sequence_string_SingleStr(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -740,7 +740,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_sequence_string(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -752,7 +752,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "arguments"
+        if token.options != "arguments": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -770,7 +770,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_arguments_KeywordsArg(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -783,7 +783,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_arguments(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -792,7 +792,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl dictionary_item"
     def inspect_dictionary_item(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "dictionary_item"
+        if token.options != "dictionary_item": raise SyntaxError()
 
         if False:
             pass
@@ -805,10 +805,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_dictionary_item_DictionarySplatFields(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_dictionary_item(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_dictionary_item(token, inher_aux)
 
      # crawl: dictionary_content
@@ -817,7 +817,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "dictionary_content"
+        if token.options != "dictionary_content": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -831,7 +831,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_dictionary_content_SingleDictionaryItem(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -844,7 +844,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_dictionary_content(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -856,7 +856,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "sequence_name"
+        if token.options != "sequence_name": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -870,7 +870,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_sequence_name_SingleId(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -883,7 +883,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_sequence_name(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -895,7 +895,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "sequence_import_name"
+        if token.options != "sequence_import_name": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -909,7 +909,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_sequence_import_name_SingleImportName(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -922,7 +922,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_sequence_import_name(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -934,7 +934,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "sequence_with_item"
+        if token.options != "sequence_with_item": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -948,7 +948,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_sequence_with_item_SingleWithItem(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -961,7 +961,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_sequence_with_item(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -970,7 +970,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl module"
     def inspect_module(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "module"
+        if token.options != "module": raise SyntaxError()
 
         if False:
             pass
@@ -983,10 +983,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_module_SimpleMod(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_module(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_module(token, inher_aux)
 
      # crawl: statements
@@ -995,7 +995,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "statements"
+        if token.options != "statements": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -1009,7 +1009,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_statements_SingleStmt(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -1022,7 +1022,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_statements(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -1034,7 +1034,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "comprehension_constraints"
+        if token.options != "comprehension_constraints": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -1048,7 +1048,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_comprehension_constraints_SingleConstraint(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -1061,7 +1061,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_comprehension_constraints(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -1073,7 +1073,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "sequence_ExceptHandler"
+        if token.options != "sequence_ExceptHandler": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -1087,7 +1087,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_sequence_ExceptHandler_SingleExceptHandler(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -1100,7 +1100,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_sequence_ExceptHandler(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -1112,7 +1112,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "conditions"
+        if token.options != "conditions": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -1130,7 +1130,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_conditions_NoCond(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -1143,7 +1143,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_conditions(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -1152,7 +1152,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl function_def"
     def inspect_function_def(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "function_def"
+        if token.options != "function_def": raise SyntaxError()
 
         if False:
             pass
@@ -1165,16 +1165,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_function_def_AsyncFunctionDef(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_function_def(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_function_def(token, inher_aux)
 
     
     # crawl stmt"
     def inspect_stmt(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "stmt"
+        if token.options != "stmt": raise SyntaxError()
 
         if False:
             pass
@@ -1327,10 +1327,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_stmt_Continue(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_stmt(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_stmt(token, inher_aux)
 
      # crawl: expr
@@ -1339,7 +1339,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux, children : tuple[Synth[SynthAux], ...], stack_result : Optional[Synth[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Synth[SynthAux], ...]]]
     ) -> Optional[Synth[SynthAux]]:
-        assert token.options == "expr"
+        if token.options != "expr": raise SyntaxError()
         rule_name = token.selection
 
         if False: 
@@ -1489,7 +1489,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_expr_Slice(inher_aux, children, stack_result, stack)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
 
 
@@ -1502,7 +1502,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
             (token, inher_aux, children) = stack.pop()
 
-            assert isinstance(token, Grammar)
+            if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_expr(token, inher_aux, children, stack_result, stack)
 
         assert stack_result
@@ -1511,7 +1511,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # crawl bool_rator"
     def inspect_bool_rator(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "bool_rator"
+        if token.options != "bool_rator": raise SyntaxError()
 
         if False:
             pass
@@ -1524,16 +1524,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_bool_rator_Or(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_bool_rator(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_bool_rator(token, inher_aux)
 
     
     # crawl bin_rator"
     def inspect_bin_rator(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "bin_rator"
+        if token.options != "bin_rator": raise SyntaxError()
 
         if False:
             pass
@@ -1590,16 +1590,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_bin_rator_FloorDiv(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_bin_rator(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_bin_rator(token, inher_aux)
 
     
     # crawl unary_rator"
     def inspect_unary_rator(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "unary_rator"
+        if token.options != "unary_rator": raise SyntaxError()
 
         if False:
             pass
@@ -1620,16 +1620,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_unary_rator_USub(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_unary_rator(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_unary_rator(token, inher_aux)
 
     
     # crawl cmp_rator"
     def inspect_cmp_rator(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "cmp_rator"
+        if token.options != "cmp_rator": raise SyntaxError()
 
         if False:
             pass
@@ -1674,16 +1674,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_cmp_rator_NotIn(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_cmp_rator(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_cmp_rator(token, inher_aux)
 
     
     # crawl constraint"
     def inspect_constraint(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.options == "constraint"
+        if token.options != "constraint": raise SyntaxError()
 
         if False:
             pass
@@ -1696,60 +1696,60 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_constraint_Constraint(inher_aux)
             
         else:
-            raise Error()
+            raise SyntaxError()
 
     def crawl_constraint(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
+        if not isinstance(token, Grammar): raise SyntaxError()
         return self.inspect_constraint(token, inher_aux)
 
      
     
     # crawl CompareRight" +
     def crawl_CompareRight(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "CompareRight"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "CompareRight": raise SyntaxError()
 
         return self.inspect_CompareRight(token, inher_aux)
     
     # crawl ExceptHandler" +
     def crawl_ExceptHandler(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "ExceptHandler"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "ExceptHandler": raise SyntaxError()
 
         return self.inspect_ExceptHandler(token, inher_aux)
     
     # crawl Param" +
     def crawl_Param(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "Param"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "Param": raise SyntaxError()
 
         return self.inspect_Param(token, inher_aux)
     
     # crawl ClassDef" +
     def crawl_ClassDef(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "ClassDef"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "ClassDef": raise SyntaxError()
 
         return self.inspect_ClassDef(token, inher_aux)
     
     # crawl ElifBlock" +
     def crawl_ElifBlock(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "ElifBlock"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "ElifBlock": raise SyntaxError()
 
         return self.inspect_ElifBlock(token, inher_aux)
     
     # crawl ElseBlock" +
     def crawl_ElseBlock(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "ElseBlock"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "ElseBlock": raise SyntaxError()
 
         return self.inspect_ElseBlock(token, inher_aux)
     
     # crawl FinallyBlock" +
     def crawl_FinallyBlock(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Grammar)
-        assert token.options == "FinallyBlock"
+        if not isinstance(token, Grammar): raise SyntaxError()
+        if token.options != "FinallyBlock": raise SyntaxError()
 
         return self.inspect_FinallyBlock(token, inher_aux)
      
@@ -1945,7 +1945,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_d <-- SingleKwParam
     def inspect_parameters_d_SingleKwParam(self,
@@ -1984,7 +1984,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_d <-- DictionarySplatParam
     def inspect_parameters_d_DictionarySplatParam(self,
@@ -2023,7 +2023,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_c <-- SingleListSplatParam"
     def inspect_parameters_c_SingleListSplatParam(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -2149,7 +2149,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_b <-- SinglePosKeyParam
     def inspect_parameters_b_SinglePosKeyParam(self,
@@ -2188,7 +2188,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_b <-- ParamsC
     def inspect_parameters_b_ParamsC(self,
@@ -2227,7 +2227,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_a <-- ConsPosParam
     def inspect_parameters_a_ConsPosParam(self,
@@ -2291,7 +2291,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_a <-- SinglePosParam
     def inspect_parameters_a_SinglePosParam(self,
@@ -2330,7 +2330,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters_a <-- TransPosParam
     def inspect_parameters_a_TransPosParam(self,
@@ -2393,7 +2393,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: parameters <-- ParamsA"
     def inspect_parameters_ParamsA(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -2659,7 +2659,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: bases_a <-- SingleBase
     def inspect_bases_a_SingleBase(self,
@@ -2698,7 +2698,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: bases_a <-- KeywordBases
     def inspect_bases_a_KeywordBases(self,
@@ -2737,7 +2737,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: keywords <-- ConsKeyword
     def inspect_keywords_ConsKeyword(self,
@@ -2801,7 +2801,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: keywords <-- SingleKeyword
     def inspect_keywords_SingleKeyword(self,
@@ -2840,7 +2840,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: comparisons <-- ConsCompareRight
     def inspect_comparisons_ConsCompareRight(self,
@@ -2904,7 +2904,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: comparisons <-- SingleCompareRight
     def inspect_comparisons_SingleCompareRight(self,
@@ -2943,7 +2943,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: option_expr <-- SomeExpr"
     def inspect_option_expr_SomeExpr(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -3032,7 +3032,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: comma_exprs <-- SingleExpr
     def inspect_comma_exprs_SingleExpr(self,
@@ -3071,7 +3071,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: target_exprs <-- ConsTargetExpr
     def inspect_target_exprs_ConsTargetExpr(self,
@@ -3135,7 +3135,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: target_exprs <-- SingleTargetExpr
     def inspect_target_exprs_SingleTargetExpr(self,
@@ -3174,7 +3174,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: decorators <-- ConsDec
     def inspect_decorators_ConsDec(self,
@@ -3238,7 +3238,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: decorators <-- NoDec
     def inspect_decorators_NoDec(self,
@@ -3259,7 +3259,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: constraint_filters <-- ConsFilter
     def inspect_constraint_filters_ConsFilter(self,
@@ -3323,7 +3323,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: constraint_filters <-- SingleFilter
     def inspect_constraint_filters_SingleFilter(self,
@@ -3362,7 +3362,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: constraint_filters <-- NoFilter
     def inspect_constraint_filters_NoFilter(self,
@@ -3383,7 +3383,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_string <-- ConsStr
     def inspect_sequence_string_ConsStr(self,
@@ -3447,7 +3447,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_string <-- SingleStr
     def inspect_sequence_string_SingleStr(self,
@@ -3486,7 +3486,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: arguments <-- ConsArg
     def inspect_arguments_ConsArg(self,
@@ -3550,7 +3550,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: arguments <-- SingleArg
     def inspect_arguments_SingleArg(self,
@@ -3589,7 +3589,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: arguments <-- KeywordsArg
     def inspect_arguments_KeywordsArg(self,
@@ -3628,7 +3628,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: dictionary_item <-- Field"
     def inspect_dictionary_item_Field(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -3737,7 +3737,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: dictionary_content <-- SingleDictionaryItem
     def inspect_dictionary_content_SingleDictionaryItem(self,
@@ -3776,7 +3776,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_name <-- ConsId
     def inspect_sequence_name_ConsId(self,
@@ -3840,7 +3840,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_name <-- SingleId
     def inspect_sequence_name_SingleId(self,
@@ -3879,7 +3879,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_import_name <-- ConsImportName
     def inspect_sequence_import_name_ConsImportName(self,
@@ -3943,7 +3943,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_import_name <-- SingleImportName
     def inspect_sequence_import_name_SingleImportName(self,
@@ -3982,7 +3982,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_with_item <-- ConsWithItem
     def inspect_sequence_with_item_ConsWithItem(self,
@@ -4046,7 +4046,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_with_item <-- SingleWithItem
     def inspect_sequence_with_item_SingleWithItem(self,
@@ -4085,7 +4085,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: module <-- FutureMod"
     def inspect_module_FutureMod(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -4194,7 +4194,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: statements <-- SingleStmt
     def inspect_statements_SingleStmt(self,
@@ -4233,7 +4233,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: comprehension_constraints <-- ConsConstraint
     def inspect_comprehension_constraints_ConsConstraint(self,
@@ -4297,7 +4297,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: comprehension_constraints <-- SingleConstraint
     def inspect_comprehension_constraints_SingleConstraint(self,
@@ -4336,7 +4336,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_ExceptHandler <-- ConsExceptHandler
     def inspect_sequence_ExceptHandler_ConsExceptHandler(self,
@@ -4400,7 +4400,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: sequence_ExceptHandler <-- SingleExceptHandler
     def inspect_sequence_ExceptHandler_SingleExceptHandler(self,
@@ -4439,7 +4439,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: conditions <-- ElifCond
     def inspect_conditions_ElifCond(self,
@@ -4503,7 +4503,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: conditions <-- ElseCond
     def inspect_conditions_ElseCond(self,
@@ -4542,7 +4542,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: conditions <-- NoCond
     def inspect_conditions_NoCond(self,
@@ -4563,7 +4563,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: function_def <-- FunctionDef"
     def inspect_function_def_FunctionDef(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -5791,7 +5791,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- AssignExpr
     def inspect_expr_AssignExpr(self,
@@ -5854,7 +5854,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- BinOp
     def inspect_expr_BinOp(self,
@@ -5945,7 +5945,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- UnaryOp
     def inspect_expr_UnaryOp(self,
@@ -6009,7 +6009,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Lambda
     def inspect_expr_Lambda(self,
@@ -6073,7 +6073,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- IfExp
     def inspect_expr_IfExp(self,
@@ -6163,7 +6163,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Dictionary
     def inspect_expr_Dictionary(self,
@@ -6202,7 +6202,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- EmptyDictionary
     def inspect_expr_EmptyDictionary(self,
@@ -6223,7 +6223,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Set
     def inspect_expr_Set(self,
@@ -6262,7 +6262,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- ListComp
     def inspect_expr_ListComp(self,
@@ -6326,7 +6326,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- SetComp
     def inspect_expr_SetComp(self,
@@ -6390,7 +6390,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- DictionaryComp
     def inspect_expr_DictionaryComp(self,
@@ -6481,7 +6481,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- GeneratorExp
     def inspect_expr_GeneratorExp(self,
@@ -6545,7 +6545,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Await
     def inspect_expr_Await(self,
@@ -6586,7 +6586,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- YieldNothing
     def inspect_expr_YieldNothing(self,
@@ -6607,7 +6607,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Yield
     def inspect_expr_Yield(self,
@@ -6648,7 +6648,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- YieldFrom
     def inspect_expr_YieldFrom(self,
@@ -6689,7 +6689,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Compare
     def inspect_expr_Compare(self,
@@ -6753,7 +6753,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Call
     def inspect_expr_Call(self,
@@ -6794,7 +6794,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- CallArgs
     def inspect_expr_CallArgs(self,
@@ -6858,7 +6858,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Integer
     def inspect_expr_Integer(self,
@@ -6897,7 +6897,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Float
     def inspect_expr_Float(self,
@@ -6936,7 +6936,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- ConcatString
     def inspect_expr_ConcatString(self,
@@ -6975,7 +6975,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- True_
     def inspect_expr_True_(self,
@@ -6996,7 +6996,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- False_
     def inspect_expr_False_(self,
@@ -7017,7 +7017,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- None_
     def inspect_expr_None_(self,
@@ -7038,7 +7038,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Ellip
     def inspect_expr_Ellip(self,
@@ -7059,7 +7059,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Attribute
     def inspect_expr_Attribute(self,
@@ -7123,7 +7123,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Subscript
     def inspect_expr_Subscript(self,
@@ -7186,7 +7186,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Starred
     def inspect_expr_Starred(self,
@@ -7227,7 +7227,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Name
     def inspect_expr_Name(self,
@@ -7266,7 +7266,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- List
     def inspect_expr_List(self,
@@ -7305,7 +7305,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- EmptyList
     def inspect_expr_EmptyList(self,
@@ -7326,7 +7326,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Tuple
     def inspect_expr_Tuple(self,
@@ -7365,7 +7365,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- EmptyTuple
     def inspect_expr_EmptyTuple(self,
@@ -7386,7 +7386,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: expr <-- Slice
     def inspect_expr_Slice(self,
@@ -7478,7 +7478,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
         
         else:
-            raise Error()
+            raise SyntaxError()
     
     # inspect: bool_rator <-- And"
     def inspect_bool_rator_And(self, inher_aux : InherAux) -> Synth[SynthAux]:
@@ -7797,7 +7797,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: CompareRight"
     def inspect_CompareRight(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "CompareRight"
+        if token.selection != "CompareRight": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_CompareRight_rator(
@@ -7827,7 +7827,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: ExceptHandler"
     def inspect_ExceptHandler(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "ExceptHandler"
+        if token.selection != "ExceptHandler": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_ExceptHandler_arg(
@@ -7857,7 +7857,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: Param"
     def inspect_Param(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "Param"
+        if token.selection != "Param": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_Param_name(
@@ -7901,7 +7901,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: ClassDef"
     def inspect_ClassDef(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "ClassDef"
+        if token.selection != "ClassDef": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_ClassDef_name(
@@ -7945,7 +7945,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: ElifBlock"
     def inspect_ElifBlock(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "ElifBlock"
+        if token.selection != "ElifBlock": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_ElifBlock_test(
@@ -7975,7 +7975,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: ElseBlock"
     def inspect_ElseBlock(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "ElseBlock"
+        if token.selection != "ElseBlock": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_ElseBlock_body(
@@ -7993,7 +7993,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # inspect: FinallyBlock"
     def inspect_FinallyBlock(self, token : Grammar, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert token.selection == "FinallyBlock"
+        if token.selection != "FinallyBlock": raise SyntaxError()
         
 
         child_inher_aux = self.traverse_FinallyBlock_body(
@@ -11906,7 +11906,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ) 
 
     def crawl_str(self, token : abstract_token, inher_aux : InherAux) -> Synth[SynthAux]:
-        assert isinstance(token, Vocab)
+        if not isinstance(token, Vocab): raise SyntaxError()
         return self.inspect_str(token, inher_aux)
 
     @abstractmethod
