@@ -1,15 +1,28 @@
-from lib import util_system as us 
-from lib import abstract_token_system as ats 
+from base import util_system as us 
+from base import abstract_token_system as ats 
 from lib import python_abstract_token_system as pats 
 from lib import python_ast_system as pas
-from lib import python_analysis_system as pals
+from lib import python_aux_system as pals
+from lib import python_generic_tree_system as pgs
 import json
 
 from pyrsistent.typing import PMap
 
 def make_demo_code(module_name, code :str, package : PMap[str, pals.ModulePackage], step_size : int = 1):
     acc = [] 
-    for token, code, inher_aux in pals.analyze_in_steps(module_name, code, package):
+
+    gnode = pgs.parse(code)
+    mod = pas.parse_from_generic_tree(gnode)
+    abstract_tokens = pas.serialize(mod)
+
+    partial_tokens = [] 
+    client : pals.Client = pals.spawn_analysis(package, module_name)
+
+    inher_aux : pals.InherAux = client.init
+    for token in abstract_tokens:
+        inher_aux = client.next(token)
+        partial_tokens.append(token)
+        code = pats.concretize(tuple(partial_tokens))
         acc += [f"""
 <<<<
 {ats.to_string(token)}

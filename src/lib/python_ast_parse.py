@@ -7,10 +7,10 @@ from collections.abc import Callable
 from abc import ABC, abstractmethod
 
 
+from base import util_system
 from lib.generic_tree_system import GenericNode
 from lib.python_ast_construct_autogen import *
 
-from lib import util_system
 
 class Obsolete(Exception):
     pass

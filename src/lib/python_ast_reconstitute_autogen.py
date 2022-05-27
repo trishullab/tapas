@@ -3,9 +3,9 @@
 
 
 from __future__ import annotations
-from lib import abstract_token_system as ats
-from lib.abstract_token_system import abstract_token, Vocab, Grammar
-from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
+from base import abstract_token_system as ats
+from base.abstract_token_system import abstract_token, Vocab, Grammar
+from base.line_format_construct_autogen import InLine, NewLine, IndentLine
     
 
 

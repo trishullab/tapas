@@ -1,9 +1,6 @@
 from typing import Callable, Any
-
+from base import util_system
 from tree_sitter import Language
-import tree_sitter
-import ast
-import json
 
 from lib import generic_tree_system
 
@@ -17,7 +14,6 @@ def run_concrete(concrete : str):
     python_ast_system.assert_concretize_parse_bidrectional(mod)
 
 
-from lib import util_system
 import os
 dirpath = util_system.project_path("res/test/python/concrete_data")
 

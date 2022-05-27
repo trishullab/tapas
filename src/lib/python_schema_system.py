@@ -1,7 +1,7 @@
 from __future__ import annotations
-from lib.rule_construct_autogen import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
-from lib.line_format_construct_autogen import NewLine, InLine, IndentLine
-import lib.rule_system
+from base.rule_construct_autogen import ItemHandlers, Rule, Vocab, Terminal, Nonterm 
+from base.line_format_construct_autogen import NewLine, InLine, IndentLine
+from base import rule_system as rs
 
 choices_schema : dict[str, list[Rule]] = {
 
@@ -1666,6 +1666,6 @@ schema = {
 
 # map from a nonterminal to choices of nodes (sequences)
 portable_schema = {
-    name : [lib.rule_system.to_dictionary(rule) for rule in rules]
+    name : [rs.to_dictionary(rule) for rule in rules]
     for name, rules in schema.items()
 }

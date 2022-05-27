@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from lib import abstract_token_system as ats
-from lib.abstract_token_construct_autogen import Grammar 
-from lib.abstract_token_system import abstract_token 
+from base import abstract_token_system as ats
+from base.abstract_token_construct_autogen import Grammar 
+from base.abstract_token_system import abstract_token 
 from lib.generic_tree_system import GenericNode
 from lib import python_ast_parse
 from lib import python_generic_tree_system as pgs

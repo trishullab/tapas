@@ -1,11 +1,11 @@
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
-from lib import python_analysis_system as pals
+from lib import python_aux_system as pals
 from lib import python_ast_system as pas
 from lib import python_generic_tree_system as pgs 
 from lib import python_abstract_token_system as pats
-from lib import abstract_token_system as ats
-from lib import util_system as us
+from base import abstract_token_system as ats
+from base import util_system as us
 
 import json
 import pytest
@@ -17,14 +17,14 @@ def test_analyze_typeshed():
 package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed()
 
 def load_source(name : str) -> str:
-    path = us.project_path(f"res/test/python/source/{name}.py")
+    path = us.project_path(f"res/python/{name}.py")
     with open(path, 'r') as f:
         return f.read()
 
 def translate(module_name : str):
     code = load_source(module_name) 
     print(f"***************************************")
-    print(f"OOGA: {module_name}")
+    print(f"-- module: {module_name} --")
     print(f"- code --")
     print(code)
     print(f"-------------------------------------")
@@ -51,14 +51,22 @@ def analyze(module_name : str):
     print(pats.dump(tokens))
     print(f"***************************************")
 
-    # pals.analyze_code(package, module_name, code)
-    partial_tokens = []
-    for token, code, inher_aux in pals.analyze_in_steps(module_name, code, package):
+    gnode = pgs.parse(code)
+    mod = pas.parse_from_generic_tree(gnode)
+    abstract_tokens = pas.serialize(mod)
+
+    partial_tokens = [] 
+    client : pals.Client = pals.spawn_analysis(package, module_name)
+
+    inher_aux : pals.InherAux = client.init
+    for token in abstract_tokens:
+        inher_aux = client.next(token)
         partial_tokens.append(token)
+        partial_code = pats.concretize(tuple(partial_tokens))
         print(f"""
 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 -----------------------------
-{code}
+{partial_code}
 -----------------------------
 {ats.to_string(token)}
 -----------------------------
@@ -152,5 +160,5 @@ def test_021_error():
         analyze("021_error")
 
 if __name__ == "__main__":
-    # analyze("020_ok")
+    analyze("020_ok")
     pass

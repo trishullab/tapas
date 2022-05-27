@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import inflection
 
-import lib.rule_system
-from lib.rule_system import Rule
+from base import rule_system as rs 
+from base.rule_system import Rule
 
-def is_vocab(o : lib.rule_system.item):
-    return isinstance(o, lib.rule_system.Vocab)
+def is_vocab(o : rs.item):
+    return isinstance(o, rs.Vocab)
 
 def generate_single_procedure(
     rule : Rule 
 ) -> str:
 
-    def assert_not_terminal(o : lib.rule_system.item) -> str:
-        assert not isinstance(o, lib.rule_system.Terminal)
+    def assert_not_terminal(o : rs.item) -> str:
+        assert not isinstance(o, rs.Terminal)
         return ""
 
     nl = "\n"
@@ -23,18 +23,18 @@ def from_{rule.name}(
     o : {rule.name} | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = '{rule.name}',
             selection = '{rule.name}'
         )]){f' +{nl}' if rule.content else ''}
 {f' +{nl}'.join([
 
-    lib.rule_system.match_item(item, lib.rule_system.ItemHandlers[str](
+    rs.match_item(item, rs.ItemHandlers[str](
         case_Vocab = lambda o : (
-            "    " * 2 + f"tuple([lib.abstract_token_system.make_Vocab(options = '{o.vocab}', selection = o.{o.relation})])"
+            "    " * 2 + f"tuple([make_Vocab(options = '{o.vocab}', selection = o.{o.relation})])"
         ),
         case_Nonterm = lambda o : (
             "    " * 2 + f"from_{o.nonterminal}(o.{o.relation})"
@@ -45,17 +45,17 @@ def from_{rule.name}(
     ))
 
     for item in rule.content 
-    if not isinstance(item, lib.rule_system.Terminal)
+    if not isinstance(item, rs.Terminal)
 ])}
 
     )
     """)
 
-def generate_item(type_name : str, item : lib.rule_system.item):
-    return lib.rule_system.match_item(item, lib.rule_system.ItemHandlers[str](
+def generate_item(type_name : str, item : rs.item):
+    return rs.match_item(item, rs.ItemHandlers[str](
         case_Vocab=lambda o : (f"""
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = '{o.vocab}',
                         selection = o.{o.relation}
                     )])
@@ -86,7 +86,7 @@ def generate_rule_handler(type_name : str, rule : Rule):
                     for child in reversed(rule.content)
                 ])}
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = '{type_name}',
                         selection = '{rule.name}'
                     )])
@@ -107,7 +107,7 @@ def from_{type_name}(
     o : {type_name} | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -130,7 +130,7 @@ def from_{type_name}(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -142,10 +142,10 @@ def generate_content(content_header : str, singles : list[Rule], choices : dict[
 
     header = """
 from __future__ import annotations
-import lib.abstract_token_system
-from lib.abstract_token_construct_autogen import abstract_token
-from lib.python_ast_construct_autogen import *
-from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
+import base.abstract_token_system
+from base.abstract_token_construct_autogen import abstract_token
+from base.abstract_token_construct_autogen import Hole, make_Grammar, make_Vocab
+from base.line_format_construct_autogen import InLine, NewLine, IndentLine
 """
 
     nl = "\n"

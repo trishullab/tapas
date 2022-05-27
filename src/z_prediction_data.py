@@ -1,9 +1,10 @@
-from lib import abstract_token_system, util_system
+from base import abstract_token_system
+from base import util_system
 import json
 
 
 
-from lib import abstract_token_system as ats
+from base import abstract_token_system as ats
 from lib import python_abstract_token_system as pats
 from lib import python_ast_system as pas
 def concretize_ptokens(ptoks : list[str]) -> str:

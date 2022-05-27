@@ -3,10 +3,10 @@
 
 
 from __future__ import annotations
-import lib.abstract_token_system
-from lib.abstract_token_construct_autogen import abstract_token
-from lib.python_ast_construct_autogen import *
-from lib.line_format_construct_autogen import InLine, NewLine, IndentLine
+import base.abstract_token_system
+from base.abstract_token_construct_autogen import abstract_token
+from base.abstract_token_construct_autogen import Hole, make_Grammar, make_Vocab
+from base.line_format_construct_autogen import InLine, NewLine, IndentLine
 
 
 
@@ -19,7 +19,7 @@ def from_return_annotation(
     o : return_annotation | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -34,7 +34,7 @@ def from_return_annotation(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'return_annotation',
                         selection = 'SomeReturnAnno'
                     )])
@@ -44,7 +44,7 @@ def from_return_annotation(
             def handle_NoReturnAnno(o : NoReturnAnno): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'return_annotation',
                         selection = 'NoReturnAnno'
                     )])
@@ -58,7 +58,7 @@ def from_return_annotation(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -70,7 +70,7 @@ def from_except_arg(
     o : except_arg | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -85,7 +85,7 @@ def from_except_arg(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'except_arg',
                         selection = 'SomeExceptArg'
                     )])
@@ -95,7 +95,7 @@ def from_except_arg(
             def handle_SomeExceptArgName(o : SomeExceptArgName): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
@@ -106,7 +106,7 @@ def from_except_arg(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'except_arg',
                         selection = 'SomeExceptArgName'
                     )])
@@ -116,7 +116,7 @@ def from_except_arg(
             def handle_NoExceptArg(o : NoExceptArg): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'except_arg',
                         selection = 'NoExceptArg'
                     )])
@@ -131,7 +131,7 @@ def from_except_arg(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -143,7 +143,7 @@ def from_param_annotation(
     o : param_annotation | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -158,7 +158,7 @@ def from_param_annotation(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'param_annotation',
                         selection = 'SomeParamAnno'
                     )])
@@ -168,7 +168,7 @@ def from_param_annotation(
             def handle_NoParamAnno(o : NoParamAnno): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'param_annotation',
                         selection = 'NoParamAnno'
                     )])
@@ -182,7 +182,7 @@ def from_param_annotation(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -194,7 +194,7 @@ def from_param_default(
     o : param_default | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -209,7 +209,7 @@ def from_param_default(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'param_default',
                         selection = 'SomeParamDefault'
                     )])
@@ -219,7 +219,7 @@ def from_param_default(
             def handle_NoParamDefault(o : NoParamDefault): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'param_default',
                         selection = 'NoParamDefault'
                     )])
@@ -233,7 +233,7 @@ def from_param_default(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -245,7 +245,7 @@ def from_parameters_d(
     o : parameters_d | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -262,7 +262,7 @@ def from_parameters_d(
 
                 stack.append(from_Param(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_d',
                         selection = 'ConsKwParam'
                     )])
@@ -273,7 +273,7 @@ def from_parameters_d(
                 
                 stack.append(from_Param(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_d',
                         selection = 'SingleKwParam'
                     )])
@@ -285,7 +285,7 @@ def from_parameters_d(
                 stack.append(from_Param(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_d',
                         selection = 'DictionarySplatParam'
                     )])
@@ -300,7 +300,7 @@ def from_parameters_d(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -312,7 +312,7 @@ def from_parameters_c(
     o : parameters_c | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -327,7 +327,7 @@ def from_parameters_c(
                 stack.append(from_Param(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_c',
                         selection = 'SingleListSplatParam'
                     )])
@@ -342,7 +342,7 @@ def from_parameters_c(
                 stack.append(from_Param(o.head))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_c',
                         selection = 'TransListSplatParam'
                     )])
@@ -354,7 +354,7 @@ def from_parameters_c(
                 stack.append(from_parameters_d(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_c',
                         selection = 'ParamsD'
                     )])
@@ -369,7 +369,7 @@ def from_parameters_c(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -381,7 +381,7 @@ def from_parameters_b(
     o : parameters_b | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -398,7 +398,7 @@ def from_parameters_b(
 
                 stack.append(from_Param(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_b',
                         selection = 'ConsPosKeyParam'
                     )])
@@ -409,7 +409,7 @@ def from_parameters_b(
                 
                 stack.append(from_Param(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_b',
                         selection = 'SinglePosKeyParam'
                     )])
@@ -420,7 +420,7 @@ def from_parameters_b(
                 
                 stack.append(from_parameters_c(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_b',
                         selection = 'ParamsC'
                     )])
@@ -435,7 +435,7 @@ def from_parameters_b(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -447,7 +447,7 @@ def from_parameters_a(
     o : parameters_a | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -464,7 +464,7 @@ def from_parameters_a(
 
                 stack.append(from_Param(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_a',
                         selection = 'ConsPosParam'
                     )])
@@ -476,7 +476,7 @@ def from_parameters_a(
 
                 stack.append(from_Param(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_a',
                         selection = 'SinglePosParam'
                     )])
@@ -490,7 +490,7 @@ def from_parameters_a(
 
                 stack.append(from_Param(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters_a',
                         selection = 'TransPosParam'
                     )])
@@ -505,7 +505,7 @@ def from_parameters_a(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -517,7 +517,7 @@ def from_parameters(
     o : parameters | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -531,7 +531,7 @@ def from_parameters(
                 
                 stack.append(from_parameters_a(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters',
                         selection = 'ParamsA'
                     )])
@@ -542,7 +542,7 @@ def from_parameters(
                 
                 stack.append(from_parameters_b(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters',
                         selection = 'ParamsB'
                     )])
@@ -552,7 +552,7 @@ def from_parameters(
             def handle_NoParam(o : NoParam): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'parameters',
                         selection = 'NoParam'
                     )])
@@ -567,7 +567,7 @@ def from_parameters(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -579,7 +579,7 @@ def from_keyword(
     o : keyword | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -595,14 +595,14 @@ def from_keyword(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'keyword',
                         selection = 'NamedKeyword'
                     )])
@@ -614,7 +614,7 @@ def from_keyword(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'keyword',
                         selection = 'SplatKeyword'
                     )])
@@ -628,7 +628,7 @@ def from_keyword(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -640,7 +640,7 @@ def from_import_name(
     o : import_name | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -653,7 +653,7 @@ def from_import_name(
             def handle_ImportNameAlias(o : ImportNameAlias): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.alias
                     )])
@@ -662,14 +662,14 @@ def from_import_name(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'import_name',
                         selection = 'ImportNameAlias'
                     )])
@@ -679,14 +679,14 @@ def from_import_name(
             def handle_ImportNameOnly(o : ImportNameOnly): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'import_name',
                         selection = 'ImportNameOnly'
                     )])
@@ -700,7 +700,7 @@ def from_import_name(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -712,7 +712,7 @@ def from_with_item(
     o : with_item | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -729,7 +729,7 @@ def from_with_item(
 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'with_item',
                         selection = 'WithItemAlias'
                     )])
@@ -740,7 +740,7 @@ def from_with_item(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'with_item',
                         selection = 'WithItemOnly'
                     )])
@@ -754,7 +754,7 @@ def from_with_item(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -766,7 +766,7 @@ def from_bases(
     o : bases | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -782,7 +782,7 @@ def from_bases(
                 stack.append(from_bases_a(o.bases))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bases',
                         selection = 'SomeBases'
                     )])
@@ -792,7 +792,7 @@ def from_bases(
             def handle_NoBases(o : NoBases): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bases',
                         selection = 'NoBases'
                     )])
@@ -806,7 +806,7 @@ def from_bases(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -818,7 +818,7 @@ def from_bases_a(
     o : bases_a | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -835,7 +835,7 @@ def from_bases_a(
 
                 stack.append(from_expr(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bases_a',
                         selection = 'ConsBase'
                     )])
@@ -846,7 +846,7 @@ def from_bases_a(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bases_a',
                         selection = 'SingleBase'
                     )])
@@ -857,7 +857,7 @@ def from_bases_a(
                 
                 stack.append(from_keywords(o.kws))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bases_a',
                         selection = 'KeywordBases'
                     )])
@@ -872,7 +872,7 @@ def from_bases_a(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -884,7 +884,7 @@ def from_keywords(
     o : keywords | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -901,7 +901,7 @@ def from_keywords(
 
                 stack.append(from_keyword(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'keywords',
                         selection = 'ConsKeyword'
                     )])
@@ -912,7 +912,7 @@ def from_keywords(
                 
                 stack.append(from_keyword(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'keywords',
                         selection = 'SingleKeyword'
                     )])
@@ -926,7 +926,7 @@ def from_keywords(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -938,7 +938,7 @@ def from_comparisons(
     o : comparisons | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -955,7 +955,7 @@ def from_comparisons(
 
                 stack.append(from_CompareRight(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'comparisons',
                         selection = 'ConsCompareRight'
                     )])
@@ -966,7 +966,7 @@ def from_comparisons(
                 
                 stack.append(from_CompareRight(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'comparisons',
                         selection = 'SingleCompareRight'
                     )])
@@ -980,7 +980,7 @@ def from_comparisons(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -992,7 +992,7 @@ def from_option_expr(
     o : option_expr | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1006,7 +1006,7 @@ def from_option_expr(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'option_expr',
                         selection = 'SomeExpr'
                     )])
@@ -1016,7 +1016,7 @@ def from_option_expr(
             def handle_NoExpr(o : NoExpr): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'option_expr',
                         selection = 'NoExpr'
                     )])
@@ -1030,7 +1030,7 @@ def from_option_expr(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1042,7 +1042,7 @@ def from_comma_exprs(
     o : comma_exprs | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1059,7 +1059,7 @@ def from_comma_exprs(
 
                 stack.append(from_expr(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'comma_exprs',
                         selection = 'ConsExpr'
                     )])
@@ -1070,7 +1070,7 @@ def from_comma_exprs(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'comma_exprs',
                         selection = 'SingleExpr'
                     )])
@@ -1084,7 +1084,7 @@ def from_comma_exprs(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1096,7 +1096,7 @@ def from_target_exprs(
     o : target_exprs | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1113,7 +1113,7 @@ def from_target_exprs(
 
                 stack.append(from_expr(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'target_exprs',
                         selection = 'ConsTargetExpr'
                     )])
@@ -1124,7 +1124,7 @@ def from_target_exprs(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'target_exprs',
                         selection = 'SingleTargetExpr'
                     )])
@@ -1138,7 +1138,7 @@ def from_target_exprs(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1150,7 +1150,7 @@ def from_decorators(
     o : decorators | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1167,7 +1167,7 @@ def from_decorators(
                 stack.append(from_expr(o.head))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'decorators',
                         selection = 'ConsDec'
                     )])
@@ -1177,7 +1177,7 @@ def from_decorators(
             def handle_NoDec(o : NoDec): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'decorators',
                         selection = 'NoDec'
                     )])
@@ -1191,7 +1191,7 @@ def from_decorators(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1203,7 +1203,7 @@ def from_constraint_filters(
     o : constraint_filters | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1220,7 +1220,7 @@ def from_constraint_filters(
                 stack.append(from_expr(o.head))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'constraint_filters',
                         selection = 'ConsFilter'
                     )])
@@ -1232,7 +1232,7 @@ def from_constraint_filters(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'constraint_filters',
                         selection = 'SingleFilter'
                     )])
@@ -1242,7 +1242,7 @@ def from_constraint_filters(
             def handle_NoFilter(o : NoFilter): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'constraint_filters',
                         selection = 'NoFilter'
                     )])
@@ -1257,7 +1257,7 @@ def from_constraint_filters(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1269,7 +1269,7 @@ def from_sequence_string(
     o : sequence_string | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1285,14 +1285,14 @@ def from_sequence_string(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'string',
                         selection = o.head
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_string',
                         selection = 'ConsStr'
                     )])
@@ -1302,14 +1302,14 @@ def from_sequence_string(
             def handle_SingleStr(o : SingleStr): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'string',
                         selection = o.content
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_string',
                         selection = 'SingleStr'
                     )])
@@ -1323,7 +1323,7 @@ def from_sequence_string(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1335,7 +1335,7 @@ def from_arguments(
     o : arguments | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1352,7 +1352,7 @@ def from_arguments(
 
                 stack.append(from_expr(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'arguments',
                         selection = 'ConsArg'
                     )])
@@ -1363,7 +1363,7 @@ def from_arguments(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'arguments',
                         selection = 'SingleArg'
                     )])
@@ -1374,7 +1374,7 @@ def from_arguments(
                 
                 stack.append(from_keywords(o.kws))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'arguments',
                         selection = 'KeywordsArg'
                     )])
@@ -1389,7 +1389,7 @@ def from_arguments(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1401,7 +1401,7 @@ def from_dictionary_item(
     o : dictionary_item | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1418,7 +1418,7 @@ def from_dictionary_item(
 
                 stack.append(from_expr(o.key))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'dictionary_item',
                         selection = 'Field'
                     )])
@@ -1430,7 +1430,7 @@ def from_dictionary_item(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'dictionary_item',
                         selection = 'DictionarySplatFields'
                     )])
@@ -1444,7 +1444,7 @@ def from_dictionary_item(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1456,7 +1456,7 @@ def from_dictionary_content(
     o : dictionary_content | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1473,7 +1473,7 @@ def from_dictionary_content(
 
                 stack.append(from_dictionary_item(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'dictionary_content',
                         selection = 'ConsDictionaryItem'
                     )])
@@ -1484,7 +1484,7 @@ def from_dictionary_content(
                 
                 stack.append(from_dictionary_item(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'dictionary_content',
                         selection = 'SingleDictionaryItem'
                     )])
@@ -1498,7 +1498,7 @@ def from_dictionary_content(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1510,7 +1510,7 @@ def from_sequence_name(
     o : sequence_name | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1526,14 +1526,14 @@ def from_sequence_name(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.head
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_name',
                         selection = 'ConsId'
                     )])
@@ -1543,14 +1543,14 @@ def from_sequence_name(
             def handle_SingleId(o : SingleId): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.content
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_name',
                         selection = 'SingleId'
                     )])
@@ -1564,7 +1564,7 @@ def from_sequence_name(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1576,7 +1576,7 @@ def from_sequence_import_name(
     o : sequence_import_name | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1593,7 +1593,7 @@ def from_sequence_import_name(
 
                 stack.append(from_import_name(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_import_name',
                         selection = 'ConsImportName'
                     )])
@@ -1604,7 +1604,7 @@ def from_sequence_import_name(
                 
                 stack.append(from_import_name(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_import_name',
                         selection = 'SingleImportName'
                     )])
@@ -1618,7 +1618,7 @@ def from_sequence_import_name(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1630,7 +1630,7 @@ def from_sequence_with_item(
     o : sequence_with_item | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1647,7 +1647,7 @@ def from_sequence_with_item(
 
                 stack.append(from_with_item(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_with_item',
                         selection = 'ConsWithItem'
                     )])
@@ -1658,7 +1658,7 @@ def from_sequence_with_item(
                 
                 stack.append(from_with_item(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_with_item',
                         selection = 'SingleWithItem'
                     )])
@@ -1672,7 +1672,7 @@ def from_sequence_with_item(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1684,7 +1684,7 @@ def from_module(
     o : module | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1701,7 +1701,7 @@ def from_module(
                 stack.append(from_sequence_import_name(o.names))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'module',
                         selection = 'FutureMod'
                     )])
@@ -1712,7 +1712,7 @@ def from_module(
                 
                 stack.append(from_statements(o.body))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'module',
                         selection = 'SimpleMod'
                     )])
@@ -1726,7 +1726,7 @@ def from_module(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1738,7 +1738,7 @@ def from_statements(
     o : statements | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1754,7 +1754,7 @@ def from_statements(
 
                 stack.append(from_stmt(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'statements',
                         selection = 'ConsStmt'
                     )])
@@ -1765,7 +1765,7 @@ def from_statements(
                 
                 stack.append(from_stmt(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'statements',
                         selection = 'SingleStmt'
                     )])
@@ -1779,7 +1779,7 @@ def from_statements(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1791,7 +1791,7 @@ def from_comprehension_constraints(
     o : comprehension_constraints | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1807,7 +1807,7 @@ def from_comprehension_constraints(
 
                 stack.append(from_constraint(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'comprehension_constraints',
                         selection = 'ConsConstraint'
                     )])
@@ -1818,7 +1818,7 @@ def from_comprehension_constraints(
                 
                 stack.append(from_constraint(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'comprehension_constraints',
                         selection = 'SingleConstraint'
                     )])
@@ -1832,7 +1832,7 @@ def from_comprehension_constraints(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1844,7 +1844,7 @@ def from_sequence_ExceptHandler(
     o : sequence_ExceptHandler | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1860,7 +1860,7 @@ def from_sequence_ExceptHandler(
 
                 stack.append(from_ExceptHandler(o.head))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_ExceptHandler',
                         selection = 'ConsExceptHandler'
                     )])
@@ -1871,7 +1871,7 @@ def from_sequence_ExceptHandler(
                 
                 stack.append(from_ExceptHandler(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'sequence_ExceptHandler',
                         selection = 'SingleExceptHandler'
                     )])
@@ -1885,7 +1885,7 @@ def from_sequence_ExceptHandler(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1897,7 +1897,7 @@ def from_conditions(
     o : conditions | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1913,7 +1913,7 @@ def from_conditions(
 
                 stack.append(from_ElifBlock(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'conditions',
                         selection = 'ElifCond'
                     )])
@@ -1924,7 +1924,7 @@ def from_conditions(
                 
                 stack.append(from_ElseBlock(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'conditions',
                         selection = 'ElseCond'
                     )])
@@ -1934,7 +1934,7 @@ def from_conditions(
             def handle_NoCond(o : NoCond): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'conditions',
                         selection = 'NoCond'
                     )])
@@ -1949,7 +1949,7 @@ def from_conditions(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -1961,7 +1961,7 @@ def from_function_def(
     o : function_def | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -1983,7 +1983,7 @@ def from_function_def(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
@@ -1991,7 +1991,7 @@ def from_function_def(
         
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'function_def',
                         selection = 'FunctionDef'
                     )])
@@ -2010,7 +2010,7 @@ def from_function_def(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
@@ -2018,7 +2018,7 @@ def from_function_def(
         
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'function_def',
                         selection = 'AsyncFunctionDef'
                     )])
@@ -2032,7 +2032,7 @@ def from_function_def(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -2044,7 +2044,7 @@ def from_stmt(
     o : stmt | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -2060,7 +2060,7 @@ def from_stmt(
 
                 stack.append(from_decorators(o.decs))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'DecFunctionDef'
                     )])
@@ -2073,7 +2073,7 @@ def from_stmt(
 
                 stack.append(from_decorators(o.decs))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'DecClassDef'
                     )])
@@ -2085,7 +2085,7 @@ def from_stmt(
                 stack.append(from_expr(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'ReturnSomething'
                     )])
@@ -2095,7 +2095,7 @@ def from_stmt(
             def handle_Return(o : Return): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Return'
                     )])
@@ -2107,7 +2107,7 @@ def from_stmt(
                 stack.append(from_comma_exprs(o.targets))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Delete'
                     )])
@@ -2121,7 +2121,7 @@ def from_stmt(
 
                 stack.append(from_target_exprs(o.targets))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Assign'
                     )])
@@ -2138,7 +2138,7 @@ def from_stmt(
 
                 stack.append(from_expr(o.target))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AugAssign'
                     )])
@@ -2155,7 +2155,7 @@ def from_stmt(
 
                 stack.append(from_expr(o.target))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AnnoAssign'
                     )])
@@ -2169,7 +2169,7 @@ def from_stmt(
 
                 stack.append(from_expr(o.target))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AnnoDeclar'
                     )])
@@ -2187,7 +2187,7 @@ def from_stmt(
                 stack.append(from_expr(o.target))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'For'
                     )])
@@ -2207,7 +2207,7 @@ def from_stmt(
                 stack.append(from_expr(o.target))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'ForElse'
                     )])
@@ -2225,7 +2225,7 @@ def from_stmt(
                 stack.append(from_expr(o.target))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AsyncFor'
                     )])
@@ -2245,7 +2245,7 @@ def from_stmt(
                 stack.append(from_expr(o.target))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AsyncForElse'
                     )])
@@ -2260,7 +2260,7 @@ def from_stmt(
                 stack.append(from_expr(o.test))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'While'
                     )])
@@ -2277,7 +2277,7 @@ def from_stmt(
                 stack.append(from_expr(o.test))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'WhileElse'
                     )])
@@ -2294,7 +2294,7 @@ def from_stmt(
                 stack.append(from_expr(o.test))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'If'
                     )])
@@ -2309,7 +2309,7 @@ def from_stmt(
                 stack.append(from_sequence_with_item(o.items))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'With'
                     )])
@@ -2324,7 +2324,7 @@ def from_stmt(
                 stack.append(from_sequence_with_item(o.items))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AsyncWith'
                     )])
@@ -2334,7 +2334,7 @@ def from_stmt(
             def handle_Raise(o : Raise): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Raise'
                     )])
@@ -2346,7 +2346,7 @@ def from_stmt(
                 stack.append(from_expr(o.exc))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'RaiseExc'
                     )])
@@ -2361,7 +2361,7 @@ def from_stmt(
                 stack.append(from_expr(o.exc))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'RaiseFrom'
                     )])
@@ -2375,7 +2375,7 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Try'
                     )])
@@ -2391,7 +2391,7 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'TryElse'
                     )])
@@ -2407,7 +2407,7 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'TryExceptFin'
                     )])
@@ -2421,7 +2421,7 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'TryFin'
                     )])
@@ -2439,7 +2439,7 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'TryElseFin'
                     )])
@@ -2451,7 +2451,7 @@ def from_stmt(
                 stack.append(from_expr(o.test))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Assert'
                     )])
@@ -2466,7 +2466,7 @@ def from_stmt(
                 stack.append(from_expr(o.test))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'AssertMsg'
                     )])
@@ -2478,7 +2478,7 @@ def from_stmt(
                 stack.append(from_sequence_import_name(o.names))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Import'
                     )])
@@ -2491,7 +2491,7 @@ def from_stmt(
 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.module
                     )])
@@ -2499,7 +2499,7 @@ def from_stmt(
         
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'ImportFrom'
                     )])
@@ -2510,7 +2510,7 @@ def from_stmt(
                 
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.module
                     )])
@@ -2518,7 +2518,7 @@ def from_stmt(
         
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'ImportWildCard'
                     )])
@@ -2530,7 +2530,7 @@ def from_stmt(
                 stack.append(from_sequence_name(o.names))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Global'
                     )])
@@ -2542,7 +2542,7 @@ def from_stmt(
                 stack.append(from_sequence_name(o.names))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Nonlocal'
                     )])
@@ -2553,7 +2553,7 @@ def from_stmt(
                 
                 stack.append(from_expr(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Expr'
                     )])
@@ -2563,7 +2563,7 @@ def from_stmt(
             def handle_Pass(o : Pass): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Pass'
                     )])
@@ -2573,7 +2573,7 @@ def from_stmt(
             def handle_Break(o : Break): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Break'
                     )])
@@ -2583,7 +2583,7 @@ def from_stmt(
             def handle_Continue(o : Continue): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Continue'
                     )])
@@ -2632,7 +2632,7 @@ def from_stmt(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -2644,7 +2644,7 @@ def from_expr(
     o : expr | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -2666,7 +2666,7 @@ def from_expr(
                 stack.append(o.left)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'BoolOp'
                     )])
@@ -2680,7 +2680,7 @@ def from_expr(
 
                 stack.append(o.target)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'AssignExpr'
                     )])
@@ -2699,7 +2699,7 @@ def from_expr(
                 stack.append(o.left)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'BinOp'
                     )])
@@ -2715,7 +2715,7 @@ def from_expr(
                 stack.append(from_unary_rator(o.rator))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'UnaryOp'
                     )])
@@ -2730,7 +2730,7 @@ def from_expr(
                 stack.append(from_parameters(o.params))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Lambda'
                     )])
@@ -2747,7 +2747,7 @@ def from_expr(
 
                 stack.append(o.body)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'IfExp'
                     )])
@@ -2760,7 +2760,7 @@ def from_expr(
                 stack.append(from_dictionary_content(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Dictionary'
                     )])
@@ -2770,7 +2770,7 @@ def from_expr(
             def handle_EmptyDictionary(o : EmptyDictionary): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'EmptyDictionary'
                     )])
@@ -2783,7 +2783,7 @@ def from_expr(
                 stack.append(from_comma_exprs(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Set'
                     )])
@@ -2798,7 +2798,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'ListComp'
                     )])
@@ -2813,7 +2813,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'SetComp'
                     )])
@@ -2831,7 +2831,7 @@ def from_expr(
                 stack.append(o.key)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'DictionaryComp'
                     )])
@@ -2846,7 +2846,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'GeneratorExp'
                     )])
@@ -2858,7 +2858,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Await'
                     )])
@@ -2868,7 +2868,7 @@ def from_expr(
             def handle_YieldNothing(o : YieldNothing): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'YieldNothing'
                     )])
@@ -2880,7 +2880,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Yield'
                     )])
@@ -2892,7 +2892,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'YieldFrom'
                     )])
@@ -2906,7 +2906,7 @@ def from_expr(
 
                 stack.append(o.left)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Compare'
                     )])
@@ -2918,7 +2918,7 @@ def from_expr(
 
                 stack.append(o.func)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Call'
                     )])
@@ -2933,7 +2933,7 @@ def from_expr(
 
                 stack.append(o.func)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'CallArgs'
                     )])
@@ -2943,14 +2943,14 @@ def from_expr(
             def handle_Integer(o : Integer): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'integer',
                         selection = o.content
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Integer'
                     )])
@@ -2960,14 +2960,14 @@ def from_expr(
             def handle_Float(o : Float): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'float',
                         selection = o.content
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Float'
                     )])
@@ -2978,7 +2978,7 @@ def from_expr(
                 
                 stack.append(from_sequence_string(o.content))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'ConcatString'
                     )])
@@ -2988,7 +2988,7 @@ def from_expr(
             def handle_True_(o : True_): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'True_'
                     )])
@@ -2998,7 +2998,7 @@ def from_expr(
             def handle_False_(o : False_): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'False_'
                     )])
@@ -3008,7 +3008,7 @@ def from_expr(
             def handle_None_(o : None_): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'None_'
                     )])
@@ -3018,7 +3018,7 @@ def from_expr(
             def handle_Ellip(o : Ellip): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Ellip'
                     )])
@@ -3028,7 +3028,7 @@ def from_expr(
             def handle_Attribute(o : Attribute): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.name
                     )])
@@ -3038,7 +3038,7 @@ def from_expr(
 
                 stack.append(o.content)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Attribute'
                     )])
@@ -3053,7 +3053,7 @@ def from_expr(
 
                 stack.append(o.content)
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Subscript'
                     )])
@@ -3065,7 +3065,7 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Starred'
                     )])
@@ -3075,14 +3075,14 @@ def from_expr(
             def handle_Name(o : Name): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Vocab(
+                    tuple([make_Vocab(
                         options = 'identifier',
                         selection = o.content
                     )])
                 )
         
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Name'
                     )])
@@ -3095,7 +3095,7 @@ def from_expr(
                 stack.append(from_comma_exprs(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'List'
                     )])
@@ -3105,7 +3105,7 @@ def from_expr(
             def handle_EmptyList(o : EmptyList): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'EmptyList'
                     )])
@@ -3118,7 +3118,7 @@ def from_expr(
                 stack.append(from_comma_exprs(o.content))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Tuple'
                     )])
@@ -3128,7 +3128,7 @@ def from_expr(
             def handle_EmptyTuple(o : EmptyTuple): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'EmptyTuple'
                     )])
@@ -3145,7 +3145,7 @@ def from_expr(
 
                 stack.append(from_option_expr(o.lower))
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Slice'
                     )])
@@ -3193,7 +3193,7 @@ def from_expr(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -3205,7 +3205,7 @@ def from_bool_rator(
     o : bool_rator | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -3218,7 +3218,7 @@ def from_bool_rator(
             def handle_And(o : And): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bool_rator',
                         selection = 'And'
                     )])
@@ -3228,7 +3228,7 @@ def from_bool_rator(
             def handle_Or(o : Or): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bool_rator',
                         selection = 'Or'
                     )])
@@ -3242,7 +3242,7 @@ def from_bool_rator(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -3254,7 +3254,7 @@ def from_bin_rator(
     o : bin_rator | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -3267,7 +3267,7 @@ def from_bin_rator(
             def handle_Add(o : Add): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'Add'
                     )])
@@ -3277,7 +3277,7 @@ def from_bin_rator(
             def handle_Sub(o : Sub): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'Sub'
                     )])
@@ -3287,7 +3287,7 @@ def from_bin_rator(
             def handle_Mult(o : Mult): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'Mult'
                     )])
@@ -3297,7 +3297,7 @@ def from_bin_rator(
             def handle_MatMult(o : MatMult): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'MatMult'
                     )])
@@ -3307,7 +3307,7 @@ def from_bin_rator(
             def handle_Div(o : Div): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'Div'
                     )])
@@ -3317,7 +3317,7 @@ def from_bin_rator(
             def handle_Mod(o : Mod): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'Mod'
                     )])
@@ -3327,7 +3327,7 @@ def from_bin_rator(
             def handle_Pow(o : Pow): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'Pow'
                     )])
@@ -3337,7 +3337,7 @@ def from_bin_rator(
             def handle_LShift(o : LShift): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'LShift'
                     )])
@@ -3347,7 +3347,7 @@ def from_bin_rator(
             def handle_RShift(o : RShift): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'RShift'
                     )])
@@ -3357,7 +3357,7 @@ def from_bin_rator(
             def handle_BitOr(o : BitOr): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'BitOr'
                     )])
@@ -3367,7 +3367,7 @@ def from_bin_rator(
             def handle_BitXor(o : BitXor): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'BitXor'
                     )])
@@ -3377,7 +3377,7 @@ def from_bin_rator(
             def handle_BitAnd(o : BitAnd): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'BitAnd'
                     )])
@@ -3387,7 +3387,7 @@ def from_bin_rator(
             def handle_FloorDiv(o : FloorDiv): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'bin_rator',
                         selection = 'FloorDiv'
                     )])
@@ -3412,7 +3412,7 @@ def from_bin_rator(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -3424,7 +3424,7 @@ def from_unary_rator(
     o : unary_rator | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -3437,7 +3437,7 @@ def from_unary_rator(
             def handle_Invert(o : Invert): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'unary_rator',
                         selection = 'Invert'
                     )])
@@ -3447,7 +3447,7 @@ def from_unary_rator(
             def handle_Not(o : Not): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'unary_rator',
                         selection = 'Not'
                     )])
@@ -3457,7 +3457,7 @@ def from_unary_rator(
             def handle_UAdd(o : UAdd): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'unary_rator',
                         selection = 'UAdd'
                     )])
@@ -3467,7 +3467,7 @@ def from_unary_rator(
             def handle_USub(o : USub): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'unary_rator',
                         selection = 'USub'
                     )])
@@ -3483,7 +3483,7 @@ def from_unary_rator(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -3495,7 +3495,7 @@ def from_cmp_rator(
     o : cmp_rator | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -3508,7 +3508,7 @@ def from_cmp_rator(
             def handle_Eq(o : Eq): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'Eq'
                     )])
@@ -3518,7 +3518,7 @@ def from_cmp_rator(
             def handle_NotEq(o : NotEq): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'NotEq'
                     )])
@@ -3528,7 +3528,7 @@ def from_cmp_rator(
             def handle_Lt(o : Lt): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'Lt'
                     )])
@@ -3538,7 +3538,7 @@ def from_cmp_rator(
             def handle_LtE(o : LtE): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'LtE'
                     )])
@@ -3548,7 +3548,7 @@ def from_cmp_rator(
             def handle_Gt(o : Gt): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'Gt'
                     )])
@@ -3558,7 +3558,7 @@ def from_cmp_rator(
             def handle_GtE(o : GtE): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'GtE'
                     )])
@@ -3568,7 +3568,7 @@ def from_cmp_rator(
             def handle_Is(o : Is): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'Is'
                     )])
@@ -3578,7 +3578,7 @@ def from_cmp_rator(
             def handle_IsNot(o : IsNot): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'IsNot'
                     )])
@@ -3588,7 +3588,7 @@ def from_cmp_rator(
             def handle_In(o : In): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'In'
                     )])
@@ -3598,7 +3598,7 @@ def from_cmp_rator(
             def handle_NotIn(o : NotIn): 
                 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'cmp_rator',
                         selection = 'NotIn'
                     )])
@@ -3620,7 +3620,7 @@ def from_cmp_rator(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -3632,7 +3632,7 @@ def from_constraint(
     o : constraint | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     result = () 
 
@@ -3652,7 +3652,7 @@ def from_constraint(
                 stack.append(from_expr(o.target))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'constraint',
                         selection = 'AsyncConstraint'
                     )])
@@ -3669,7 +3669,7 @@ def from_constraint(
                 stack.append(from_expr(o.target))
 
                 stack.append(
-                    tuple([lib.abstract_token_system.make_Grammar(
+                    tuple([make_Grammar(
                         options = 'constraint',
                         selection = 'Constraint'
                     )])
@@ -3683,7 +3683,7 @@ def from_constraint(
             ))
 
         elif stack_item == None:
-            result += (lib.abstract_token_system.Hole(),) 
+            result += (Hole(),) 
         else:
             result += stack_item 
 
@@ -3696,10 +3696,10 @@ def from_CompareRight(
     o : CompareRight | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'CompareRight',
             selection = 'CompareRight'
         )]) +
@@ -3715,10 +3715,10 @@ def from_ExceptHandler(
     o : ExceptHandler | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'ExceptHandler',
             selection = 'ExceptHandler'
         )]) +
@@ -3734,15 +3734,15 @@ def from_Param(
     o : Param | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'Param',
             selection = 'Param'
         )]) +
 
-        tuple([lib.abstract_token_system.make_Vocab(options = 'identifier', selection = o.name)]) +
+        tuple([make_Vocab(options = 'identifier', selection = o.name)]) +
         from_param_annotation(o.anno) +
         from_param_default(o.default)
 
@@ -3754,15 +3754,15 @@ def from_ClassDef(
     o : ClassDef | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'ClassDef',
             selection = 'ClassDef'
         )]) +
 
-        tuple([lib.abstract_token_system.make_Vocab(options = 'identifier', selection = o.name)]) +
+        tuple([make_Vocab(options = 'identifier', selection = o.name)]) +
         from_bases(o.bs) +
         from_statements(o.body)
 
@@ -3774,10 +3774,10 @@ def from_ElifBlock(
     o : ElifBlock | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'ElifBlock',
             selection = 'ElifBlock'
         )]) +
@@ -3793,10 +3793,10 @@ def from_ElseBlock(
     o : ElseBlock | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'ElseBlock',
             selection = 'ElseBlock'
         )]) +
@@ -3811,10 +3811,10 @@ def from_FinallyBlock(
     o : FinallyBlock | None
 ) -> tuple[abstract_token, ...]:
     if o == None:
-        return (lib.abstract_token_system.Hole(),)
+        return (Hole(),)
 
     return (
-        tuple([lib.abstract_token_system.make_Grammar(
+        tuple([make_Grammar(
             options = 'FinallyBlock',
             selection = 'FinallyBlock'
         )]) +

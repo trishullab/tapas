@@ -1,6 +1,7 @@
 **/__pycache__
 workspace.code-workspace
 env
+build
 res/apps/**
 res/py150/**
 res/cubert/**
