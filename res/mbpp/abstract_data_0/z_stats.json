@@ -1,1 +1,1 @@
-{"id": "mbpp", "time": 11.737771, "processed_count": 968, "rec_error_count": 0, "big_code_error_count": 0, "obsolete_error_count": 0, "unsupported_error_count": 6, "analysis_error_count": 0, "error_count": 6, "total_count": 974}
+{"unsupported_error": 6, "unknown_error": 68, "total": 974, "assertion_error": 70, "apply_arg_type_error": 530, "processed": 300, "total_error": 674, "time": 8.569585}

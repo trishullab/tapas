@@ -6,9 +6,9 @@ if __name__ == "__main__":
     package = pals.analyze_typeshed()
     python_data_system.generate_dir(package, 'mbpp')
 
-    # data_system.generate_dir(package, 'apps')
-    # data_system.generate_dir(package, 'py150_train')
-    # data_system.generate_dir(package, 'py150_test')
-    # data_system.generate_dir(package, 'py150_validation')
+    # python_data_system.generate_dir(package, 'apps')
+    # python_data_system.generate_dir(package, 'py150_train')
+    # python_data_system.generate_dir(package, 'py150_test')
+    # python_data_system.generate_dir(package, 'py150_validation')
 
-    # data_system.generate_dir(package, 'cubert')
+    # python_data_system.generate_dir(package, 'cubert')

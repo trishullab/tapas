@@ -1,4 +1,5 @@
 
+from regex import W
 from tree_sitter import Language
 
 import logging
@@ -32,6 +33,36 @@ concrete_dir_name = "concrete_data"
 
 from pyrsistent.typing import PMap
 
+
+def error_to_string(err : Exception) -> str:
+
+    if isinstance(err, RecursionError):
+        return "recursion_error"
+    elif isinstance(err, BigCodeError):
+        return "big_code_error"
+    elif isinstance(err, Obsolete):
+        return "obsolete_error"
+    elif isinstance(err, Unsupported):
+        return "unsupported_error"
+    elif isinstance(err, pals.ApplyArgTypeError):
+        return "apply_arg_type_error"
+    elif isinstance(err, AnalysisError):
+        return "analysis_error"
+    elif isinstance(err, AssertionError):
+        return "assertion_error"
+
+    return "unknown_error"
+
+
+from pyrsistent.typing import PMap
+from pyrsistent import pmap, m
+
+def inc_key(map : PMap[str, int], error_key) -> PMap[str, int]:
+    if error_key in map:
+        return map + pmap({error_key : map[error_key] + 1}) 
+    else:
+        return map + pmap({error_key : 1}) 
+
 def generate_file(
     package : PMap[str, pals.ModulePackage], 
     dirname : str, 
@@ -40,16 +71,7 @@ def generate_file(
     dir_count : int
 ) -> dict[str, Any]:
 
-    processed_count = 0
-    rec_error_count = 0
-    big_code_error_count = 0
-    obsolete_error_count = 0
-    unsupported_error_count = 0
-    arg_param_mismatch_error_count = 0
-    analysis_error_count = 0
-    assertion_error_count = 0
-    error_count = 0
-    total_count = 0
+    count_map : PMap[str, int] = m() 
 
     concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
 
@@ -122,64 +144,28 @@ def generate_file(
                         case_Hole=lambda _ : () 
                     )) 
                 
-                processed_count += 1
-
-            except RecursionError:
-                rec_error_count += 1
-                error_count += 1
-
-            except BigCodeError as ex:
-                big_code_error_count += 1
-                error_count += 1
-
-            except Obsolete as ex:
-                obsolete_error_count += 1
-                error_count += 1
-
-            except Unsupported as ex:
-                unsupported_error_count += 1
-                error_count += 1
-
-            except pals.ApplyArgTypeError as ex:
-                arg_param_mismatch_error_count += 1
-                error_count += 1
-            except AnalysisError as ex:
-                analysis_error_count += 1
-                error_count += 1
-                # print(f"")
-                # print(f"** ERROR index: {total_count}")
-                # line_obj = json.loads(line)
-                # source_code = line_obj['code']
-                # print(f"** ERROR source code:\n{source_code}")
-                # print(f"** ERROR index: {total_count}")
-                # print("** partial_program **")
-                # print(python_abstract_token_system.concretize(tuple(partial_program)))
-                # print("*********************")
-                # print(f"")
-                # raise ex
-            except AssertionError as ex:
-                assertion_error_count += 1
-                error_count += 1
-                # print(f"")
-                # print(f"** ERROR index: {total_count}")
-                # line_obj = json.loads(line)
-                # source_code = line_obj['code']
-                # print(f"** ERROR source code:\n{source_code}")
-                # print(f"** ERROR index: {total_count}")
-                # print("** partial_program **")
-                # print(python_abstract_token_system.concretize(tuple(partial_program)))
-                # print("*********************")
-                # print(f"")
-                # raise ex
+                count_map = inc_key(count_map, 'processed')
 
             except Exception as ex:
+                count_map = inc_key(count_map, error_to_string(ex))
+                count_map = inc_key(count_map, 'total_error')
+
+                # print(f"")
+                # print(f"** ERROR index: {total_count}")
+                # line_obj = json.loads(line)
+                # source_code = line_obj['code']
+                # print(f"** ERROR source code:\n{source_code}")
+                # print(f"** ERROR index: {total_count}")
+                # print("** partial_program **")
+                # print(python_abstract_token_system.concretize(tuple(partial_program)))
+                # print("*********************")
+                # print(f"")
                 # raise ex
-                error_count += 1
 
             # update
             br = "\n"
             line = f.readline()
-            total_count += 1
+            count_map = inc_key(count_map, 'total')
             
             # print(f"")
             # print(f"total_count: {total_count}")
@@ -191,20 +177,12 @@ def generate_file(
     end = datetime.now()
 
 
-    stats = {
+    stats_cm : PMap[str, Any] = count_map 
+    stats_supp : PMap[str, Any] = pmap({
         'id' : f"{dirname}//{name}",
-        'time': (end - start).total_seconds(),
-        'processed_count' : processed_count,
-        'rec_error_count' : rec_error_count,
-        'big_code_error_count' : big_code_error_count,
-        'obsolete_error_count' : obsolete_error_count,
-        'unsupported_error_count' : unsupported_error_count,
-        'arg_param_mismatch_error_count' : arg_param_mismatch_error_count,
-        'analysis_error_count' : analysis_error_count,
-        'assertion_error_count' :  assertion_error_count,
-        'error_count' : error_count,
-        'total_count' : total_count
-    }
+        'time': (end - start).total_seconds()
+    })
+    stats = dict(stats_supp + stats_cm)
     print(f"FILE STATS: {stats}")
     write(abstract_data_dirpath, f'{abstract_data_base}_stats.json', json.dumps(stats))
     return stats
@@ -218,14 +196,14 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
     concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
-    concrete_data_file_names = os.listdir(concrete_data_dirpath)
+    concrete_data_file_names : list[str] = sorted(os.listdir(concrete_data_dirpath))
     cdpl = len(concrete_data_file_names)
     stepsize = 50 
     chunks = [concrete_data_file_names[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
 
         # generate for abstract_data_1 and abstract_data_2 only
-        if i not in [1,2]: continue 
+        # if i not in [1,2]: continue 
 
         abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
         write(abstract_data_dirpath, f'vocab.json', '')
@@ -235,46 +213,21 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
         pool.close()
         pool.join()
 
-        time = 0
-        processed_count = 0
-        rec_error_count = 0
-        big_code_error_count = 0
-        obsolete_error_count = 0
-        unsupported_error_count = 0
-        arg_param_mismatch_error_count = 0
-        analysis_error_count = 0
-        assertion_error_count = 0
-        error_count = 0
-        total_count = 0
-
         # print(f"stats_collection length: {len(stats_collection)}")
 
-        for stats in stats_collection:
-            time += stats['time']
-            processed_count += stats['processed_count']
-            rec_error_count += stats['rec_error_count']
-            big_code_error_count += stats['big_code_error_count'] 
-            obsolete_error_count += stats['obsolete_error_count'] 
-            unsupported_error_count += stats['unsupported_error_count'] 
-            arg_param_mismatch_error_count += stats['arg_param_mismatch_error_count'] 
-            analysis_error_count += stats['analysis_error_count'] 
-            assertion_error_count += stats['assertion_error_count'] 
-            error_count += stats['error_count'] 
-            total_count += stats['total_count'] 
 
-        stats = {
-            'id' : f"{dirname}",
-            'time' : time,
-            'processed_count' : processed_count,
-            'rec_error_count' : rec_error_count,
-            'big_code_error_count' : big_code_error_count,
-            'obsolete_error_count' : obsolete_error_count,
-            'unsupported_error_count' : unsupported_error_count,
-            'analysis_error_count' : analysis_error_count,
-            'error_count' : error_count,
-            'total_count' : total_count
-        }
 
+        stats = {} 
+        for next_stats in stats_collection:
+
+            for k, v in next_stats.items():
+                if k == "id":
+                    pass
+                elif k in stats:
+                    stats[k] = stats[k] + v
+                else:
+                    stats[k] = v
+            
         # print(f"DIR STATS: {stats}")
         write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
 
