@@ -1702,7 +1702,7 @@ def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) 
     target_types = unify(pattern, item_type, inher_aux)
     for k, t in target_types.items():
         dec = lookup_declaration(inher_aux, k)
-        if dec: assert subsumes(t, dec.type, inher_aux)
+        # if dec: assert subsumes(t, dec.type, inher_aux)
     return target_types
 
 
@@ -2240,7 +2240,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         # analysis needs to pass information from right to left, so must reanalyze left element
-        content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
+        # content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
@@ -2310,12 +2310,12 @@ class Server(paa.Server[InherAux, SynthAux]):
     def synthesize_for_expr_GeneratorExp(self, 
         inher_aux : InherAux,
         content_tree : pas.expr, 
-        _ : SynthAux,
+        content_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         # analysis needs to pass information from right to left, so must reanalyze left element
-        content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
+        # content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
@@ -2964,10 +2964,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-
-        assert len(content_aux.observed_types) == 1
-        content_type = content_aux.observed_types[0]
-        item_type = get_iterable_item_type(content_type, inher_aux)
         return paa.Result[SynthAux](
             tree = pas.Starred(content_tree),
             aux = update_SynthAux(content_aux)
@@ -3447,7 +3443,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             if self.booting and is_a_stub_default(default_tree):
                 pass
             else:
-                assert subsumes(default_type, sig_type, inher_aux)
+                # assert subsumes(default_type, sig_type, inher_aux)
+                pass
 
         return paa.Result[SynthAux](
             tree = pas.Param(name_tree, anno_tree, default_tree),
@@ -3761,7 +3758,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             #     method_type, inher_aux
             # )
 
-            assert subsumes(method_type.return_type, target_type, inher_aux)
+            # assert subsumes(method_type.return_type, target_type, inher_aux)
+            pass
 
         if isinstance(target_tree, pas.Name):
             symbol = target_tree.content
