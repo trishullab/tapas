@@ -114,7 +114,8 @@ def is_a_stub_default(tree : pas.param_default) -> bool:
 def check_decl_usage(dec_env : PMap[str, Declaration], usage_env : PMap[str, Usage]):
     for dec in dec_env:
         if dec not in usage_env:
-            raise DeclareError()
+            # raise DeclareError()
+            pass
 
 def diff_usage_decl(
     inher_aux : InherAux,
@@ -129,17 +130,20 @@ def diff_usage_decl(
 
             dec = dec_env[usage_key]
             if usage.updated and dec.constant:
-                raise UpdateError()
+                # raise UpdateError()
+                pass
 
             if not booting and not dec.initialized:
-                raise LookupInitError()
+                # raise LookupInitError()
+                pass
         else:
 
             usage_additions += pmap({usage_key : usage_env[usage_key]})
             if  not booting and not inher_aux.internal_path:
                 t = from_static_path_to_declaration(inher_aux, f"builtins.{usage_key}")
                 if isinstance(t, AnyType): 
-                    raise LookupDecError()
+                    # raise LookupDecError()
+                    pass
     return usage_additions
 
 
@@ -1193,7 +1197,8 @@ def check_application_args(
 
     if not compatible:
         # TODO: this could be due to overloaded methods, which isn't currently supported
-        raise ApplyArgTypeError()
+        # raise ApplyArgTypeError()
+        pass
 
     return compatible
 
@@ -1903,13 +1908,14 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         # check name compatability between target and source expressions 
         for name in content_aux.usage_additions:
-           if (
-               name in target_aux.usage_additions and 
-               name not in inher_aux.declared_globals and 
-               name not in inher_aux.declared_nonlocals and 
-               name not in inher_aux.local_env
-           ):
-               raise UpdateError()  
+            if (
+                name in target_aux.usage_additions and 
+                name not in inher_aux.declared_globals and 
+                name not in inher_aux.declared_nonlocals and 
+                name not in inher_aux.local_env
+            ):
+                # raise UpdateError()  
+                pass
 
 
         updated_usage_additions : PMap[str, Usage] = m()
@@ -1969,18 +1975,21 @@ class Server(paa.Server[InherAux, SynthAux]):
         else:
 
             method_name = pas.from_bin_rator_to_method_name(rator_tree)
-            # print(f"@@## left_tree : {left_tree}")
-            # print(f"@@## left_type : {left_type}")
-            # print(f"@@## rator_tree : {rator_tree}")
-            # print(f"@@## method_name : {method_name}")
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
-
             if isinstance(method_type, FunctionType):
-                assert check_application_args(
-                    [right_type], {}, 
-                    method_type, inher_aux
-                )
+                # TODO: handle typing.AbstractSet aliasing 
+                # print(f"@@## left_tree : {left_tree}")
+                # print(f"@@## left_type : {left_type}")
+                # print(f"@@## rator_tree: {rator_tree}")
+                # print(f"@@## method_name : {method_name}")
+                # print(f"@@## method_type: {method_type}")
+                # print(f"@@## right_tree: {right_tree}")
+                # print(f"@@## right_type: {right_type}")
+                # check_application_args(
+                #     [right_type], {}, 
+                #     method_type, inher_aux
+                # )
                 expr_type = method_type.return_type
 
         return paa.Result[SynthAux](
@@ -2005,7 +2014,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         method_type = lookup_field_type(rand_type, method_name, inher_aux)
         return_type = AnyType()
         if isinstance(method_type, FunctionType):
-            assert check_application_args(
+            check_application_args(
                 [], {}, 
                 method_type, inher_aux
             )
@@ -2415,18 +2424,19 @@ class Server(paa.Server[InherAux, SynthAux]):
             right_type = comps_aux.observed_types[i]
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
-            # print(f"##@@ left_tree {left_tree}") 
-            # print(f"##@@ left_type {left_type}") 
-            # print(f"##@@ comps_tree {comps_tree}") 
-            # print(f"##@@ right_type {right_type}") 
-            # print(f"##@@ method_name {method_name}") 
-            # print(f"##@@ method_type {method_type}") 
-
             if isinstance(method_type, FunctionType):
-                assert check_application_args(
-                    [right_type], {}, 
-                    method_type, inher_aux
-                )
+                # print(f"##@@ left_tree {left_tree}") 
+                # print(f"##@@ left_type {left_type}") 
+                # print(f"##@@ comps_tree {comps_tree}") 
+                # print(f"##@@ right_type {right_type}") 
+                # print(f"##@@ method_name {method_name}") 
+                # print(f"##@@ method_type {method_type}") 
+                # check_application_args(
+                #     [right_type], {}, 
+                #     method_type, inher_aux
+                # )
+                pass
+
             # update:
             left_type = right_type
 
@@ -2455,7 +2465,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         elif isinstance(func_type, AnyType):
             inferred_type = AnyType() 
         else:
-            raise ApplyRatorTypeError()
+            # raise ApplyRatorTypeError()
+            inferred_type = AnyType() 
+            pass
 
         return paa.Result[SynthAux](
             tree = pas.Call(func_tree),
@@ -2494,7 +2506,8 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
         if not isinstance(key_type, StrType):
-            raise SplatKeywordTypeError()
+            # raise SplatKeywordTypeError()
+            pass
 
         return paa.Result[SynthAux](
             tree = pas.SplatKeyword(content_tree),
@@ -2517,11 +2530,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
-            assert check_application_args(
-                args_aux.observed_types,
-                args_aux.kw_types, 
-                func_type, inher_aux
-            )
+
+            # TODO: handle overloaded methods
+            # print(f"@@## func_tree: {func_tree}")
+            # print(f"@@## func_type: {func_type}")
+            # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
+            # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
+            # check_application_args(
+            #     args_aux.observed_types,
+            #     args_aux.kw_types, 
+            #     func_type, inher_aux
+            # )
             expr_type = func_type.return_type
 
         elif isinstance(func_type, TypeType):
@@ -2564,11 +2583,18 @@ class Server(paa.Server[InherAux, SynthAux]):
                     init_type = lookup_static_field_type(class_record, "__init__", inher_aux)
                     assert isinstance(init_type, FunctionType)
 
-                    assert check_application_args(
-                        args_aux.observed_types,
-                        args_aux.kw_types, 
-                        init_type, inher_aux
-                    )
+
+                    ## TODO: handle overloaded methods
+                    # print(f"@@## func_tree: {func_tree}")
+                    # print(f"@@## class_record: {class_record.key}")
+                    # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
+                    # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
+
+                    # check_application_args(
+                    #     args_aux.observed_types,
+                    #     args_aux.kw_types, 
+                    #     init_type, inher_aux
+                    # )
 
                 expr_type = func_type.content 
         else:
@@ -2800,10 +2826,10 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"### slice_type : {slice_type}")
                 # print(f"### slice_type : {method_type}")
 
-                assert check_application_args(
-                    [slice_type], {}, 
-                    method_type, inher_aux
-                )
+                # check_application_args(
+                #     [slice_type], {}, 
+                #     method_type, inher_aux
+                # )
 
                 assert method_type.return_type
                 expr_types = tuple([
@@ -3325,7 +3351,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 pass
             else:
                 if not subsumes(function_body_return_type, function_sig_return_type, inher_aux):
-                    raise ReturnTypeError()
+                    # raise ReturnTypeError()
+                    pass
 
             function_return_type = function_sig_return_type
         else:
@@ -3616,13 +3643,14 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         # check name compatability between target and source expressions 
         for name in content_aux.usage_additions:
-           if (
-               name in targets_aux.usage_additions and 
-               name not in inher_aux.declared_globals and 
-               name not in inher_aux.declared_nonlocals and 
-               name not in inher_aux.local_env
-           ):
-               raise UpdateError()  
+            if (
+                name in targets_aux.usage_additions and 
+                name not in inher_aux.declared_globals and 
+                name not in inher_aux.declared_nonlocals and 
+                name not in inher_aux.local_env
+            ):
+                # raise UpdateError()  
+                pass
 
 
 
@@ -3654,7 +3682,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         for sym, observed_type in env_types.items():
             dec = lookup_declaration(inher_aux, sym, builtins = False)
             if not self.booting and dec and dec.annotated and not subsumes(observed_type, dec.type, inher_aux):
-                raise AssignTypeError()
+                # raise AssignTypeError()
+                pass
 
 
         decl_additions : PMap[str, Declaration] = m() 
@@ -3718,12 +3747,21 @@ class Server(paa.Server[InherAux, SynthAux]):
         method_type = lookup_field_type(target_type, method_name, inher_aux)
 
         if isinstance(method_type, FunctionType):
-            assert check_application_args(
-                [content_type], {}, 
-                method_type, inher_aux
-            )
 
-            assert subsumes(method_type, target_type, inher_aux)
+            # TODO: support subtyping List <: typing.Iterable
+            # print(f"@@## target_tree : {target_tree}")
+            # print(f"@@## target_type : {target_type}")
+            # print(f"@@## rator_tree: {rator_tree}")
+            # print(f"@@## method_name : {method_name}")
+            # print(f"@@## method_type: {method_type}")
+            # print(f"@@## content_tree: {content_tree}")
+            # print(f"@@## content_type: {content_type}")
+            # check_application_args(
+            #     [content_type], {}, 
+            #     method_type, inher_aux
+            # )
+
+            assert subsumes(method_type.return_type, target_type, inher_aux)
 
         if isinstance(target_tree, pas.Name):
             symbol = target_tree.content
@@ -3732,14 +3770,16 @@ class Server(paa.Server[InherAux, SynthAux]):
                 symbol not in inher_aux.declared_nonlocals and 
                 symbol not in inher_aux.local_env
             ):
-                raise UpdateError()  
+                # raise UpdateError()  
+                pass
 
         else:
             if (
                 not isinstance(target_tree, pas.Subscript) and 
                 not isinstance(target_tree, pas.Attribute) 
             ):
-                raise UpdateError()  
+                # raise UpdateError()  
+                pass
 
         updated_usage_additions : PMap[str, Usage] = m()
         for name, usage in target_aux.usage_additions.items():
@@ -3778,7 +3818,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         if not self.booting:
             subs = subsumes(content_type, sig_type, inher_aux)
             if not subs:
-                raise AssignTypeError()
+                # raise AssignTypeError()
+                pass
 
         decl_additions: PMap[str, Declaration] = m() 
         # special consideration for declaration of special_form types

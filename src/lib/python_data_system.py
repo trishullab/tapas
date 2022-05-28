@@ -150,17 +150,18 @@ def generate_file(
                 count_map = inc_key(count_map, error_to_string(ex))
                 count_map = inc_key(count_map, 'total_error')
 
-                # print(f"")
-                # print(f"** ERROR index: {total_count}")
-                # line_obj = json.loads(line)
-                # source_code = line_obj['code']
-                # print(f"** ERROR source code:\n{source_code}")
-                # print(f"** ERROR index: {total_count}")
-                # print("** partial_program **")
-                # print(python_abstract_token_system.concretize(tuple(partial_program)))
-                # print("*********************")
-                # print(f"")
-                # raise ex
+                # if isinstance(ex, pals.ApplyArgTypeError):
+                #     print(f"")
+                #     print(f"** ERROR index: {count_map.get('total')}")
+                #     line_obj = json.loads(line)
+                #     source_code = line_obj['code']
+                #     print(f"** ERROR source code:\n{source_code}")
+                #     print(f"** ERROR index: {count_map.get('total')}")
+                #     print("** partial_program **")
+                #     print(python_abstract_token_system.concretize(tuple(partial_program)))
+                #     print("*********************")
+                #     print(f"")
+                #     raise ex
 
             # update
             br = "\n"
