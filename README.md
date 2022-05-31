@@ -1,4 +1,5 @@
-# Texas Language System
+# Tapas 
+Texas program analyzer
 
 ## Download this repo
 ```bash
@@ -91,6 +92,3 @@ while token:
     ...
 ...
 ```
-
-
-
