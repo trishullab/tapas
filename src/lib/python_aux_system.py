@@ -472,7 +472,7 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-def subsumes_RecordType(sub_type : RecordType, super_type : RecordType, inher_aux : InherAux) -> bool:
+def targs_subsumed_RecordType(sub_type : RecordType, super_type : RecordType, inher_aux : InherAux) -> bool:
     assert sub_type.class_key == super_type.class_key 
     class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
     if class_record:
@@ -480,9 +480,9 @@ def subsumes_RecordType(sub_type : RecordType, super_type : RecordType, inher_au
         assert len(type_params) == len(sub_type.type_args) == len(super_type.type_args)
         subsumptions = [
             (
-                subsumes(sub_type.type_args[i], super_type.type_args[i], inher_aux)
+                subsumed(sub_type.type_args[i], super_type.type_args[i], inher_aux)
                 if isinstance(tp.variant, CoVariant) else
-                subsumes(super_type.type_args[i], sub_type.type_args[i], inher_aux)
+                subsumed(super_type.type_args[i], sub_type.type_args[i], inher_aux)
                 if isinstance(tp.variant, ContraVariant) else
                 sub_type.type_args[i] == super_type.type_args[i]
             )
@@ -495,30 +495,30 @@ def subsumes_RecordType(sub_type : RecordType, super_type : RecordType, inher_au
 
 
 
-def subsumes_FunctionType(sub_type : FunctionType, super_type : FunctionType, inher_aux : InherAux) -> bool:
+def subsumed_FunctionType(sub_type : FunctionType, super_type : FunctionType, inher_aux : InherAux) -> bool:
     param_subsumptions = [ 
-        subsumes(super_type.pos_param_types[i], t, inher_aux)
+        subsumed(super_type.pos_param_types[i], t, inher_aux)
         for i, t in enumerate(sub_type.pos_param_types)
     ] + [ 
-        subsumes(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
+        subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
         for i, s in enumerate(sub_type.pos_kw_param_sigs)
     ] + [
-        subsumes(super_type.splat_pos_param_type, sub_type.splat_pos_param_type, inher_aux)
+        subsumed(super_type.splat_pos_param_type, sub_type.splat_pos_param_type, inher_aux)
     ] if sub_type.splat_pos_param_type and super_type.splat_pos_param_type else [] + [
-        subsumes(super_type.kw_param_sigs[i].type, s.type, inher_aux)
+        subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux)
         for i, s in enumerate(sub_type.kw_param_sigs)
     ] + [
-        subsumes(super_type.splat_kw_param_type, sub_type.splat_kw_param_type, inher_aux)
+        subsumed(super_type.splat_kw_param_type, sub_type.splat_kw_param_type, inher_aux)
     ] if sub_type.splat_kw_param_type and super_type.splat_kw_param_type else [] 
 
-    return_subsumption = subsumes(sub_type.return_type, super_type.return_type, inher_aux)
+    return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
 
     return us.every(param_subsumptions, lambda x : x) and return_subsumption
 
 
-def types_match_args_subsume(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
     if isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
-        return types_match_args_subsume(sub_type.content, super_type.content, inher_aux)
+        return types_match_subsumed(sub_type.content, super_type.content, inher_aux)
 
     if isinstance(sub_type, TypeType) and not isinstance(super_type, TypeType):
         return False
@@ -531,10 +531,10 @@ def types_match_args_subsume(sub_type : type, super_type : type, inher_aux : Inh
     
     if isinstance(sub_type, FunctionType):
         assert isinstance(super_type, FunctionType)
-        return subsumes_FunctionType(sub_type, super_type, inher_aux)
+        return subsumed_FunctionType(sub_type, super_type, inher_aux)
     elif isinstance(sub_type, RecordType):
         assert isinstance(super_type, RecordType)
-        return subsumes_RecordType(sub_type, super_type, inher_aux)
+        return targs_subsumed_RecordType(sub_type, super_type, inher_aux)
     else:
         assert get_class_key(sub_type) == get_class_key(super_type)
         sub_type_args = get_type_args(sub_type)
@@ -545,7 +545,7 @@ def types_match_args_subsume(sub_type : type, super_type : type, inher_aux : Inh
             return False
         else: 
             subsumptions = [
-                subsumes(t, super_type_args[i], inher_aux)
+                subsumed(t, super_type_args[i], inher_aux)
                 for i, t in enumerate(sub_type_args)
             ]
 
@@ -554,7 +554,7 @@ def types_match_args_subsume(sub_type : type, super_type : type, inher_aux : Inh
 
 
 
-def subsumes(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
     return (
         not isinstance(sub_type, VarType) and 
@@ -563,7 +563,7 @@ def subsumes(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             ( 
                 isinstance(sub_type, TypeType) and
                 isinstance(super_type, TypeType) and
-                subsumes(sub_type.content, super_type.content, inher_aux)
+                subsumed(sub_type.content, super_type.content, inher_aux)
             ) or 
 
             isinstance(sub_type, AnyType) or 
@@ -575,25 +575,25 @@ def subsumes(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             (isinstance(super_type, SliceType) and
                 isinstance(super_type.stop, AnyType) and
                 isinstance(super_type.step, AnyType) and
-                subsumes(sub_type, super_type.start, inher_aux)
+                subsumed(sub_type, super_type.start, inher_aux)
             ) or
 
-            types_match_args_subsume(sub_type, super_type, inher_aux) or 
+            types_match_subsumed(sub_type, super_type, inher_aux) or 
 
             (isinstance(sub_type, InterType) and 
-                us.exists(sub_type.type_components, lambda tc : subsumes(tc, super_type, inher_aux))) or 
+                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux))) or 
 
             (isinstance(super_type, InterType) and 
-                us.every(super_type.type_components, lambda tc : subsumes(sub_type, tc, inher_aux))) or
+                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux))) or
 
             (isinstance(super_type, UnionType) and 
-                us.exists(super_type.type_choices, lambda tc : subsumes(sub_type, tc, inher_aux))) or
+                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux))) or
 
             (isinstance(sub_type, UnionType) and 
-                us.every(sub_type.type_choices, lambda tc : subsumes(tc, super_type, inher_aux))) or
+                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux))) or
 
             (parent_type := get_parent_type(sub_type, inher_aux),
-                parent_type != None and subsumes(parent_type, super_type, inher_aux))[-1]
+                parent_type != None and subsumed(parent_type, super_type, inher_aux))[-1]
         )
     )
 
@@ -1149,16 +1149,16 @@ def check_application_args(
 ) -> bool:
 
     pos_param_compat : Iterable[bool] = [
-        subsumes(pos_arg_types[i], param_type, inher_aux)
+        subsumed(pos_arg_types[i], param_type, inher_aux)
         for i, param_type in enumerate(function_type.pos_param_types) 
         if i < len(pos_arg_types)
     ] + [
-        subsumes(pos_arg_types[j], param_sig.type, inher_aux)
+        subsumed(pos_arg_types[j], param_sig.type, inher_aux)
         for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
         for j in [i + len(function_type.pos_param_types)]
         if j < len(pos_arg_types)
     ] + [
-        subsumes(pos_type_arg, function_type.splat_pos_param_type, inher_aux)
+        subsumed(pos_type_arg, function_type.splat_pos_param_type, inher_aux)
         for i, pos_type_arg in enumerate(pos_arg_types)
         if i >= len(function_type.pos_param_types) + len(function_type.pos_kw_param_sigs)
         if function_type.splat_pos_param_type != None
@@ -1168,7 +1168,7 @@ def check_application_args(
         param_sig.optional or
         (
             kw_arg_types.get(param_sig.key) != None and
-            subsumes(kw_arg_types[param_sig.key], param_sig.type, inher_aux)
+            subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux)
         ) 
         for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
         for j in [i + len(function_type.pos_param_types)]
@@ -1177,11 +1177,11 @@ def check_application_args(
         param_sig.optional or
         (
             kw_arg_types.get(param_sig.key) != None and
-            subsumes(kw_arg_types[param_sig.key], param_sig.type, inher_aux)
+            subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux)
         ) 
         for param_sig in function_type.kw_param_sigs 
     ] + [
-        subsumes(kw_arg_type, function_type.splat_kw_param_type, inher_aux)
+        subsumed(kw_arg_type, function_type.splat_kw_param_type, inher_aux)
         for kw, kw_arg_type in kw_arg_types.items()
         if function_type.splat_kw_param_type != None
         if (
@@ -3346,7 +3346,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             if self.booting and is_a_stub_body(body_tree):
                 pass
             else:
-                if not subsumes(function_body_return_type, function_sig_return_type, inher_aux):
+                if not subsumed(function_body_return_type, function_sig_return_type, inher_aux):
                     # raise ReturnTypeError()
                     pass
 
@@ -3678,7 +3678,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         # check observed type with declared type
         for sym, observed_type in env_types.items():
             dec = lookup_declaration(inher_aux, sym, builtins = False)
-            if not self.booting and dec and dec.annotated and not subsumes(observed_type, dec.type, inher_aux):
+            if not self.booting and dec and dec.annotated and not subsumed(observed_type, dec.type, inher_aux):
                 # raise AssignTypeError()
                 pass
 
@@ -3814,7 +3814,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         symbol = target_tree.content
 
         if not self.booting:
-            subs = subsumes(content_type, sig_type, inher_aux)
+            subs = subsumed(content_type, sig_type, inher_aux)
             if not subs:
                 # raise AssignTypeError()
                 pass

@@ -203,20 +203,17 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
     chunks = [concrete_data_file_names[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
 
-        # generate for abstract_data_1 and abstract_data_2 only
-        # if i not in [1,2]: continue 
+        # skip i 
+        # if i in [0]: continue 
 
         abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
         write(abstract_data_dirpath, f'vocab.json', '')
     
-        pool = multiprocessing.Pool(multiprocessing.cpu_count())
-        stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, i) for n in chunk])
-        pool.close()
-        pool.join()
+        cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
+        with multiprocessing.Pool(cpu_count) as pool:
+            stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, i) for n in chunk])
 
-        # print(f"stats_collection length: {len(stats_collection)}")
-
-
+            # print(f"stats_collection length: {len(stats_collection)}")
 
         stats = {} 
         for next_stats in stats_collection:
