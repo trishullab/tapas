@@ -7,6 +7,10 @@ import os
 import pathlib
 import tree_sitter
 import json
+
+
+from pyrsistent import pset
+
 from base.abstract_token_construct_autogen import AbstractTokenHandlers, match_abstract_token, Vocab
 from lib import generic_tree_system
 
@@ -17,7 +21,6 @@ from lib import python_ast_system
 from base.util_system import write, project_path
 
 
-from lib.python_aux_system import AnalysisError
 from base import abstract_token_system as ats
 from base.abstract_token_system import Vocab
 from lib import python_aux_system as pals 
@@ -44,14 +47,15 @@ def error_to_string(err : Exception) -> str:
         return "obsolete_error"
     elif isinstance(err, Unsupported):
         return "unsupported_error"
-    elif isinstance(err, pals.ApplyArgTypeError):
+    elif isinstance(err, pals.ApplyArgTypeCheck):
         return "apply_arg_type_error"
-    elif isinstance(err, AnalysisError):
-        return "analysis_error"
+    elif isinstance(err, pals.IterateTypeCheck):
+        return "iterate_type_error"
     elif isinstance(err, AssertionError):
         return "assertion_error"
 
-    return "unknown_error"
+    else:
+        return f"{err}"
 
 
 from pyrsistent.typing import PMap
@@ -108,7 +112,10 @@ def generate_file(
 
                 abstract_tokens = python_ast_system.serialize(mod)
 
-                client : pals.Client = pals.spawn_analysis(package, "main")
+                client : pals.Client = pals.spawn_analysis(package, "main",
+                    checks=pset()
+                    # checks=pals.all_checks.remove(pals.DeclareCheck())
+                )
 
                 atok = client.init_prim
                 abstract_program_data = [atok]
@@ -150,7 +157,7 @@ def generate_file(
                 count_map = inc_key(count_map, error_to_string(ex))
                 count_map = inc_key(count_map, 'total_error')
 
-                # if isinstance(ex, pals.ApplyArgTypeError):
+                # if isinstance(ex, pals.IterateTypeError):
                 #     print(f"")
                 #     print(f"** ERROR index: {count_map.get('total')}")
                 #     line_obj = json.loads(line)
@@ -167,12 +174,10 @@ def generate_file(
             br = "\n"
             line = f.readline()
             count_map = inc_key(count_map, 'total')
+            print(f"")
+            print(f"total_count : {count_map['total']}")
+            print(f"")
             
-            # print(f"")
-            # print(f"total_count: {total_count}")
-            # print(f"processed_count: {processed_count}")
-            # print(f"")
-
         #endwhile
 
     end = datetime.now()
@@ -203,7 +208,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
     chunks = [concrete_data_file_names[i:i + stepsize] for i in range(0, cdpl, stepsize)]
     for i, chunk in enumerate(chunks):
 
-        # skip i 
+        # skip chunks
         # if i in [0]: continue 
 
         abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
@@ -212,8 +217,6 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
         with multiprocessing.Pool(cpu_count) as pool:
             stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, i) for n in chunk])
-
-            # print(f"stats_collection length: {len(stats_collection)}")
 
         stats = {} 
         for next_stats in stats_collection:
@@ -226,7 +229,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
                 else:
                     stats[k] = v
             
-        # print(f"DIR STATS: {stats}")
+        print(f"DIR STATS: {stats}")
         write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
 
         write(abstract_data_dirpath, f'vocab.json', json.dumps(

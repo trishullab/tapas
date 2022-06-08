@@ -70,6 +70,8 @@ singles = [
 
         Field("var_types", "tuple[VarType, ...]", "()"),
 
+        Field("protocol", "bool", "False"),
+
         # param that is collected at a lower level
         # (key, type, optional)
         Field("param_sig", "Optional[ParamSig]", "None"),
@@ -120,6 +122,12 @@ choices = {
     ],
 
     "type" : [
+
+        Constructor("ProtocolType", [], []),
+        Constructor("GenericType", [], []),
+
+        # type for the @overload decorator
+        Constructor("OverloadType", [], [ ]),
 
         Constructor("TypeType", [], [
             Field("class_key", "str", ""),
@@ -184,8 +192,8 @@ choices = {
             Field("class_key", "str", ""),
             Field("class_uid", "int", "0"),
             Field("type_args", "tuple[type, ...]", "()"),
+            Field("protocol", "bool", "False"),
         ]),
-
 
         Constructor("TupleLitType", [], [
             Field("item_types", "tuple[type, ...]", "()"),
@@ -195,78 +203,20 @@ choices = {
             Field("item_type", "type", "AnyType()"),
         ]),
             
-        Constructor("MappingType", [], [
-            Field("key_type", "type", "AnyType()"),
-            Field("value_type", "type", "AnyType()"),
-        ]),
-
-        Constructor("DictType", [], [
-            Field("key_type", "type", "AnyType()"),
-            Field("value_type", "type", "AnyType()"),
-        ]),
-
-        Constructor("SetType", [], [
-            Field("item_type", "type", "AnyType()"),
-        ]),
-
-        Constructor("IterableType", [], [
-            Field("item_type", "type", "AnyType()"),
-        ]),
-
-
-        Constructor("DictKeysType", [], [
-            Field("key_type", "type", "AnyType()"),
-            Field("value_type", "type", "AnyType()"),
-        ]),
-        Constructor("DictValuesType", [], [
-            Field("key_type", "type", "AnyType()"),
-            Field("value_type", "type", "AnyType()"),
-        ]),
-        Constructor("DictItemsType", [], [
-            Field("key_type", "type", "AnyType()"),
-            Field("value_type", "type", "AnyType()"),
-        ]),
-
-        Constructor("SequenceType", [], [
-            Field("item_type", "type", "AnyType()"),
-        ]),
-
-        Constructor("RangeType", [], [
-            Field("item_type", "type", "AnyType()"),
-        ]),
-
-        Constructor("ListType", [], [
-            Field("item_type", "type", "AnyType()"),
-        ]),
-
         Constructor("ListLitType", [], [
             Field("item_types", "tuple[type, ...]", "()"),
         ]),
 
-        Constructor("GeneratorType", [], [
-            Field("yield_type", "type", "NoneType()"),
-            Field("return_type", "type", "NoneType()"),
-        ]),
-
-        Constructor("BoolType", [], []),
         Constructor("TrueType", [], []),
         Constructor("FalseType", [], []),
-        Constructor("IntType", [], []),
         Constructor("IntLitType", [], [
             Field("literal", "str", "''"),
         ]),
-        Constructor("FloatType", [], []),
         Constructor("FloatLitType", [], [
             Field("literal", "str", "''"),
         ]),
-        Constructor("StrType", [], []),
         Constructor("StrLitType", [], [
             Field("literal", "str", "''"),
-        ]),
-        Constructor("SliceType", [], [
-            Field("start", "type", "AnyType()"),
-            Field("stop", "type", "AnyType()"),
-            Field("step", "type", "AnyType()")
         ]),
 
     ],

@@ -118,6 +118,63 @@ class type(ABC):
 # constructors for type type
 
 @dataclass(frozen=True, eq=True)
+class ProtocolType(type):
+
+
+    def match(self, handlers : TypeHandlers[T]) -> T:
+        return handlers.case_ProtocolType(self)
+
+def make_ProtocolType(
+) -> type:
+    return ProtocolType(
+    )
+
+def update_ProtocolType(source_ProtocolType : ProtocolType
+) -> ProtocolType:
+    return ProtocolType(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class GenericType(type):
+
+
+    def match(self, handlers : TypeHandlers[T]) -> T:
+        return handlers.case_GenericType(self)
+
+def make_GenericType(
+) -> type:
+    return GenericType(
+    )
+
+def update_GenericType(source_GenericType : GenericType
+) -> GenericType:
+    return GenericType(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class OverloadType(type):
+
+
+    def match(self, handlers : TypeHandlers[T]) -> T:
+        return handlers.case_OverloadType(self)
+
+def make_OverloadType(
+) -> type:
+    return OverloadType(
+    )
+
+def update_OverloadType(source_OverloadType : OverloadType
+) -> OverloadType:
+    return OverloadType(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
 class TypeType(type):
     class_key : str
     content : type
@@ -371,6 +428,7 @@ class RecordType(type):
     class_key : str
     class_uid : int
     type_args : tuple[type, ...]
+    protocol : bool
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_RecordType(self)
@@ -378,23 +436,27 @@ class RecordType(type):
 def make_RecordType(
     class_key : str, 
     class_uid : int = 0, 
-    type_args : tuple[type, ...] = ()
+    type_args : tuple[type, ...] = (), 
+    protocol : bool = False
 ) -> type:
     return RecordType(
         class_key,
         class_uid,
-        type_args
+        type_args,
+        protocol
     )
 
 def update_RecordType(source_RecordType : RecordType,
     class_key : Union[str, SourceFlag] = SourceFlag(),
     class_uid : Union[int, SourceFlag] = SourceFlag(),
-    type_args : Union[tuple[type, ...], SourceFlag] = SourceFlag()
+    type_args : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
+    protocol : Union[bool, SourceFlag] = SourceFlag()
 ) -> RecordType:
     return RecordType(
         source_RecordType.class_key if isinstance(class_key, SourceFlag) else class_key,
         source_RecordType.class_uid if isinstance(class_uid, SourceFlag) else class_uid,
-        source_RecordType.type_args if isinstance(type_args, SourceFlag) else type_args
+        source_RecordType.type_args if isinstance(type_args, SourceFlag) else type_args,
+        source_RecordType.protocol if isinstance(protocol, SourceFlag) else protocol
     )
 
         
@@ -446,261 +508,6 @@ def update_VariedTupleType(source_VariedTupleType : VariedTupleType,
         
 
 @dataclass(frozen=True, eq=True)
-class MappingType(type):
-    key_type : type
-    value_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_MappingType(self)
-
-def make_MappingType(
-    key_type : type = AnyType(), 
-    value_type : type = AnyType()
-) -> type:
-    return MappingType(
-        key_type,
-        value_type
-    )
-
-def update_MappingType(source_MappingType : MappingType,
-    key_type : Union[type, SourceFlag] = SourceFlag(),
-    value_type : Union[type, SourceFlag] = SourceFlag()
-) -> MappingType:
-    return MappingType(
-        source_MappingType.key_type if isinstance(key_type, SourceFlag) else key_type,
-        source_MappingType.value_type if isinstance(value_type, SourceFlag) else value_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class DictType(type):
-    key_type : type
-    value_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_DictType(self)
-
-def make_DictType(
-    key_type : type = AnyType(), 
-    value_type : type = AnyType()
-) -> type:
-    return DictType(
-        key_type,
-        value_type
-    )
-
-def update_DictType(source_DictType : DictType,
-    key_type : Union[type, SourceFlag] = SourceFlag(),
-    value_type : Union[type, SourceFlag] = SourceFlag()
-) -> DictType:
-    return DictType(
-        source_DictType.key_type if isinstance(key_type, SourceFlag) else key_type,
-        source_DictType.value_type if isinstance(value_type, SourceFlag) else value_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class SetType(type):
-    item_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_SetType(self)
-
-def make_SetType(
-    item_type : type = AnyType()
-) -> type:
-    return SetType(
-        item_type
-    )
-
-def update_SetType(source_SetType : SetType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
-) -> SetType:
-    return SetType(
-        source_SetType.item_type if isinstance(item_type, SourceFlag) else item_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class IterableType(type):
-    item_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_IterableType(self)
-
-def make_IterableType(
-    item_type : type = AnyType()
-) -> type:
-    return IterableType(
-        item_type
-    )
-
-def update_IterableType(source_IterableType : IterableType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
-) -> IterableType:
-    return IterableType(
-        source_IterableType.item_type if isinstance(item_type, SourceFlag) else item_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class DictKeysType(type):
-    key_type : type
-    value_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_DictKeysType(self)
-
-def make_DictKeysType(
-    key_type : type = AnyType(), 
-    value_type : type = AnyType()
-) -> type:
-    return DictKeysType(
-        key_type,
-        value_type
-    )
-
-def update_DictKeysType(source_DictKeysType : DictKeysType,
-    key_type : Union[type, SourceFlag] = SourceFlag(),
-    value_type : Union[type, SourceFlag] = SourceFlag()
-) -> DictKeysType:
-    return DictKeysType(
-        source_DictKeysType.key_type if isinstance(key_type, SourceFlag) else key_type,
-        source_DictKeysType.value_type if isinstance(value_type, SourceFlag) else value_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class DictValuesType(type):
-    key_type : type
-    value_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_DictValuesType(self)
-
-def make_DictValuesType(
-    key_type : type = AnyType(), 
-    value_type : type = AnyType()
-) -> type:
-    return DictValuesType(
-        key_type,
-        value_type
-    )
-
-def update_DictValuesType(source_DictValuesType : DictValuesType,
-    key_type : Union[type, SourceFlag] = SourceFlag(),
-    value_type : Union[type, SourceFlag] = SourceFlag()
-) -> DictValuesType:
-    return DictValuesType(
-        source_DictValuesType.key_type if isinstance(key_type, SourceFlag) else key_type,
-        source_DictValuesType.value_type if isinstance(value_type, SourceFlag) else value_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class DictItemsType(type):
-    key_type : type
-    value_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_DictItemsType(self)
-
-def make_DictItemsType(
-    key_type : type = AnyType(), 
-    value_type : type = AnyType()
-) -> type:
-    return DictItemsType(
-        key_type,
-        value_type
-    )
-
-def update_DictItemsType(source_DictItemsType : DictItemsType,
-    key_type : Union[type, SourceFlag] = SourceFlag(),
-    value_type : Union[type, SourceFlag] = SourceFlag()
-) -> DictItemsType:
-    return DictItemsType(
-        source_DictItemsType.key_type if isinstance(key_type, SourceFlag) else key_type,
-        source_DictItemsType.value_type if isinstance(value_type, SourceFlag) else value_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class SequenceType(type):
-    item_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_SequenceType(self)
-
-def make_SequenceType(
-    item_type : type = AnyType()
-) -> type:
-    return SequenceType(
-        item_type
-    )
-
-def update_SequenceType(source_SequenceType : SequenceType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
-) -> SequenceType:
-    return SequenceType(
-        source_SequenceType.item_type if isinstance(item_type, SourceFlag) else item_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class RangeType(type):
-    item_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_RangeType(self)
-
-def make_RangeType(
-    item_type : type = AnyType()
-) -> type:
-    return RangeType(
-        item_type
-    )
-
-def update_RangeType(source_RangeType : RangeType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
-) -> RangeType:
-    return RangeType(
-        source_RangeType.item_type if isinstance(item_type, SourceFlag) else item_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class ListType(type):
-    item_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_ListType(self)
-
-def make_ListType(
-    item_type : type = AnyType()
-) -> type:
-    return ListType(
-        item_type
-    )
-
-def update_ListType(source_ListType : ListType,
-    item_type : Union[type, SourceFlag] = SourceFlag()
-) -> ListType:
-    return ListType(
-        source_ListType.item_type if isinstance(item_type, SourceFlag) else item_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
 class ListLitType(type):
     item_types : tuple[type, ...]
 
@@ -719,53 +526,6 @@ def update_ListLitType(source_ListLitType : ListLitType,
 ) -> ListLitType:
     return ListLitType(
         source_ListLitType.item_types if isinstance(item_types, SourceFlag) else item_types
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class GeneratorType(type):
-    yield_type : type
-    return_type : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_GeneratorType(self)
-
-def make_GeneratorType(
-    yield_type : type = NoneType(), 
-    return_type : type = NoneType()
-) -> type:
-    return GeneratorType(
-        yield_type,
-        return_type
-    )
-
-def update_GeneratorType(source_GeneratorType : GeneratorType,
-    yield_type : Union[type, SourceFlag] = SourceFlag(),
-    return_type : Union[type, SourceFlag] = SourceFlag()
-) -> GeneratorType:
-    return GeneratorType(
-        source_GeneratorType.yield_type if isinstance(yield_type, SourceFlag) else yield_type,
-        source_GeneratorType.return_type if isinstance(return_type, SourceFlag) else return_type
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class BoolType(type):
-
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_BoolType(self)
-
-def make_BoolType(
-) -> type:
-    return BoolType(
-    )
-
-def update_BoolType(source_BoolType : BoolType
-) -> BoolType:
-    return BoolType(
     )
 
         
@@ -809,25 +569,6 @@ def update_FalseType(source_FalseType : FalseType
         
 
 @dataclass(frozen=True, eq=True)
-class IntType(type):
-
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_IntType(self)
-
-def make_IntType(
-) -> type:
-    return IntType(
-    )
-
-def update_IntType(source_IntType : IntType
-) -> IntType:
-    return IntType(
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
 class IntLitType(type):
     literal : str
 
@@ -846,25 +587,6 @@ def update_IntLitType(source_IntLitType : IntLitType,
 ) -> IntLitType:
     return IntLitType(
         source_IntLitType.literal if isinstance(literal, SourceFlag) else literal
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
-class FloatType(type):
-
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_FloatType(self)
-
-def make_FloatType(
-) -> type:
-    return FloatType(
-    )
-
-def update_FloatType(source_FloatType : FloatType
-) -> FloatType:
-    return FloatType(
     )
 
         
@@ -893,25 +615,6 @@ def update_FloatLitType(source_FloatLitType : FloatLitType,
         
 
 @dataclass(frozen=True, eq=True)
-class StrType(type):
-
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_StrType(self)
-
-def make_StrType(
-) -> type:
-    return StrType(
-    )
-
-def update_StrType(source_StrType : StrType
-) -> StrType:
-    return StrType(
-    )
-
-        
-
-@dataclass(frozen=True, eq=True)
 class StrLitType(type):
     literal : str
 
@@ -934,42 +637,12 @@ def update_StrLitType(source_StrLitType : StrLitType,
 
         
 
-@dataclass(frozen=True, eq=True)
-class SliceType(type):
-    start : type
-    stop : type
-    step : type
-
-    def match(self, handlers : TypeHandlers[T]) -> T:
-        return handlers.case_SliceType(self)
-
-def make_SliceType(
-    start : type = AnyType(), 
-    stop : type = AnyType(), 
-    step : type = AnyType()
-) -> type:
-    return SliceType(
-        start,
-        stop,
-        step
-    )
-
-def update_SliceType(source_SliceType : SliceType,
-    start : Union[type, SourceFlag] = SourceFlag(),
-    stop : Union[type, SourceFlag] = SourceFlag(),
-    step : Union[type, SourceFlag] = SourceFlag()
-) -> SliceType:
-    return SliceType(
-        source_SliceType.start if isinstance(start, SourceFlag) else start,
-        source_SliceType.stop if isinstance(stop, SourceFlag) else stop,
-        source_SliceType.step if isinstance(step, SourceFlag) else step
-    )
-
-        
-
 # case handlers for type type
 @dataclass(frozen=True, eq=True)
 class TypeHandlers(Generic[T]):
+    case_ProtocolType : Callable[[ProtocolType], T]
+    case_GenericType : Callable[[GenericType], T]
+    case_OverloadType : Callable[[OverloadType], T]
     case_TypeType : Callable[[TypeType], T]
     case_VarType : Callable[[VarType], T]
     case_EllipType : Callable[[EllipType], T]
@@ -983,28 +656,12 @@ class TypeHandlers(Generic[T]):
     case_RecordType : Callable[[RecordType], T]
     case_TupleLitType : Callable[[TupleLitType], T]
     case_VariedTupleType : Callable[[VariedTupleType], T]
-    case_MappingType : Callable[[MappingType], T]
-    case_DictType : Callable[[DictType], T]
-    case_SetType : Callable[[SetType], T]
-    case_IterableType : Callable[[IterableType], T]
-    case_DictKeysType : Callable[[DictKeysType], T]
-    case_DictValuesType : Callable[[DictValuesType], T]
-    case_DictItemsType : Callable[[DictItemsType], T]
-    case_SequenceType : Callable[[SequenceType], T]
-    case_RangeType : Callable[[RangeType], T]
-    case_ListType : Callable[[ListType], T]
     case_ListLitType : Callable[[ListLitType], T]
-    case_GeneratorType : Callable[[GeneratorType], T]
-    case_BoolType : Callable[[BoolType], T]
     case_TrueType : Callable[[TrueType], T]
     case_FalseType : Callable[[FalseType], T]
-    case_IntType : Callable[[IntType], T]
     case_IntLitType : Callable[[IntLitType], T]
-    case_FloatType : Callable[[FloatType], T]
     case_FloatLitType : Callable[[FloatLitType], T]
-    case_StrType : Callable[[StrType], T]
     case_StrLitType : Callable[[StrLitType], T]
-    case_SliceType : Callable[[SliceType], T]
 
 
 # matching for type type
@@ -1146,6 +803,7 @@ class InherAux:
     class_env : PMap[str, ClassRecord]
 
 
+
 def make_InherAux(
     package : PMap[str, ModulePackage] = m(),
     external_path : str = '',
@@ -1219,6 +877,7 @@ class SynthAux:
     return_types : tuple[type, ...]
     yield_types : tuple[type, ...]
     var_types : tuple[VarType, ...]
+    protocol : bool
     param_sig : Optional[ParamSig]
     pos_param_types : tuple[type, ...]
     pos_kw_param_sigs : tuple[ParamSig, ...]
@@ -1241,6 +900,7 @@ def make_SynthAux(
     return_types : tuple[type, ...] = (),
     yield_types : tuple[type, ...] = (),
     var_types : tuple[VarType, ...] = (),
+    protocol : bool = False,
     param_sig : Optional[ParamSig] = None,
     pos_param_types : tuple[type, ...] = (),
     pos_kw_param_sigs : tuple[ParamSig, ...] = (),
@@ -1262,6 +922,7 @@ def make_SynthAux(
         return_types,
         yield_types,
         var_types,
+        protocol,
         param_sig,
         pos_param_types,
         pos_kw_param_sigs,
@@ -1283,6 +944,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
     return_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     yield_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     var_types : Union[tuple[VarType, ...], SourceFlag] = SourceFlag(),
+    protocol : Union[bool, SourceFlag] = SourceFlag(),
     param_sig : Union[Optional[ParamSig], SourceFlag] = SourceFlag(),
     pos_param_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     pos_kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
@@ -1304,6 +966,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
         source_SynthAux.return_types if isinstance(return_types, SourceFlag) else return_types, 
         source_SynthAux.yield_types if isinstance(yield_types, SourceFlag) else yield_types, 
         source_SynthAux.var_types if isinstance(var_types, SourceFlag) else var_types, 
+        source_SynthAux.protocol if isinstance(protocol, SourceFlag) else protocol, 
         source_SynthAux.param_sig if isinstance(param_sig, SourceFlag) else param_sig, 
         source_SynthAux.pos_param_types if isinstance(pos_param_types, SourceFlag) else pos_param_types, 
         source_SynthAux.pos_kw_param_sigs if isinstance(pos_kw_param_sigs, SourceFlag) else pos_kw_param_sigs, 

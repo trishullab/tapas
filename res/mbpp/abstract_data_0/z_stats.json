@@ -1,1 +1,1 @@
-{"processed": 872, "assertion_error": 89, "total": 974, "time": 15.50488, "total_error": 102, "unsupported_error": 6, "unknown_error": 7}
+{"total": 974, "total_error": 98, "": 58, "apply_arg_type_error": 33, "assertion_error": 1, "time": 17.418177, "unsupported_error": 6, "processed": 876}

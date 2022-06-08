@@ -78,68 +78,68 @@ def test_000_0_ok():
     analyze("000_0_ok")
 
 def test_000_1_error():
-    with pytest.raises(pals.LookupDecError):
+    with pytest.raises(pals.LookupDecCheck):
         analyze("000_1_error")
 
 def test_000_2_error():
-    with pytest.raises(pals.LookupInitError):
+    with pytest.raises(pals.LookupInitCheck):
         analyze("000_2_error")
 
 def test_001_ok():
     analyze("001_ok")
 
 def test_002_error():
-    with pytest.raises(pals.AssignTypeError):
+    with pytest.raises(pals.AssignTypeCheck):
         analyze("002_error")
 
 def test_003_ok():
     analyze("003_ok")
 
 def test_004_error():
-    with pytest.raises(pals.ApplyArgTypeError):
+    with pytest.raises(pals.ApplyArgTypeCheck):
         analyze("004_error")
 
 def test_005_ok():
         analyze("005_ok")
 
 def test_006_error():
-    with pytest.raises(pals.AssignTypeError):
+    with pytest.raises(pals.AssignTypeCheck):
         analyze("006_error")
 
 def test_007_ok():
     analyze("007_ok")
 
 def test_008_error():
-    with pytest.raises(pals.AssignTypeError):
+    with pytest.raises(pals.AssignTypeCheck):
         analyze("008_error")
 
 def test_009_error():
-    with pytest.raises(pals.AssignTypeError):
+    with pytest.raises(pals.AssignTypeCheck):
         analyze("009_error")
 
 def test_010_ok():
     analyze("010_ok")
 
 def test_011_error():
-    with pytest.raises(pals.AssignTypeError):
+    with pytest.raises(pals.AssignTypeCheck):
         analyze("011_error")
 
 def test_012_ok():
     analyze("012_ok")
 
 def test_013_error():
-    with pytest.raises(pals.ApplyArgTypeError):
+    with pytest.raises(pals.ApplyArgTypeCheck):
         analyze("013_error")
 
 def test_014_ok():
     analyze("014_ok")
 
 def test_015_error():
-    with pytest.raises(pals.ApplyArgTypeError):
+    with pytest.raises(pals.ApplyArgTypeCheck):
         analyze("015_error")
 
 def test_016_error():
-    with pytest.raises(pals.ReturnTypeError):
+    with pytest.raises(pals.ReturnTypeCheck):
         analyze("016_error")
 
 def test_017_ok():
@@ -149,16 +149,81 @@ def test_018_ok():
     analyze("018_ok")
 
 def test_019_error():
-    with pytest.raises(pals.LookupTypeError):
+    with pytest.raises(pals.LookupTypeCheck):
         analyze("019_error")
 
 def test_020_ok():
     analyze("020_ok")
 
 def test_021_error():
-    with pytest.raises(pals.UpdateError):
+    with pytest.raises(pals.UpdateCheck):
         analyze("021_error")
 
+def test_022_ok():
+    analyze("022_ok")
+
+def test_023_ok():
+    analyze("023_ok")
+
+def test_024_ok():
+    analyze("024_ok")
+
+def test_025_error():
+    with pytest.raises(pals.UpdateCheck):
+        analyze("025_error")
+
+def test_026_error():
+    with pytest.raises(pals.UpdateCheck):
+        analyze("026_error")
+
+def test_027_error():
+    with pytest.raises(pals.UpdateCheck):
+        analyze("027_error")
+
+def test_028_ok():
+    analyze("028_ok")
+
+def test_029_ok():
+    analyze("029_ok")
+
+def test_030_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("030_error")
+
+def test_031_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("031_error")
+
+def test_032_error():
+    with pytest.raises(pals.ApplyRatorTypeCheck):
+        analyze("032_error")
+
+def test_034_ok():
+    analyze("034_ok")
+
+def test_035_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("035_error")
+
+def test_036_ok():
+    analyze("036_ok")
+
+def test_037_ok():
+    analyze("037_ok")
+
+def test_038_ok():
+    analyze("038_ok")
+
+def test_039_error():
+    with pytest.raises(Exception):
+        analyze("039_error")
+
+def test_040_ok():
+    analyze("040_ok")
+
+def test_041_error():
+    with pytest.raises(Exception):
+        analyze("041_error")
+
 if __name__ == "__main__":
-    analyze("020_ok")
     pass

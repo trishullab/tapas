@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from ftplib import all_errors
 from typing import Callable, Iterator, Iterable, Mapping
 
 from pyrsistent import pmap, m, pset, s, PMap, PSet
@@ -22,44 +23,72 @@ from lib.python_aux_construct_autogen import *
 
 
 T = TypeVar('T')
-# class UnsupportedError(Exception): pass
-class AnalysisError(Exception): pass
 
-"Lookup type error - field does not exist in type of object(field exists in object)"
-class LookupTypeError(Exception): pass
+
+class semantic_check(Exception): pass
+
+"Lookup type error - field does not exist in type of object"
+@dataclass(frozen=True, eq=True)
+class LookupTypeCheck(semantic_check): pass
 
 "Apply arg type error - types of arguments don’t match types of parameters"
-class ApplyArgTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class ApplyArgTypeCheck(semantic_check): pass
 
 "Apply rator type error - rator in application is not a type that can be applied"
-class ApplyRatorTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class ApplyRatorTypeCheck(semantic_check): pass
 
 "Splat keyword type error - the the splatted mapping type does not have as a string as the key type"
-class SplatKeywordTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class SplatKeywordTypeCheck(semantic_check): pass
 
 "Return type error - types of return values don’t match output annotation"
-class ReturnTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class ReturnTypeCheck(semantic_check): pass
 
 "Unify type error - type of target doesn’t match type of source"
-class UnifyTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class UnifyTypeCheck(semantic_check): pass
 
 "Assign type error - type of target doesn’t match type of source"
-class AssignTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class AssignTypeCheck(semantic_check): pass
 
 "Iterate type error - type of iterated object is not iterable"
-class IterateTypeError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class IterateTypeCheck(semantic_check): pass
 
 "Lookup declaration error - name does not exist in environment"
-class LookupDecError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class LookupDecCheck(semantic_check): pass
 
 "Lookup initialization error - name exists in environment but is possibly not initialized"
-class LookupInitError(Exception): pass
-
-"Declare error - name is declared but possibly never referenced"
-class DeclareError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class LookupInitCheck(semantic_check): pass
 
 "Update error - name is updated but not allowed to be"
-class UpdateError(Exception): pass
+@dataclass(frozen=True, eq=True)
+class UpdateCheck(semantic_check): pass
+
+@dataclass(frozen=True, eq=True)
+class DeclareCheck(semantic_check): pass
+
+all_checks : PSet[semantic_check] = pset({
+    LookupTypeCheck(),
+    ApplyArgTypeCheck(),
+    ApplyRatorTypeCheck(),
+    SplatKeywordTypeCheck(),
+    ReturnTypeCheck(),
+    UnifyTypeCheck(),
+    AssignTypeCheck(),
+    IterateTypeCheck(),
+    LookupDecCheck(),
+    LookupInitCheck(),
+    UpdateCheck(),
+    DeclareCheck()
+})
+
 
 
 def declared_and_initialized(inher_aux : InherAux, name : str) -> bool:
@@ -110,42 +139,6 @@ def is_a_stub_default(tree : pas.param_default) -> bool:
         return isinstance(tree.content, pas.Ellip)
     else:
         return False
-
-def check_decl_usage(dec_env : PMap[str, Declaration], usage_env : PMap[str, Usage]):
-    for dec in dec_env:
-        if dec not in usage_env:
-            # raise DeclareError()
-            pass
-
-def diff_usage_decl(
-    inher_aux : InherAux,
-    booting : bool, 
-    dec_env : PMap[str, Declaration],
-    usage_env : PMap[str, Usage],
-) -> PMap[str, Usage]:
-
-    usage_additions : PMap[str, Usage] = m()
-    for usage_key, usage in usage_env.items():
-        if usage_key in dec_env:
-
-            dec = dec_env[usage_key]
-            if usage.updated and dec.constant:
-                # raise UpdateError()
-                pass
-
-            if not booting and not dec.initialized:
-                # raise LookupInitError()
-                pass
-        else:
-
-            usage_additions += pmap({usage_key : usage_env[usage_key]})
-            if  not booting and not inher_aux.internal_path:
-                t = from_static_path_to_declaration(inher_aux, f"builtins.{usage_key}")
-                if isinstance(t, AnyType): 
-                    # raise LookupDecError()
-                    pass
-    return usage_additions
-
 
 def merge_usages(a : Usage, b : Usage) -> Usage:
     return Usage(
@@ -208,6 +201,9 @@ def unionize_types(a : type, b : type) -> type:
 def get_type_args(t : type) -> tuple[type, ...]:
 
     return match_type(t, TypeHandlers(
+        case_ProtocolType = lambda t : (),
+        case_GenericType = lambda t : (),
+        case_OverloadType = lambda t : (),
         case_TypeType = lambda t : (t.content,),
         case_VarType = lambda t : (),
         case_EllipType = lambda t : (),
@@ -221,69 +217,39 @@ def get_type_args(t : type) -> tuple[type, ...]:
         case_RecordType = lambda t : t.type_args,
         case_TupleLitType = lambda t : t.item_types,
         case_VariedTupleType = lambda t : (t.item_type,),
-        case_MappingType = lambda t : (t.key_type, t.value_type),
-        case_DictType = lambda t : (t.key_type, t.value_type),
-        case_SetType = lambda t : (t.item_type,),
-        case_IterableType = lambda t : (t.item_type,),
-        case_DictKeysType = lambda t : (t.key_type, t.value_type),
-        case_DictValuesType = lambda t : (t.key_type, t.value_type),
-        case_DictItemsType = lambda t : (t.key_type, t.value_type),
-        case_SequenceType = lambda t : (t.item_type,),
-        case_RangeType = lambda t : (t.item_type,),
-        case_ListType = lambda t : (t.item_type,),
         case_ListLitType = lambda t : (unionize_all_types(t.item_types),),
-        case_GeneratorType = lambda t : (t.yield_type, t.return_type,),
-        case_BoolType = lambda t : (),
         case_TrueType = lambda t : (),
         case_FalseType = lambda t : (),
-        case_IntType = lambda t : (),
         case_IntLitType = lambda t : (),
-        case_FloatType = lambda t : (),
         case_FloatLitType = lambda t : (),
-        case_StrType = lambda t : (),
         case_StrLitType = lambda t : (),
-        case_SliceType = lambda t : (),
     ))
 
 
 def get_class_key(t : type) -> str:
-    assert not isinstance(t, VarType)
     return match_type(t, TypeHandlers(
+        case_ProtocolType = lambda t : "",
+        case_GenericType = lambda t : "",
+        case_OverloadType = lambda t : "",
         case_TypeType = lambda t : t.class_key,
         case_VarType = lambda t : "",
         case_EllipType = lambda t : "builtins.ellipsis",
-        case_AnyType = lambda t : "typing.Any",
+        case_AnyType = lambda t : "",
         case_ObjectType = lambda t : "builtins.object",
         case_NoneType = lambda t : "", 
         case_ModuleType = lambda t : "",
-        case_FunctionType = lambda t : "_collections_abc.Callable",
+        case_FunctionType = lambda t : "typing.Callable",
         case_UnionType = lambda t : "typing.Union",
         case_InterType = lambda t : "",
         case_RecordType = lambda t : t.class_key,
         case_TupleLitType = lambda t : "builtins.tuple",
         case_VariedTupleType = lambda t : "builtins.tuple",
-        case_MappingType = lambda t : "_collections_abc.Mapping",
-        case_DictType = lambda t : "builtins.dict",
-        case_SetType = lambda t : "builtins.set",
-        case_IterableType = lambda t : "_collections_abc.Iterable",
-        case_DictKeysType = lambda t : "_collections_abc.dict_keys",
-        case_DictValuesType = lambda t : "_collections_abc.dict_values",
-        case_DictItemsType = lambda t : "_collections_abc.dict_items",
-        case_SequenceType = lambda t : "_collections_abc.Sequence",
-        case_RangeType = lambda t : "builtins.range",
-        case_ListType = lambda t : "builtins.list",
         case_ListLitType = lambda t : "builtins.list",
-        case_GeneratorType = lambda t : "_collections_abc.Generator",
-        case_BoolType = lambda t : "builtins.bool",
         case_TrueType = lambda t : "builtins.bool",
         case_FalseType = lambda t : "builtins.bool",
-        case_IntType = lambda t : "builtins.int",
         case_IntLitType = lambda t : "builtins.int",
-        case_FloatType = lambda t : "builtins.float",
         case_FloatLitType = lambda t : "builtins.float",
-        case_StrType = lambda t : "builtins.str",
         case_StrLitType = lambda t : "builtins.str",
-        case_SliceType = lambda t : "builtins.slice"
     ))
 
 def coerce_to_type(t) -> type:
@@ -330,14 +296,12 @@ def from_anno_pair_option_to_instance_type(t : type | None) -> tuple[type, type]
 
 def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Optional[type] = None) -> type:
 
-    if class_key == "builtins.ellipsis":
+    if class_key == "":
+        return AnyType()
+    elif class_key == "builtins.ellipsis":
         assert not type_arg
         return EllipType()
-    elif class_key == "typing.Any":
-        # types might not be fully formed, 
-        # so type_arg may exist for unresolved type that uses Any as a placeholder
-        return AnyType()
-    elif class_key == "_collections_abc.Callable":
+    elif class_key == "typing.Callable":
         assert isinstance(type_arg, TupleLitType)
         type_args = coerce_to_TupleLitType(type_arg).item_types
         assert len(type_args) == 2
@@ -372,63 +336,6 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         else:
             return TupleLitType(item_types=())
 
-    elif class_key == "builtins.dict":
-        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
-        return DictType(key_type=key_type, value_type=value_type)
-
-    elif class_key == "builtins.set":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return SetType(item_type = item_type)
-    elif class_key == "_collections_abc.Iterable":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return IterableType(item_type=item_type)
-    elif class_key == "_collections_abc.dict_keys":
-        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
-        return DictKeysType(key_type=key_type, value_type=value_type)
-
-    elif class_key == "_collections_abc.dict_values":
-        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
-        return DictValuesType(key_type=key_type, value_type=value_type)
-
-    elif class_key == "_collections_abc.dict_items":
-        (key_type, value_type) = from_anno_pair_option_to_instance_type(type_arg)
-        return DictItemsType(key_type=key_type, value_type=value_type)
-
-    elif class_key == "_collections_abc.Sequence":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return SequenceType(item_type=item_type)
-    elif class_key == "builtins.range":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return RangeType(item_type=item_type)
-    elif class_key == "builtins.list":
-        item_type = from_anno_option_to_instance_type(type_arg)
-        return ListType(item_type=item_type)
-    elif class_key == "_collections_abc.Generator":
-        if type_arg:
-            ftt = coerce_to_TupleLitType(type_arg)
-            ts = from_anno_seq_to_instance_types(ftt.item_types)
-            assert len(ts) == 3
-            return GeneratorType(yield_type=ts[0], return_type=ts[2])
-        else:
-            return GeneratorType(AnyType(), AnyType())
-    elif class_key == "builtins.bool":
-        return BoolType()
-    elif class_key == "builtins.int":
-        return IntType()
-    elif class_key == "builtins.float":
-        return FloatType()
-    elif class_key == "builtins.str":
-        return StrType()
-    elif class_key == "builtins.slice":
-
-        if type_arg:
-            ftt = coerce_to_TupleLitType(type_arg)
-            ts = from_anno_seq_to_instance_types(ftt.item_types)
-            assert len(ts) == 3
-            return SliceType(ts[0], ts[1], ts[2])
-        else:
-            return SliceType(AnyType(), AnyType(), AnyType())
-
     else:
         type_args = (
             from_anno_seq_to_instance_types(type_arg.item_types)  
@@ -445,26 +352,37 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
 
 
 def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
-    class_key = get_class_key(spec_type)
-    class_record = from_static_path_to_ClassRecord(inher_aux, class_key)
-    if class_record:
-        spec_type_args = get_type_args(spec_type)
-        type_arg = (
-            None
-            if len(spec_type_args) == 0 else
-            TypeType(class_key = "builtins.type", content = spec_type_args[0])
-            if len(spec_type_args) == 1 else
-            TupleLitType(
-                item_types=tuple(
-                    TypeType(class_key = "builtins.type", content = ta)
-                    for ta in spec_type_args
-                )
-            )
-        )
-        gen_type = from_class_key_to_type(inher_aux, class_key, type_arg)
-        return gen_type
-    else:
-        return AnyType()
+    t = match_type(spec_type, TypeHandlers(
+        case_ProtocolType = lambda t : t,
+        case_GenericType = lambda t : t,
+        case_OverloadType = lambda t : t,
+        case_TypeType = lambda t : t,
+        case_VarType = lambda t : t,
+        case_EllipType = lambda t : t,
+        case_AnyType = lambda t : t,
+        case_ObjectType = lambda t : t,
+        case_NoneType = lambda t : t, 
+        case_ModuleType = lambda t : t,
+        case_FunctionType = lambda t : t,
+        case_UnionType = lambda t : t,
+        case_InterType = lambda t : t,
+        case_RecordType = lambda t : t,
+        case_TupleLitType = lambda t : t,
+        case_VariedTupleType = lambda t : t,
+        case_ListLitType = lambda t : make_RecordType(
+            class_key="builtins.list", 
+            type_args=(unionize_all_types(
+                generalize_type(inher_aux, it)
+                for it in t.item_types
+            ),)        
+        ),
+        case_TrueType = lambda t : make_RecordType(class_key="builtins.bool"),
+        case_FalseType = lambda t : make_RecordType(class_key="builtins.bool"),
+        case_IntLitType = lambda t : make_RecordType(class_key="builtins.int"),
+        case_FloatLitType = lambda t : make_RecordType(class_key="builtins.float"),
+        case_StrLitType = lambda t : make_RecordType(class_key="builtins.str"),
+    ))
+    return t
 
 
 def coerce_to_VarType(t : type) -> VarType:
@@ -472,51 +390,17 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-def targs_subsumed_RecordType(sub_type : RecordType, super_type : RecordType, inher_aux : InherAux) -> bool:
-    assert sub_type.class_key == super_type.class_key 
-    class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
-    if class_record:
-        type_params = class_record.type_params
-        assert len(type_params) == len(sub_type.type_args) == len(super_type.type_args)
-        subsumptions = [
-            (
-                subsumed(sub_type.type_args[i], super_type.type_args[i], inher_aux)
-                if isinstance(tp.variant, CoVariant) else
-                subsumed(super_type.type_args[i], sub_type.type_args[i], inher_aux)
-                if isinstance(tp.variant, ContraVariant) else
-                sub_type.type_args[i] == super_type.type_args[i]
-            )
-            for i, tp in enumerate(type_params)
-        ]
-
-        return us.every(subsumptions, lambda x : x)
-    else:
-        return True
-
-
-
-def subsumed_FunctionType(sub_type : FunctionType, super_type : FunctionType, inher_aux : InherAux) -> bool:
-    param_subsumptions = [ 
-        subsumed(super_type.pos_param_types[i], t, inher_aux)
-        for i, t in enumerate(sub_type.pos_param_types)
-    ] + [ 
-        subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
-        for i, s in enumerate(sub_type.pos_kw_param_sigs)
-    ] + [
-        subsumed(super_type.splat_pos_param_type, sub_type.splat_pos_param_type, inher_aux)
-    ] if sub_type.splat_pos_param_type and super_type.splat_pos_param_type else [] + [
-        subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux)
-        for i, s in enumerate(sub_type.kw_param_sigs)
-    ] + [
-        subsumed(super_type.splat_kw_param_type, sub_type.splat_kw_param_type, inher_aux)
-    ] if sub_type.splat_kw_param_type and super_type.splat_kw_param_type else [] 
-
-    return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
-
-    return us.every(param_subsumptions, lambda x : x) and return_subsumption
 
 
 def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+
+    # print(f"")
+    # print(f">>>>>>>>>>>>>>>>")
+    # print(f">>## sub_type : {sub_type}")
+    # print(f">>## super_type : {super_type}")
+    # print(f">>>>>>>>>>>>>>>>")
+    # print(f"")
+
     if isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
         return types_match_subsumed(sub_type.content, super_type.content, inher_aux)
 
@@ -531,35 +415,116 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
     
     if isinstance(sub_type, FunctionType):
         assert isinstance(super_type, FunctionType)
-        return subsumed_FunctionType(sub_type, super_type, inher_aux)
+        param_subsumptions = [ 
+            subsumed(super_type.pos_param_types[i], t, inher_aux)
+            for i, t in enumerate(sub_type.pos_param_types)
+        ] + [ 
+            subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
+            for i, s in enumerate(sub_type.pos_kw_param_sigs)
+        ] + [
+            subsumed(super_type.splat_pos_param_type, sub_type.splat_pos_param_type, inher_aux)
+        ] if sub_type.splat_pos_param_type and super_type.splat_pos_param_type else [] + [
+            subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux)
+            for i, s in enumerate(sub_type.kw_param_sigs)
+        ] + [
+            subsumed(super_type.splat_kw_param_type, sub_type.splat_kw_param_type, inher_aux)
+        ] if sub_type.splat_kw_param_type and super_type.splat_kw_param_type else [] 
+
+        return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
+
+        return us.every(param_subsumptions, lambda x : x) and return_subsumption
+
     elif isinstance(sub_type, RecordType):
         assert isinstance(super_type, RecordType)
-        return targs_subsumed_RecordType(sub_type, super_type, inher_aux)
+        class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
+        if class_record:
+            type_params = class_record.type_params
+
+
+            # print(f"##############################")
+            # print(f"### sub_type: {sub_type}")
+            # print(f"### type_params: {type_params}")
+            # print(f"##############################")
+
+            assert len(sub_type.type_args) <= len(type_params)
+            assert len(super_type.type_args) <= len(type_params)
+
+            def get_type_arg(t : RecordType, i : int) -> type:
+                return t.type_args[i] if i < len(t.type_args) else AnyType()
+
+            subsumptions = [
+                (
+                    subsumed(get_type_arg(super_type, i), get_type_arg(sub_type, i), inher_aux)
+                    if isinstance(tp.variant, ContraVariant) else
+                    subsumed(get_type_arg(sub_type, i), get_type_arg(super_type, i), inher_aux)
+                    # by default type_params should be treated as covariant
+                    # if isinstance(tp.variant, CoVariant) else
+                    # sub_type.type_args[i] == super_type.type_args[i]
+                )
+                for i, tp in enumerate(type_params)
+            ]
+
+            return us.every(subsumptions, lambda x : x)
+        else:
+            return True
+
     else:
         assert get_class_key(sub_type) == get_class_key(super_type)
         sub_type_args = get_type_args(sub_type)
         super_type_args = get_type_args(super_type)
         
+        m = min(len(sub_type_args), len(super_type_args))
+        subsumptions = [
+            subsumed(sub_type_args[i], super_type_args[i], inher_aux)
+            for i in range(m)
+        ]
 
-        if len(sub_type_args) != len(super_type_args):
-            return False
-        else: 
-            subsumptions = [
-                subsumed(t, super_type_args[i], inher_aux)
-                for i, t in enumerate(sub_type_args)
-            ]
-
-            return us.every(subsumptions, lambda x : x)
+        return us.every(subsumptions, lambda x : x)
     
 
 
+def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, inher_aux : InherAux) -> bool:
+
+    sub_field_type = lookup_field_type(sub_type, field_name, inher_aux)
+    if sub_field_type:
+        return subsumed(sub_field_type, field_type, inher_aux)
+    else:
+        return False
+
 
 def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+    super_type = generalize_type(inher_aux, super_type)
+
+    # print("")
+    # print("-------------------------------")
+    # print(f"## sub_type: {sub_type}")
+    # print(f"## super_type: {super_type}")
+    # print("-------------------------------")
+    # print("")
 
     return (
         not isinstance(sub_type, VarType) and 
         not isinstance(sub_type, ModuleType) and
         (
+
+            (
+                # TODO: figure out more genearl way to handle int <: float
+                isinstance(super_type, RecordType) and
+                super_type.class_key == "builtins.float" and
+                isinstance(sub_type, RecordType) and
+                sub_type.class_key == "builtins.int"
+            ) or
+
+            (
+                isinstance(super_type, RecordType) and super_type.protocol and
+                (
+                    cr := infer_class_record(super_type, inher_aux),
+                    cr and us.every(cr.instance_fields.items(), lambda p : (
+                        field_exists_subsumed(sub_type, p[0], p[1], inher_aux)
+                    ))
+                )[-1]
+            ) or
+
             ( 
                 isinstance(sub_type, TypeType) and
                 isinstance(super_type, TypeType) and
@@ -572,10 +537,8 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
             isinstance(super_type, VarType) or # if VarType hasn't been subbed, then it can't be inferred.
 
-            (isinstance(super_type, SliceType) and
-                isinstance(super_type.stop, AnyType) and
-                isinstance(super_type.step, AnyType) and
-                subsumed(sub_type, super_type.start, inher_aux)
+            (isinstance(super_type, RecordType) and
+                super_type.class_key == "builtins.slice"
             ) or
 
             types_match_subsumed(sub_type, super_type, inher_aux) or 
@@ -603,9 +566,13 @@ def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
     if not class_record:   
         return ObjectType()
 
-    assert len(t.type_args) == len(class_record.type_params)
+    # print(f"##############################")
+    # print(f"@@## t : {t}")
+    # print(f"@@## class_record.type_params: {class_record.type_params}")
+    # print(f"##############################")
+    assert len(t.type_args) <= len(class_record.type_params)
     subst_map = pmap({
-        var_type.name : t.type_args[i]
+        var_type.name : t.type_args[i] if i < len(t.type_args) else AnyType()
         for i, var_type in enumerate(class_record.type_params)
     })
     parent_types = tuple(
@@ -621,6 +588,9 @@ def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
 def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
 
     return match_type(t, TypeHandlers(
+        case_ProtocolType = lambda t : None,
+        case_GenericType = lambda t : None,
+        case_OverloadType = lambda t : None,
         case_TypeType = lambda t : ObjectType(),
         case_VarType = lambda t : None,
         case_EllipType = lambda t : ObjectType(),
@@ -633,29 +603,13 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
         case_InterType = lambda t : ObjectType(),
         case_RecordType = lambda t : instance_parent_type(t, inher_aux),
         case_TupleLitType = lambda t : VariedTupleType(unionize_all_types(t.item_types)),
-        case_VariedTupleType = lambda t : SequenceType(t.item_type),
-        case_MappingType = lambda t : ObjectType(),
-        case_DictType = lambda t : MappingType(t.key_type, t.value_type),
-        case_SetType = lambda t : IterableType(t.item_type),
-        case_IterableType = lambda t : ObjectType(),
-        case_DictKeysType = lambda t : IterableType(t.key_type),
-        case_DictValuesType = lambda t : IterableType(t.value_type),
-        case_DictItemsType = lambda t : IterableType(TupleLitType((t.key_type, t.value_type))),
-        case_SequenceType = lambda t : IterableType(t.item_type),
-        case_RangeType = lambda t : SequenceType(t.item_type),
-        case_ListType = lambda t : SequenceType(t.item_type),
-        case_ListLitType = lambda t : ListType(unionize_all_types(t.item_types)),
-        case_GeneratorType = lambda t : IterableType(t.yield_type),
-        case_BoolType = lambda t : ObjectType(),
-        case_TrueType = lambda t : BoolType(),
-        case_FalseType = lambda t : BoolType(),
-        case_IntType = lambda t : ObjectType(),
-        case_IntLitType = lambda t : IntType(),
-        case_FloatType = lambda t : ObjectType(),
-        case_FloatLitType = lambda t : FloatType(),
-        case_StrType = lambda t : SequenceType(item_type=StrType()),
-        case_StrLitType = lambda t : StrType(),
-        case_SliceType = lambda t : ObjectType() 
+        case_VariedTupleType = lambda t : make_RecordType(class_key = "typing.Sequence", type_args=(t.item_type,)),
+        case_ListLitType = lambda t : make_RecordType("builtins.list", type_args=(unionize_all_types(t.item_types),)),
+        case_TrueType = lambda t : make_RecordType(class_key="builtins.bool"),
+        case_FalseType = lambda t : make_RecordType(class_key="builtins.bool"),
+        case_IntLitType = lambda t : make_RecordType(class_key="builtins.int"),
+        case_FloatLitType = lambda t : make_RecordType(class_key="builtins.float"),
+        case_StrLitType = lambda t : make_RecordType(class_key="builtins.str"),
     )) 
 
 def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
@@ -715,14 +669,15 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
     if isinstance(anchor_type, ModuleType):
         assert anchor_type.key
         path = f"{anchor_type.key}.{field_name}" 
-        return from_static_path_to_declaration(inher_aux, path).type
+        dec = from_static_path_to_declaration(inher_aux, path)
+        return dec.type
 
     elif isinstance(anchor_type, TypeType) or isinstance(anchor_type, TypeType):
         content_class_record = infer_class_record(anchor_type.content, inher_aux)
         if content_class_record:
             return lookup_static_field_type(content_class_record, field_name, inher_aux)
         else:
-            return AnyType()
+            return None 
 
     else:
         class_record = infer_class_record(anchor_type, inher_aux)
@@ -736,13 +691,17 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
                     result = lookup_field_type(super_type.content, field_name, inher_aux)
                     if result:
                         return result
-        return AnyType()
+        else:
+            return None
 
 
 
 
 def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     return match_type(t, TypeHandlers(
+        case_ProtocolType = lambda t : t,
+        case_GenericType = lambda t : t,
+        case_OverloadType = lambda t : t,
         case_TypeType = lambda t : substitute_type_args(t.content, subst_map),
         case_VarType = lambda t : subst_map[t.name] if subst_map.get(t.name) else t,
         case_EllipType = lambda t : t,
@@ -825,63 +784,6 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
                 item_type = substitute_type_args(t.item_type, subst_map)
             )
         ),
-        case_MappingType = lambda t : (
-            MappingType(
-                key_type = substitute_type_args(t.key_type, subst_map),
-                value_type = substitute_type_args(t.value_type, subst_map),
-            )
-        ),
-        case_DictType = lambda t : (
-            DictType(
-                key_type = substitute_type_args(t.key_type, subst_map),
-                value_type = substitute_type_args(t.value_type, subst_map),
-            )
-        ),
-        case_SetType = lambda t : (
-            SetType(
-                item_type = substitute_type_args(t.item_type, subst_map)
-            )
-        ),
-        case_IterableType = lambda t : (
-            IterableType(
-                item_type = substitute_type_args(t.item_type, subst_map)
-            )
-        ),
-
-        case_DictKeysType = lambda t : (
-            DictKeysType(
-                key_type = substitute_type_args(t.key_type, subst_map),
-                value_type = substitute_type_args(t.value_type, subst_map),
-            )
-        ),
-        case_DictValuesType = lambda t : (
-            DictValuesType(
-                key_type = substitute_type_args(t.key_type, subst_map),
-                value_type = substitute_type_args(t.value_type, subst_map),
-            )
-        ),
-        case_DictItemsType = lambda t : (
-            DictItemsType(
-                key_type = substitute_type_args(t.key_type, subst_map),
-                value_type = substitute_type_args(t.value_type, subst_map),
-            )
-        ),
-
-        case_SequenceType = lambda t : (
-            SequenceType(
-                item_type = substitute_type_args(t.item_type, subst_map)
-            )
-        ),
-        case_RangeType = lambda t : (
-            RangeType(
-                item_type = substitute_type_args(t.item_type, subst_map)
-            )
-        ),
-        case_ListType = lambda t :( 
-            ListType(
-                item_type = substitute_type_args(t.item_type, subst_map)
-            )
-        ),
 
         case_ListLitType = lambda t :( 
             ListLitType(
@@ -891,31 +793,23 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
                 )
             )
         ),
-        case_GeneratorType = lambda t : ( 
-            GeneratorType(
-                yield_type = substitute_type_args(t.yield_type, subst_map),
-                return_type = substitute_type_args(t.return_type, subst_map)
-            )
-        ),
-        case_BoolType = lambda t : t,
         case_TrueType = lambda t : t,
         case_FalseType = lambda t : t,
-        case_IntType = lambda t : t,
         case_IntLitType = lambda t : t,
-        case_FloatType = lambda t : t,
         case_FloatLitType = lambda t : t,
-        case_StrType = lambda t : t,
         case_StrLitType = lambda t : t,
-        case_SliceType = lambda t : t
     ))
 
 
 def get_mapping_key_value_types(t : type, inher_aux : InherAux) -> tuple[type, type]:
-    if isinstance(t, DictType):
-        return (t.key_type, t.value_type)
-    elif isinstance(t, MappingType):
-        return (t.key_type, t.value_type)
-    elif isinstance(t, RecordType):
+    if isinstance(t, RecordType):
+
+        if t.class_key == "typing.Mapping":
+            assert len(t.type_args) == 2
+            key_type = t.type_args[0] 
+            val_type = t.type_args[1] 
+            return (key_type, val_type)
+
         class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
         if class_record:
             substitution_map : PMap[str, type] = pmap({
@@ -928,80 +822,82 @@ def get_mapping_key_value_types(t : type, inher_aux : InherAux) -> tuple[type, t
                 result = get_mapping_key_value_types(super_type, inher_aux)
                 return result
 
-            raise IterateTypeError() 
+            raise IterateTypeCheck() 
         else:
             return (AnyType(), AnyType())
+
+    elif isinstance(t, AnyType):
+        return (AnyType(), AnyType())
+
     else:
-        raise IterateTypeError() 
+        raise IterateTypeCheck() 
 
 
-def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux) -> type:
+def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux) -> type | None:
+
+    # print(f"*************")
+    # print(f"*** t : {t}")
+    # print(f"*************")
+    if t.class_key == "typing.Iterable": 
+        assert len(t.type_args) == 1
+        item_type = t.type_args[0]
+        return item_type
+    
     class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
-
     if class_record:
         substitution_map : PMap[str, type] = pmap({
             class_record.type_params[i].name : type_arg
             for i, type_arg in enumerate(t.type_args) 
         })
 
+        # print(f"## super_types : {class_record.super_types}")
         for super_type in reversed(class_record.super_types):
             super_type = substitute_type_args(super_type, substitution_map)
             result = get_iterable_item_type(super_type, inher_aux)
-            return result
+            if result:
+                return result
 
-        raise IterateTypeError() 
+        return None
     else:
         return AnyType()
 
-def get_iterable_item_type_from_UnionType(t : UnionType, inher_aux : InherAux) -> type:
+def get_iterable_item_type_from_UnionType(t : UnionType, inher_aux : InherAux) -> type | None:
     assert len(t.type_choices) > 0
 
     item = t.type_choices[0]
     for tc in t.type_choices[1:]:
         tc_item = get_iterable_item_type(tc, inher_aux)
-        item = unionize_types(item, tc_item)
+        if tc_item:
+            item = unionize_types(item, tc_item)
+        else:
+            return None
     return item
 
-def get_iterable_item_type(t : type, inher_aux : InherAux) -> type:
-    def fail() -> type:
-        raise IterateTypeError()
+def get_iterable_item_type(iter_type : type, inher_aux : InherAux) -> Optional[type]:
 
-    return match_type(t, TypeHandlers(
-        case_TypeType = lambda t : fail(),
-        case_VarType = lambda t : fail(),
-        case_EllipType = lambda t : fail(),
+    return match_type(iter_type, TypeHandlers(
+        case_ProtocolType = lambda t : None,
+        case_GenericType = lambda t : None,
+        case_OverloadType = lambda t : None,
+        case_TypeType = lambda t : None,
+        case_VarType = lambda t : None,
+        case_EllipType = lambda t : None,
         case_AnyType = lambda t : AnyType(),
-        case_ObjectType = lambda t : fail(),
-        case_NoneType = lambda t : fail(), 
-        case_ModuleType = lambda t : fail(),
-        case_FunctionType = lambda t : fail(),
+        case_ObjectType = lambda t : None,
+        case_NoneType = lambda t : None, 
+        case_ModuleType = lambda t : None,
+        case_FunctionType = lambda t : None,
         case_UnionType = lambda t : get_iterable_item_type_from_UnionType(t, inher_aux),
-        case_InterType = lambda t : fail(),
+        case_InterType = lambda t : None,
         case_RecordType = lambda t : get_iterable_item_type_from_RecordType(t, inher_aux),
         case_TupleLitType = lambda t : unionize_all_types(t.item_types),
         case_VariedTupleType = lambda t : t.item_type,
-        case_MappingType = lambda t : fail(),
-        case_DictType = lambda t : t.key_type,
-        case_SetType = lambda t : t.item_type,
-        case_IterableType = lambda t : t.item_type,
-        case_DictKeysType = lambda t : t.key_type,
-        case_DictValuesType = lambda t : t.value_type,
-        case_DictItemsType = lambda t : TupleLitType((t.key_type, t.value_type)),
-        case_SequenceType = lambda t : t.item_type,
-        case_RangeType = lambda t : t.item_type,
-        case_ListType = lambda t : t.item_type,
         case_ListLitType = lambda t : unionize_all_types(t.item_types),
-        case_GeneratorType = lambda t : t.yield_type,
-        case_BoolType = lambda t : fail(),
-        case_TrueType = lambda t : fail(),
-        case_FalseType = lambda t : fail(),
-        case_IntType = lambda t : fail(),
-        case_IntLitType = lambda t : fail(),
-        case_FloatType = lambda t : fail(),
-        case_FloatLitType = lambda t : fail(),
-        case_StrType = lambda t : StrType(),
-        case_StrLitType = lambda t : StrType(),
-        case_SliceType = lambda t : fail(),
+        case_TrueType = lambda t : None,
+        case_FalseType = lambda t : None,
+        case_IntLitType = lambda t : None,
+        case_FloatLitType = lambda t : None,
+        case_StrLitType = lambda t : make_RecordType(class_key="builtins.str"),
     ))
 
 
@@ -1025,8 +921,11 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
         assert pattern.content
         for p in generate_items(pattern.content):
             item_type = get_iterable_item_type(type, inher_aux)
-            new_env = unify(p, item_type, inher_aux)
-            type_env += new_env
+            if item_type:
+                new_env = unify(p, item_type, inher_aux)
+                type_env += new_env
+            else:
+                raise UnifyTypeCheck()
 
         return type_env 
     elif isinstance(pattern, pas.Tuple):
@@ -1044,8 +943,11 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
             assert pattern.content
             for p in generate_items(pattern.content):
                 item_type = get_iterable_item_type(type, inher_aux)
-                new_env = unify(p, item_type, inher_aux)
-                type_env += new_env
+                if item_type:
+                    new_env = unify(p, item_type, inher_aux)
+                    type_env += new_env
+                else:
+                    raise UnifyTypeCheck()
 
             return type_env 
     elif isinstance(pattern, pas.Attribute):
@@ -1053,7 +955,7 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
     elif isinstance(pattern, pas.Subscript):
         return m()
     else:
-        raise UnifyTypeError()
+        raise UnifyTypeCheck()
 
 
 def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRecord | None:
@@ -1134,7 +1036,7 @@ def lookup_declaration(inher_aux : InherAux, key : str, builtins = True) -> Decl
     elif inher_aux.global_env.get(key):
         return inher_aux.global_env[key]
     elif key == "Ellipsis": # don't expose the type of builtins.Ellipsis
-        return Declaration(annotated=True, initialized = True, constant=True, type = AnyType(), decorator_types=())
+        return make_Declaration(annotated=True, initialized = True, constant=True)
     elif builtins:
         return from_static_path_to_declaration(inher_aux, f"builtins.{key}")
     else:
@@ -1195,11 +1097,6 @@ def check_application_args(
         us.every(kw_param_compat, lambda x : x)
     )
 
-    if not compatible:
-        # TODO: this could be due to overloaded methods, which isn't currently supported
-        # raise ApplyArgTypeError()
-        pass
-
     return compatible
 
 
@@ -1209,7 +1106,6 @@ def is_literal_string(content : str) -> bool:
         return isinstance(result, str)
     except:
         return False
-
 
 def from_inher_aux_to_primitive(inher_aux : InherAux):
     return ['A', 
@@ -1259,6 +1155,9 @@ def from_ParamSig_to_primitive(p : ParamSig) -> list:
     
 def from_type_to_primitive(t : type) -> list:
     return match_type(t, TypeHandlers(
+        case_ProtocolType = lambda t : ["ProtocolType"],
+        case_GenericType = lambda t : ["GenericType"],
+        case_OverloadType = lambda t : ["OverloadType"],
         case_TypeType = lambda t : ["TypeType", from_type_to_primitive(t.content)],
         case_VarType = lambda t : ["VarType", t.name, from_variant_to_primitive(t.variant)],
         case_EllipType = lambda t : ["EllipType"],
@@ -1282,32 +1181,12 @@ def from_type_to_primitive(t : type) -> list:
         ]],
         case_TupleLitType = lambda t : ["TupleLitType", [from_type_to_primitive(it) for it in t.item_types]],
         case_VariedTupleType = lambda t : ["VariedTupleType", from_type_to_primitive(t.item_type)],
-        case_MappingType = lambda t : ["MappingType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
-        case_DictType = lambda t : ["DictType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
-        case_SetType = lambda t : ["SetType", from_type_to_primitive(t.item_type)],
-        case_IterableType = lambda t : ["IterableType", from_type_to_primitive(t.item_type)],
-        case_DictKeysType = lambda t : ["DictKeysType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
-        case_DictValuesType = lambda t : ["DictValuesType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
-        case_DictItemsType = lambda t : ["DictItemsType", from_type_to_primitive(t.key_type), from_type_to_primitive(t.value_type)],
-        case_SequenceType = lambda t : ["SequenceType", from_type_to_primitive(t.item_type)],
-        case_RangeType = lambda t : ["RangeType", from_type_to_primitive(t.item_type)],
-        case_ListType = lambda t : ["ListType", from_type_to_primitive(t.item_type)],
         case_ListLitType = lambda t : ["ListLitType", [from_type_to_primitive(it) for it in t.item_types]],
-        case_GeneratorType = lambda t : ["GeneratorType", from_type_to_primitive(t.yield_type), from_type_to_primitive(t.return_type)],
-        case_BoolType = lambda t : ["BoolType"],
         case_TrueType = lambda t : ["TrueType"],
         case_FalseType = lambda t : ["FalseType"],
-        case_IntType = lambda t : ["IntType"],
         case_IntLitType = lambda t : ["IntLitType", t.literal],
-        case_FloatType = lambda t : ["FloatType"],
         case_FloatLitType = lambda t : ["FloatLitType", t.literal],
-        case_StrType = lambda t : ["StrType"],
         case_StrLitType = lambda t : ["StrLitType", t.literal],
-        case_SliceType = lambda t : ["SliceType",
-            from_type_to_primitive(t.start),
-            from_type_to_primitive(t.stop),
-            from_type_to_primitive(t.step)
-        ],
     ))
 
 
@@ -1335,11 +1214,20 @@ def analyze_modules_once(
         )
         assert path.isfile(file_path)
 
+
+        checks = (
+            all_checks
+            .remove(LookupInitCheck())
+            .remove(LookupDecCheck())
+            .remove(DeclareCheck())
+            .remove(AssignTypeCheck())
+        )
+
         try:
             with open(file_path) as f:
                 code = f.read().strip()
                 if code:
-                    package = analyze_code(package, module_path, code, booting = True)
+                    package = analyze_code(package, module_path, code, checks=checks)
                 else:
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
@@ -1414,14 +1302,14 @@ def analyze_code(
     package : PMap[str, ModulePackage], 
     module_name, 
     code : str,
-    booting : bool = False
+    checks = all_checks
 ) -> PMap[str, ModulePackage]:
 
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
 
-    client : Client = spawn_analysis(package, module_name, booting)
+    client : Client = spawn_analysis(package, module_name, checks)
 
     last_inher_aux : InherAux = client.init
     a_keys_len = len(last_inher_aux.package.keys())
@@ -1494,17 +1382,29 @@ def traverse_aux(inher_aux : InherAux, synth_aux : SynthAux) -> InherAux:
         observed_types = synth_aux.observed_types
     )
 
-def cross_join_aux(true_body_aux : SynthAux, false_body_aux : SynthAux) -> SynthAux:
+@dataclass(frozen=True, eq=True)
+class Change(Generic[T]):
+    subtractions: PSet[str]
+    additions: PMap[str, T] 
+
+def to_change_decl(body_aux : SynthAux) -> Change[Declaration]:
+    return Change(
+        subtractions=body_aux.decl_subtractions,
+        additions=body_aux.decl_additions
+    )
+
+
+def cross_join_aux_decls(true_body_aux : Change[Declaration], false_body_aux : Change[Declaration]) -> Change[Declaration]:
 
     subtractions : PSet[str] = s()
-    for sub in true_body_aux.decl_subtractions:
-        if sub in false_body_aux.decl_subtractions:
+    for sub in true_body_aux.subtractions:
+        if sub in false_body_aux.subtractions:
             subtractions = subtractions.add(sub)
 
     body_additions : PMap[str, Declaration] = m()
-    for target, dec in true_body_aux.decl_additions.items():
-        if target in false_body_aux.decl_additions:
-            false_body_dec = false_body_aux.decl_additions[target]   
+    for target, dec in true_body_aux.additions.items():
+        if target in false_body_aux.additions:
+            false_body_dec = false_body_aux.additions[target]   
             initialized = dec.initialized and false_body_dec.initialized
             annotated = dec.annotated or false_body_dec.annotated
             constant = dec.constant or false_body_dec.constant
@@ -1522,7 +1422,7 @@ def cross_join_aux(true_body_aux : SynthAux, false_body_aux : SynthAux) -> Synth
                 unionize_types(dec.type, false_body_dec.type)
             )
 
-            new_declaration = Declaration(
+            new_declaration = make_Declaration(
                 annotated=annotated,
                 initialized=initialized,
                 constant = constant,
@@ -1532,9 +1432,9 @@ def cross_join_aux(true_body_aux : SynthAux, false_body_aux : SynthAux) -> Synth
             body_additions = body_additions + pmap({target : new_declaration})
 
 
-    return make_SynthAux(
-        decl_subtractions = subtractions,
-        decl_additions = body_additions
+    return Change(
+        subtractions = subtractions,
+        additions = body_additions
     )
 
 
@@ -1610,12 +1510,16 @@ def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_
     return result
 
 
-def spawn_analysis(package : PMap[str, ModulePackage], module_name : str, booting : bool = False) -> Client:
+def spawn_analysis(
+    package : PMap[str, ModulePackage], 
+    module_name : str, 
+    checks : PSet[semantic_check] = all_checks
+) -> Client:
 
     in_stream : Queue[abstract_token] = Queue()
     out_stream : Queue[Union[InherAux, Exception]] = Queue()
 
-    server : Server = Server(in_stream, out_stream, booting)
+    server : Server = Server(in_stream, out_stream, checks)
 
     mp = from_package_get_ModulePackage(package, module_name)
 
@@ -1698,12 +1602,23 @@ def spawn_analysis(package : PMap[str, ModulePackage], module_name : str, bootin
 
 
 def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
-    item_type = get_iterable_item_type(iter_type, inher_aux)
-    target_types = unify(pattern, item_type, inher_aux)
-    for k, t in target_types.items():
-        dec = lookup_declaration(inher_aux, k)
-        # if dec: assert subsumes(t, dec.type, inher_aux)
-    return target_types
+
+    # print(f"--## pattern : {pattern}")
+    # print(f"--## iter_type : {iter_type}")
+
+    if isinstance(iter_type, AnyType):
+        return unify(pattern, AnyType(), inher_aux)
+    else:
+        item_type = get_iterable_item_type(iter_type, inher_aux)
+        if item_type:
+            target_types = unify(pattern, item_type, inher_aux)
+            for k, t in target_types.items():
+                dec = lookup_declaration(inher_aux, k)
+                if dec and not subsumed(t, dec.type, inher_aux):
+                    raise UnifyTypeCheck()
+            return target_types
+        else:
+            raise IterateTypeCheck()
 
 
 def analyze_statements(
@@ -1772,10 +1687,59 @@ class Server(paa.Server[InherAux, SynthAux]):
     def __init__(self, 
         in_stream : Queue[abstract_token], 
         out_stream : Queue[Union[InherAux, Exception]],
-        booting : bool = False
+        checks : PSet[semantic_check] = all_checks
     ):  
         super().__init__(in_stream, out_stream)
-        self.booting = booting
+        self.checks = checks
+
+
+    def check(self, sc : semantic_check, f : Callable[[], bool]): 
+        if sc in self.checks:
+            if not f():
+                raise sc
+
+    def diff_usage_decl(
+        self,
+        inher_aux : InherAux,
+        dec_env : PMap[str, Declaration],
+        usage_env : PMap[str, Usage],
+    ) -> PMap[str, Usage]:
+
+        usage_additions : PMap[str, Usage] = m()
+        for usage_key, usage in usage_env.items():
+            if usage_key in dec_env:
+
+                dec = dec_env[usage_key]
+                self.check(UpdateCheck(), lambda:
+                    not usage.updated or not dec.constant
+                )
+
+                # print(f"-----------------")
+                # print(f"--## usage_key : {usage_key}")
+                # print(f"--## dec : {dec}")
+                # print(f"-----------------")
+                self.check(LookupInitCheck(), lambda:
+                    dec.initialized
+                )
+            else:
+
+                usage_additions += pmap({usage_key : usage_env[usage_key]})
+                self.check(LookupDecCheck(), lambda: 
+                    inher_aux.internal_path != "" or 
+                    not isinstance(
+                        from_static_path_to_declaration(inher_aux, f"builtins.{usage_key}"), 
+                        AnyType
+                    )
+                )
+
+        return usage_additions
+
+    def check_decl_usage(self, dec_env : PMap[str, Declaration], usage_env : PMap[str, Usage]):
+        self.check(DeclareCheck(), lambda:
+            us.every(dec_env.keys(), lambda k :
+                k in usage_env
+            )  
+        )
 
     # override parent class method
     def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux]) -> InherAux:
@@ -1808,6 +1772,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         yield_types : tuple[type, ...] = ()
 
         var_types : tuple[VarType, ...] = ()
+
+        protocol : bool = False
 
         param_sig : Optional[ParamSig] = None 
         pos_param_types : tuple[type, ...] = ()
@@ -1843,6 +1809,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             yield_types = yield_types + aux.yield_types
 
             var_types = var_types + aux.var_types
+            protocol = protocol or aux.protocol
 
             param_sig = param_sig if param_sig else aux.param_sig
 
@@ -1865,6 +1832,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             return_types,
             yield_types,
             var_types,
+            protocol,
             param_sig, 
             pos_param_types, pos_kw_param_sigs, list_splat_param_type, kw_param_sigs, dict_splat_param_type,
             import_names
@@ -1880,18 +1848,44 @@ class Server(paa.Server[InherAux, SynthAux]):
         right_tree : pas.expr, 
         right_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        # TODO: check that the rator and rhs operand correspond to a method on the lhs operand
 
-        bool_type = make_BoolType()
+        assert len(left_aux.observed_types) == 1
+        left_type = left_aux.observed_types[0]
+        assert len(right_aux.observed_types) == 1
+        right_type = right_aux.observed_types[0]
 
-        synth_aux = update_SynthAux(
-            self.synthesize_auxes(tuple([left_aux, rator_aux, right_aux])),
-            observed_types = (bool_type,)
-        )
+        expr_type = AnyType()
+
+        # TODO: use some sort of subsumption check to determine __and__ vs _rand__ etc
+        # infix operators should use the method on the higher type
+        if subsumed(left_type, right_type, inher_aux):
+            left_type = right_type
+
+        method_name = pas.from_bool_rator_to_method_name(rator_tree)
+        method_type = lookup_field_type(left_type, method_name, inher_aux)
+
+        if isinstance(method_type, FunctionType):
+            # print(f"@@## left_tree : {left_tree}")
+            # print(f"@@## left_type : {left_type}")
+            # print(f"@@## rator_tree: {rator_tree}")
+            # print(f"@@## method_name : {method_name}")
+            # print(f"@@## method_type: {method_type}")
+            # print(f"@@## right_tree: {right_tree}")
+            # print(f"@@## right_type: {right_type}")
+            compatible = check_application_args(
+                [right_type], {}, 
+                method_type, inher_aux
+            )
+
+            self.check(ApplyArgTypeCheck(), lambda: compatible)
+
+            expr_type = method_type.return_type
 
         return paa.Result[SynthAux](
             tree = pas.BoolOp(left_tree, rator_tree, right_tree),
-            aux = synth_aux
+            aux = update_SynthAux(self.synthesize_auxes(tuple([left_aux, rator_aux, right_aux])),
+                observed_types = (expr_type,)
+            )
         )
     
 
@@ -1908,22 +1902,18 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         # check name compatability between target and source expressions 
         for name in content_aux.usage_additions:
-            if (
-                name in target_aux.usage_additions and 
-                name not in inher_aux.declared_globals and 
-                name not in inher_aux.declared_nonlocals and 
-                name not in inher_aux.local_env
-            ):
-                # raise UpdateError()  
-                pass
+            self.check(UpdateCheck(), lambda: 
+                name not in target_aux.usage_additions or 
+                name in inher_aux.declared_globals or 
+                name in inher_aux.declared_nonlocals or 
+                name in inher_aux.local_env
+            )
 
 
         updated_usage_additions : PMap[str, Usage] = m()
         for name, usage in target_aux.usage_additions.items():
             if declared_and_initialized(inher_aux, name):
                 updated_usage_additions = updated_usage_additions + pmap({name : update_Usage(usage, updated = True)})
-            else:
-                updated_usage_additions = updated_usage_additions + pmap({name : usage})
 
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
@@ -1974,11 +1964,15 @@ class Server(paa.Server[InherAux, SynthAux]):
             expr_type = TypeType(class_key = "builtins.type", content = union_type)
         else:
 
+
+            # infix operators should use the method on the higher type
+            if subsumed(left_type, right_type, inher_aux):
+                left_type = right_type
+
             method_name = pas.from_bin_rator_to_method_name(rator_tree)
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
             if isinstance(method_type, FunctionType):
-                # TODO: handle typing.AbstractSet aliasing 
                 # print(f"@@## left_tree : {left_tree}")
                 # print(f"@@## left_type : {left_type}")
                 # print(f"@@## rator_tree: {rator_tree}")
@@ -1986,10 +1980,13 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"@@## method_type: {method_type}")
                 # print(f"@@## right_tree: {right_tree}")
                 # print(f"@@## right_type: {right_type}")
-                # check_application_args(
-                #     [right_type], {}, 
-                #     method_type, inher_aux
-                # )
+                compatible = check_application_args(
+                    [right_type], {}, 
+                    method_type, inher_aux
+                )
+
+                self.check(ApplyArgTypeCheck(), lambda: compatible)
+
                 expr_type = method_type.return_type
 
         return paa.Result[SynthAux](
@@ -2014,10 +2011,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         method_type = lookup_field_type(rand_type, method_name, inher_aux)
         return_type = AnyType()
         if isinstance(method_type, FunctionType):
-            check_application_args(
+            compatible = check_application_args(
                 [], {}, 
                 method_type, inher_aux
             )
+
+            self.check(ApplyArgTypeCheck(), lambda: compatible)
         else:
             return_type = AnyType() 
 
@@ -2129,9 +2128,9 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert len(content_aux.observed_types) == 2
 
-        dict_type = DictType(
-            key_type = content_aux.observed_types[0],
-            value_type = content_aux.observed_types[1]
+        dict_type = make_RecordType(
+            class_key = "builtins.dict",
+            type_args = (content_aux.observed_types[0], content_aux.observed_types[1])
         )
 
         return paa.Result[SynthAux](
@@ -2146,10 +2145,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> paa.Result[SynthAux]:
 
-
-        dict_type = DictType(
-            key_type = AnyType(),
-            value_type = AnyType()
+        dict_type = make_RecordType(
+            class_key = "builtins.dict",
+            type_args = (AnyType(), AnyType())
         )
 
         return paa.Result[SynthAux](
@@ -2170,10 +2168,11 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         item_type = content_aux.observed_types[0] 
         for t in content_aux.observed_types[1:]:
-            item_type = unionize_types(t, item_type)
+            item_type = unionize_types(item_type, t)
 
-        set_type = make_SetType(
-            item_type = item_type 
+        set_type = make_RecordType(
+            class_key = "builtins.set",
+            type_args = (item_type,)
         )
 
         return paa.Result[SynthAux](
@@ -2247,8 +2246,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.ListComp(content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, constraints_aux])),
-                observed_types = (ListType(
-                    item_type = content_type
+                observed_types = (make_RecordType(
+                    class_key = "builtins.list",
+                    type_args = (content_type,)
                 ),)
             )
         )
@@ -2270,8 +2270,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.SetComp(content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, constraints_aux])),
-                observed_types = (SetType(
-                    item_type = content_type
+                observed_types = (make_RecordType(
+                    class_key = "builtins.set",
+                    type_args = (content_type,)
                 ),)
             )
         )
@@ -2299,9 +2300,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.DictionaryComp(key_tree, content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([key_aux, content_aux, constraints_aux])),
-                observed_types = (DictType(
-                    key_type = key_type,
-                    value_type = content_type,
+                observed_types = (make_RecordType(
+                    class_key = "builtins.dict",
+                    type_args = (key_type, content_type)
                 ),)
             )
         )
@@ -2322,9 +2323,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.GeneratorExp(content_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, constraints_aux])),
-                observed_types = (GeneratorType(
-                    yield_type = content_type,
-                    return_type = NoneType()
+                observed_types = (make_RecordType(
+                    class_key = "typing.Generator",
+                    type_args = (content_type, NoneType(), NoneType())
                 ),)
             )
         )
@@ -2384,10 +2385,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         expr_type = content_aux.observed_types[0]
         item_type = get_iterable_item_type(expr_type, inher_aux)
+
+        self.check(IterateTypeCheck(), lambda: item_type != None)
+
         return paa.Result[SynthAux](
             tree = pas.YieldFrom(content_tree),
             aux = update_SynthAux(content_aux,
-                yield_types = (item_type,)
+                yield_types = (item_type or AnyType(),)
             )
         )
 
@@ -2431,11 +2435,12 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"##@@ right_type {right_type}") 
                 # print(f"##@@ method_name {method_name}") 
                 # print(f"##@@ method_type {method_type}") 
-                # check_application_args(
-                #     [right_type], {}, 
-                #     method_type, inher_aux
-                # )
-                pass
+                compatible = check_application_args(
+                    [right_type], {}, 
+                    method_type, inher_aux
+                )
+
+                self.check(ApplyArgTypeCheck(), lambda: compatible)
 
             # update:
             left_type = right_type
@@ -2443,7 +2448,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.Compare(left_tree, comps_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([left_aux, comps_aux])),
-                observed_types= tuple([BoolType()]),
+                observed_types= tuple([make_RecordType("builtins.bool")]),
                 cmp_names = () 
             )
         )
@@ -2455,19 +2460,22 @@ class Server(paa.Server[InherAux, SynthAux]):
         func_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        inferred_type : type
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
             inferred_type = func_type.return_type
         elif isinstance(func_type, TypeType):
             inferred_type = func_type.content 
+            self.check(ApplyRatorTypeCheck(), lambda:
+                not isinstance(inferred_type, RecordType) or
+                not inferred_type.protocol
+            )
+
         elif isinstance(func_type, AnyType):
             inferred_type = AnyType() 
         else:
-            # raise ApplyRatorTypeError()
+            self.check(ApplyRatorTypeCheck(), lambda: False)
             inferred_type = AnyType() 
-            pass
 
         return paa.Result[SynthAux](
             tree = pas.Call(func_tree),
@@ -2505,9 +2513,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
-        if not isinstance(key_type, StrType):
-            # raise SplatKeywordTypeError()
-            pass
+
+        self.check(SplatKeywordTypeCheck(), lambda: 
+            subsumed(key_type, make_RecordType("builtins.str"), inher_aux)
+        )
 
         return paa.Result[SynthAux](
             tree = pas.SplatKeyword(content_tree),
@@ -2531,19 +2540,36 @@ class Server(paa.Server[InherAux, SynthAux]):
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
 
-            # TODO: handle overloaded methods
+            # print(f"")
+            # print(f"@@##########")
             # print(f"@@## func_tree: {func_tree}")
             # print(f"@@## func_type: {func_type}")
             # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
+            # for ot in args_aux.observed_types:
+            #     print(f"--- ot : {ot}")
             # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
-            # check_application_args(
-            #     args_aux.observed_types,
-            #     args_aux.kw_types, 
-            #     func_type, inher_aux
-            # )
+            # for k, v in args_aux.kw_types.items():
+            #     print(f"--- kwt : {k} |-> {v}")
+            # print(f"")
+            
+
+            self.check(ApplyArgTypeCheck(), lambda: 
+                check_application_args(
+                    args_aux.observed_types,
+                    args_aux.kw_types, 
+                    func_type, inher_aux
+                )
+            )
+
             expr_type = func_type.return_type
 
         elif isinstance(func_type, TypeType):
+
+            self.check(ApplyRatorTypeCheck(), lambda: 
+                not isinstance(func_type, RecordType) or
+                not func_type.protocol
+            )
+
             class_key = get_class_key(func_type.content)
 
             if class_key == "typing.TypeVar": 
@@ -2581,20 +2607,24 @@ class Server(paa.Server[InherAux, SynthAux]):
 
                 if class_record:
                     init_type = lookup_static_field_type(class_record, "__init__", inher_aux)
-                    assert isinstance(init_type, FunctionType)
 
-
-                    ## TODO: handle overloaded methods
                     # print(f"@@## func_tree: {func_tree}")
                     # print(f"@@## class_record: {class_record.key}")
                     # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
                     # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
+                    # print(f"@@## init_type: {init_type}")
 
-                    # check_application_args(
-                    #     args_aux.observed_types,
-                    #     args_aux.kw_types, 
-                    #     init_type, inher_aux
-                    # )
+                    if isinstance(init_type, FunctionType):
+
+                        self.check(ApplyArgTypeCheck(), lambda: 
+                            check_application_args(
+                                args_aux.observed_types,
+                                args_aux.kw_types, 
+                                init_type, inher_aux
+                            )
+                        )
+                    else:
+                        assert isinstance(init_type, AnyType) or init_type == None
 
                 expr_type = func_type.content 
         else:
@@ -2647,7 +2677,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         expr_type = (
             StrLitType(literal = head_tree)
             if is_literal_string(head_tree) else
-            StrType()
+            make_RecordType("builtins.str")
         )
 
         return paa.Result[SynthAux](
@@ -2667,7 +2697,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         expr_type = (
             StrLitType(literal = content_tree)
             if is_literal_string(content_tree) else
-            StrType()
+            make_RecordType("builtins.str")
         )
         return paa.Result[SynthAux](
             tree = pas.SingleStr(content_tree),
@@ -2689,7 +2719,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         expr_type = (
             content_aux.observed_types[0]
             if len(content_aux.observed_types) == 1 else 
-            StrType()
+            make_RecordType("builtins.str")
         )
 
         return paa.Result[SynthAux](
@@ -2754,19 +2784,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
-        if isinstance(content_type, ModuleType) and not content_type.key:
-            if inher_aux.global_env.get(name_tree):
-                if not inher_aux.internal_path:
-                    expr_type = inher_aux.local_env[name_tree].type
-                else:
-                    expr_type = inher_aux.global_env[name_tree].type
-            else:
-                expr_type = AnyType()
-        else: 
+
+        if isinstance(content_type, AnyType):
+            expr_type = AnyType()
+        else:
             expr_type = lookup_field_type(content_type, name_tree, inher_aux)
 
-        if not expr_type:
-            expr_type = AnyType()
+            # self.check(LookupTypeCheck(), lambda: 
+            #     expr_type != None
+            # )
+            if not expr_type:
+                expr_type = AnyType()
 
         return paa.Result[SynthAux](
             tree = pas.Attribute(content_tree, name_tree),
@@ -2792,11 +2820,13 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         var_types : tuple[VarType, ...]= ()
         expr_types = ()
+        protocol : bool = False
 
         if isinstance(content_type, TypeType):
-            class_key = get_class_key(content_type.content)
-            # ## TODO: Use a special type for Generic base class
-            if class_key == "typing.Generic":
+            core_type = content_type.content
+            if isinstance(core_type, ProtocolType):
+                protocol = True
+            if isinstance(core_type, GenericType) or isinstance(core_type, ProtocolType):
                 if isinstance(slice_type, TupleLitType):
                     for anno_vt in slice_type.item_types:
                         assert isinstance(anno_vt, TypeType)
@@ -2811,6 +2841,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     var_types += (vt,) 
 
             else:
+                class_key = get_class_key(content_type.content)
                 expr_types = (TypeType(
                     class_key = "builtins.type",
                     content = from_class_key_to_type(inher_aux, class_key, slice_type)
@@ -2826,10 +2857,12 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"### slice_type : {slice_type}")
                 # print(f"### slice_type : {method_type}")
 
-                # check_application_args(
-                #     [slice_type], {}, 
-                #     method_type, inher_aux
-                # )
+                self.check(ApplyArgTypeCheck(), lambda: 
+                    check_application_args(
+                        [slice_type], {}, 
+                        method_type, inher_aux
+                    )
+                )
 
                 assert method_type.return_type
                 expr_types = tuple([
@@ -2843,6 +2876,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, slice_aux])),
                 observed_types = expr_types, 
                 var_types = var_types, 
+                protocol = protocol
             )
         )
 
@@ -2860,11 +2894,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.Slice(lower_tree, upper_tree, step_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([lower_aux, upper_aux, step_aux])),
-                observed_types = tuple([SliceType(
-                    start = lower_aux.observed_types[0] if lower_aux.observed_types else NoneType(),
-                    stop = upper_aux.observed_types[0] if upper_aux.observed_types else NoneType(),
-                    step = step_aux.observed_types[0] if step_aux.observed_types else NoneType()
-                )])
+                observed_types = (make_RecordType("builtins.slice"),)
             )
         )
     
@@ -2881,10 +2911,23 @@ class Server(paa.Server[InherAux, SynthAux]):
         expr_dec = lookup_declaration(inher_aux, id)
         assert expr_dec
 
+        protocol = False
+        types = ()
+
+        expr_type = expr_dec.type
+        if isinstance(expr_type, TypeType):
+            content_type =  expr_type.content
+            if isinstance(content_type, ProtocolType):
+                protocol = True
+
+        types = (expr_type,)
+
+
         return paa.Result[SynthAux](
             tree = pas.Name(content_tree),
             aux = make_SynthAux(
-                observed_types = (expr_dec.type,),
+                observed_types = types,
+                protocol = protocol,
                 usage_additions = pmap({content_tree : make_Usage()})
             )
         )
@@ -2898,14 +2941,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(content_aux.observed_types) > 0
 
-        item_type = generalize_type(inher_aux, content_aux.observed_types[0])
-        for t in content_aux.observed_types[1:]:
-            gt = generalize_type(inher_aux, t)
-            item_type = unionize_types(item_type, gt)
-
-        list_type = make_ListType(
-            item_type = item_type
-        )
+        list_type = ListLitType(content_aux.observed_types)
         return paa.Result[SynthAux](
             tree = pas.List(content_tree),
             aux = update_SynthAux(content_aux,
@@ -2920,8 +2956,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.EmptyList(),
             aux = make_SynthAux(
-                observed_types = tuple([ListType(
-                    item_type=AnyType()
+                observed_types = tuple([make_RecordType(
+                    class_key = "builtins.list",
+                    type_args=(AnyType(),)
                 )])
             )
         )
@@ -2978,7 +3015,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        diff_usage_decl(inher_aux, self.booting, body_aux.decl_additions, body_aux.usage_additions)
+        self.diff_usage_decl(inher_aux, body_aux.decl_additions, body_aux.usage_additions)
 
         return paa.Result[SynthAux](
             tree = pas.FutureMod(names_tree, body_tree),
@@ -2993,7 +3030,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        diff_usage_decl(inher_aux, self.booting, body_aux.decl_additions, body_aux.usage_additions)
+        self.diff_usage_decl(inher_aux, body_aux.decl_additions, body_aux.usage_additions)
 
         return paa.Result[SynthAux](
             tree = pas.SimpleMod(body_tree),
@@ -3138,7 +3175,6 @@ class Server(paa.Server[InherAux, SynthAux]):
                             pos_kw_param_sigs=p.type.pos_kw_param_sigs[1:]
                         )
 
-
             if name == "__init__": 
                 # first param is for newly constructed self
                 assert len(p.type.pos_kw_param_sigs) > 0
@@ -3213,8 +3249,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
         instance_type = from_class_key_to_type(inher_aux, class_record.key)
+        if bs_aux.protocol and isinstance(instance_type, RecordType):
+            instance_type = update_RecordType(instance_type, protocol=bs_aux.protocol)
 
-        usage_additions = diff_usage_decl(inher_aux, self.booting, body_aux.decl_additions, body_aux.usage_additions)
+        usage_additions = self.diff_usage_decl(inher_aux, body_aux.decl_additions, body_aux.usage_additions)
 
         return paa.Result[SynthAux](
             tree = pas.ClassDef(name_tree, bs_tree, body_tree),
@@ -3242,16 +3280,30 @@ class Server(paa.Server[InherAux, SynthAux]):
         fun_def_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
+
+        fun_decls = fun_def_aux.decl_additions.items()
+        assert len(fun_decls) == 1
+
+        (name, dec) = next(p for p in fun_decls)
+
+        type = dec.type
+
+        ####### replace overloaded def with AnyType() as temporary kludge
+        for dt in decs_aux.observed_types:
+            if isinstance(dt, OverloadType):
+                 type = AnyType() 
+        #######
+
         env_additions = pmap({
             name : make_Declaration(
                 annotated=dec.annotated,
                 constant = dec.constant,
                 initialized = dec.initialized, 
-                type = dec.type,
+                type = type,
                 decorator_types = decs_aux.observed_types   
             )
-            for name, dec in fun_def_aux.decl_additions.items()
-        })  
+        })
+
         return paa.Result[SynthAux](
             tree = pas.DecFunctionDef(decs_tree, fun_def_tree),
             aux = make_SynthAux(
@@ -3324,12 +3376,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
 
         function_body_return_type = (
-            GeneratorType(
-                yield_type = unionize_all_types(body_aux.yield_types),
-                return_type = (
-                    unionize_all_types(body_aux.yield_types)
-                    if len(body_aux.return_types) > 0 else
-                    NoneType()
+            make_RecordType(
+                class_key = "typing.Generator",
+                type_args = (
+                    unionize_all_types(body_aux.yield_types),
+                    NoneType(),
+                    (
+                        unionize_all_types(body_aux.yield_types)
+                        if len(body_aux.return_types) > 0 else
+                        NoneType()
+                    )
                 )
             )
             if len(body_aux.yield_types) > 0 else
@@ -3343,12 +3399,15 @@ class Server(paa.Server[InherAux, SynthAux]):
             assert len(ret_anno_aux.observed_types) == 1
             function_sig_return_type = coerce_to_TypeType(ret_anno_aux.observed_types[0]).content
 
-            if self.booting and is_a_stub_body(body_tree):
-                pass
-            else:
-                if not subsumed(function_body_return_type, function_sig_return_type, inher_aux):
-                    # raise ReturnTypeError()
-                    pass
+            # print(f"------------")
+            # print(f"-- body_return_type : {function_body_return_type}")
+            # print(f"-- sig_return_type : {function_sig_return_type}")
+            # print(f"------------")
+
+            self.check(ReturnTypeCheck(), lambda: 
+                is_a_stub_body(body_tree) or
+                subsumed(function_body_return_type, function_sig_return_type, inher_aux)
+            )
 
             function_return_type = function_sig_return_type
         else:
@@ -3369,8 +3428,22 @@ class Server(paa.Server[InherAux, SynthAux]):
             if self_param and inher_aux.in_class and len(params_aux.decl_additions) > 0 else
             params_aux.decl_additions
         ) + body_aux.decl_additions
-        if not self.booting: check_decl_usage(decls, body_aux.usage_additions)
-        usage_additions = diff_usage_decl(inher_aux, self.booting, decls, body_aux.usage_additions)
+
+
+        # print(f"### decls : {decls.keys()}")
+        # print(f"### usages : {body_aux.usage_additions.keys()}")
+
+        if not is_a_stub_body(body_tree): self.check_decl_usage(decls, body_aux.usage_additions)
+
+        usage_additions = self.diff_usage_decl(inher_aux, decls, body_aux.usage_additions)
+
+
+        if (
+            inher_aux.external_path == "typing" and
+            name_tree == 'overload'
+        ):
+            type = OverloadType()
+
 
         return paa.Result[SynthAux](
             tree = pas.FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
@@ -3406,8 +3479,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             if self_param and inher_aux.in_class and len(params_aux.decl_additions) > 0 else
             params_aux.decl_additions
         ) + body_aux.decl_additions
-        if not self.booting : check_decl_usage(decls, body_aux.usage_additions)
-        usage_additions = diff_usage_decl(inher_aux, self.booting, decls, body_aux.usage_additions)
+        self.check_decl_usage(decls, body_aux.usage_additions)
+        usage_additions = self.diff_usage_decl(inher_aux, decls, body_aux.usage_additions)
 
         return paa.Result[SynthAux](
             tree = pas.AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
@@ -3440,10 +3513,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         if len(default_aux.observed_types) > 0:
             default_type = default_aux.observed_types[0]
 
-            if self.booting and is_a_stub_default(default_tree):
+            if is_a_stub_default(default_tree):
                 pass
             else:
-                # assert subsumes(default_type, sig_type, inher_aux)
+                # assert subsumed(default_type, sig_type, inher_aux)
                 pass
 
         return paa.Result[SynthAux](
@@ -3639,15 +3712,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         # TODO: if source is of TypeType(VarType), check that target symbol matches VarType's symbol
 
         # check name compatability between target and source expressions 
-        for name in content_aux.usage_additions:
-            if (
-                name in targets_aux.usage_additions and 
-                name not in inher_aux.declared_globals and 
-                name not in inher_aux.declared_nonlocals and 
-                name not in inher_aux.local_env
-            ):
-                # raise UpdateError()  
-                pass
+        self.check(UpdateCheck(), lambda: 
+            us.every(content_aux.usage_additions, lambda name : 
+                name not in targets_aux.usage_additions or 
+                name in inher_aux.declared_globals or 
+                name in inher_aux.declared_nonlocals or 
+                name in inher_aux.local_env
+            )
+        )
 
 
 
@@ -3655,11 +3727,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         for name, usage in targets_aux.usage_additions.items():
             if declared_and_initialized(inher_aux, name):
                 updated_usage_additions = updated_usage_additions + pmap({name : update_Usage(usage, updated = True)})
-            else:
-                updated_usage_additions = updated_usage_additions + pmap({name : usage})
 
 
-        def patterns() -> Iterator[pas.expr]:
+        def patterns() -> Iterator[pas.expr | None]:
             tail = targets_tree
             while isinstance(tail, pas.ConsTargetExpr):
                 yield tail.head
@@ -3672,15 +3742,20 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
         env_types : PMap[str, type] = m()
         for pattern in patterns():
-            next_env_types = unify(pattern, content_type, inher_aux)
-            env_types += next_env_types 
+            if pattern:
+                next_env_types = unify(pattern, content_type, inher_aux)
+                env_types += next_env_types 
 
         # check observed type with declared type
-        for sym, observed_type in env_types.items():
-            dec = lookup_declaration(inher_aux, sym, builtins = False)
-            if not self.booting and dec and dec.annotated and not subsumed(observed_type, dec.type, inher_aux):
-                # raise AssignTypeError()
-                pass
+        self.check(AssignTypeCheck(), lambda: 
+            us.every(env_types.items(), lambda entry : (
+                sym := entry[0],
+                observed_type := entry[1],
+                dec := lookup_declaration(inher_aux, sym, builtins = False),
+                not dec or not dec.annotated or subsumed(observed_type, dec.type, inher_aux)
+            )[-1])
+        )
+
 
 
         decl_additions : PMap[str, Declaration] = m() 
@@ -3696,6 +3771,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             'Any' in env_types
         ):
             original_type = env_types['Any']
+
             if (
                 isinstance(original_type, RecordType) and
                 original_type.class_key == "builtins.object"
@@ -3741,50 +3817,50 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         content_type = content_aux.observed_types[0]
         method_name = pas.from_bin_rator_to_aug_method_name(rator_tree)
+
+        # print(f"@@## target_tree : {target_tree}")
+        # print(f"@@## target_type : {target_type}")
+        # print(f"@@## rator_tree: {rator_tree}")
+        # print(f"@@## content_tree: {content_tree}")
+        # print(f"@@## content_type: {content_type}")
+
         method_type = lookup_field_type(target_type, method_name, inher_aux)
+
+        # print(f"@@## method_name : {method_name}")
+        # print(f"@@## method_type: {method_type}")
 
         if isinstance(method_type, FunctionType):
 
-            # TODO: support subtyping List <: typing.Iterable
-            # print(f"@@## target_tree : {target_tree}")
-            # print(f"@@## target_type : {target_type}")
-            # print(f"@@## rator_tree: {rator_tree}")
-            # print(f"@@## method_name : {method_name}")
-            # print(f"@@## method_type: {method_type}")
-            # print(f"@@## content_tree: {content_tree}")
-            # print(f"@@## content_type: {content_type}")
-            # check_application_args(
-            #     [content_type], {}, 
-            #     method_type, inher_aux
-            # )
+            self.check(ApplyArgTypeCheck(), lambda: 
+                check_application_args(
+                    [content_type], {}, 
+                    method_type, inher_aux
+                )
+            )
 
-            # assert subsumes(method_type.return_type, target_type, inher_aux)
-            pass
+            self.check(AssignTypeCheck(), lambda: 
+                subsumed(method_type.return_type, target_type, inher_aux)
+            )
 
         if isinstance(target_tree, pas.Name):
             symbol = target_tree.content
-            if (
-                symbol not in inher_aux.declared_globals and 
-                symbol not in inher_aux.declared_nonlocals and 
-                symbol not in inher_aux.local_env
-            ):
-                # raise UpdateError()  
-                pass
+
+            self.check(UpdateCheck(), lambda: 
+                symbol in inher_aux.declared_globals or 
+                symbol in inher_aux.declared_nonlocals or 
+                symbol in inher_aux.local_env
+            )
 
         else:
-            if (
-                not isinstance(target_tree, pas.Subscript) and 
-                not isinstance(target_tree, pas.Attribute) 
-            ):
-                # raise UpdateError()  
-                pass
+            self.check(UpdateCheck(), lambda: 
+                isinstance(target_tree, pas.Subscript) or 
+                isinstance(target_tree, pas.Attribute) 
+            )
 
         updated_usage_additions : PMap[str, Usage] = m()
         for name, usage in target_aux.usage_additions.items():
             if declared_and_initialized(inher_aux, name):
                 updated_usage_additions = updated_usage_additions + pmap({name : update_Usage(usage, updated = True)})
-            else:
-                updated_usage_additions = updated_usage_additions + pmap({name : usage})
 
 
 
@@ -3813,15 +3889,37 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
-        if not self.booting:
-            subs = subsumed(content_type, sig_type, inher_aux)
-            if not subs:
-                # raise AssignTypeError()
-                pass
+        # print(f"@@## target_tree : {target_tree}")
+        # print(f"@@## content_tree : {content_tree}")
+        # print(f"@@## sig_type: {sig_type}")
+        # print(f"@@## content_type : {content_type}")
+        self.check(AssignTypeCheck(), lambda: 
+            subsumed(content_type, sig_type, inher_aux)
+        )
 
         decl_additions: PMap[str, Declaration] = m() 
         # special consideration for declaration of special_form types
         if (
+            inher_aux.external_path == "typing" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing._SpecialForm" and
+            symbol == "Generic"
+        ):
+            t = TypeType(sig_type.class_key, GenericType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
+            inher_aux.external_path == "typing" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing._SpecialForm" and
+            symbol == "Protocol"
+        ):
+            t = TypeType(sig_type.class_key, ProtocolType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
             (inher_aux.external_path == "typing" and
             isinstance(sig_type, RecordType) and
             sig_type.class_key == "typing._SpecialForm") or
@@ -3958,21 +4056,11 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        assert len(iter_aux.observed_types) == 1
-        iter_type = iter_aux.observed_types[0]
-
-        new_synth_aux = self.synthesize_auxes(tuple([iter_aux, body_aux]))
         return paa.Result[SynthAux](
             tree = pas.For(target_tree, iter_tree, body_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux])),
-                decl_subtractions = new_synth_aux.decl_subtractions, 
-                decl_additions= (
-                    new_synth_aux.decl_additions +
-                    pmap({
-                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
-                        for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
-                    })
-                )
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux])),
+                decl_subtractions = iter_aux.decl_subtractions, 
+                decl_additions= iter_aux.decl_additions
             )
         )
 
@@ -4007,23 +4095,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        assert len(iter_aux.observed_types) == 1
-        iter_type = iter_aux.observed_types[0]
-        cross_joined_aux : SynthAux = cross_join_aux(body_aux, orelse_aux)
-
-        new_synth_aux = self.synthesize_auxes(tuple([iter_aux, cross_joined_aux]))
-
+        change_decl : Change[Declaration] = cross_join_aux_decls(
+            to_change_decl(body_aux), 
+            to_change_decl(orelse_aux)
+        )
         return paa.Result[SynthAux](
             tree = pas.ForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = make_SynthAux(
-                decl_subtractions = new_synth_aux.decl_subtractions, 
-                decl_additions = (
-                    new_synth_aux.decl_additions +
-                    pmap({
-                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
-                        for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
-                    })
-                )
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
+                decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
+                decl_additions = iter_aux.decl_additions + change_decl.additions
             )
         )
 
@@ -4100,14 +4180,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
-        cross_joined_aux : SynthAux = cross_join_aux(body_aux, orelse_aux)
-        new_synth_aux = self.synthesize_auxes(tuple([iter_aux, cross_joined_aux]))
+        change_decl : Change[Declaration] = cross_join_aux_decls(
+            to_change_decl(body_aux), 
+            to_change_decl(orelse_aux)
+        )
         return paa.Result[SynthAux](
             tree = pas.AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = make_SynthAux(
-                decl_subtractions = new_synth_aux.decl_subtractions, 
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
+                decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions= (
-                    new_synth_aux.decl_additions +
+                    iter_aux.decl_additions + change_decl.additions +
                     pmap({
                         k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
@@ -4226,19 +4308,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
     
-    # synthesize: stmt <-- While
-    def synthesize_for_stmt_While(self, 
-        inher_aux : InherAux,
-        test_tree : pas.expr, 
-        test_aux : SynthAux,
-        body_tree : pas.statements, 
-        body_aux : SynthAux
-    ) -> paa.Result[SynthAux]:
-        return paa.Result[SynthAux](
-            tree = pas.While(test_tree, body_tree),
-            aux = make_SynthAux(decl_additions=test_aux.decl_additions)
-        )
-    
     # traverse: stmt <-- WhileElse
     def traverse_stmt_WhileElse_orelse(self, 
         inher_aux : InherAux,
@@ -4250,6 +4319,23 @@ class Server(paa.Server[InherAux, SynthAux]):
         return traverse_aux(inher_aux, test_aux) 
     
 
+    # synthesize: stmt <-- While
+    def synthesize_for_stmt_While(self, 
+        inher_aux : InherAux,
+        test_tree : pas.expr, 
+        test_aux : SynthAux,
+        body_tree : pas.statements, 
+        body_aux : SynthAux
+    ) -> paa.Result[SynthAux]:
+
+        return paa.Result[SynthAux](
+            tree = pas.While(test_tree, body_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux])),
+                decl_subtractions = test_aux.decl_subtractions,
+                decl_additions = test_aux.decl_additions,
+            ) 
+        )
+
     # synthesize: stmt <-- WhileElse
     def synthesize_for_stmt_WhileElse(self, 
         inher_aux : InherAux,
@@ -4260,10 +4346,19 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
+        change_decl : Change[Declaration] = cross_join_aux_decls(
+            to_change_decl(body_aux), 
+            to_change_decl(orelse_aux)
+        )
+
         return paa.Result[SynthAux](
             tree = pas.WhileElse(test_tree, body_tree, orelse_tree),
-            aux = make_SynthAux(decl_additions = test_aux.decl_additions)
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])),
+                decl_subtractions = test_aux.decl_subtractions.update(change_decl.subtractions),
+                decl_additions = test_aux.decl_additions + change_decl.additions,
+            ) 
         )
+
 
     # traverse: stmt <-- If
     def traverse_stmt_If_orelse(self, 
@@ -4286,13 +4381,16 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        joined_aux : SynthAux = cross_join_aux(body_aux, orelse_aux)
-        new_synth_aux = self.synthesize_auxes(tuple([test_aux, joined_aux]))
-        
+        change_decl : Change[Declaration] = cross_join_aux_decls(
+            to_change_decl(body_aux), 
+            to_change_decl(orelse_aux)
+        )
 
         return paa.Result[SynthAux](
             tree = pas.If(test_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(new_synth_aux,
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])),
+                decl_subtractions = test_aux.decl_subtractions.update(change_decl.subtractions), 
+                decl_additions = test_aux.decl_additions + change_decl.additions,
                 return_types = body_aux.return_types + orelse_aux.return_types,
                 yield_types = body_aux.yield_types + orelse_aux.yield_types
             )
@@ -4314,9 +4412,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         tail_tree : pas.conditions, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
+        change_decl = cross_join_aux_decls(
+            
+            to_change_decl(content_aux), 
+            to_change_decl(tail_aux)
+        )
+            
         return paa.Result[SynthAux](
             tree = pas.ElifCond(content_tree, tail_tree),
-            aux = update_SynthAux(cross_join_aux(content_aux, tail_aux),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([content_aux, tail_aux])),
+                decl_subtractions = change_decl.subtractions, 
+                decl_additions = change_decl.additions,
                 return_types = content_aux.return_types + tail_aux.return_types,
                 yield_types = content_aux.yield_types + tail_aux.yield_types
             )

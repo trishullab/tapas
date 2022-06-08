@@ -107,6 +107,12 @@ def from_bin_rator_to_aug_method_name(br : bin_rator) -> str:
         case_FloorDiv = lambda _: "__ifloordiv__",
     ))
 
+def from_bool_rator_to_method_name(br : bool_rator) -> str:
+    return match_bool_rator(br, BoolRatorHandlers[str](
+        case_And = lambda _ : "__and__", 
+        case_Or = lambda _ : "__or__" 
+    ))
+
 def truncate(code : str, k : float) -> str:
     ast = parse(code)
     toks = serialize(ast)

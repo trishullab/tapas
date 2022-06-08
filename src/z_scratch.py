@@ -702,10 +702,7 @@ class Boo: pass
 
 
 # from typing import Callable
-if 4 * 25 == 100:
-    Goo = 4 
-else:
-    class Goo: pass
-
-
-
+# if 4 * 25 == 100:
+#     Goo = 4 
+# else:
+#     class Goo: pass
