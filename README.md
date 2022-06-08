@@ -92,3 +92,26 @@ while token:
     ...
 ...
 ```
+
+## Semantic checks
+```python
+from pyrsistent import pset
+from lib import python_aux_system as pals
+...
+
+client : pals.Client = pals.spawn_analysis(package, module_name,
+    checks = pals.all_checks.remove(pals.DeclareCheck())
+)
+```
+Control which semantic checks are turned on with the `checks` parameter in `spawn_analysis`
+
+```python
+from pyrsistent import pset
+from lib import python_aux_system as pals
+...
+
+client : pals.Client = pals.spawn_analysis(package, module_name,
+    checks = pset() 
+)
+```
+Turn off all semantics checks by passing in an empty set into the `checks` parameter of `spawn_analysis`
