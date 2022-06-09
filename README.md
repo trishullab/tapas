@@ -151,7 +151,7 @@ A method that starts with `synthesize_` takes in the `InherAux` of the current n
 
 -default behavior of traversal in method `traverse_auxes`
 -default behavior of synthesis in method `synthesize_auxes`
--bespoke behavior of traversal for choice nodes in method `traverse_<node_lhs###_<node_rhs>_<field>`
--bespoke behavior of synthesis for choice nodes in method `synthesize_for_<node_lhs###_<node_rhs>`
--bespoke behavior of traversal for single nodes in method `traverse_<node###_<field>`
--bespoke behavior of synthesis for single nodes in method `synthesize_for_<node###`
+-bespoke behavior of traversal for choice nodes in method `traverse_<node_lhs>_<node_rhs>_<field>`
+-bespoke behavior of synthesis for choice nodes in method `synthesize_for_<node_lhs>_<node_rhs>`
+-bespoke behavior of traversal for single nodes in method `traverse_<node>_<field>`
+-bespoke behavior of synthesis for single nodes in method `synthesize_for_<node>`
