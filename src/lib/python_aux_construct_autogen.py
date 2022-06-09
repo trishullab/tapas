@@ -803,7 +803,6 @@ class InherAux:
     class_env : PMap[str, ClassRecord]
 
 
-
 def make_InherAux(
     package : PMap[str, ModulePackage] = m(),
     external_path : str = '',
@@ -1035,5 +1034,266 @@ def update_Usage(source_Usage : Usage,
     return Usage(
         source_Usage.updated if isinstance(updated, SourceFlag) else updated)
 
+     
+    
+
+# type semantic_check
+@dataclass(frozen=True, eq=True)
+class semantic_check(Exception, ABC):
+    # @abstractmethod
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        raise Exception()
+
+
+# constructors for type semantic_check
+
+@dataclass(frozen=True, eq=True)
+class LookupTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_LookupTypeCheck(self)
+
+def make_LookupTypeCheck(
+) -> semantic_check:
+    return LookupTypeCheck(
+    )
+
+def update_LookupTypeCheck(source_LookupTypeCheck : LookupTypeCheck
+) -> LookupTypeCheck:
+    return LookupTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class ApplyArgTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_ApplyArgTypeCheck(self)
+
+def make_ApplyArgTypeCheck(
+) -> semantic_check:
+    return ApplyArgTypeCheck(
+    )
+
+def update_ApplyArgTypeCheck(source_ApplyArgTypeCheck : ApplyArgTypeCheck
+) -> ApplyArgTypeCheck:
+    return ApplyArgTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class ApplyRatorTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_ApplyRatorTypeCheck(self)
+
+def make_ApplyRatorTypeCheck(
+) -> semantic_check:
+    return ApplyRatorTypeCheck(
+    )
+
+def update_ApplyRatorTypeCheck(source_ApplyRatorTypeCheck : ApplyRatorTypeCheck
+) -> ApplyRatorTypeCheck:
+    return ApplyRatorTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class SplatKeywordTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_SplatKeywordTypeCheck(self)
+
+def make_SplatKeywordTypeCheck(
+) -> semantic_check:
+    return SplatKeywordTypeCheck(
+    )
+
+def update_SplatKeywordTypeCheck(source_SplatKeywordTypeCheck : SplatKeywordTypeCheck
+) -> SplatKeywordTypeCheck:
+    return SplatKeywordTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class ReturnTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_ReturnTypeCheck(self)
+
+def make_ReturnTypeCheck(
+) -> semantic_check:
+    return ReturnTypeCheck(
+    )
+
+def update_ReturnTypeCheck(source_ReturnTypeCheck : ReturnTypeCheck
+) -> ReturnTypeCheck:
+    return ReturnTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class UnifyTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_UnifyTypeCheck(self)
+
+def make_UnifyTypeCheck(
+) -> semantic_check:
+    return UnifyTypeCheck(
+    )
+
+def update_UnifyTypeCheck(source_UnifyTypeCheck : UnifyTypeCheck
+) -> UnifyTypeCheck:
+    return UnifyTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class AssignTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_AssignTypeCheck(self)
+
+def make_AssignTypeCheck(
+) -> semantic_check:
+    return AssignTypeCheck(
+    )
+
+def update_AssignTypeCheck(source_AssignTypeCheck : AssignTypeCheck
+) -> AssignTypeCheck:
+    return AssignTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class IterateTypeCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_IterateTypeCheck(self)
+
+def make_IterateTypeCheck(
+) -> semantic_check:
+    return IterateTypeCheck(
+    )
+
+def update_IterateTypeCheck(source_IterateTypeCheck : IterateTypeCheck
+) -> IterateTypeCheck:
+    return IterateTypeCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class LookupDecCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_LookupDecCheck(self)
+
+def make_LookupDecCheck(
+) -> semantic_check:
+    return LookupDecCheck(
+    )
+
+def update_LookupDecCheck(source_LookupDecCheck : LookupDecCheck
+) -> LookupDecCheck:
+    return LookupDecCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class LookupInitCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_LookupInitCheck(self)
+
+def make_LookupInitCheck(
+) -> semantic_check:
+    return LookupInitCheck(
+    )
+
+def update_LookupInitCheck(source_LookupInitCheck : LookupInitCheck
+) -> LookupInitCheck:
+    return LookupInitCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class UpdateCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_UpdateCheck(self)
+
+def make_UpdateCheck(
+) -> semantic_check:
+    return UpdateCheck(
+    )
+
+def update_UpdateCheck(source_UpdateCheck : UpdateCheck
+) -> UpdateCheck:
+    return UpdateCheck(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class DeclareCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_DeclareCheck(self)
+
+def make_DeclareCheck(
+) -> semantic_check:
+    return DeclareCheck(
+    )
+
+def update_DeclareCheck(source_DeclareCheck : DeclareCheck
+) -> DeclareCheck:
+    return DeclareCheck(
+    )
+
+        
+
+# case handlers for type semantic_check
+@dataclass(frozen=True, eq=True)
+class SemanticCheckHandlers(Generic[T]):
+    case_LookupTypeCheck : Callable[[LookupTypeCheck], T]
+    case_ApplyArgTypeCheck : Callable[[ApplyArgTypeCheck], T]
+    case_ApplyRatorTypeCheck : Callable[[ApplyRatorTypeCheck], T]
+    case_SplatKeywordTypeCheck : Callable[[SplatKeywordTypeCheck], T]
+    case_ReturnTypeCheck : Callable[[ReturnTypeCheck], T]
+    case_UnifyTypeCheck : Callable[[UnifyTypeCheck], T]
+    case_AssignTypeCheck : Callable[[AssignTypeCheck], T]
+    case_IterateTypeCheck : Callable[[IterateTypeCheck], T]
+    case_LookupDecCheck : Callable[[LookupDecCheck], T]
+    case_LookupInitCheck : Callable[[LookupInitCheck], T]
+    case_UpdateCheck : Callable[[UpdateCheck], T]
+    case_DeclareCheck : Callable[[DeclareCheck], T]
+
+
+# matching for type semantic_check
+def match_semantic_check(o : semantic_check, handlers : SemanticCheckHandlers[T]) -> T :
+    return o.match(handlers)
      
     

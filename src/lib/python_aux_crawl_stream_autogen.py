@@ -8004,10 +8004,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
             
-
-
         return self.synthesize_for_FinallyBlock(inher_aux, body_tree, body_aux)
-     
 
     
     # traverse return_annotation <-- SomeReturnAnno"

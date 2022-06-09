@@ -18,61 +18,13 @@ from lib import python_generic_tree_system as pgs
 from lib import python_ast_system as pas
 from lib import python_abstract_token_system as pats 
 
-from lib import python_aux_analyze_stream_autogen as paa
+from lib import python_aux_crawl_stream_autogen as paa
 from lib.python_aux_construct_autogen import *
 
 
 T = TypeVar('T')
 
 
-class semantic_check(Exception): pass
-
-"Lookup type error - field does not exist in type of object"
-@dataclass(frozen=True, eq=True)
-class LookupTypeCheck(semantic_check): pass
-
-"Apply arg type error - types of arguments don’t match types of parameters"
-@dataclass(frozen=True, eq=True)
-class ApplyArgTypeCheck(semantic_check): pass
-
-"Apply rator type error - rator in application is not a type that can be applied"
-@dataclass(frozen=True, eq=True)
-class ApplyRatorTypeCheck(semantic_check): pass
-
-"Splat keyword type error - the the splatted mapping type does not have as a string as the key type"
-@dataclass(frozen=True, eq=True)
-class SplatKeywordTypeCheck(semantic_check): pass
-
-"Return type error - types of return values don’t match output annotation"
-@dataclass(frozen=True, eq=True)
-class ReturnTypeCheck(semantic_check): pass
-
-"Unify type error - type of target doesn’t match type of source"
-@dataclass(frozen=True, eq=True)
-class UnifyTypeCheck(semantic_check): pass
-
-"Assign type error - type of target doesn’t match type of source"
-@dataclass(frozen=True, eq=True)
-class AssignTypeCheck(semantic_check): pass
-
-"Iterate type error - type of iterated object is not iterable"
-@dataclass(frozen=True, eq=True)
-class IterateTypeCheck(semantic_check): pass
-
-"Lookup declaration error - name does not exist in environment"
-@dataclass(frozen=True, eq=True)
-class LookupDecCheck(semantic_check): pass
-
-"Lookup initialization error - name exists in environment but is possibly not initialized"
-@dataclass(frozen=True, eq=True)
-class LookupInitCheck(semantic_check): pass
-
-"Update error - name is updated but not allowed to be"
-@dataclass(frozen=True, eq=True)
-class UpdateCheck(semantic_check): pass
-
-@dataclass(frozen=True, eq=True)
-class DeclareCheck(semantic_check): pass
 
 all_checks : PSet[semantic_check] = pset({
     LookupTypeCheck(),

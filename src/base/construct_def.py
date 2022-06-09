@@ -90,6 +90,7 @@ def update_{constructor.name}(source_{constructor.name} : {constructor.name}{''.
 
 def generate_choice(
     type_name : str,
+    type_base : str,
     constructors : list[Constructor] 
 ) -> str:
     handlers_name = f"{inflection.camelize(type_name)}Handlers"
@@ -139,7 +140,7 @@ def update_{constructor.name}(source_{constructor.name} : {constructor.name}{''.
     code = (f"""
 # type {type_name}
 @dataclass(frozen=True, eq=True)
-class {type_name}(ABC):
+class {type_name}({type_base + ', ' if type_base else ''}ABC):
     # @abstractmethod
     def match(self, handlers : {handlers_name}[T]) -> T:
         raise Exception()
@@ -175,12 +176,20 @@ def generate_content(content_header : str, singles : list[Constructor], choices 
 {content_header}
 
 {nl.join([
-    generate_choice(type_name, cons)
+    generate_choice(type_name, '', cons)
     for type_name, cons in choices.items()
 ])} 
 
 {nl.join([
     generate_single(con)
     for con in singles
+])} 
+    """)
+
+def generate_choices_type_base(choices : dict[tuple[str, str], list[Constructor]]) -> str:
+    return (f"""
+{nl.join([
+    generate_choice(type_name, type_base, cons)
+    for (type_name, type_base), cons in choices.items()
 ])} 
     """)

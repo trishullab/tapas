@@ -223,6 +223,25 @@ choices = {
 }
 
 
+choices_type_base = {
+    ('semantic_check', 'Exception') : [
+        Constructor("LookupTypeCheck", [], []),
+        Constructor("ApplyArgTypeCheck", [], []),
+        Constructor("ApplyRatorTypeCheck", [], []),
+        Constructor("SplatKeywordTypeCheck", [], []),
+        Constructor("ReturnTypeCheck", [], []),
+        Constructor("UnifyTypeCheck", [], []),
+        Constructor("AssignTypeCheck", [], []),
+        Constructor("IterateTypeCheck", [], []),
+        Constructor("LookupDecCheck", [], []),
+        Constructor("LookupInitCheck", [], []),
+        Constructor("UpdateCheck", [], []),
+        Constructor("DeclareCheck", [], []),
+
+    ]
+}
+
+
 
 def generate_content():
     return construct_def.generate_content(f"""
@@ -230,4 +249,4 @@ from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
 from base.abstract_token_construct_autogen import abstract_token 
 from lib.python_ast_construct_autogen import ast 
-    """, singles, choices)
+    """, singles, choices) + construct_def.generate_choices_type_base(choices_type_base)
