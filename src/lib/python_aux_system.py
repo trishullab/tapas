@@ -1334,10 +1334,11 @@ def analyze_summary(
     package : PMap[str, ModulePackage], 
     module_name, 
     code : str,
+    checks = all_checks
 ) -> str:
 
     try:
-        analyze_code(package, module_name, code)
+        analyze_code(package, module_name, code, checks)
     except Exception as ex:
         if isinstance(ex, semantic_check):
             return from_semantic_check_to_string(ex)

@@ -12,8 +12,6 @@ import os.path
 import json
 import pytest
 
-from lib.python_aux_construct_autogen import DictLitType, RecordType, StrLitType
-
 typeshed_cache = 'res/typeshed_object'
 package : PMap[str, pals.ModulePackage] = (
     us.load_object(typeshed_cache)
@@ -328,7 +326,7 @@ def test_058_ok():
     x = aux.local_env.get('x')
     assert x
     x_type = x.type
-    assert isinstance(x_type, DictLitType)
+    assert isinstance(x_type, pals.DictLitType)
     assert len(x_type.pair_types) == 2
 
     entry_one = x_type.pair_types[0]
@@ -355,7 +353,7 @@ def test_060_ok():
     foo_type = foo.type
     assert isinstance(foo_type, pals.FunctionType)
     foo_return_type = foo_type.return_type
-    assert isinstance(foo_return_type, RecordType)
+    assert isinstance(foo_return_type, pals.RecordType)
     assert foo_return_type.class_key == "builtins.int"
 
 def test_061_ok():
@@ -365,7 +363,7 @@ def test_061_ok():
     final_str = aux.local_env.get('final_str')
     assert final_str 
     final_str_type = final_str.type
-    assert isinstance(final_str_type, RecordType)
+    assert isinstance(final_str_type, pals.RecordType)
     assert final_str_type.class_key == "builtins.str"
 
 
