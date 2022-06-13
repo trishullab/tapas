@@ -1139,20 +1139,20 @@ def update_ApplyRatorTypeCheck(source_ApplyRatorTypeCheck : ApplyRatorTypeCheck
         
 
 @dataclass(frozen=True, eq=True)
-class SplatKeywordTypeCheck(semantic_check):
+class SplatKeywordArgTypeCheck(semantic_check):
 
 
     def match(self, handlers : SemanticCheckHandlers[T]) -> T:
-        return handlers.case_SplatKeywordTypeCheck(self)
+        return handlers.case_SplatKeywordArgTypeCheck(self)
 
-def make_SplatKeywordTypeCheck(
+def make_SplatKeywordArgTypeCheck(
 ) -> semantic_check:
-    return SplatKeywordTypeCheck(
+    return SplatKeywordArgTypeCheck(
     )
 
-def update_SplatKeywordTypeCheck(source_SplatKeywordTypeCheck : SplatKeywordTypeCheck
-) -> SplatKeywordTypeCheck:
-    return SplatKeywordTypeCheck(
+def update_SplatKeywordArgTypeCheck(source_SplatKeywordArgTypeCheck : SplatKeywordArgTypeCheck
+) -> SplatKeywordArgTypeCheck:
+    return SplatKeywordArgTypeCheck(
     )
 
         
@@ -1315,7 +1315,7 @@ class SemanticCheckHandlers(Generic[T]):
     case_LookupTypeCheck : Callable[[LookupTypeCheck], T]
     case_ApplyArgTypeCheck : Callable[[ApplyArgTypeCheck], T]
     case_ApplyRatorTypeCheck : Callable[[ApplyRatorTypeCheck], T]
-    case_SplatKeywordTypeCheck : Callable[[SplatKeywordTypeCheck], T]
+    case_SplatKeywordArgTypeCheck : Callable[[SplatKeywordArgTypeCheck], T]
     case_ReturnTypeCheck : Callable[[ReturnTypeCheck], T]
     case_UnifyTypeCheck : Callable[[UnifyTypeCheck], T]
     case_AssignTypeCheck : Callable[[AssignTypeCheck], T]

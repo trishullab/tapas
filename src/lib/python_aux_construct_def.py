@@ -234,7 +234,7 @@ choices_type_base = {
         Constructor("LookupTypeCheck", [], []),
         Constructor("ApplyArgTypeCheck", [], []),
         Constructor("ApplyRatorTypeCheck", [], []),
-        Constructor("SplatKeywordTypeCheck", [], []),
+        Constructor("SplatKeywordArgTypeCheck", [], []),
         Constructor("ReturnTypeCheck", [], []),
         Constructor("UnifyTypeCheck", [], []),
         Constructor("AssignTypeCheck", [], []),

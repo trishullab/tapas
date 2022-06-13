@@ -88,9 +88,13 @@ def test_000_1_error():
     with pytest.raises(pals.LookupDecCheck):
         analyze("000_1_error")
 
+
+
 def test_000_2_error():
     with pytest.raises(pals.LookupInitCheck):
         analyze("000_2_error")
+    code = load_source("000_2_error")
+    assert pals.analyze_summary(package, "main", code) == "lookup_init_check"
 
 def test_000_3_ok():
     analyze("000_3_ok")

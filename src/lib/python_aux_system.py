@@ -22,6 +22,8 @@ from lib import python_abstract_token_system as pats
 from lib import python_aux_crawl_stream_autogen as paa
 from lib.python_aux_construct_autogen import *
 
+from lib import python_ast_parse as pap
+
 
 T = TypeVar('T')
 
@@ -31,7 +33,7 @@ all_checks : PSet[semantic_check] = pset({
     LookupTypeCheck(),
     ApplyArgTypeCheck(),
     ApplyRatorTypeCheck(),
-    SplatKeywordTypeCheck(),
+    SplatKeywordArgTypeCheck(),
     ReturnTypeCheck(),
     UnifyTypeCheck(),
     AssignTypeCheck(),
@@ -1312,7 +1314,46 @@ def analyze_code(
 
     return last_inher_aux.package
 
+def from_semantic_check_to_string(sc : semantic_check) -> str:
+    return match_semantic_check(sc, SemanticCheckHandlers(
+        case_LookupTypeCheck = lambda _ : "lookup_type_check", 
+        case_ApplyArgTypeCheck = lambda _ : "apply_arg_type_check", 
+        case_ApplyRatorTypeCheck = lambda _ : "apply_rator_type_check", 
+        case_SplatKeywordArgTypeCheck = lambda _ : "splat_keyword_arg_type_check", 
+        case_ReturnTypeCheck = lambda _ : "return_type_check", 
+        case_UnifyTypeCheck = lambda _ : "unify_type_check", 
+        case_AssignTypeCheck = lambda _ : "assign_type_check", 
+        case_IterateTypeCheck = lambda _ : "iterate_type_check", 
+        case_LookupDecCheck = lambda _ :  "lookup_dec_check",
+        case_LookupInitCheck = lambda _ : "lookup_init_check", 
+        case_UpdateCheck = lambda _ : "update_check", 
+        case_DeclareCheck = lambda _ : "declare_check"
+    ))
 
+def analyze_summary(
+    package : PMap[str, ModulePackage], 
+    module_name, 
+    code : str,
+) -> str:
+
+    try:
+        analyze_code(package, module_name, code)
+    except Exception as ex:
+        if isinstance(ex, semantic_check):
+            return from_semantic_check_to_string(ex)
+        elif isinstance(ex, pap.Obsolete):
+            return "parsing_obsolete"
+        elif isinstance(ex, pap.Unsupported):
+            return "parsing_unsupported"
+        elif isinstance(ex, pap.ConcreteParsingError):
+            return "parsing_concrete"
+        elif isinstance(ex, pap.TreeSitterError):
+            return "parsing_tree_sitter"
+        else:
+            import builtins
+            return builtins.type(ex).__name__
+
+    return "ok"
 
 
 def from_class_env_to_primitive(env : PMap[str, ClassRecord]) -> dict:
@@ -2490,7 +2531,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
 
-        self.check(SplatKeywordTypeCheck(), lambda: 
+        self.check(SplatKeywordArgTypeCheck(), lambda: 
             subsumed(key_type, make_RecordType("builtins.str"), inher_aux)
         )
 
