@@ -1,4 +1,5 @@
 from __future__ import annotations
+from asyncio import constants
 
 from dataclasses import dataclass
 from ftplib import all_errors
@@ -94,8 +95,20 @@ def is_a_stub_default(tree : pas.param_default) -> bool:
 
 def merge_usages(a : Usage, b : Usage) -> Usage:
     return Usage(
+        backref = a.backref or b.backref,
         updated = a.updated or b.updated
     )
+
+def merge_nested_usages(xs : PMap[str, tuple[Usage, ...]], ys : PMap[str, tuple[Usage, ...]]) -> PMap[str, tuple[Usage, ...]]:
+    overlaps = pmap({
+        yk : x + y 
+        for yk, y in ys.items()
+        for xk, x in xs.items()
+        if yk == xk
+    })
+    
+    return xs + ys + overlaps 
+
 
 def merge_usage_additions(xs : PMap[str, Usage], ys : PMap[str, Usage]) -> PMap[str, Usage]:
 
@@ -170,6 +183,10 @@ def get_type_args(t : type) -> tuple[type, ...]:
         case_TupleLitType = lambda t : t.item_types,
         case_VariedTupleType = lambda t : (t.item_type,),
         case_ListLitType = lambda t : (unionize_all_types(t.item_types),),
+        case_DictLitType = lambda t : (
+            unionize_all_types(kt for kt, _ in t.pair_types),
+            unionize_all_types(vt for _, vt in t.pair_types)
+        ),
         case_TrueType = lambda t : (),
         case_FalseType = lambda t : (),
         case_IntLitType = lambda t : (),
@@ -197,6 +214,7 @@ def get_class_key(t : type) -> str:
         case_TupleLitType = lambda t : "builtins.tuple",
         case_VariedTupleType = lambda t : "builtins.tuple",
         case_ListLitType = lambda t : "builtins.list",
+        case_DictLitType = lambda t : "builtins.dict",
         case_TrueType = lambda t : "builtins.bool",
         case_FalseType = lambda t : "builtins.bool",
         case_IntLitType = lambda t : "builtins.int",
@@ -327,6 +345,13 @@ def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
                 generalize_type(inher_aux, it)
                 for it in t.item_types
             ),)        
+        ),
+        case_DictLitType = lambda t : make_RecordType(
+            class_key="builtins.dict", 
+            type_args=(
+                unionize_all_types(generalize_type(inher_aux, kt) for kt, _ in t.pair_types),
+                unionize_all_types(generalize_type(inher_aux, vt) for _, vt in t.pair_types),
+            )        
         ),
         case_TrueType = lambda t : make_RecordType(class_key="builtins.bool"),
         case_FalseType = lambda t : make_RecordType(class_key="builtins.bool"),
@@ -556,7 +581,8 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
         case_RecordType = lambda t : instance_parent_type(t, inher_aux),
         case_TupleLitType = lambda t : VariedTupleType(unionize_all_types(t.item_types)),
         case_VariedTupleType = lambda t : make_RecordType(class_key = "typing.Sequence", type_args=(t.item_type,)),
-        case_ListLitType = lambda t : make_RecordType("builtins.list", type_args=(unionize_all_types(t.item_types),)),
+        case_ListLitType = lambda t : generalize_type(inher_aux, t),
+        case_DictLitType = lambda t : generalize_type(inher_aux, t),
         case_TrueType = lambda t : make_RecordType(class_key="builtins.bool"),
         case_FalseType = lambda t : make_RecordType(class_key="builtins.bool"),
         case_IntLitType = lambda t : make_RecordType(class_key="builtins.int"),
@@ -745,6 +771,14 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
                 )
             )
         ),
+        case_DictLitType = lambda t : ( 
+            DictLitType(
+                pair_types = tuple(
+                    (substitute_type_args(kt, subst_map), substitute_type_args(vt, subst_map))
+                    for kt, vt in t.pair_types
+                )
+            )
+        ),
         case_TrueType = lambda t : t,
         case_FalseType = lambda t : t,
         case_IntLitType = lambda t : t,
@@ -845,6 +879,7 @@ def get_iterable_item_type(iter_type : type, inher_aux : InherAux) -> Optional[t
         case_TupleLitType = lambda t : unionize_all_types(t.item_types),
         case_VariedTupleType = lambda t : t.item_type,
         case_ListLitType = lambda t : unionize_all_types(t.item_types),
+        case_DictLitType = lambda t : get_iterable_item_type(generalize_type(inher_aux, t), inher_aux),
         case_TrueType = lambda t : None,
         case_FalseType = lambda t : None,
         case_IntLitType = lambda t : None,
@@ -1134,6 +1169,10 @@ def from_type_to_primitive(t : type) -> list:
         case_TupleLitType = lambda t : ["TupleLitType", [from_type_to_primitive(it) for it in t.item_types]],
         case_VariedTupleType = lambda t : ["VariedTupleType", from_type_to_primitive(t.item_type)],
         case_ListLitType = lambda t : ["ListLitType", [from_type_to_primitive(it) for it in t.item_types]],
+        case_DictLitType = lambda t : ["DictLitType", [
+            (from_type_to_primitive(kt), from_type_to_primitive(vt)) 
+            for kt, vt in t.pair_types
+        ]],
         case_TrueType = lambda t : ["TrueType"],
         case_FalseType = lambda t : ["FalseType"],
         case_IntLitType = lambda t : ["IntLitType", t.literal],
@@ -1292,7 +1331,7 @@ def from_class_env_to_primitive(env : PMap[str, ClassRecord]) -> dict:
 
 def from_env_to_primitive(env : PMap[str, Declaration]) -> dict:
     return {
-        symbol : [p.initialized, from_type_to_primitive(p.type)]
+        symbol : [p.initialized, f'constant={p.constant}', from_type_to_primitive(p.type)]
         for symbol, p in env.items()
     }
 
@@ -1308,7 +1347,7 @@ def traverse_function_body(inher_aux : InherAux, path_extension : str) -> InherA
             # reset local_decl
             local_env = m(), 
             internal_path = path_extension,
-            in_class = False 
+            in_class = False,
         )
     else:
         return update_InherAux(inher_aux,
@@ -1317,7 +1356,7 @@ def traverse_function_body(inher_aux : InherAux, path_extension : str) -> InherA
             # reset local_decl
             local_env = m(), 
             internal_path = f"{inher_aux.internal_path}.{path_extension}",
-            in_class = False 
+            in_class = False,
         )
 
 
@@ -1399,6 +1438,7 @@ class Client:
     init_prim : list 
     next : Callable[[abstract_token], InherAux]
     next_prim : Callable[[list], list | None]
+    kill : Callable[[Exception], None]
 
 
 def insert_module_class_env_dotpath(
@@ -1468,8 +1508,8 @@ def spawn_analysis(
     checks : PSet[semantic_check] = all_checks
 ) -> Client:
 
-    in_stream : Queue[abstract_token] = Queue()
-    out_stream : Queue[Union[InherAux, Exception]] = Queue()
+    in_stream : Queue[abstract_token | Exception] = Queue()
+    out_stream : Queue[InherAux | Exception] = Queue()
 
     server : Server = Server(in_stream, out_stream, checks)
 
@@ -1493,6 +1533,10 @@ def spawn_analysis(
         try:
             nonlocal inher_aux
             token = in_stream.get()
+
+            if isinstance(token, Exception):
+                raise token
+
             synth = server.crawl_module(token, inher_aux)
 
             module : PMap[str, Declaration] = pmap({
@@ -1546,7 +1590,8 @@ def spawn_analysis(
         init = inher_aux, 
         init_prim = from_inher_aux_to_primitive(inher_aux), 
         next = next, 
-        next_prim = next_prim
+        next_prim = next_prim,
+        kill = lambda ex: in_stream.put(ex)
     ) 
 
 
@@ -1578,8 +1623,8 @@ def analyze_statements(
     inher_aux : InherAux, 
 ) -> SynthAux:
 
-    in_stream : Queue[abstract_token] = Queue()
-    out_stream : Queue[Union[InherAux, Exception]] = Queue()
+    in_stream : Queue[abstract_token | Exception] = Queue()
+    out_stream : Queue[InherAux | Exception] = Queue()
 
     return_stream : Queue[SynthAux] = Queue()
 
@@ -1587,6 +1632,8 @@ def analyze_statements(
 
     def run():
         tok = in_stream.get()
+        if isinstance(tok, Exception):
+            raise tok
         synth = server.crawl_statements(tok, inher_aux)
         out_stream.put(inher_aux)
         return_stream.put(synth.aux)
@@ -1609,7 +1656,7 @@ def analyze_expr(
     inher_aux : InherAux, 
 ) -> SynthAux:
 
-    in_stream : Queue[abstract_token] = Queue()
+    in_stream : Queue[abstract_token | Exception] = Queue()
     out_stream : Queue[Union[InherAux, Exception]] = Queue()
 
     return_stream : Queue[SynthAux] = Queue()
@@ -1618,6 +1665,8 @@ def analyze_expr(
 
     def run():
         tok = in_stream.get()
+        if isinstance(tok, Exception):
+            raise tok
         synth = server.crawl_expr(tok, inher_aux)
         out_stream.put(inher_aux)
         return_stream.put(synth.aux)
@@ -1637,8 +1686,8 @@ def analyze_expr(
 class Server(paa.Server[InherAux, SynthAux]):
 
     def __init__(self, 
-        in_stream : Queue[abstract_token], 
-        out_stream : Queue[Union[InherAux, Exception]],
+        in_stream : Queue[abstract_token | Exception], 
+        out_stream : Queue[InherAux | Exception],
         checks : PSet[semantic_check] = all_checks
     ):  
         super().__init__(in_stream, out_stream)
@@ -1650,41 +1699,43 @@ class Server(paa.Server[InherAux, SynthAux]):
             if not f():
                 raise sc
 
-    def diff_usage_decl(
-        self,
-        inher_aux : InherAux,
-        dec_env : PMap[str, Declaration],
-        usage_env : PMap[str, Usage],
-    ) -> PMap[str, Usage]:
-
-        usage_additions : PMap[str, Usage] = m()
-        for usage_key, usage in usage_env.items():
-            if usage_key in dec_env:
-
-                dec = dec_env[usage_key]
-                self.check(UpdateCheck(), lambda:
-                    not usage.updated or not dec.constant
-                )
-
-                # print(f"-----------------")
-                # print(f"--## usage_key : {usage_key}")
-                # print(f"--## dec : {dec}")
-                # print(f"-----------------")
-                self.check(LookupInitCheck(), lambda:
-                    dec.initialized
-                )
-            else:
-
-                usage_additions += pmap({usage_key : usage_env[usage_key]})
-                self.check(LookupDecCheck(), lambda: 
-                    inher_aux.internal_path != "" or 
-                    not isinstance(
-                        from_static_path_to_declaration(inher_aux, f"builtins.{usage_key}"), 
-                        AnyType
+    def update_nested_usages(self, 
+        decls: PMap[str, Declaration], 
+        usage_additions : PMap[str, Usage], 
+        nested_usages : PMap[str, tuple[Usage, ...]]
+    ):
+        for symbol, dec in decls.items(): 
+            symbol_usages = nested_usages.get(symbol) or () 
+            if symbol_usages:
+                nested_usages = nested_usages.remove(symbol)
+                self.check(UpdateCheck(), lambda: 
+                    us.every(symbol_usages, lambda symbol_usage:
+                        not symbol_usage.updated or not dec.constant
                     )
                 )
 
-        return usage_additions
+
+            local_usage = usage_additions.get(symbol)
+            # print(f"#### symbol : {symbol}")
+            # print(f"#### local_usage : {local_usage}")
+            self.check(LookupDecCheck(), lambda:
+                not local_usage or local_usage.backref
+            )
+
+            self.check(LookupInitCheck(), lambda: 
+                not local_usage or not local_usage.backref or dec.initialized 
+            )
+
+        nested_usages = merge_nested_usages(
+            pmap({
+                k : (usg,)
+                for k, usg in usage_additions.items() 
+                if not usg.backref
+            }),
+            nested_usages
+        )
+        return nested_usages
+
 
     def check_decl_usage(self, dec_env : PMap[str, Declaration], usage_env : PMap[str, Usage]):
         self.check(DeclareCheck(), lambda:
@@ -1714,6 +1765,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         declared_globals : PSet[str] = s()
         declared_nonlocals : PSet[str] = s()
         usage_additions : PMap[str, Usage] = m()
+        nested_usages : PMap[str, tuple[Usage, ...]] = m()
 
         method_names : tuple[str, ...] = ()
         observed_types : tuple[type, ...] = ()
@@ -1750,6 +1802,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             declared_globals = declared_globals.update(aux.declared_globals)
             declared_nonlocals = declared_nonlocals.update(aux.declared_nonlocals)
             usage_additions = merge_usage_additions(usage_additions, aux.usage_additions)
+            nested_usages = merge_nested_usages(nested_usages, aux.nested_usages)
 
             method_names = method_names + aux.cmp_names
 
@@ -1778,6 +1831,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             decl_subtractions, decl_additions, 
             declared_globals, declared_nonlocals, 
             usage_additions, 
+            nested_usages, 
             method_names,
             observed_types, 
             kw_types,
@@ -1789,6 +1843,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             pos_param_types, pos_kw_param_sigs, list_splat_param_type, kw_param_sigs, dict_splat_param_type,
             import_names
         )
+
 
     # synthesize: expr <-- BoolOp
     def synthesize_for_expr_BoolOp(self, 
@@ -2040,49 +2095,18 @@ class Server(paa.Server[InherAux, SynthAux]):
             ) 
         )
 
-    # synthesize: dictionary_content <-- ConsDictionaryItem
-    def synthesize_for_dictionary_content_ConsDictionaryItem(self, 
-        inher_aux : InherAux,
-        head_tree : pas.dictionary_item, 
-        head_aux : SynthAux,
-        tail_tree : pas.dictionary_content, 
-        tail_aux : SynthAux
-    ) -> paa.Result[SynthAux]:
-        assert len(head_aux.observed_types) == 2
-        assert len(tail_aux.observed_types) == 2
-
-        head_key_type = head_aux.observed_types[0]
-        head_value_type = head_aux.observed_types[1]
-
-        tail_key_type = head_aux.observed_types[0]
-        tail_value_type = head_aux.observed_types[1]
-
-        key_type = head_key_type
-        if head_key_type != tail_key_type:
-            key_type = unionize_types(head_key_type, tail_key_type)
-
-        value_type = head_value_type
-        if head_value_type != tail_value_type:
-            value_type = unionize_types(head_value_type, tail_value_type)
-        
-        return paa.Result[SynthAux](
-            tree = pas.ConsDictionaryItem(head_tree, tail_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
-                observed_types = (key_type, value_type)
-            )
-        )
-    
     # synthesize: expr <-- Dictionary
     def synthesize_for_expr_Dictionary(self, 
         inher_aux : InherAux,
         content_tree : pas.dictionary_content, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        assert len(content_aux.observed_types) == 2
 
-        dict_type = make_RecordType(
-            class_key = "builtins.dict",
-            type_args = (content_aux.observed_types[0], content_aux.observed_types[1])
+        dict_type = make_DictLitType(
+            pair_types = tuple(
+                (content_aux.observed_types[i], content_aux.observed_types[i + 1])
+                for i in range(0, int(len(content_aux.observed_types)), 2)
+            )
         )
 
         return paa.Result[SynthAux](
@@ -2496,6 +2520,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             # print(f"@@##########")
             # print(f"@@## func_tree: {func_tree}")
             # print(f"@@## func_type: {func_type}")
+            # print(f"@@## args_tree: {args_tree}")
             # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
             # for ot in args_aux.observed_types:
             #     print(f"--- ot : {ot}")
@@ -2503,7 +2528,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             # for k, v in args_aux.kw_types.items():
             #     print(f"--- kwt : {k} |-> {v}")
             # print(f"")
-            
 
             self.check(ApplyArgTypeCheck(), lambda: 
                 check_application_args(
@@ -2580,6 +2604,13 @@ class Server(paa.Server[InherAux, SynthAux]):
 
                 expr_type = func_type.content 
         else:
+            # print(f"")
+            # print(f"@@##########")
+            # print(f"@@## func_tree: {func_tree}")
+            # print(f"@@## func_type: {func_type}")
+            # print(f"@@##########")
+            # print(f"")
+            self.check(ApplyRatorTypeCheck(), lambda:isinstance(func_type,AnyType))
             expr_type = AnyType()
 
 
@@ -2874,13 +2905,19 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         types = (expr_type,)
 
+        backref = (
+            id in inher_aux.local_env or
+            id in inher_aux.nonlocal_env or
+            id in inher_aux.global_env
+        )
+
 
         return paa.Result[SynthAux](
             tree = pas.Name(content_tree),
             aux = make_SynthAux(
                 observed_types = types,
                 protocol = protocol,
-                usage_additions = pmap({content_tree : make_Usage()})
+                usage_additions = pmap({content_tree : make_Usage(backref)})
             )
         )
     
@@ -2967,7 +3004,19 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        self.diff_usage_decl(inher_aux, body_aux.decl_additions, body_aux.usage_additions)
+        self.check(LookupDecCheck(), lambda: (
+            nested_usages := self.update_nested_usages(
+                body_aux.decl_additions, 
+                body_aux.usage_additions, 
+                body_aux.nested_usages
+            ),
+            us.every(nested_usages, lambda sym : 
+                not isinstance(
+                    from_static_path_to_declaration(inher_aux, f"builtins.{sym}"), 
+                    AnyType
+                )
+            )
+        )[-1])
 
         return paa.Result[SynthAux](
             tree = pas.FutureMod(names_tree, body_tree),
@@ -2982,7 +3031,21 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        self.diff_usage_decl(inher_aux, body_aux.decl_additions, body_aux.usage_additions)
+
+
+        self.check(LookupDecCheck(), lambda: (
+            nested_usages := self.update_nested_usages(
+                body_aux.decl_additions, 
+                body_aux.usage_additions, 
+                body_aux.nested_usages
+            ),
+            us.every(nested_usages, lambda sym : 
+                not isinstance(
+                    from_static_path_to_declaration(inher_aux, f"builtins.{sym}"), 
+                    AnyType
+                )
+            )
+        )[-1])
 
         return paa.Result[SynthAux](
             tree = pas.SimpleMod(body_tree),
@@ -3204,7 +3267,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         if bs_aux.protocol and isinstance(instance_type, RecordType):
             instance_type = update_RecordType(instance_type, protocol=bs_aux.protocol)
 
-        usage_additions = self.diff_usage_decl(inher_aux, body_aux.decl_additions, body_aux.usage_additions)
 
         return paa.Result[SynthAux](
             tree = pas.ClassDef(name_tree, bs_tree, body_tree),
@@ -3218,8 +3280,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                         type=TypeType("builtins.type", instance_type)
                     )
                 }),
-                class_additions=pmap({internal_class_key : class_record}) + body_aux.class_additions,
-                usage_additions=usage_additions
+                class_additions=pmap({internal_class_key : class_record}) + body_aux.class_additions
             ) 
         )
 
@@ -3374,21 +3435,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             return_type = function_return_type 
         )
 
-        self_param = get_self_param(params_tree)
-        decls = (
-            params_aux.decl_additions.remove(self_param.name)
-            if self_param and inher_aux.in_class and len(params_aux.decl_additions) > 0 else
-            params_aux.decl_additions
-        ) + body_aux.decl_additions
-
-
-        # print(f"### decls : {decls.keys()}")
-        # print(f"### usages : {body_aux.usage_additions.keys()}")
-
-        if not is_a_stub_body(body_tree): self.check_decl_usage(decls, body_aux.usage_additions)
-
-        usage_additions = self.diff_usage_decl(inher_aux, decls, body_aux.usage_additions)
-
+        nested_usages = self.update_nested_usages(body_aux.decl_additions, body_aux.usage_additions, body_aux.nested_usages)
 
         if (
             inher_aux.external_path == "typing" and
@@ -3405,7 +3452,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                     annotated = isinstance(ret_anno_tree, pas.SomeReturnAnno),# this refers to the return annotation
                     constant = True, initialized = True, type = type)
                 }),
-                usage_additions=usage_additions
+                usage_additions=m(),
+                nested_usages=nested_usages
             )
         )
 
@@ -3423,16 +3471,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         # TODO: follow FunctionDef but return a CoroutineType 
 
-        self_param = get_self_param(params_tree)
-
-
-        decls = (
-            params_aux.decl_additions.remove(self_param.name)
-            if self_param and inher_aux.in_class and len(params_aux.decl_additions) > 0 else
-            params_aux.decl_additions
-        ) + body_aux.decl_additions
-        self.check_decl_usage(decls, body_aux.usage_additions)
-        usage_additions = self.diff_usage_decl(inher_aux, decls, body_aux.usage_additions)
+        nested_usages = self.update_nested_usages(body_aux.decl_additions, body_aux.usage_additions, body_aux.nested_usages)
 
         return paa.Result[SynthAux](
             tree = pas.AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
@@ -3442,7 +3481,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                     annotated = isinstance(ret_anno_tree, pas.SomeReturnAnno),# this refers to the return annotation
                     constant = True, initialized=True
                 )}),
-                usage_additions=usage_additions
+                usage_additions=m(),
+                nested_usages=nested_usages
             ) 
         )
 
@@ -3901,6 +3941,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.AnnoAssign(target_tree, anno_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, anno_aux, content_aux])),
+                usage_additions = content_aux.usage_additions,
                 decl_additions = decl_additions
             ) 
         )

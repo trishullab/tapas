@@ -60,6 +60,7 @@ singles = [
         Field("declared_nonlocals", "PSet[str]", "s()"),
 
         Field("usage_additions", "PMap[str, Usage]", "m()"), # TODO: add more info like type info - PMap[str, Usage]
+        Field("nested_usages", "PMap[str, tuple[Usage, ...]]", "m()"),
         Field("cmp_names", "tuple[str, ...]", "()"),
 
         Field("observed_types", "tuple[type, ...]", "()"),
@@ -97,6 +98,7 @@ singles = [
     ]),
 
     Constructor("Usage", [], [
+        Field("backref", "bool", ""),
         Field("updated", "bool", "False"),
         # Field("type", "type", "AnyType()"), # expectation
 
@@ -205,6 +207,10 @@ choices = {
             
         Constructor("ListLitType", [], [
             Field("item_types", "tuple[type, ...]", "()"),
+        ]),
+
+        Constructor("DictLitType", [], [
+            Field("pair_types", "tuple[tuple[type, type], ...]", "()"),
         ]),
 
         Constructor("TrueType", [], []),

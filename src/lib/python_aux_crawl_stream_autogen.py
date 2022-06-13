@@ -33,11 +33,15 @@ class Result(Generic[SynthAux]):
 
 class Server(ABC, Generic[InherAux, SynthAux]): 
 
-    def __init__(self, in_stream : Queue[abstract_token], out_stream : Queue[Union[InherAux, Exception]]):  
+    def __init__(self, in_stream : Queue[abstract_token | Exception], out_stream : Queue[InherAux | Exception]):  
 
         def next(inher_aux : InherAux) -> abstract_token: 
             out_stream.put(inher_aux)
-            return in_stream.get()
+            tok = in_stream.get()
+            if isinstance(tok, Exception):
+                raise tok
+            else:
+                return tok
 
         self.next = next
 
@@ -8004,7 +8008,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
             
+
+
         return self.synthesize_for_FinallyBlock(inher_aux, body_tree, body_aux)
+     
 
     
     # traverse return_annotation <-- SomeReturnAnno"

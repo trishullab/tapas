@@ -9,9 +9,13 @@ import json
 
 from pyrsistent import PMap, PSet, pset
 
+import pickle
+
 T = TypeVar('T')
 
 X = TypeVar('X')
+
+
 
 def linearize_dict(d : dict) -> list: 
     return ['{'] + [
@@ -114,3 +118,18 @@ def run_file(fpath : str, func : Callable[[str], Any]):
     with open(fpath, 'r') as f:
         concrete = f.read()
         func(concrete)
+
+
+def save_object(o : Any, file : str) -> Any:
+    path = project_path(file)
+    with open(path, 'wb') as f:
+        pickle.dump(o, f)
+    return o
+
+def load_object(file : str) -> Any:
+    path = project_path(file)
+    with open(path, 'rb') as f:
+        return pickle.load(f)
+
+
+

@@ -531,6 +531,29 @@ def update_ListLitType(source_ListLitType : ListLitType,
         
 
 @dataclass(frozen=True, eq=True)
+class DictLitType(type):
+    pair_types : tuple[tuple[type, type], ...]
+
+    def match(self, handlers : TypeHandlers[T]) -> T:
+        return handlers.case_DictLitType(self)
+
+def make_DictLitType(
+    pair_types : tuple[tuple[type, type], ...] = ()
+) -> type:
+    return DictLitType(
+        pair_types
+    )
+
+def update_DictLitType(source_DictLitType : DictLitType,
+    pair_types : Union[tuple[tuple[type, type], ...], SourceFlag] = SourceFlag()
+) -> DictLitType:
+    return DictLitType(
+        source_DictLitType.pair_types if isinstance(pair_types, SourceFlag) else pair_types
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
 class TrueType(type):
 
 
@@ -657,6 +680,7 @@ class TypeHandlers(Generic[T]):
     case_TupleLitType : Callable[[TupleLitType], T]
     case_VariedTupleType : Callable[[VariedTupleType], T]
     case_ListLitType : Callable[[ListLitType], T]
+    case_DictLitType : Callable[[DictLitType], T]
     case_TrueType : Callable[[TrueType], T]
     case_FalseType : Callable[[FalseType], T]
     case_IntLitType : Callable[[IntLitType], T]
@@ -870,6 +894,7 @@ class SynthAux:
     declared_globals : PSet[str]
     declared_nonlocals : PSet[str]
     usage_additions : PMap[str, Usage]
+    nested_usages : PMap[str, tuple[Usage, ...]]
     cmp_names : tuple[str, ...]
     observed_types : tuple[type, ...]
     kw_types : PMap[str, type]
@@ -893,6 +918,7 @@ def make_SynthAux(
     declared_globals : PSet[str] = s(),
     declared_nonlocals : PSet[str] = s(),
     usage_additions : PMap[str, Usage] = m(),
+    nested_usages : PMap[str, tuple[Usage, ...]] = m(),
     cmp_names : tuple[str, ...] = (),
     observed_types : tuple[type, ...] = (),
     kw_types : PMap[str, type] = m(),
@@ -915,6 +941,7 @@ def make_SynthAux(
         declared_globals,
         declared_nonlocals,
         usage_additions,
+        nested_usages,
         cmp_names,
         observed_types,
         kw_types,
@@ -937,6 +964,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
     declared_globals : Union[PSet[str], SourceFlag] = SourceFlag(),
     declared_nonlocals : Union[PSet[str], SourceFlag] = SourceFlag(),
     usage_additions : Union[PMap[str, Usage], SourceFlag] = SourceFlag(),
+    nested_usages : Union[PMap[str, tuple[Usage, ...]], SourceFlag] = SourceFlag(),
     cmp_names : Union[tuple[str, ...], SourceFlag] = SourceFlag(),
     observed_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     kw_types : Union[PMap[str, type], SourceFlag] = SourceFlag(),
@@ -959,6 +987,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
         source_SynthAux.declared_globals if isinstance(declared_globals, SourceFlag) else declared_globals, 
         source_SynthAux.declared_nonlocals if isinstance(declared_nonlocals, SourceFlag) else declared_nonlocals, 
         source_SynthAux.usage_additions if isinstance(usage_additions, SourceFlag) else usage_additions, 
+        source_SynthAux.nested_usages if isinstance(nested_usages, SourceFlag) else nested_usages, 
         source_SynthAux.cmp_names if isinstance(cmp_names, SourceFlag) else cmp_names, 
         source_SynthAux.observed_types if isinstance(observed_types, SourceFlag) else observed_types, 
         source_SynthAux.kw_types if isinstance(kw_types, SourceFlag) else kw_types, 
@@ -1019,19 +1048,24 @@ def update_Declaration(source_Declaration : Declaration,
 # type and constructor Usage
 @dataclass(frozen=True, eq=True)
 class Usage:
+    backref : bool
     updated : bool
 
 
 def make_Usage(
+    backref : bool,
     updated : bool = False
 ) -> Usage:
     return Usage(
+        backref,
         updated)
 
 def update_Usage(source_Usage : Usage,
+    backref : Union[bool, SourceFlag] = SourceFlag(),
     updated : Union[bool, SourceFlag] = SourceFlag()
 ) -> Usage:
     return Usage(
+        source_Usage.backref if isinstance(backref, SourceFlag) else backref, 
         source_Usage.updated if isinstance(updated, SourceFlag) else updated)
 
      
