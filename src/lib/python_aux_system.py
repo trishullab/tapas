@@ -4,6 +4,7 @@ from asyncio import constants
 from dataclasses import dataclass
 from ftplib import all_errors
 from typing import Callable, Iterator, Iterable, Mapping
+from pkg_resources import compatible_platforms
 
 from pyrsistent import pmap, m, pset, s, PMap, PSet
 
@@ -80,7 +81,8 @@ def get_self_param(params_tree : pas.parameters) -> pas.Param | None:
             return None
     else:
         return None
- 
+
+
 
 def is_a_stub_body(tree : pas.ast) -> bool:
     if isinstance(tree, pas.SingleStmt):
@@ -95,9 +97,17 @@ def is_a_stub_default(tree : pas.param_default) -> bool:
     else:
         return False
 
+def filter_usage_additions(usage_additions : PMap[str, Usage], *excludes : Iterable[str]) -> PMap[str, Usage]:
+    for exc in excludes:
+        for k in exc:
+            if k in usage_additions:
+                usage_additions = usage_additions.remove(k)
+    return usage_additions
+
+
 def merge_usages(a : Usage, b : Usage) -> Usage:
     return Usage(
-        backref = a.backref or b.backref,
+        backref = a.backref and b.backref,
         updated = a.updated or b.updated
     )
 
@@ -486,6 +496,12 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
         not isinstance(sub_type, ModuleType) and
         (
 
+            isinstance(sub_type, AnyType) or 
+
+            isinstance(super_type, AnyType) or 
+
+            isinstance(super_type, VarType) or # if VarType hasn't been subbed, then it can't be inferred.
+
             (
                 # TODO: figure out more genearl way to handle int <: float
                 isinstance(super_type, RecordType) and
@@ -498,9 +514,14 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
                 isinstance(super_type, RecordType) and super_type.protocol and
                 (
                     cr := infer_class_record(super_type, inher_aux),
+                    print(f"----cr: {cr}"),
+                    print(f"----sub_type: {sub_type}"),
                     cr and us.every(cr.instance_fields.items(), lambda p : (
-                        field_exists_subsumed(sub_type, p[0], p[1], inher_aux)
-                    ))
+                        print(f"----p: {p}"),
+                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux),
+                        print(f"----fe: {fe}"),
+                        fe
+                    )[-1])
                 )[-1]
             ) or
 
@@ -509,12 +530,6 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
                 isinstance(super_type, TypeType) and
                 subsumed(sub_type.content, super_type.content, inher_aux)
             ) or 
-
-            isinstance(sub_type, AnyType) or 
-
-            isinstance(super_type, AnyType) or 
-
-            isinstance(super_type, VarType) or # if VarType hasn't been subbed, then it can't be inferred.
 
             (isinstance(super_type, RecordType) and
                 super_type.class_key == "builtins.slice"
@@ -1039,6 +1054,13 @@ def check_application_args(
     inher_aux : InherAux 
 ) -> bool:
 
+    if len(pos_arg_types) + len(kw_arg_types) > (
+        len(function_type.pos_param_types) +
+        len(function_type.pos_kw_param_sigs) +
+        len(function_type.kw_param_sigs)
+    ):
+        return False
+
     pos_param_compat : Iterable[bool] = [
         subsumed(pos_arg_types[i], param_type, inher_aux)
         for i, param_type in enumerate(function_type.pos_param_types) 
@@ -1080,7 +1102,7 @@ def check_application_args(
             not kw in {sig.key for sig in function_type.kw_param_sigs}
         )
     ]
-    
+
     compatible =  (
         us.every(pos_param_compat, lambda x : x) and
         us.every(kw_param_compat, lambda x : x)
@@ -1226,7 +1248,8 @@ def analyze_modules_once(
                 success_count += 1
         except Exception as ex:
             # raise ex
-            return package 
+            continue
+            # return package 
         finally:
             print("")
             print("")
@@ -1373,7 +1396,13 @@ def from_class_env_to_primitive(env : PMap[str, ClassRecord]) -> dict:
 
 def from_env_to_primitive(env : PMap[str, Declaration]) -> dict:
     return {
-        symbol : [p.initialized, f'constant={p.constant}', from_type_to_primitive(p.type)]
+        symbol : [p.initialized, from_type_to_primitive(p.type)]
+        for symbol, p in env.items()
+    }
+
+def from_env_to_primitive_verbose(env : PMap[str, Declaration]) -> dict:
+    return {
+        symbol : [f'initialized={p.initialized}', f'constant={p.constant}', from_type_to_primitive(p.type)]
         for symbol, p in env.items()
     }
 
@@ -1562,7 +1591,7 @@ def spawn_analysis(
             external_path = module_name, 
             package = package,
             local_env = pmap(
-                (sym, update_Declaration(dec, initialized=False)) 
+                (sym, update_Declaration(dec, initialized=False, overloading=False)) 
                 for sym, dec in mp.module.items()
             ),
             class_env = mp.class_env
@@ -1735,6 +1764,25 @@ class Server(paa.Server[InherAux, SynthAux]):
         super().__init__(in_stream, out_stream)
         self.checks = checks
 
+    def match_function_type(self, inher_aux : InherAux, 
+        pos_arg_types : Sequence[type],
+        kw_arg_types : Mapping[str, type], 
+        it : InterType
+    ) -> FunctionType | None:
+        passing_func_type = None
+        for ft in it.type_components:
+            self.check(ApplyRatorTypeCheck(), lambda:
+                isinstance(ft, FunctionType)
+            )
+            assert isinstance(ft, FunctionType)
+
+            if check_application_args(pos_arg_types, kw_arg_types, ft, inher_aux):
+                passing_func_type = ft
+                return passing_func_type
+        return passing_func_type
+
+ 
+
 
     def check(self, sc : semantic_check, f : Callable[[], bool]): 
         if sc in self.checks:
@@ -1746,6 +1794,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         usage_additions : PMap[str, Usage], 
         nested_usages : PMap[str, tuple[Usage, ...]]
     ):
+
         for symbol, dec in decls.items(): 
             symbol_usages = nested_usages.get(symbol) or () 
             if symbol_usages:
@@ -1758,8 +1807,6 @@ class Server(paa.Server[InherAux, SynthAux]):
 
 
             local_usage = usage_additions.get(symbol)
-            # print(f"#### symbol : {symbol}")
-            # print(f"#### local_usage : {local_usage}")
             self.check(LookupDecCheck(), lambda:
                 not local_usage or local_usage.backref
             )
@@ -1921,14 +1968,26 @@ class Server(paa.Server[InherAux, SynthAux]):
             # print(f"@@## method_type: {method_type}")
             # print(f"@@## right_tree: {right_tree}")
             # print(f"@@## right_type: {right_type}")
-            compatible = check_application_args(
-                [right_type], {}, 
-                method_type, inher_aux
+            
+
+            self.check(ApplyArgTypeCheck(), lambda: 
+                check_application_args(
+                    [right_type], {}, 
+                    method_type, inher_aux
+                )
             )
 
-            self.check(ApplyArgTypeCheck(), lambda: compatible)
-
             expr_type = method_type.return_type
+
+        elif isinstance(method_type, InterType):
+            chosen_method_type = self.match_function_type(
+                inher_aux,
+                [right_type], {}, 
+                method_type
+            ) 
+            self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
+            assert chosen_method_type
+            expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
             tree = pas.BoolOp(left_tree, rator_tree, right_tree),
@@ -2029,14 +2088,25 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"@@## method_type: {method_type}")
                 # print(f"@@## right_tree: {right_tree}")
                 # print(f"@@## right_type: {right_type}")
-                compatible = check_application_args(
-                    [right_type], {}, 
-                    method_type, inher_aux
+
+                self.check(ApplyArgTypeCheck(), lambda: 
+                    check_application_args(
+                        [right_type], {}, 
+                        method_type, inher_aux
+                    )
                 )
 
-                self.check(ApplyArgTypeCheck(), lambda: compatible)
-
                 expr_type = method_type.return_type
+
+            elif isinstance(method_type, InterType):
+                chosen_method_type = self.match_function_type(
+                    inher_aux,
+                    [right_type], {}, 
+                    method_type
+                ) 
+                self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
+                assert chosen_method_type
+                expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
             tree = pas.BinOp(left_tree, rator_tree, right_tree),
@@ -2060,12 +2130,21 @@ class Server(paa.Server[InherAux, SynthAux]):
         method_type = lookup_field_type(rand_type, method_name, inher_aux)
         return_type = AnyType()
         if isinstance(method_type, FunctionType):
-            compatible = check_application_args(
-                [], {}, 
-                method_type, inher_aux
+            self.check(ApplyArgTypeCheck(), lambda: 
+                check_application_args(
+                    [], {}, 
+                    method_type, inher_aux
+                )
             )
 
-            self.check(ApplyArgTypeCheck(), lambda: compatible)
+        elif isinstance(method_type, InterType):
+            self.check(ApplyArgTypeCheck(), lambda: 
+                self.match_function_type(
+                    inher_aux,
+                    [], {}, 
+                    method_type
+                ) != None
+            )
         else:
             return_type = AnyType() 
 
@@ -2460,6 +2539,16 @@ class Server(paa.Server[InherAux, SynthAux]):
 
                 self.check(ApplyArgTypeCheck(), lambda: compatible)
 
+            elif isinstance(method_type, InterType):
+                chosen_method_type = self.match_function_type(
+                    inher_aux,
+                    [right_type], {}, 
+                    method_type
+                ) 
+                self.check(ApplyArgTypeCheck(), lambda: 
+                    chosen_method_type != None
+                )
+
             # update:
             left_type = right_type
 
@@ -2481,7 +2570,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
+            self.check(ApplyArgTypeCheck(), lambda: check_application_args((), {}, func_type, inher_aux))
             inferred_type = func_type.return_type
+        elif isinstance(func_type, InterType):
+            passing_func_type = self.match_function_type(inher_aux, (), {}, func_type) 
+            self.check(ApplyArgTypeCheck(), lambda: passing_func_type != None)
+            assert passing_func_type
+            inferred_type = passing_func_type.return_type
         elif isinstance(func_type, TypeType):
             inferred_type = func_type.content 
             self.check(ApplyRatorTypeCheck(), lambda:
@@ -2581,6 +2676,16 @@ class Server(paa.Server[InherAux, SynthAux]):
 
             expr_type = func_type.return_type
 
+        elif isinstance(func_type, InterType):
+            passing_func_type = self.match_function_type(inher_aux,
+                args_aux.observed_types,
+                args_aux.kw_types, 
+                func_type
+            ) 
+            self.check(ApplyArgTypeCheck(), lambda: passing_func_type != None)
+            assert passing_func_type
+            expr_type = passing_func_type.return_type
+
         elif isinstance(func_type, TypeType):
 
             self.check(ApplyRatorTypeCheck(), lambda: 
@@ -2633,7 +2738,6 @@ class Server(paa.Server[InherAux, SynthAux]):
                     # print(f"@@## init_type: {init_type}")
 
                     if isinstance(init_type, FunctionType):
-
                         self.check(ApplyArgTypeCheck(), lambda: 
                             check_application_args(
                                 args_aux.observed_types,
@@ -2641,6 +2745,16 @@ class Server(paa.Server[InherAux, SynthAux]):
                                 init_type, inher_aux
                             )
                         )
+
+                    elif isinstance(init_type, InterType):
+                        chosen_func_type = self.match_function_type(
+                            inher_aux, 
+                            args_aux.observed_types,
+                            args_aux.kw_types, 
+                            init_type
+                        ) 
+                        self.check(ApplyArgTypeCheck(), lambda: chosen_func_type != None)
+
                     else:
                         assert isinstance(init_type, AnyType) or init_type == None
 
@@ -2893,6 +3007,17 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_types = tuple([
                     method_type.return_type
                 ])
+
+            elif isinstance(method_type, InterType):
+                chosen_method_type = self.match_function_type(
+                    inher_aux, 
+                    [slice_type], {}, 
+                    method_type
+                ) 
+                self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
+                assert chosen_method_type
+
+                expr_types = (chosen_method_type.return_type,)
             else:
                 expr_types = (AnyType(),)
 
@@ -2933,11 +3058,13 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         # TODO: update to apply decorators from environment when inferring type
         id = content_tree
+
         expr_dec = lookup_declaration(inher_aux, id)
         assert expr_dec
 
         protocol = False
         types = ()
+
 
         expr_type = expr_dec.type
         if isinstance(expr_type, TypeType):
@@ -2952,7 +3079,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             id in inher_aux.nonlocal_env or
             id in inher_aux.global_env
         )
-
 
         return paa.Result[SynthAux](
             tree = pas.Name(content_tree),
@@ -3073,20 +3199,18 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-
+        nested_usages = self.update_nested_usages(
+            body_aux.decl_additions, 
+            body_aux.usage_additions, 
+            body_aux.nested_usages
+        )
 
         self.check(LookupDecCheck(), lambda: (
-            nested_usages := self.update_nested_usages(
-                body_aux.decl_additions, 
-                body_aux.usage_additions, 
-                body_aux.nested_usages
-            ),
-            us.every(nested_usages, lambda sym : 
-                not isinstance(
-                    from_static_path_to_declaration(inher_aux, f"builtins.{sym}"), 
-                    AnyType
-                )
-            )
+            (),
+            us.every(nested_usages, lambda sym : (
+                (dec := from_static_path_to_declaration(inher_aux, f"builtins.{sym}")),
+                not isinstance( dec.type, AnyType)
+            )[-1])
         )[-1])
 
         return paa.Result[SynthAux](
@@ -3218,29 +3342,39 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
         class_key = f"{inher_aux.external_path}.{internal_class_key}"
 
-        def expose_static_method_type(name : str, p : Declaration) -> type:
-            if not isinstance(p.type, FunctionType):
-                return p.type
+        def expose_static_method_type(name : str, decl : Declaration) -> type:
+            decl_type = decl.type
+            if isinstance(decl_type, InterType):
+                return InterType(type_components=tuple(
+                    expose_static_method_type(name, update_Declaration(decl,
+                        type = ft
+                    ))
+                    for ft in decl_type.type_components
 
-            for dt in p.decorator_types:
+                ))
+            elif not isinstance(decl.type, FunctionType):
+                return decl.type
+
+            for dt in decl.decorator_types:
                 if isinstance(dt, TypeType):
                     dt_class_key = get_class_key(dt.content)
                     if dt_class_key == "builtins.staticmethod":
-                        return p.type
+                        return decl.type
                     elif dt_class_key == "builtins.classmethod":
-                        return update_FunctionType(p.type,
-                            pos_kw_param_sigs=p.type.pos_kw_param_sigs[1:]
+                        return update_FunctionType(decl.type,
+                            pos_kw_param_sigs=decl.type.pos_kw_param_sigs[1:]
                         )
 
             if name == "__init__": 
+
                 # first param is for newly constructed self
-                assert len(p.type.pos_kw_param_sigs) > 0
-                return update_FunctionType(p.type,
-                    pos_kw_param_sigs=p.type.pos_kw_param_sigs[1:]
+                assert len(decl.type.pos_kw_param_sigs) > 0
+                return update_FunctionType(decl.type,
+                    pos_kw_param_sigs=decl.type.pos_kw_param_sigs[1:]
                 )
 
-            elif len(p.type.pos_kw_param_sigs) == 0:
-                return p.type 
+            elif len(decl.type.pos_kw_param_sigs) == 0:
+                return decl.type 
             else:
 
                 # check if type has been partially resolved in previous iteration of analysis
@@ -3253,14 +3387,28 @@ class Server(paa.Server[InherAux, SynthAux]):
                 ) 
                 self_instance_type = from_class_key_to_type(inher_aux, class_key, type_arg)
 
-                self_instance_param_sig = update_ParamSig(p.type.pos_kw_param_sigs[0], type = self_instance_type)
+                self_instance_param_sig = update_ParamSig(decl.type.pos_kw_param_sigs[0], type = self_instance_type)
 
-                return update_FunctionType(p.type,
-                    pos_kw_param_sigs=tuple([self_instance_param_sig]) + p.type.pos_kw_param_sigs[1:]
+                return update_FunctionType(decl.type,
+                    pos_kw_param_sigs=tuple([self_instance_param_sig]) + decl.type.pos_kw_param_sigs[1:]
                 )
 
         def expose_instance_method_type(p : Declaration) -> Optional[type]:
-            if not isinstance(p.type, FunctionType):
+
+            p_type = p.type
+            if isinstance(p_type, InterType):
+
+                fts = tuple(
+                    expose_instance_method_type(update_Declaration(p, type = ft))
+                    for ft in p_type.type_components
+                )
+                if us.exists(fts, lambda ft: ft == None):
+                    return None
+                fts = tuple(ft for ft in fts if ft != None) 
+
+                return InterType(type_components=fts)
+
+            elif not isinstance(p.type, FunctionType):
                 return None 
 
             for dt in p.decorator_types:
@@ -3283,6 +3431,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             name : expose_static_method_type(name, p)
             for name, p in body_aux.decl_additions.items()
         })
+
 
         instance_fields : PMap[str, type] = pmap({
             k : t 
@@ -3339,30 +3488,59 @@ class Server(paa.Server[InherAux, SynthAux]):
         fun_decls = fun_def_aux.decl_additions.items()
         assert len(fun_decls) == 1
 
-        (name, dec) = next(p for p in fun_decls)
+        (name, decl) = next(p for p in fun_decls)
+        assert decl.constant
 
-        type = dec.type
+        ####### update overloaded type 
+        prev_decl = inher_aux.local_env.get(name)
+        assert not prev_decl or not prev_decl.overloading or isinstance(prev_decl.type, InterType)
 
-        ####### replace overloaded def with AnyType() as temporary kludge
-        for dt in decs_aux.observed_types:
-            if isinstance(dt, OverloadType):
-                 type = AnyType() 
+        overloaded_types = (
+            prev_decl.type.type_components + (decl.type,)
+            if prev_decl and prev_decl.overloading and isinstance(prev_decl.type, InterType) else 
+            (decl.type,)
+        ) 
+
+        if us.exists(decs_aux.observed_types, lambda dt :
+            isinstance(dt, OverloadType)
+        ):
+
+            decl = update_Declaration(decl,
+                annotated = prev_decl and prev_decl.annotated or decl.annotated,
+                # type = AnyType(), 
+                type = InterType(type_components=overloaded_types), 
+                decorator_types = (prev_decl and prev_decl.decorator_types or ()) + decs_aux.observed_types,
+                overloading = True
+            )
+
+        else:
+            # TODO: check that prev_decl's overload's params and return types subsume decl.type's
+            if prev_decl and prev_decl.overloading:
+            # if False: 
+                decl = update_Declaration(decl,
+                    # type = AnyType(), 
+                    type = InterType(type_components=overloaded_types),
+                    annotated = prev_decl and prev_decl.annotated or decl.annotated,
+                    decorator_types = decs_aux.observed_types,
+                    overloading = False
+                )
+            else:
+                decl = update_Declaration(decl,
+                    decorator_types = decs_aux.observed_types,
+                    overloading = False
+                )
         #######
 
-        env_additions = pmap({
-            name : make_Declaration(
-                annotated=dec.annotated,
-                constant = dec.constant,
-                initialized = dec.initialized, 
-                type = type,
-                decorator_types = decs_aux.observed_types   
-            )
-        })
+
+
+
 
         return paa.Result[SynthAux](
             tree = pas.DecFunctionDef(decs_tree, fun_def_tree),
-            aux = make_SynthAux(
-                decl_additions = env_additions
+            aux = update_SynthAux(fun_def_aux,
+                decl_additions = pmap({
+                    name : decl
+                })
             ) 
         )
 
@@ -3876,6 +4054,15 @@ class Server(paa.Server[InherAux, SynthAux]):
                 subsumed(method_type.return_type, target_type, inher_aux)
             )
 
+        elif isinstance(method_type, InterType):
+            chosen_method_type = self.match_function_type(
+                inher_aux,
+                [content_type], {}, 
+                method_type
+            ) 
+            self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
+
+
         if isinstance(target_tree, pas.Name):
             symbol = target_tree.content
 
@@ -3946,7 +4133,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         elif (
             inher_aux.external_path == "typing" and
             isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing._SpecialForm" and
+            sig_type.class_key == "typing._SpecialForm" and 
+            symbol == "Protocol"
+        ):
+            t = TypeType(sig_type.class_key, ProtocolType())
+            decl_additions = pmap({
+                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+            })
+        elif (
+            inher_aux.external_path == "typing_extensions" and
+            isinstance(sig_type, RecordType) and
+            sig_type.class_key == "typing_extensions._SpecialForm" and 
             symbol == "Protocol"
         ):
             t = TypeType(sig_type.class_key, ProtocolType())
@@ -4078,7 +4275,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             })
         )) 
 
-    
 
     # synthesize: stmt <-- For
     def synthesize_for_stmt_For(self, 
@@ -4091,11 +4287,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
+        usage_additions = filter_usage_additions(body_aux.usage_additions, target_aux.usage_additions, body_aux.decl_additions)
+
         return paa.Result[SynthAux](
             tree = pas.For(target_tree, iter_tree, body_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux])),
                 decl_subtractions = iter_aux.decl_subtractions, 
-                decl_additions= iter_aux.decl_additions
+                decl_additions = iter_aux.decl_additions,
+                usage_additions = usage_additions
             )
         )
 
@@ -4107,6 +4306,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         iter_tree : pas.expr, 
         iter_aux : SynthAux
     ) -> InherAux:
+
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
         return update_InherAux(inher_aux, local_env = (
@@ -4130,6 +4330,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
+
+        usage_additions = filter_usage_additions(body_aux.usage_additions, 
+            target_aux.usage_additions,
+            body_aux.decl_additions,
+            orelse_aux.decl_additions,
+        )
+
         change_decl : Change[Declaration] = cross_join_aux_decls(
             to_change_decl(body_aux), 
             to_change_decl(orelse_aux)
@@ -4138,7 +4345,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             tree = pas.ForElse(target_tree, iter_tree, body_tree, orelse_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
                 decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
-                decl_additions = iter_aux.decl_additions + change_decl.additions
+                decl_additions = iter_aux.decl_additions + change_decl.additions,
+                usage_additions = usage_additions
             )
         )
 
@@ -4170,6 +4378,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
+
+        usage_additions = filter_usage_additions(body_aux.usage_additions, 
+            target_aux.usage_additions,
+            body_aux.decl_additions,
+        )
+
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
         new_synth_aux = self.synthesize_auxes(tuple([iter_aux, body_aux]))
@@ -4183,7 +4397,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                         k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
-                )
+                ),
+                usage_additions=usage_additions
             )
         )
 
@@ -4213,6 +4428,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
+
+        usage_additions = filter_usage_additions(body_aux.usage_additions, 
+            target_aux.usage_additions,
+            body_aux.decl_additions,
+            orelse_aux.decl_additions
+        )
+
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
         change_decl : Change[Declaration] = cross_join_aux_decls(
@@ -4229,7 +4451,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                         k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
-                )
+                ),
+                usage_additions=usage_additions
             )
         )
 

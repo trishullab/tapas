@@ -1013,6 +1013,7 @@ class Declaration:
     initialized : bool
     type : type
     decorator_types : tuple[type, ...]
+    overloading : bool
 
 
 def make_Declaration(
@@ -1020,28 +1021,32 @@ def make_Declaration(
     constant : bool,
     initialized : bool = False,
     type : type = AnyType(),
-    decorator_types : tuple[type, ...] = ()
+    decorator_types : tuple[type, ...] = (),
+    overloading : bool = False
 ) -> Declaration:
     return Declaration(
         annotated,
         constant,
         initialized,
         type,
-        decorator_types)
+        decorator_types,
+        overloading)
 
 def update_Declaration(source_Declaration : Declaration,
     annotated : Union[bool, SourceFlag] = SourceFlag(),
     constant : Union[bool, SourceFlag] = SourceFlag(),
     initialized : Union[bool, SourceFlag] = SourceFlag(),
     type : Union[type, SourceFlag] = SourceFlag(),
-    decorator_types : Union[tuple[type, ...], SourceFlag] = SourceFlag()
+    decorator_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
+    overloading : Union[bool, SourceFlag] = SourceFlag()
 ) -> Declaration:
     return Declaration(
         source_Declaration.annotated if isinstance(annotated, SourceFlag) else annotated, 
         source_Declaration.constant if isinstance(constant, SourceFlag) else constant, 
         source_Declaration.initialized if isinstance(initialized, SourceFlag) else initialized, 
         source_Declaration.type if isinstance(type, SourceFlag) else type, 
-        source_Declaration.decorator_types if isinstance(decorator_types, SourceFlag) else decorator_types)
+        source_Declaration.decorator_types if isinstance(decorator_types, SourceFlag) else decorator_types, 
+        source_Declaration.overloading if isinstance(overloading, SourceFlag) else overloading)
 
     
 

@@ -293,17 +293,23 @@ def test_054_ok():
 def test_055_error():
     code, aux = analyze("055_error", 9)
     # print(code)
-    # print(json.dumps(pals.from_env_to_primitive(aux.local_env), indent=4))
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     t = aux.local_env.get('type')
     assert t
     assert isinstance(t.type, pals.IntLitType)
     with pytest.raises(pals.ApplyRatorTypeCheck):
         analyze("055_error", 10)
 
+def test_055_1_ok():
+    analyze("055_1_ok")
+
+def test_055_2_ok():
+    analyze("055_2_ok")
+
 def test_056_error():
     code, aux = analyze("056_error", 8)
     # print(code)
-    # print(json.dumps(pals.from_env_to_primitive(aux.local_env), indent=4))
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     f = aux.local_env.get('f')
     assert f 
     assert isinstance(f.type, pals.IntLitType)
@@ -313,16 +319,24 @@ def test_056_error():
 def test_057_error():
     code, aux = analyze("057_error", 9)
     # print(code)
-    # print(json.dumps(pals.from_env_to_primitive(aux.local_env), indent=4))
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     i = aux.local_env.get('i')
     assert i == None 
     with pytest.raises(pals.LookupDecCheck):
         analyze("057_error")
 
+def test_057_1_error():
+    with pytest.raises(pals.LookupDecCheck):
+        analyze("057_1_error")
+
+def test_057_2_error():
+    with pytest.raises(pals.LookupDecCheck):
+        analyze("057_2_error")
+
 def test_058_ok():
     code, aux = analyze("058_ok", 5)
     # print(code)
-    # print(json.dumps(pals.from_env_to_primitive(aux.local_env), indent=4))
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     x = aux.local_env.get('x')
     assert x
     x_type = x.type
@@ -347,7 +361,7 @@ def test_059_ok():
 def test_060_ok():
     code, aux = analyze("060_ok", 4)
     # print(code)
-    # print(json.dumps(pals.from_env_to_primitive(aux.local_env), indent=4))
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     foo = aux.local_env.get('foo')
     assert foo
     foo_type = foo.type
@@ -359,13 +373,66 @@ def test_060_ok():
 def test_061_ok():
     code, aux = analyze("061_ok", 2)
     # print(code)
-    # print(json.dumps(pals.from_env_to_primitive(aux.local_env), indent=4))
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     final_str = aux.local_env.get('final_str')
     assert final_str 
     final_str_type = final_str.type
     assert isinstance(final_str_type, pals.RecordType)
     assert final_str_type.class_key == "builtins.str"
 
+def test_062_ok():
+    analyze("062_ok")
+
+def test_063_error():
+    with pytest.raises(pals.LookupDecCheck):
+        analyze("063_error")
+
+def test_064_ok():
+    analyze("064_ok")
+
+def test_065_ok():
+    code_pre, aux_pre = analyze("065_ok", 2)
+    # print(code_pre)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
+    xs_pre = aux_pre.local_env.get('xs')
+    il = pals.IntLitType
+    assert xs_pre 
+    assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
+
+    code_post, aux_post = analyze("065_ok", 3)
+    # print(code_post)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
+    xs_post = aux_post.local_env.get('xs')
+    il = pals.IntLitType
+    assert xs_post 
+    assert xs_post.type == pals.make_RecordType(
+        class_key="builtins.list",
+        type_args=(pals.make_RecordType(class_key="builtins.int"),)
+    )
+
+def test_066_ok():
+    code_pre, aux_pre = analyze("066_ok", 2)
+    # print(code_pre)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
+    xs_pre = aux_pre.local_env.get('xs')
+    il = pals.IntLitType
+    assert xs_pre 
+    assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
+
+    code_post, aux_post = analyze("066_ok", 3)
+    xs_post = aux_post.local_env.get('xs')
+    # print(code_post)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
+    assert xs_post 
+    xs_post_type = xs_post.type
+    assert (
+        isinstance(xs_post_type, pals.RecordType) and
+        xs_post_type.class_key == "builtins.list" and
+        pals.make_RecordType(class_key="builtins.int") in xs_post_type.type_args and
+        pals.make_RecordType(class_key="builtins.str") in xs_post_type.type_args
+    )
+
 
 if __name__ == "__main__":
+    # analyze("055_2_ok")
     pass

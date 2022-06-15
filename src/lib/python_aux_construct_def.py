@@ -94,7 +94,8 @@ singles = [
         Field("constant", "bool", ""), # def/class are constant; assignment is not constant
         Field("initialized", "bool", "False"),
         Field("type", "type", "AnyType()"),
-        Field("decorator_types", "tuple[type, ...]", "()")
+        Field("decorator_types", "tuple[type, ...]", "()"),
+        Field("overloading", "bool", "False")
     ]),
 
     Constructor("Usage", [], [
