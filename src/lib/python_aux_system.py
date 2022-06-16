@@ -645,7 +645,7 @@ def lookup_static_field_type(class_record : ClassRecord, field_name : str, inher
         return result
     else:
         super_class_type_unresolved = False
-        for st in reversed(class_record.super_types):
+        for st in class_record.super_types:
             super_class_type = infer_class_record(st, inher_aux)
             if super_class_type:
                 result = lookup_static_field_type(super_class_type, field_name, inher_aux)
@@ -682,7 +682,7 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
             if result:
                 return result 
             else:
-                for super_type in reversed(class_record.super_types):
+                for super_type in class_record.super_types:
                     result = lookup_field_type(super_type.content, field_name, inher_aux)
                     if result:
                         return result
@@ -854,7 +854,7 @@ def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux)
         })
 
         # print(f"## super_types : {class_record.super_types}")
-        for super_type in reversed(class_record.super_types):
+        for super_type in class_record.super_types:
             super_type = substitute_type_args(super_type, substitution_map)
             result = get_iterable_item_type(super_type, inher_aux)
             if result:

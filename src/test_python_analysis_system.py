@@ -432,7 +432,20 @@ def test_066_ok():
         pals.make_RecordType(class_key="builtins.str") in xs_post_type.type_args
     )
 
+def test_067_ok():
+    code, aux = analyze("067_ok", 4)
+    # print(code)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    assert 'x' in aux.local_env
+    code, aux = analyze("067_ok", 7)
+    # print(code)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    assert 'x' not in aux.local_env
+    assert 'self' in aux.local_env
+
+def test_068_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("068_error")
 
 if __name__ == "__main__":
-    # analyze("055_2_ok")
     pass
