@@ -384,7 +384,7 @@ def test_062_ok():
     analyze("062_ok")
 
 def test_063_error():
-    with pytest.raises(pals.LookupDecCheck):
+    with pytest.raises(pals.AssignTypeCheck):
         analyze("063_error")
 
 def test_064_ok():
@@ -446,6 +446,9 @@ def test_067_ok():
 def test_068_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
         analyze("068_error")
+
+def test_069_ok():
+    analyze("069_ok")
 
 if __name__ == "__main__":
     pass

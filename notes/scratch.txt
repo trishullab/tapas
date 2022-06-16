@@ -1,4 +1,0 @@
-----------------------------
-FAILED src/test_python_analysis_system.py::test_055_error - AssertionError
-FAILED src/test_python_analysis_system.py::test_056_error - AssertionError
-FAILED src/test_python_analysis_system.py::test_057_error - AssertionError

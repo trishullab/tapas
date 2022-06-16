@@ -3495,15 +3495,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         prev_decl = inher_aux.local_env.get(name)
         assert not prev_decl or not prev_decl.overloading or isinstance(prev_decl.type, InterType)
 
-        overloaded_types = (
-            prev_decl.type.type_components + (decl.type,)
-            if prev_decl and prev_decl.overloading and isinstance(prev_decl.type, InterType) else 
-            (decl.type,)
-        ) 
-
         if us.exists(decs_aux.observed_types, lambda dt :
             isinstance(dt, OverloadType)
         ):
+
+            overloaded_types = (
+                prev_decl.type.type_components + (decl.type,)
+                if prev_decl and prev_decl.overloading and isinstance(prev_decl.type, InterType) else 
+                (decl.type,)
+            ) 
 
             decl = update_Declaration(decl,
                 annotated = prev_decl and prev_decl.annotated or decl.annotated,
@@ -3514,12 +3514,11 @@ class Server(paa.Server[InherAux, SynthAux]):
             )
 
         else:
-            # TODO: check that prev_decl's overload's params and return types subsume decl.type's
             if prev_decl and prev_decl.overloading:
-            # if False: 
+                # TODO: check that prev_decl.types' params and return types subsume decl.type's params and return types
                 decl = update_Declaration(decl,
                     # type = AnyType(), 
-                    type = InterType(type_components=overloaded_types),
+                    type = prev_decl.type,
                     annotated = prev_decl and prev_decl.annotated or decl.annotated,
                     decorator_types = decs_aux.observed_types,
                     overloading = False
