@@ -2,6 +2,7 @@ LICENSE
 README.md
 setup.py
 src/res/__init__.py
+src/res/typeshed_object
 src/tapas_base/__init__.py
 src/tapas_base/abstract_token_construct_autogen.py
 src/tapas_base/abstract_token_construct_def.py
