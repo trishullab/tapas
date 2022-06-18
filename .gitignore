@@ -3,7 +3,7 @@ workspace.code-workspace
 env
 build
 dist/**
-src/tapas-utaustin.egg	
+src/tapas_utaustin.egg-info/**
 src/tapas_res/typeshed_object
 src/tapas_res/grammars.so
 src/tapas_res/apps/**
