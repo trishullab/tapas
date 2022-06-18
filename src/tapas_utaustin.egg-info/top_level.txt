@@ -1,3 +1,0 @@
-tapas_base
-tapas_lib
-tapas_res
