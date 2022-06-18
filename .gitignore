@@ -2,7 +2,7 @@
 workspace.code-workspace
 env
 build
-res/apps/**
-res/py150/**
-res/cubert/**
+src/res/apps/**
+src/res/py150/**
+src/res/cubert/**
 .DS_Store
