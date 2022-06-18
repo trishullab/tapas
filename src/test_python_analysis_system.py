@@ -15,7 +15,7 @@ import pytest
 package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()
 
 def load_source(name : str) -> str:
-    path = us.project_path(f"res/python/{name}.py")
+    path = us.project_path(f"tapas_res/python/{name}.py")
     with open(path, 'r') as f:
         return f.read()
 

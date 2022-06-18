@@ -1308,13 +1308,14 @@ def analyze_modules_fixpoint(
 
 def analyze_typeshed_cache(cache : bool = True):
     return (
-        us.load_object('res/typeshed_object')
-        if cache and os.path.exists(us.project_path('res/typeshed_object')) else
-        us.save_object(analyze_typeshed(), 'res/typeshed_object')
+        us.load_object('tapas_res/typeshed_object')
+        if cache and os.path.exists(us.project_path('tapas_res/typeshed_object')) else
+        us.save_object(analyze_typeshed(), 'tapas_res/typeshed_object')
     )
 
 def analyze_typeshed() -> PMap[str, ModulePackage]:
-    stdlib_dirpath = us.project_path("res/typeshed/stdlib")
+    stdlib_dirpath = us.project_path("tapas_res/typeshed/stdlib")
+    print(f"stdlib_dirpath: {stdlib_dirpath}")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
 
     package : PMap[str, ModulePackage] = m()

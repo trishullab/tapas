@@ -9,7 +9,7 @@ from tapas_base import util_system as us
 
 Language.build_library(
     # Store the library in the `build` directory
-    us.project_path('res/grammars.so'),
+    us.project_path('tapas_res/grammars.so'),
 
     # Include one or more languages
     [

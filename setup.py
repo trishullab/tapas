@@ -1,4 +1,8 @@
 import setuptools
+import os
+import pathlib
+
+from src.tapas_base import util_system as us
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -21,10 +25,9 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    packages=(x := setuptools.find_packages(where="src"), print(x), x)[-1],
     python_requires=">=3.6",
     package_data = {
-        'res': ['*'],
-        'build': ['*'],
+        'tapas_res': us.all_paths(us.project_path('tapas_res'))
     }
 )

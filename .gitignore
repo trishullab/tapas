@@ -3,8 +3,10 @@ workspace.code-workspace
 env
 build
 dist/**
-src/res/grammars.so
-src/res/apps/**
-src/res/py150/**
-src/res/cubert/**
+src/tapas-utaustin.egg	
+src/tapas_res/typeshed_object
+src/tapas_res/grammars.so
+src/tapas_res/apps/**
+src/tapas_res/py150/**
+src/tapas_res/cubert/**
 .DS_Store

@@ -77,7 +77,7 @@ def generate_file(
 
     count_map : PMap[str, int] = m() 
 
-    concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
+    concrete_data_dirpath = project_path(f"tapas_res/{dirname}/{concrete_dir_name}")
 
     logging.basicConfig(level=logging.INFO)
 
@@ -85,7 +85,7 @@ def generate_file(
 
     abstract_data_base = name.split(".")[0]  
 
-    abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{dir_count}")
+    abstract_data_dirpath = project_path(f"tapas_res/{dirname}/abstract_data_{dir_count}")
     write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', '')
 
     from datetime import datetime
@@ -199,7 +199,7 @@ def generate_file_tuple(tup) -> dict[str, Any]:
     return stats
 
 def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
-    concrete_data_dirpath = project_path(f"res/{dirname}/{concrete_dir_name}")
+    concrete_data_dirpath = project_path(f"tapas_res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
     concrete_data_file_names : list[str] = sorted(os.listdir(concrete_data_dirpath))
@@ -211,7 +211,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
         # skip chunks
         # if i in [0]: continue 
 
-        abstract_data_dirpath = project_path(f"res/{dirname}/abstract_data_{i}")
+        abstract_data_dirpath = project_path(f"tapas_res/{dirname}/abstract_data_{i}")
         write(abstract_data_dirpath, f'vocab.json', '')
     
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))

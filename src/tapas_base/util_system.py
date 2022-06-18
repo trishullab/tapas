@@ -75,14 +75,18 @@ import pathlib
 
 # logging.basicConfig(level=logging.INFO)
 
-# import importlib.resources
-# def package_path(package : str, path : str) -> str:
-#     with importlib.resources.path(package, path) as p:
-#         return str(p)
 
 def project_path(rel_path : str):
     base_path = os.path.join(pathlib.Path(__file__).parent.absolute(), '..')
     return os.path.abspath(os.path.join(base_path, rel_path))
+
+def all_paths(base_root : str) -> list[str]:
+    paths = []
+    for root,_,files in os.walk(base_root, topdown=True):
+        prefix = root[len(base_root) + 1:]
+        for f in files:
+            paths.append(prefix + '/' + f)
+    return paths
 
 
 def write(dirpath : str, fname : str, code : str, append : bool = False):
@@ -137,4 +141,3 @@ def load_object(rel_file : str) -> Any:
     path = project_path(rel_file)
     with open(path, 'rb') as f:
         return pickle.load(f)
-

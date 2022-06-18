@@ -15,7 +15,7 @@ def run_concrete(concrete : str):
 
 
 import os
-dirpath = util_system.project_path("res/test/python/concrete_data")
+dirpath = util_system.project_path("tapas_res/test/python/concrete_data")
 
 def test_cubert():
     return util_system.run_jsonl_file(os.path.join(dirpath, "cubert_583.jsonl"), run_concrete)
