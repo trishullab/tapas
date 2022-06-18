@@ -10,6 +10,9 @@ from pyrsistent import pmap, m, pset, s, PMap, PSet
 
 from queue import Queue
 import os
+import pickle
+
+from importlib import resources
 
 from tapas_base.line_format_construct_autogen import InLine, NewLine, IndentLine
 from tapas_base.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
@@ -1303,16 +1306,17 @@ def analyze_modules_fixpoint(
     return out_package
 
 
+import importlib.resources
+
 def analyze_typeshed_cache(cache : bool = True):
-    typeshed_cache = 'res/typeshed_object'
     return (
-        us.load_object(typeshed_cache)
-        if cache and os.path.exists(us.project_path(typeshed_cache)) else
-        us.save_object(analyze_typeshed(), typeshed_cache)
+        us.load_object('res', 'typeshed_object')
+        if cache and importlib.resources.is_resource('res', 'typeshed_object') else
+        us.save_object(analyze_typeshed(), 'res/typeshed_object')
     )
 
 def analyze_typeshed() -> PMap[str, ModulePackage]:
-    stdlib_dirpath = us.project_path(f"../typeshed/stdlib")
+    stdlib_dirpath = us.project_path("res/typeshed/stdlib")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
 
     package : PMap[str, ModulePackage] = m()

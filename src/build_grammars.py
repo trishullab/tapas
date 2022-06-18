@@ -14,6 +14,6 @@ Language.build_library(
     # Include one or more languages
     [
         # 'vendor/tree-sitter-python'
-        us.project_path('../tree-sitter-python/')
+        us.project_path('../../tree-sitter-python/')
     ]
 )

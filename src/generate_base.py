@@ -5,8 +5,8 @@ from tapas_base import line_format_construct_def
 from tapas_base import abstract_token_construct_def
 from tapas_base import rule_construct_def
 
-write_code('base', "rule_construct", rule_construct_def.generate_content())
+write_code('tapas_base', "rule_construct", rule_construct_def.generate_content())
 
-write_code('base', "line_format_construct", line_format_construct_def.generate_content())
+write_code('tapas_base', "line_format_construct", line_format_construct_def.generate_content())
 
-write_code('base', "abstract_token_construct", abstract_token_construct_def.generate_content())
+write_code('tapas_base', "abstract_token_construct", abstract_token_construct_def.generate_content())

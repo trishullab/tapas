@@ -6,8 +6,6 @@ from collections.abc import Callable
 
 from abc import ABC, abstractmethod
 
-import inflection
-
 from tapas_base.rule_construct_autogen import *
 from tapas_base import construct_def
 from tapas_base import line_format_system as lf
