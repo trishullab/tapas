@@ -2,7 +2,8 @@
 workspace.code-workspace
 env
 build
-dist	
+dist/**
+src/res/grammars.so
 src/res/apps/**
 src/res/py150/**
 src/res/cubert/**
