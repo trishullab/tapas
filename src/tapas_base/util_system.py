@@ -83,9 +83,13 @@ def project_path(rel_path : str):
 def all_paths(base_root : str) -> list[str]:
     paths = []
     for root,_,files in os.walk(base_root, topdown=True):
-        prefix = root[len(base_root) + 1:]
+        prefix = (
+            ""
+            if root == base_root else
+	    root[len(base_root) + 1:] + '/'
+        )
         for f in files:
-            paths.append(prefix + '/' + f)
+            paths.append(prefix + f)
     return paths
 
 
