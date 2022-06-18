@@ -2,6 +2,7 @@
 workspace.code-workspace
 env
 build
+dist	
 src/res/apps/**
 src/res/py150/**
 src/res/cubert/**
