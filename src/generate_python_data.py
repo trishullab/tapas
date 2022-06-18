@@ -1,5 +1,5 @@
-from lib import python_aux_system as pals
-from lib import python_data_system
+from tapas_lib import python_aux_system as pals
+from tapas_lib import python_data_system
 
 if __name__ == "__main__":
 

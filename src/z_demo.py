@@ -1,9 +1,9 @@
-from base import util_system as us 
-from base import abstract_token_system as ats 
-from lib import python_abstract_token_system as pats 
-from lib import python_ast_system as pas
-from lib import python_aux_system as pals
-from lib import python_generic_tree_system as pgs
+from tapas_base import util_system as us 
+from tapas_base import abstract_token_system as ats 
+from tapas_lib import python_abstract_token_system as pats 
+from tapas_lib import python_ast_system as pas
+from tapas_lib import python_aux_system as pals
+from tapas_lib import python_generic_tree_system as pgs
 import json
 
 from pyrsistent.typing import PMap

@@ -1,7 +1,7 @@
 from datasets import load_dataset
 import requests
 import re
-from base.util_system import write, project_path
+from tapas_base.util_system import write, project_path
 
 
 # split = 'train', 'test', or 'validation'

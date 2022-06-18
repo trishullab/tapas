@@ -1,11 +1,11 @@
 from typing import Callable, Any
-from base import util_system
+from tapas_base import util_system
 from tree_sitter import Language
 
-from lib import generic_tree_system
+from tapas_lib import generic_tree_system
 
-from lib import python_ast_system
-from lib.generic_tree_system import GenericNode
+from tapas_lib import python_ast_system
+from tapas_lib.generic_tree_system import GenericNode
 
 
 def run_concrete(concrete : str):

@@ -1,12 +1,12 @@
-from base import abstract_token_system
-from base import util_system
+from tapas_base import abstract_token_system
+from tapas_base import util_system
 import json
 
 
 
-from base import abstract_token_system as ats
-from lib import python_abstract_token_system as pats
-from lib import python_ast_system as pas
+from tapas_base import abstract_token_system as ats
+from tapas_lib import python_abstract_token_system as pats
+from tapas_lib import python_ast_system as pas
 def concretize_ptokens(ptoks : list[str]) -> str:
 
     triples = [ptoks[i:i + 3] for i in range(0, len(ptoks), 3)]

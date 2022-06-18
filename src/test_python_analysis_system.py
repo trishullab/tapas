@@ -1,24 +1,18 @@
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
-from lib import python_aux_system as pals
-from lib import python_ast_system as pas
-from lib import python_generic_tree_system as pgs 
-from lib import python_abstract_token_system as pats
-from base import abstract_token_system as ats
-from base import util_system as us
+from tapas_lib import python_aux_system as pals
+from tapas_lib import python_ast_system as pas
+from tapas_lib import python_generic_tree_system as pgs 
+from tapas_lib import python_abstract_token_system as pats
+from tapas_base import abstract_token_system as ats
+from tapas_base import util_system as us
 
 import os.path
 
 import json
 import pytest
 
-typeshed_cache = 'res/typeshed_object'
-package : PMap[str, pals.ModulePackage] = (
-    us.load_object(typeshed_cache)
-    if os.path.exists(us.project_path(typeshed_cache)) else
-    # if False else
-    us.save_object(pals.analyze_typeshed(), typeshed_cache)
-)
+package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()
 
 def load_source(name : str) -> str:
     path = us.project_path(f"res/python/{name}.py")
@@ -451,4 +445,5 @@ def test_069_ok():
     analyze("069_ok")
 
 if __name__ == "__main__":
+    # analyze("example")
     pass

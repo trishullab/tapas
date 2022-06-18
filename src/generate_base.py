@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from base.util_system import write_code
-from base import line_format_construct_def
-from base import abstract_token_construct_def
-from base import rule_construct_def
+from tapas_base.util_system import write_code
+from tapas_base import line_format_construct_def
+from tapas_base import abstract_token_construct_def
+from tapas_base import rule_construct_def
 
 write_code('base', "rule_construct", rule_construct_def.generate_content())
 

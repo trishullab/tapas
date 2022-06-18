@@ -19,3 +19,4 @@ def foo(input_: int | Sequence[int]) -> int | list[int]:
 
 x : int = foo(4)
 ys : list[int] = foo([1,2,3])
+
