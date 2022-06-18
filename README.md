@@ -57,6 +57,16 @@ run this script to create `build/grammars.so`
 pytest -v src/test_python_analysis_system.py
 ```
 
+### Create local distribution 
+```bash
+python setup.py install
+```
+
+### Install package locally 
+```bash
+pip install <local_path_to_repo>
+```
+
 ## Transliteration
 ```python
 from lib import python_generic_tree_system as pgs 
