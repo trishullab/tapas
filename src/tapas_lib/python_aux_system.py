@@ -1223,15 +1223,15 @@ def analyze_modules_once(
     for i, file_path in enumerate(file_paths):
 
         file_path_split = file_path.split(".") 
-        if file_path_split[1] != "pyi": continue 
-        module_segments = file_path_split[0][package_start:].split("/")
+        if file_path_split[-1] != "pyi": continue 
+        module_segments = file_path[:-4][package_start:].split("/")
         module_path = (
             ".".join(module_segments[:-1])
             if module_segments[-1] == "__init__" else
             ".".join(module_segments)
         )
-        assert path.isfile(file_path)
 
+        assert path.isfile(file_path)
 
         checks = (
             all_checks
@@ -1243,6 +1243,7 @@ def analyze_modules_once(
 
         try:
             with open(file_path) as f:
+
                 code = f.read().strip()
                 if code:
                     package = analyze_code(package, module_path, code, checks=checks)

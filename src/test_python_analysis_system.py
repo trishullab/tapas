@@ -7,9 +7,6 @@ from tapas_lib import python_abstract_token_system as pats
 from tapas_base import abstract_token_system as ats
 from tapas_base import util_system as us
 
-import os.path
-
-import json
 import pytest
 
 package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()

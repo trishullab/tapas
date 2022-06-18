@@ -12,7 +12,7 @@ setuptools.setup(
     version="0.0.1",
     author="Thomas Logan",
     author_email="thomas.logan.atx@gmail.com",
-    description="A small example package",
+    description="A language analysis and synthesis system",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/trishullab/tapas",

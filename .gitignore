@@ -4,7 +4,6 @@ env
 build
 dist/**
 src/tapas_utaustin.egg-info/**
-src/tapas_res/typeshed_object
 src/tapas_res/grammars.so
 src/tapas_res/apps/**
 src/tapas_res/py150/**
