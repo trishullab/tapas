@@ -75,10 +75,10 @@ import pathlib
 
 # logging.basicConfig(level=logging.INFO)
 
-import importlib.resources
-def package_path(package : str, path : str) -> str:
-    with importlib.resources.path(package, path) as p:
-        return str(p)
+# import importlib.resources
+# def package_path(package : str, path : str) -> str:
+#     with importlib.resources.path(package, path) as p:
+#         return str(p)
 
 def project_path(rel_path : str):
     base_path = os.path.join(pathlib.Path(__file__).parent.absolute(), '..')
@@ -133,8 +133,8 @@ def save_object(o : Any, rel_path : str) -> Any:
         pickle.dump(o, f)
     return o
 
-def load_object(package : str, file : str) -> Any:
-    path = package_path(package, file)
+def load_object(rel_file : str) -> Any:
+    path = project_path(rel_file)
     with open(path, 'rb') as f:
         return pickle.load(f)
 

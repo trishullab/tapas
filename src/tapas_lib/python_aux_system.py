@@ -1306,12 +1306,10 @@ def analyze_modules_fixpoint(
     return out_package
 
 
-import importlib.resources
-
 def analyze_typeshed_cache(cache : bool = True):
     return (
-        us.load_object('res', 'typeshed_object')
-        if cache and importlib.resources.is_resource('res', 'typeshed_object') else
+        us.load_object('res/typeshed_object')
+        if cache and os.path.exists(us.project_path('res/typeshed_object')) else
         us.save_object(analyze_typeshed(), 'res/typeshed_object')
     )
 

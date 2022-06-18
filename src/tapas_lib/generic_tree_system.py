@@ -90,7 +90,7 @@ import os
 base_path = pathlib.Path(__file__).parent.absolute()
 
 def parse(lang_name : str, source : str, encoding : str) -> GenericNode:
-    grammars_path = util_system.project_path('build/grammars.so')
+    grammars_path = util_system.project_path('res/grammars.so')
     grammar = Language(grammars_path, lang_name)
 
     parser = tree_sitter.Parser()
