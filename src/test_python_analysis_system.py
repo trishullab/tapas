@@ -523,6 +523,4 @@ def test_079_error():
         analyze("079_error")
 
 if __name__ == "__main__":
-    code, aux = analyze("075_1_error")
-    print(code)
     pass
