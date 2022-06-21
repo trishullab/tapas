@@ -89,9 +89,9 @@ def to_parameters_d(
     kw_params : list[Param | None], 
     dictionary_splat_param : Param | None
 ) -> parameters_d:
-    assert kw_params or dictionary_splat_param
+    assert kw_params
     (result, kw_params) = (
-        (DictionarySplatParam(dictionary_splat_param), kw_params)
+        (TransKwParam(kw_params[-1], dictionary_splat_param), kw_params[:-1])
         if dictionary_splat_param else
 
         (SingleKwParam(kw_params[-1]), kw_params[:-1])
@@ -108,13 +108,18 @@ def to_parameters_c(
     kw_params : list[Param | None], 
     dictionary_splat_param : Param | None
 ) -> parameters_c:
-    if (list_splat_param and (kw_params or dictionary_splat_param)):
-        return TransListSplatParam(list_splat_param, 
+    if list_splat_param and kw_params:
+        return TransTupleBundleParam(list_splat_param, 
             to_parameters_d(kw_params, dictionary_splat_param)
         )
-    elif (list_splat_param and not (kw_params or dictionary_splat_param)):
-        return SingleListSplatParam(list_splat_param)
+    elif list_splat_param and not kw_params and not dictionary_splat_param:
+        return SingleTupleBundleParam(list_splat_param)
+    elif list_splat_param and not kw_params and dictionary_splat_param:
+        return DoubleBundleParam(list_splat_param, dictionary_splat_param)
+    elif not list_splat_param and not kw_params and dictionary_splat_param:
+        return DictionaryBundleParam(dictionary_splat_param)
     else:
+        #  not list_splat_param and kw_params:
         return ParamsD(to_parameters_d(kw_params, dictionary_splat_param))
 
 
@@ -1266,7 +1271,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             else (
                 children[0:list_splat_index], 
                 children[list_splat_index], 
-                children[list_splat_index + 1: -1], 
+                children[list_splat_index + 1:], 
                 None
             )
             if list_splat_index >= 0 and dictionary_splat_index < 0
@@ -1311,7 +1316,6 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
         ]
 
         dictionary_splat_param = from_generic_tree_to_Param(dictionary_splat_node) if dictionary_splat_node else None
-
 
         return to_parameters(pos_params, pos_kw_params, list_splat_param, kw_params, dictionary_splat_param)
 

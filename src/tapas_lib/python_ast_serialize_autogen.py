@@ -280,14 +280,16 @@ def from_parameters_d(
                 )
     
 
-            def handle_DictionarySplatParam(o : DictionarySplatParam): 
+            def handle_TransKwParam(o : TransKwParam): 
                 
-                stack.append(from_Param(o.content))
+                stack.append(from_Param(o.tail))
 
+
+                stack.append(from_Param(o.head))
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
-                        selection = 'DictionarySplatParam'
+                        selection = 'TransKwParam'
                     )])
                 )
     
@@ -296,7 +298,7 @@ def from_parameters_d(
             match_parameters_d(stack_item, ParametersDHandlers(
                 case_ConsKwParam = handle_ConsKwParam,
                 case_SingleKwParam = handle_SingleKwParam,
-                case_DictionarySplatParam = handle_DictionarySplatParam
+                case_TransKwParam = handle_TransKwParam
             ))
 
         elif stack_item == None:
@@ -322,19 +324,19 @@ def from_parameters_c(
         if isinstance(stack_item, parameters_c):
 
             
-            def handle_SingleListSplatParam(o : SingleListSplatParam): 
+            def handle_SingleTupleBundleParam(o : SingleTupleBundleParam): 
                 
                 stack.append(from_Param(o.content))
 
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'SingleListSplatParam'
+                        selection = 'SingleTupleBundleParam'
                     )])
                 )
     
 
-            def handle_TransListSplatParam(o : TransListSplatParam): 
+            def handle_TransTupleBundleParam(o : TransTupleBundleParam): 
                 
                 stack.append(from_parameters_d(o.tail))
 
@@ -344,7 +346,7 @@ def from_parameters_c(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'TransListSplatParam'
+                        selection = 'TransTupleBundleParam'
                     )])
                 )
     
@@ -361,11 +363,40 @@ def from_parameters_c(
                 )
     
 
+            def handle_DoubleBundleParam(o : DoubleBundleParam): 
+                
+                stack.append(from_Param(o.dict_param))
+
+
+                stack.append(from_Param(o.tuple_param))
+
+                stack.append(
+                    tuple([make_Grammar(
+                        options = 'parameters_c',
+                        selection = 'DoubleBundleParam'
+                    )])
+                )
+    
+
+            def handle_DictionaryBundleParam(o : DictionaryBundleParam): 
+                
+                stack.append(from_Param(o.content))
+
+                stack.append(
+                    tuple([make_Grammar(
+                        options = 'parameters_c',
+                        selection = 'DictionaryBundleParam'
+                    )])
+                )
+    
+
 
             match_parameters_c(stack_item, ParametersCHandlers(
-                case_SingleListSplatParam = handle_SingleListSplatParam,
-                case_TransListSplatParam = handle_TransListSplatParam,
-                case_ParamsD = handle_ParamsD
+                case_SingleTupleBundleParam = handle_SingleTupleBundleParam,
+                case_TransTupleBundleParam = handle_TransTupleBundleParam,
+                case_ParamsD = handle_ParamsD,
+                case_DoubleBundleParam = handle_DoubleBundleParam,
+                case_DictionaryBundleParam = handle_DictionaryBundleParam
             ))
 
         elif stack_item == None:

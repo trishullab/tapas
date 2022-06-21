@@ -414,13 +414,13 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
             subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
             for i, s in enumerate(sub_type.pos_kw_param_sigs)
         ] + [
-            subsumed(super_type.splat_pos_param_type, sub_type.splat_pos_param_type, inher_aux)
-        ] if sub_type.splat_pos_param_type and super_type.splat_pos_param_type else [] + [
+            subsumed(super_type.bundle_pos_param_type, sub_type.bundle_pos_param_type, inher_aux)
+        ] if sub_type.bundle_pos_param_type and super_type.bundle_pos_param_type else [] + [
             subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux)
             for i, s in enumerate(sub_type.kw_param_sigs)
         ] + [
-            subsumed(super_type.splat_kw_param_type, sub_type.splat_kw_param_type, inher_aux)
-        ] if sub_type.splat_kw_param_type and super_type.splat_kw_param_type else [] 
+            subsumed(super_type.bundle_kw_param_type, sub_type.bundle_kw_param_type, inher_aux)
+        ] if sub_type.bundle_kw_param_type and super_type.bundle_kw_param_type else [] 
 
         return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
 
@@ -601,13 +601,6 @@ def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
             for i, tp in enumerate(class_record.type_params) 
         })
 
-        # print(f"### class_record.key : {class_record.key}")
-        # print(f"### class_record.type_params : {class_record.type_params}")
-        # print(f"### type_args : {type_args}")
-        # print(f"### subst_map : {subst_map}")
-        # for (k, v) in class_record.static_fields.items():
-        #     print(f"### class_record.static_field key : {k}")
-        #     print(f"### class_record.static_field type : {v}")
         return update_ClassRecord(class_record,
             static_fields = pmap({
                 k : substitute_type_args(t, subst_map)  
@@ -690,9 +683,9 @@ def substitute_function_type_args(t : FunctionType, subst_map : PMap[str, type])
             )
             for sig in t.pos_kw_param_sigs
         ), # tuple[ParamSig, ...]
-        splat_pos_param_type = (
-            substitute_type_args(t.splat_pos_param_type, subst_map)
-            if t.splat_pos_param_type else
+        bundle_pos_param_type = (
+            substitute_type_args(t.bundle_pos_param_type, subst_map)
+            if t.bundle_pos_param_type else
             None
         ), # Optional[type]
         kw_param_sigs = tuple(
@@ -703,9 +696,9 @@ def substitute_function_type_args(t : FunctionType, subst_map : PMap[str, type])
             )
             for sig in t.kw_param_sigs
         ), # tuple[ParamSig, ...]
-        splat_kw_param_type = (
-            substitute_type_args(t.splat_kw_param_type, subst_map)
-            if t.splat_kw_param_type else
+        bundle_kw_param_type = (
+            substitute_type_args(t.bundle_kw_param_type, subst_map)
+            if t.bundle_kw_param_type else
             None
         ), # Optional[type]
         return_type = substitute_type_args(t.return_type, subst_map) # type
@@ -822,9 +815,6 @@ def get_mapping_key_value_types(t : type, inher_aux : InherAux) -> tuple[type, t
 
 def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux) -> type | None:
 
-    # print(f"*************")
-    # print(f"*** t : {t}")
-    # print(f"*************")
     if t.class_key == "typing.Iterable": 
         assert len(t.type_args) == 1
         item_type = t.type_args[0]
@@ -837,7 +827,6 @@ def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux)
             for i, type_arg in enumerate(t.type_args) 
         })
 
-        # print(f"## super_types : {class_record.super_types}")
         for super_type in class_record.super_types:
             super_type = substitute_type_args(super_type, substitution_map)
             result = get_iterable_item_type(super_type, inher_aux)
@@ -1055,10 +1044,43 @@ def check_application_args(
 
     subst_map : PMap[str, type] = pmap() # VarType |-> arg_type
 
-    if len(pos_arg_types) + len(kw_arg_types) > (
-        len(function_type.pos_param_types) +
-        len(function_type.pos_kw_param_sigs) +
-        len(function_type.kw_param_sigs)
+    pos_overflow = len(pos_arg_types) - len(function_type.pos_param_types)
+    if pos_overflow < 0:
+        return (None, subst_map)
+
+    if (
+        not function_type.bundle_pos_param_type and  
+        pos_overflow > len(function_type.pos_kw_param_sigs)
+    ):
+        return (None, subst_map)
+
+    if (
+        not function_type.bundle_pos_param_type and 
+        not function_type.bundle_kw_param_type and 
+        (pos_overflow + len(kw_arg_types) > (
+            len(function_type.pos_kw_param_sigs) +
+            len(function_type.kw_param_sigs)
+        ))
+    ):
+
+        return (None, subst_map)
+
+    if (
+        function_type.bundle_pos_param_type and
+        pos_overflow > len(function_type.pos_kw_param_sigs) and
+        not function_type.bundle_kw_param_type and
+        len(kw_arg_types) > len(function_type.kw_param_sigs)
+    ):
+        return (None, subst_map)
+
+    if (
+        function_type.bundle_pos_param_type and 
+        pos_overflow <= len(function_type.pos_kw_param_sigs) and
+        not function_type.bundle_kw_param_type and 
+        (pos_overflow + len(kw_arg_types) > (
+            len(function_type.pos_kw_param_sigs) +
+            len(function_type.kw_param_sigs)
+        ))
     ):
         return (None, subst_map)
 
@@ -1072,7 +1094,6 @@ def check_application_args(
             ss
         )[-1]
         for i, param_type in enumerate(function_type.pos_param_types) 
-        if i < len(pos_arg_types)
     ] + [
         (
             subst_map := collect_subst_map(
@@ -1084,39 +1105,42 @@ def check_application_args(
             ss
         )[-1]
         for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
+        if i < pos_overflow 
         for j in [i + len(function_type.pos_param_types)]
-        if j < len(pos_arg_types)
-    ] + [
-        (
-            subst_map := collect_subst_map(
-                inher_aux, subst_map, 
-                function_type.splat_pos_param_type, 
-                generalize_type(inher_aux, pos_type_arg)
-            ),
-            ss := subsumed(pos_type_arg, function_type.splat_pos_param_type, inher_aux),
-            ss
-        )[-1]
-        for i, pos_type_arg in enumerate(pos_arg_types)
-        if i >= len(function_type.pos_param_types) + len(function_type.pos_kw_param_sigs)
-        if function_type.splat_pos_param_type != None
-    ] + [
-        param_sig.optional or
-        (
-            kw_arg_types.get(param_sig.key) != None and
+    ] + (
+        [
             (
                 subst_map := collect_subst_map(
                     inher_aux, subst_map, 
-                    param_sig.type, 
-                    generalize_type(inher_aux, kw_arg_types[param_sig.key])
+                    function_type.bundle_pos_param_type, 
+                    generalize_type(inher_aux, pos_type_arg)
                 ),
-                ss := subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux),
+                ss := subsumed(pos_type_arg, function_type.bundle_pos_param_type, inher_aux),
                 ss
             )[-1]
-        ) 
-        for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
-        for j in [i + len(function_type.pos_param_types)]
-        if j >= len(pos_arg_types) 
-    ] + [
+            for pos_type_arg in pos_arg_types[len(function_type.pos_param_types) + len(function_type.pos_kw_param_sigs):]
+        ]
+        if (function_type.bundle_pos_param_type != None and
+            len(pos_arg_types) > len(function_type.pos_param_types) + len(function_type.pos_kw_param_sigs)
+        ) else
+        [
+            param_sig.optional or
+            (
+                kw_arg_types.get(param_sig.key) != None and
+                (
+                    subst_map := collect_subst_map(
+                        inher_aux, subst_map, 
+                        param_sig.type, 
+                        generalize_type(inher_aux, kw_arg_types[param_sig.key])
+                    ),
+                    ss := subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux),
+                    ss
+                )[-1]
+            ) 
+            for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
+            if i >= pos_overflow 
+        ] 
+    ) + [
         param_sig.optional or
         (
             kw_arg_types.get(param_sig.key) != None and
@@ -1134,14 +1158,14 @@ def check_application_args(
         (
             subst_map := collect_subst_map(
                 inher_aux, subst_map, 
-                function_type.splat_kw_param_type, 
+                function_type.bundle_kw_param_type, 
                 generalize_type(inher_aux, kw_arg_type)
             ),
-            ss := subsumed(kw_arg_type, function_type.splat_kw_param_type, inher_aux),
+            ss := subsumed(kw_arg_type, function_type.bundle_kw_param_type, inher_aux),
             ss
         )[-1]
         for kw, kw_arg_type in kw_arg_types.items()
-        if function_type.splat_kw_param_type != None
+        if function_type.bundle_kw_param_type != None
         if (
             not kw in {sig.key for sig in function_type.pos_kw_param_sigs} and
             not kw in {sig.key for sig in function_type.kw_param_sigs}
@@ -1222,9 +1246,9 @@ def from_type_to_primitive(t : type) -> list:
         case_FunctionType = lambda t : ["FunctionType",
             [from_type_to_primitive(t) for t in t.pos_param_types],
             [from_ParamSig_to_primitive(p) for p in t.pos_kw_param_sigs],
-            [from_type_to_primitive(t.splat_pos_param_type)] if t.splat_pos_param_type else [],
+            [from_type_to_primitive(t.bundle_pos_param_type)] if t.bundle_pos_param_type else [],
             [from_ParamSig_to_primitive(p) for p in t.kw_param_sigs],
-            [from_type_to_primitive(t.splat_kw_param_type)] if t.splat_kw_param_type else [],
+            [from_type_to_primitive(t.bundle_kw_param_type)] if t.bundle_kw_param_type else [],
             from_type_to_primitive(t.return_type)
         ],
         case_UnionType = lambda t : ["UnionType", [from_type_to_primitive(tc) for tc in t.type_choices]],
@@ -1347,16 +1371,15 @@ def analyze_modules_fixpoint(
     return out_package
 
 
-def analyze_typeshed_cache(cache : bool = True):
+def analyze_typeshed_cache(cache_loadable : bool = True):
     return (
         us.load_object('tapas_res/typeshed_object')
-        if cache and os.path.exists(us.project_path('tapas_res/typeshed_object')) else
+        if cache_loadable and os.path.exists(us.project_path('tapas_res/typeshed_object')) else
         us.save_object(analyze_typeshed(), 'tapas_res/typeshed_object')
     )
 
 def analyze_typeshed() -> PMap[str, ModulePackage]:
     stdlib_dirpath = us.project_path("tapas_res/typeshed/stdlib")
-    print(f"stdlib_dirpath: {stdlib_dirpath}")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
 
     package : PMap[str, ModulePackage] = m()
@@ -1958,9 +1981,9 @@ class Server(paa.Server[InherAux, SynthAux]):
 
             pos_param_types = pos_param_types + aux.pos_param_types
             pos_kw_param_sigs = pos_kw_param_sigs + aux.pos_kw_param_sigs
-            list_splat_param_type = list_splat_param_type if list_splat_param_type else aux.splat_pos_param_type
+            list_splat_param_type = list_splat_param_type if list_splat_param_type else aux.bundle_pos_param_type
             kw_param_sigs = kw_param_sigs + aux.kw_param_sigs 
-            dict_splat_param_type = dict_splat_param_type if dict_splat_param_type else aux.splat_kw_param_type 
+            dict_splat_param_type = dict_splat_param_type if dict_splat_param_type else aux.bundle_kw_param_type 
 
             import_names = import_names + aux.import_names
 
@@ -2010,14 +2033,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         method_type = lookup_field_type(left_type, method_name, inher_aux)
 
         if isinstance(method_type, FunctionType):
-            # print(f"@@## left_tree : {left_tree}")
-            # print(f"@@## left_type : {left_type}")
-            # print(f"@@## rator_tree: {rator_tree}")
-            # print(f"@@## method_name : {method_name}")
-            # print(f"@@## method_type: {method_type}")
-            # print(f"@@## right_tree: {right_tree}")
-            # print(f"@@## right_type: {right_type}")
-            
 
             precise_method_type, _ = check_application_args(
                 [right_type], {}, 
@@ -2130,13 +2145,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
             if isinstance(method_type, FunctionType):
-                # print(f"@@## left_tree : {left_tree}")
-                # print(f"@@## left_type : {left_type}")
-                # print(f"@@## rator_tree: {rator_tree}")
-                # print(f"@@## method_name : {method_name}")
-                # print(f"@@## method_type: {method_type}")
-                # print(f"@@## right_tree: {right_tree}")
-                # print(f"@@## right_type: {right_type}")
 
                 precise_method_type, _ = check_application_args(
                     [right_type], {}, 
@@ -2150,6 +2158,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_type = precise_method_type.return_type
 
             elif isinstance(method_type, InterType):
+
                 chosen_method_type, _ = self.match_function_type(
                     inher_aux,
                     [right_type], {}, 
@@ -2587,12 +2596,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
             if isinstance(method_type, FunctionType):
-                # print(f"##@@ left_tree {left_tree}") 
-                # print(f"##@@ left_type {left_type}") 
-                # print(f"##@@ comps_tree {comps_tree}") 
-                # print(f"##@@ right_type {right_type}") 
-                # print(f"##@@ method_name {method_name}") 
-                # print(f"##@@ method_type {method_type}") 
                 precise_method_type, _ = check_application_args(
                     [right_type], {}, 
                     method_type, inher_aux
@@ -2697,15 +2700,27 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
-        (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
+        kw_types = pmap()
+        if isinstance(content_type, DictLitType):
+            for kt, vt in content_type.pair_types:
+                if isinstance(kt, StrLitType):
+                    kw_types += pmap({eval(kt.literal) : vt})
+                else:
+                    self.check(SplatKeywordArgTypeCheck(), lambda: 
+                        subsumed(kt, make_RecordType("builtins.str"), inher_aux)
+                    )
+        else:
+            (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
 
-        self.check(SplatKeywordArgTypeCheck(), lambda: 
-            subsumed(key_type, make_RecordType("builtins.str"), inher_aux)
-        )
+            self.check(SplatKeywordArgTypeCheck(), lambda: 
+                subsumed(key_type, make_RecordType("builtins.str"), inher_aux)
+            )
 
         return paa.Result[SynthAux](
             tree = pas.SplatKeyword(content_tree),
-            aux = update_SynthAux(content_aux) 
+            aux = make_SynthAux(
+                kw_types = kw_types
+            ) 
         )
     
     # synthesize: expr <-- CallArgs
@@ -2803,13 +2818,6 @@ class Server(paa.Server[InherAux, SynthAux]):
                 if class_record:
                     init_type = lookup_static_field_type(class_record, "__init__", inher_aux)
 
-                    # print(f"@@## func_tree: {func_tree}")
-                    # print(f"@@## class_record: {class_record.key}")
-                    # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
-                    # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
-                    # print(f"@@## init_type: {init_type}")
-
-
                     if isinstance(init_type, FunctionType):
                         precise_init_type, subst_map = check_application_args(
                             args_aux.observed_types,
@@ -2836,12 +2844,6 @@ class Server(paa.Server[InherAux, SynthAux]):
                         assert isinstance(init_type, AnyType) or init_type == None
 
         else:
-            # print(f"")
-            # print(f"@@##########")
-            # print(f"@@## func_tree: {func_tree}")
-            # print(f"@@## func_type: {func_type}")
-            # print(f"@@##########")
-            # print(f"")
             self.check(ApplyRatorTypeCheck(), lambda:isinstance(func_type,AnyType))
             expr_type = AnyType()
 
@@ -3065,12 +3067,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         else:
             method_type = lookup_field_type(content_type, "__getitem__", inher_aux)
             if isinstance(method_type, FunctionType): 
-
-                # print(f"### content_tree : {content_tree}")
-                # print(f"### slice_tree : {slice_tree}")
-                # print(f"### method_name : __getitem__")
-                # print(f"### slice_type : {slice_type}")
-                # print(f"### slice_type : {method_type}")
 
                 precise_method_type, _ = check_application_args(
                     [slice_type], {}, 
@@ -3403,10 +3399,6 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         type_params : tuple[VarType, ...] = bs_aux.var_types
 
-        # print(f"##@@ ClassDef")
-        # print(f"##@@ name_tree : {name_tree}")
-        # print(f"##@@ bs_aux.observed_types : {bs_aux.observed_types}")
-
         super_types : tuple[TypeType, ...] = tuple(
             coerce_to_TypeType(t)
             for t in bs_aux.observed_types
@@ -3714,11 +3706,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             assert len(ret_anno_aux.observed_types) == 1
             function_sig_return_type = coerce_to_TypeType(ret_anno_aux.observed_types[0]).content
 
-            # print(f"------------")
-            # print(f"-- body_return_type : {function_body_return_type}")
-            # print(f"-- sig_return_type : {function_sig_return_type}")
-            # print(f"------------")
-
             self.check(ReturnTypeCheck(), lambda: 
                 is_a_stub_body(body_tree) or
                 subsumed(function_body_return_type, function_sig_return_type, inher_aux)
@@ -3728,12 +3715,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         else:
             function_return_type = function_body_return_type
 
+
         type = FunctionType(
             pos_param_types = params_aux.pos_param_types,
             pos_kw_param_sigs = params_aux.pos_kw_param_sigs,
-            splat_pos_param_type = params_aux.splat_pos_param_type,
+            bundle_pos_param_type = params_aux.bundle_pos_param_type,
             kw_param_sigs = params_aux.kw_param_sigs,
-            splat_kw_param_type = params_aux.splat_kw_param_type,
+            bundle_kw_param_type = params_aux.bundle_kw_param_type,
             return_type = function_return_type 
         )
 
@@ -3806,12 +3794,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
         if len(default_aux.observed_types) > 0:
             default_type = default_aux.observed_types[0]
-
-            if is_a_stub_default(default_tree):
-                pass
-            else:
-                # assert subsumed(default_type, sig_type, inher_aux)
-                pass
+            self.check(AssignTypeCheck(), lambda: 
+                subsumed(default_type, sig_type, inher_aux)
+            )
 
         return paa.Result[SynthAux](
             tree = pas.Param(name_tree, anno_tree, default_tree),
@@ -3843,7 +3828,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.ConsKwParam(head_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
-                kw_param_sigs = tuple([head_aux.param_sig]) + tail_aux.kw_param_sigs
+                kw_param_sigs = (head_aux.param_sig,) + tail_aux.kw_param_sigs
             )
         )
     
@@ -3858,40 +3843,138 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.SingleKwParam(content_tree),
             aux = update_SynthAux(content_aux,
-                kw_param_sigs = tuple([content_aux.param_sig])
+                kw_param_sigs = (content_aux.param_sig,)
             )
         )
-    
-    # synthesize: parameters_d <-- DictionarySplatParam
-    def synthesize_for_parameters_d_DictionarySplatParam(self, 
+
+    # synthesize: parameters_d <-- TransKwParam
+    def synthesize_for_parameters_d_TransKwParam(self, 
+        inher_aux : InherAux,
+        head_tree : pas.Param, 
+        head_aux : SynthAux,
+        tail_tree : pas.Param, 
+        tail_aux : SynthAux
+    ) -> paa.Result[SynthAux]:
+        assert head_aux.param_sig
+        assert tail_aux.param_sig
+        return paa.Result[SynthAux](
+            tree = pas.TransKwParam(head_tree, tail_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
+                kw_param_sigs = (head_aux.param_sig,) + tail_aux.kw_param_sigs,
+                bundle_kw_param_type = tail_aux.param_sig.type,
+                decl_additions=pmap({
+                    tail_aux.param_sig.key : make_Declaration(
+                        annotated = True,
+                        constant = False,
+                        initialized = True,
+                        type = make_RecordType(
+                            class_key = "builtins.dict",
+                            type_args=(
+                                make_RecordType(class_key="builtins.str"),
+                                tail_aux.param_sig.type,
+                            )
+                        )
+                    )
+                })
+            )
+        )
+
+    # synthesize: parameters_c <-- DoubleBundleParam
+    def synthesize_for_parameters_c_DoubleBundleParam(self, 
+        inher_aux : InherAux,
+        tuple_param_tree : pas.Param, 
+        tuple_param_aux : SynthAux,
+        dict_param_tree : pas.Param, 
+        dict_param_aux : SynthAux
+    ) -> paa.Result[SynthAux]:
+        assert tuple_param_aux.param_sig
+        assert dict_param_aux.param_sig
+        return paa.Result[SynthAux](
+            tree = pas.DoubleBundleParam(tuple_param_tree, dict_param_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([tuple_param_aux, dict_param_aux])),
+                bundle_pos_param_type = tuple_param_aux.param_sig.type,
+                bundle_kw_param_type = dict_param_aux.param_sig.type,
+                decl_additions=pmap({
+                    tuple_param_aux.param_sig.key : make_Declaration(
+                        annotated = True,
+                        constant = False,
+                        initialized = True,
+                        type = make_VariedTupleType(
+                            item_type=tuple_param_aux.param_sig.type
+                        )
+                    ),
+                    dict_param_aux.param_sig.key : make_Declaration(
+                        annotated = True,
+                        constant = False,
+                        initialized = True,
+                        type = make_RecordType(
+                            class_key = "builtins.dict",
+                            type_args=(
+                                make_RecordType(class_key="builtins.str"),
+                                dict_param_aux.param_sig.type,
+                            )
+                        )
+                    )
+                })
+            )
+        )
+
+
+
+    # synthesize: parameters_c <-- DictionaryBundleParam
+    def synthesize_for_parameters_c_DictionaryBundleParam(self, 
         inher_aux : InherAux,
         content_tree : pas.Param, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.DictionarySplatParam(content_tree),
+            tree = pas.DictionaryBundleParam(content_tree),
             aux = update_SynthAux(content_aux,
-                splat_kw_param_type = content_aux.param_sig.type
+                bundle_kw_param_type = content_aux.param_sig.type,
+                decl_additions=pmap({
+                    content_aux.param_sig.key : make_Declaration(
+                        annotated = True,
+                        constant = False,
+                        initialized = True,
+                        type = make_RecordType(
+                            class_key = "builtins.dict",
+                            type_args=(
+                                make_RecordType(class_key="builtins.str"),
+                                content_aux.param_sig.type,
+                            )
+                        )
+                    )
+                })
             )
         )
     
-    # synthesize: parameters_c <-- SingleListSplatParam
-    def synthesize_for_parameters_c_SingleListSplatParam(self, 
+    # synthesize: parameters_c <-- SingleTupleBundleParam
+    def synthesize_for_parameters_c_SingleTupleBundleParam(self, 
         inher_aux : InherAux,
         content_tree : pas.Param, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.SingleListSplatParam(content_tree),
+            tree = pas.SingleTupleBundleParam(content_tree),
             aux = update_SynthAux(content_aux,
-                splat_pos_param_type = content_aux.param_sig.type
+                bundle_pos_param_type = content_aux.param_sig.type,
+                decl_additions=pmap({
+                    content_aux.param_sig.key : make_Declaration(
+                        annotated = True,
+                        constant = False,
+                        initialized = True,
+                        type = make_VariedTupleType(
+                            item_type=content_aux.param_sig.type
+                        )
+                    )
+                })
             ) 
         )
     
-    # synthesize: parameters_c <-- TransListSplatParam
-    def synthesize_for_parameters_c_TransListSplatParam(self, 
+    # synthesize: parameters_c <-- TransTupleBundleParam
+    def synthesize_for_parameters_c_TransTupleBundleParam(self, 
         inher_aux : InherAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
@@ -3900,9 +3983,19 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.TransListSplatParam(head_tree, tail_tree),
+            tree = pas.TransTupleBundleParam(head_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
-                splat_pos_param_type = head_aux.param_sig.type
+                bundle_pos_param_type = head_aux.param_sig.type,
+                decl_additions=pmap({
+                    head_aux.param_sig.key : make_Declaration(
+                        annotated = True,
+                        constant = False,
+                        initialized = True,
+                        type = make_VariedTupleType(
+                            item_type=head_aux.param_sig.type
+                        )
+                    )
+                }) + tail_aux.decl_additions
             ) 
         )
     
@@ -3918,7 +4011,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.ConsPosKeyParam(head_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
-                pos_kw_param_sigs = tuple([head_aux.param_sig]) + tail_aux.pos_kw_param_sigs
+                pos_kw_param_sigs = (head_aux.param_sig,) + tail_aux.pos_kw_param_sigs
             )
         )
     
@@ -3932,7 +4025,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.SinglePosKeyParam(content_tree),
             aux = update_SynthAux(content_aux,
-                pos_kw_param_sigs = tuple([content_aux.param_sig])
+                pos_kw_param_sigs = (content_aux.param_sig,)
             )
         )
     
@@ -4112,16 +4205,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
         method_name = pas.from_bin_rator_to_aug_method_name(rator_tree)
 
-        # print(f"@@## target_tree : {target_tree}")
-        # print(f"@@## target_type : {target_type}")
-        # print(f"@@## rator_tree: {rator_tree}")
-        # print(f"@@## content_tree: {content_tree}")
-        # print(f"@@## content_type: {content_type}")
-
         method_type = lookup_field_type(target_type, method_name, inher_aux)
-
-        # print(f"@@## method_name : {method_name}")
-        # print(f"@@## method_type: {method_type}")
 
         if isinstance(method_type, FunctionType):
 
@@ -4195,10 +4279,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert isinstance(target_tree, pas.Name)
         symbol = target_tree.content
 
-        # print(f"@@## target_tree : {target_tree}")
-        # print(f"@@## content_tree : {content_tree}")
-        # print(f"@@## sig_type: {sig_type}")
-        # print(f"@@## content_type : {content_type}")
         self.check(AssignTypeCheck(), lambda: 
             subsumed(content_type, sig_type, inher_aux)
         )

@@ -158,8 +158,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return self.inspect_parameters_d_SingleKwParam(inher_aux, children, stack_result, stack)
             
 
-        elif rule_name == "DictionarySplatParam": 
-            return self.inspect_parameters_d_DictionarySplatParam(inher_aux, children, stack_result, stack)
+        elif rule_name == "TransKwParam": 
+            return self.inspect_parameters_d_TransKwParam(inher_aux, children, stack_result, stack)
             
         else:
             raise SyntaxError()
@@ -189,16 +189,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         if False:
             pass
         
-        elif token.selection == "SingleListSplatParam":
-            return self.inspect_parameters_c_SingleListSplatParam(inher_aux)
+        elif token.selection == "SingleTupleBundleParam":
+            return self.inspect_parameters_c_SingleTupleBundleParam(inher_aux)
             
 
-        elif token.selection == "TransListSplatParam":
-            return self.inspect_parameters_c_TransListSplatParam(inher_aux)
+        elif token.selection == "TransTupleBundleParam":
+            return self.inspect_parameters_c_TransTupleBundleParam(inher_aux)
             
 
         elif token.selection == "ParamsD":
             return self.inspect_parameters_c_ParamsD(inher_aux)
+            
+
+        elif token.selection == "DoubleBundleParam":
+            return self.inspect_parameters_c_DoubleBundleParam(inher_aux)
+            
+
+        elif token.selection == "DictionaryBundleParam":
+            return self.inspect_parameters_c_DictionaryBundleParam(inher_aux)
             
         else:
             raise SyntaxError()
@@ -1989,51 +1997,75 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         else:
             raise SyntaxError()
     
-    # inspect: parameters_d <-- DictionarySplatParam
-    def inspect_parameters_d_DictionarySplatParam(self,
+    # inspect: parameters_d <-- TransKwParam
+    def inspect_parameters_d_TransKwParam(self,
         inher_aux : InherAux, children : tuple[Result[SynthAux], ...], stack_result : Optional[Result[SynthAux]], 
         stack : list[tuple[abstract_token, InherAux, tuple[Result[SynthAux], ...]]]
     ) -> Optional[Result[SynthAux]]:
 
         
 
-        total_num_children = 1
+        total_num_children = 2
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, Param)
-            content_aux = children[0].aux
+            head_tree = children[0].tree
+            assert isinstance(head_tree, Param)
+            head_aux = children[0].aux
                 
-            return self.synthesize_for_parameters_d_DictionarySplatParam(inher_aux, content_tree, content_aux)
+            tail_tree = children[1].tree
+            assert isinstance(tail_tree, Param)
+            tail_aux = children[1].aux
+                
+            return self.synthesize_for_parameters_d_TransKwParam(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_parameters_d_DictionarySplatParam_content(
+            child_inher_aux = self.traverse_parameters_d_TransKwParam_head(
                 inher_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "DictionarySplatParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + tuple([child_synth])))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            head_tree = children[0].tree
+            assert isinstance(head_tree, Param)
+            head_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_parameters_d_TransKwParam_tail(
+                inher_aux,
+                head_tree, 
+                head_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
+
+            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + tuple([child_synth])))
             return None
             
         
         else:
             raise SyntaxError()
     
-    # inspect: parameters_c <-- SingleListSplatParam"
-    def inspect_parameters_c_SingleListSplatParam(self, inher_aux : InherAux) -> Result[SynthAux]:
+    # inspect: parameters_c <-- SingleTupleBundleParam"
+    def inspect_parameters_c_SingleTupleBundleParam(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_parameters_c_SingleListSplatParam_content(
+        child_inher_aux = self.traverse_parameters_c_SingleTupleBundleParam_content(
             inher_aux
         )
         child_token = self.next(child_inher_aux)
@@ -2043,14 +2075,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux = synth.aux
         
 
-        return self.synthesize_for_parameters_c_SingleListSplatParam(inher_aux, content_tree, content_aux)
+        return self.synthesize_for_parameters_c_SingleTupleBundleParam(inher_aux, content_tree, content_aux)
     
-    # inspect: parameters_c <-- TransListSplatParam"
-    def inspect_parameters_c_TransListSplatParam(self, inher_aux : InherAux) -> Result[SynthAux]:
+    # inspect: parameters_c <-- TransTupleBundleParam"
+    def inspect_parameters_c_TransTupleBundleParam(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_parameters_c_TransListSplatParam_head(
+        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_head(
             inher_aux
         )
         child_token = self.next(child_inher_aux)
@@ -2059,7 +2091,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(head_tree, Param)
         head_aux = synth.aux
         
-        child_inher_aux = self.traverse_parameters_c_TransListSplatParam_tail(
+        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_tail(
             inher_aux,
             head_tree, 
             head_aux
@@ -2071,7 +2103,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux = synth.aux
         
 
-        return self.synthesize_for_parameters_c_TransListSplatParam(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+        return self.synthesize_for_parameters_c_TransTupleBundleParam(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
     
     # inspect: parameters_c <-- ParamsD"
     def inspect_parameters_c_ParamsD(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -2089,6 +2121,51 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
 
         return self.synthesize_for_parameters_c_ParamsD(inher_aux, content_tree, content_aux)
+    
+    # inspect: parameters_c <-- DoubleBundleParam"
+    def inspect_parameters_c_DoubleBundleParam(self, inher_aux : InherAux) -> Result[SynthAux]:
+
+
+        
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_tuple_param(
+            inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_Param(child_token, child_inher_aux)
+        tuple_param_tree = synth.tree
+        assert isinstance(tuple_param_tree, Param)
+        tuple_param_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_dict_param(
+            inher_aux,
+            tuple_param_tree, 
+            tuple_param_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_Param(child_token, child_inher_aux)
+        dict_param_tree = synth.tree
+        assert isinstance(dict_param_tree, Param)
+        dict_param_aux = synth.aux
+        
+
+        return self.synthesize_for_parameters_c_DoubleBundleParam(inher_aux, tuple_param_tree, tuple_param_aux, dict_param_tree, dict_param_aux)
+    
+    # inspect: parameters_c <-- DictionaryBundleParam"
+    def inspect_parameters_c_DictionaryBundleParam(self, inher_aux : InherAux) -> Result[SynthAux]:
+
+
+        
+        child_inher_aux = self.traverse_parameters_c_DictionaryBundleParam_content(
+            inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_Param(child_token, child_inher_aux)
+        content_tree = synth.tree
+        assert isinstance(content_tree, Param)
+        content_aux = synth.aux
+        
+
+        return self.synthesize_for_parameters_c_DictionaryBundleParam(inher_aux, content_tree, content_aux)
     
     # inspect: parameters_b <-- ConsPosKeyParam
     def inspect_parameters_b_ConsPosKeyParam(self,
@@ -8072,26 +8149,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, tuple([])) 
     
-    # traverse parameters_d <-- DictionarySplatParam"
-    def traverse_parameters_d_DictionarySplatParam_content(self, 
+    # traverse parameters_d <-- TransKwParam"
+    def traverse_parameters_d_TransKwParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, tuple([])) 
     
-    # traverse parameters_c <-- SingleListSplatParam"
-    def traverse_parameters_c_SingleListSplatParam_content(self, 
+    # traverse parameters_d <-- TransKwParam"
+    def traverse_parameters_d_TransKwParam_tail(self, 
+        inher_aux : InherAux,
+        head_tree : Param, 
+        head_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+    
+    # traverse parameters_c <-- SingleTupleBundleParam"
+    def traverse_parameters_c_SingleTupleBundleParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, tuple([])) 
     
-    # traverse parameters_c <-- TransListSplatParam"
-    def traverse_parameters_c_TransListSplatParam_head(self, 
+    # traverse parameters_c <-- TransTupleBundleParam"
+    def traverse_parameters_c_TransTupleBundleParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, tuple([])) 
     
-    # traverse parameters_c <-- TransListSplatParam"
-    def traverse_parameters_c_TransListSplatParam_tail(self, 
+    # traverse parameters_c <-- TransTupleBundleParam"
+    def traverse_parameters_c_TransTupleBundleParam_tail(self, 
         inher_aux : InherAux,
         head_tree : Param, 
         head_aux : SynthAux
@@ -8100,6 +8185,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     
     # traverse parameters_c <-- ParamsD"
     def traverse_parameters_c_ParamsD_content(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, tuple([])) 
+    
+    # traverse parameters_c <-- DoubleBundleParam"
+    def traverse_parameters_c_DoubleBundleParam_tuple_param(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, tuple([])) 
+    
+    # traverse parameters_c <-- DoubleBundleParam"
+    def traverse_parameters_c_DoubleBundleParam_dict_param(self, 
+        inher_aux : InherAux,
+        tuple_param_tree : Param, 
+        tuple_param_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, tuple([tuple_param_aux])) 
+    
+    # traverse parameters_c <-- DictionaryBundleParam"
+    def traverse_parameters_c_DictionaryBundleParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, tuple([])) 
@@ -9836,30 +9941,32 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             aux = self.synthesize_auxes(tuple([content_aux])) 
         )
     
-    # synthesize: parameters_d <-- DictionarySplatParam
-    def synthesize_for_parameters_d_DictionarySplatParam(self, 
+    # synthesize: parameters_d <-- TransKwParam
+    def synthesize_for_parameters_d_TransKwParam(self, 
+        inher_aux : InherAux,
+        head_tree : Param, 
+        head_aux : SynthAux,
+        tail_tree : Param, 
+        tail_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = TransKwParam(head_tree, tail_tree),
+            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+        )
+    
+    # synthesize: parameters_c <-- SingleTupleBundleParam
+    def synthesize_for_parameters_c_SingleTupleBundleParam(self, 
         inher_aux : InherAux,
         content_tree : Param, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DictionarySplatParam(content_tree),
+            tree = SingleTupleBundleParam(content_tree),
             aux = self.synthesize_auxes(tuple([content_aux])) 
         )
     
-    # synthesize: parameters_c <-- SingleListSplatParam
-    def synthesize_for_parameters_c_SingleListSplatParam(self, 
-        inher_aux : InherAux,
-        content_tree : Param, 
-        content_aux : SynthAux
-    ) -> Result[SynthAux]:
-        return Result[SynthAux](
-            tree = SingleListSplatParam(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
-        )
-    
-    # synthesize: parameters_c <-- TransListSplatParam
-    def synthesize_for_parameters_c_TransListSplatParam(self, 
+    # synthesize: parameters_c <-- TransTupleBundleParam
+    def synthesize_for_parameters_c_TransTupleBundleParam(self, 
         inher_aux : InherAux,
         head_tree : Param, 
         head_aux : SynthAux,
@@ -9867,7 +9974,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TransListSplatParam(head_tree, tail_tree),
+            tree = TransTupleBundleParam(head_tree, tail_tree),
             aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
         )
     
@@ -9879,6 +9986,30 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ParamsD(content_tree),
+            aux = self.synthesize_auxes(tuple([content_aux])) 
+        )
+    
+    # synthesize: parameters_c <-- DoubleBundleParam
+    def synthesize_for_parameters_c_DoubleBundleParam(self, 
+        inher_aux : InherAux,
+        tuple_param_tree : Param, 
+        tuple_param_aux : SynthAux,
+        dict_param_tree : Param, 
+        dict_param_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = DoubleBundleParam(tuple_param_tree, dict_param_tree),
+            aux = self.synthesize_auxes(tuple([tuple_param_aux, dict_param_aux])) 
+        )
+    
+    # synthesize: parameters_c <-- DictionaryBundleParam
+    def synthesize_for_parameters_c_DictionaryBundleParam(self, 
+        inher_aux : InherAux,
+        content_tree : Param, 
+        content_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = DictionaryBundleParam(content_tree),
             aux = self.synthesize_auxes(tuple([content_aux])) 
         )
     

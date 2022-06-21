@@ -371,24 +371,29 @@ def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
         
 
 @dataclass(frozen=True, eq=True)
-class DictionarySplatParam(parameters_d):
-    content : Param | None
+class TransKwParam(parameters_d):
+    head : Param | None
+    tail : Param | None
 
     def match(self, handlers : ParametersDHandlers[T]) -> T:
-        return handlers.case_DictionarySplatParam(self)
+        return handlers.case_TransKwParam(self)
 
-def make_DictionarySplatParam(
-    content : Param | None
+def make_TransKwParam(
+    head : Param | None, 
+    tail : Param | None
 ) -> parameters_d:
-    return DictionarySplatParam(
-        content
+    return TransKwParam(
+        head,
+        tail
     )
 
-def update_DictionarySplatParam(source_DictionarySplatParam : DictionarySplatParam,
-    content : Union[Param | None, SourceFlag] = SourceFlag()
-) -> DictionarySplatParam:
-    return DictionarySplatParam(
-        source_DictionarySplatParam.content if isinstance(content, SourceFlag) else content
+def update_TransKwParam(source_TransKwParam : TransKwParam,
+    head : Union[Param | None, SourceFlag] = SourceFlag(),
+    tail : Union[Param | None, SourceFlag] = SourceFlag()
+) -> TransKwParam:
+    return TransKwParam(
+        source_TransKwParam.head if isinstance(head, SourceFlag) else head,
+        source_TransKwParam.tail if isinstance(tail, SourceFlag) else tail
     )
 
         
@@ -398,7 +403,7 @@ def update_DictionarySplatParam(source_DictionarySplatParam : DictionarySplatPar
 class ParametersDHandlers(Generic[T]):
     case_ConsKwParam : Callable[[ConsKwParam], T]
     case_SingleKwParam : Callable[[SingleKwParam], T]
-    case_DictionarySplatParam : Callable[[DictionarySplatParam], T]
+    case_TransKwParam : Callable[[TransKwParam], T]
 
 
 # matching for type parameters_d
@@ -417,52 +422,52 @@ class parameters_c(ABC):
 # constructors for type parameters_c
 
 @dataclass(frozen=True, eq=True)
-class SingleListSplatParam(parameters_c):
+class SingleTupleBundleParam(parameters_c):
     content : Param | None
 
     def match(self, handlers : ParametersCHandlers[T]) -> T:
-        return handlers.case_SingleListSplatParam(self)
+        return handlers.case_SingleTupleBundleParam(self)
 
-def make_SingleListSplatParam(
+def make_SingleTupleBundleParam(
     content : Param | None
 ) -> parameters_c:
-    return SingleListSplatParam(
+    return SingleTupleBundleParam(
         content
     )
 
-def update_SingleListSplatParam(source_SingleListSplatParam : SingleListSplatParam,
+def update_SingleTupleBundleParam(source_SingleTupleBundleParam : SingleTupleBundleParam,
     content : Union[Param | None, SourceFlag] = SourceFlag()
-) -> SingleListSplatParam:
-    return SingleListSplatParam(
-        source_SingleListSplatParam.content if isinstance(content, SourceFlag) else content
+) -> SingleTupleBundleParam:
+    return SingleTupleBundleParam(
+        source_SingleTupleBundleParam.content if isinstance(content, SourceFlag) else content
     )
 
         
 
 @dataclass(frozen=True, eq=True)
-class TransListSplatParam(parameters_c):
+class TransTupleBundleParam(parameters_c):
     head : Param | None
     tail : parameters_d | None
 
     def match(self, handlers : ParametersCHandlers[T]) -> T:
-        return handlers.case_TransListSplatParam(self)
+        return handlers.case_TransTupleBundleParam(self)
 
-def make_TransListSplatParam(
+def make_TransTupleBundleParam(
     head : Param | None, 
     tail : parameters_d | None
 ) -> parameters_c:
-    return TransListSplatParam(
+    return TransTupleBundleParam(
         head,
         tail
     )
 
-def update_TransListSplatParam(source_TransListSplatParam : TransListSplatParam,
+def update_TransTupleBundleParam(source_TransTupleBundleParam : TransTupleBundleParam,
     head : Union[Param | None, SourceFlag] = SourceFlag(),
     tail : Union[parameters_d | None, SourceFlag] = SourceFlag()
-) -> TransListSplatParam:
-    return TransListSplatParam(
-        source_TransListSplatParam.head if isinstance(head, SourceFlag) else head,
-        source_TransListSplatParam.tail if isinstance(tail, SourceFlag) else tail
+) -> TransTupleBundleParam:
+    return TransTupleBundleParam(
+        source_TransTupleBundleParam.head if isinstance(head, SourceFlag) else head,
+        source_TransTupleBundleParam.tail if isinstance(tail, SourceFlag) else tail
     )
 
         
@@ -490,12 +495,65 @@ def update_ParamsD(source_ParamsD : ParamsD,
 
         
 
+@dataclass(frozen=True, eq=True)
+class DoubleBundleParam(parameters_c):
+    tuple_param : Param | None
+    dict_param : Param | None
+
+    def match(self, handlers : ParametersCHandlers[T]) -> T:
+        return handlers.case_DoubleBundleParam(self)
+
+def make_DoubleBundleParam(
+    tuple_param : Param | None, 
+    dict_param : Param | None
+) -> parameters_c:
+    return DoubleBundleParam(
+        tuple_param,
+        dict_param
+    )
+
+def update_DoubleBundleParam(source_DoubleBundleParam : DoubleBundleParam,
+    tuple_param : Union[Param | None, SourceFlag] = SourceFlag(),
+    dict_param : Union[Param | None, SourceFlag] = SourceFlag()
+) -> DoubleBundleParam:
+    return DoubleBundleParam(
+        source_DoubleBundleParam.tuple_param if isinstance(tuple_param, SourceFlag) else tuple_param,
+        source_DoubleBundleParam.dict_param if isinstance(dict_param, SourceFlag) else dict_param
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class DictionaryBundleParam(parameters_c):
+    content : Param | None
+
+    def match(self, handlers : ParametersCHandlers[T]) -> T:
+        return handlers.case_DictionaryBundleParam(self)
+
+def make_DictionaryBundleParam(
+    content : Param | None
+) -> parameters_c:
+    return DictionaryBundleParam(
+        content
+    )
+
+def update_DictionaryBundleParam(source_DictionaryBundleParam : DictionaryBundleParam,
+    content : Union[Param | None, SourceFlag] = SourceFlag()
+) -> DictionaryBundleParam:
+    return DictionaryBundleParam(
+        source_DictionaryBundleParam.content if isinstance(content, SourceFlag) else content
+    )
+
+        
+
 # case handlers for type parameters_c
 @dataclass(frozen=True, eq=True)
 class ParametersCHandlers(Generic[T]):
-    case_SingleListSplatParam : Callable[[SingleListSplatParam], T]
-    case_TransListSplatParam : Callable[[TransListSplatParam], T]
+    case_SingleTupleBundleParam : Callable[[SingleTupleBundleParam], T]
+    case_TransTupleBundleParam : Callable[[TransTupleBundleParam], T]
     case_ParamsD : Callable[[ParamsD], T]
+    case_DoubleBundleParam : Callable[[DoubleBundleParam], T]
+    case_DictionaryBundleParam : Callable[[DictionaryBundleParam], T]
 
 
 # matching for type parameters_c
@@ -5675,10 +5733,12 @@ ast = Union[
     NoParamDefault,
     ConsKwParam,
     SingleKwParam,
-    DictionarySplatParam,
-    SingleListSplatParam,
-    TransListSplatParam,
+    TransKwParam,
+    SingleTupleBundleParam,
+    TransTupleBundleParam,
     ParamsD,
+    DoubleBundleParam,
+    DictionaryBundleParam,
     ConsPosKeyParam,
     SinglePosKeyParam,
     ParamsC,

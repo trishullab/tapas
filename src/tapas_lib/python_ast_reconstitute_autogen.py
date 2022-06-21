@@ -417,7 +417,7 @@ def to_parameters_d(xs : tuple[abstract_token, ...]) -> tuple[parameters_d, tupl
                 stack.append((remainder[-1], [], remainder[:-1]))
         
 
-        elif rule_name == "DictionarySplatParam": 
+        elif rule_name == "TransKwParam": 
             children = children
             remainder = remainder
             if stack_result:
@@ -426,18 +426,23 @@ def to_parameters_d(xs : tuple[abstract_token, ...]) -> tuple[parameters_d, tupl
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 1
+            total_num_children = 2
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    DictionarySplatParam(children[0]),
+                    TransKwParam(children[0], children[1]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_Param(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
                 (child, remainder) = to_Param(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -466,7 +471,7 @@ def to_parameters_c(xs : tuple[abstract_token, ...]) -> tuple[parameters_c, tupl
         if False:
             pass
         
-        elif rule_name == "SingleListSplatParam": 
+        elif rule_name == "SingleTupleBundleParam": 
             children = children
             remainder = remainder
             if stack_result:
@@ -482,7 +487,7 @@ def to_parameters_c(xs : tuple[abstract_token, ...]) -> tuple[parameters_c, tupl
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    SingleListSplatParam(children[0]),
+                    SingleTupleBundleParam(children[0]),
                     remainder
                 )
             
@@ -495,7 +500,7 @@ def to_parameters_c(xs : tuple[abstract_token, ...]) -> tuple[parameters_c, tupl
                 stack.append((remainder[-1], [], remainder[:-1]))
         
 
-        elif rule_name == "TransListSplatParam": 
+        elif rule_name == "TransTupleBundleParam": 
             children = children
             remainder = remainder
             if stack_result:
@@ -511,7 +516,7 @@ def to_parameters_c(xs : tuple[abstract_token, ...]) -> tuple[parameters_c, tupl
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    TransListSplatParam(children[0], children[1]),
+                    TransTupleBundleParam(children[0], children[1]),
                     remainder
                 )
             
@@ -551,6 +556,69 @@ def to_parameters_c(xs : tuple[abstract_token, ...]) -> tuple[parameters_c, tupl
             
             elif index == 0: # index does *not* refer to an inductive child
                 (child, remainder) = to_parameters_d(remainder)
+                stack.append((x, children + [child], remainder))
+                
+            else: # index refers to an inductive child
+                stack.append((x, children, remainder))
+                stack.append((remainder[-1], [], remainder[:-1]))
+        
+
+        elif rule_name == "DoubleBundleParam": 
+            children = children
+            remainder = remainder
+            if stack_result:
+                # get the result from the child in the stack
+                (child, remainder) = stack_result
+                children = children + [child]
+                stack_result = None
+
+            total_num_children = 2
+
+            index = len(children)
+            if index == total_num_children:
+                # the processing of the current rule has completed
+                # return the result to the parent in the stack 
+                stack_result = (
+                    DoubleBundleParam(children[0], children[1]),
+                    remainder
+                )
+            
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_Param(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
+                (child, remainder) = to_Param(remainder)
+                stack.append((x, children + [child], remainder))
+                
+            else: # index refers to an inductive child
+                stack.append((x, children, remainder))
+                stack.append((remainder[-1], [], remainder[:-1]))
+        
+
+        elif rule_name == "DictionaryBundleParam": 
+            children = children
+            remainder = remainder
+            if stack_result:
+                # get the result from the child in the stack
+                (child, remainder) = stack_result
+                children = children + [child]
+                stack_result = None
+
+            total_num_children = 1
+
+            index = len(children)
+            if index == total_num_children:
+                # the processing of the current rule has completed
+                # return the result to the parent in the stack 
+                stack_result = (
+                    DictionaryBundleParam(children[0]),
+                    remainder
+                )
+            
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_Param(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child

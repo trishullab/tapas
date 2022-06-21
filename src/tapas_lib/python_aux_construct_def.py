@@ -81,9 +81,9 @@ singles = [
         # params according to the context within which they occur 
         Field("pos_param_types", "tuple[type, ...]", "()"),
         Field("pos_kw_param_sigs", "tuple[ParamSig, ...]", "()"),
-        Field("splat_pos_param_type", "Optional[type]", "None"),
+        Field("bundle_pos_param_type", "Optional[type]", "None"),
         Field("kw_param_sigs", "tuple[ParamSig, ...]", "()"),
-        Field("splat_kw_param_type", "Optional[type]", "None"),
+        Field("bundle_kw_param_type", "Optional[type]", "None"),
 
         # import names { alias : module source }
         Field("import_names", "PMap[str, str]", "m()")
@@ -171,12 +171,12 @@ choices = {
             # (key, type, optional)
             Field("pos_kw_param_sigs", "tuple[ParamSig, ...]", "()"),
 
-            Field("splat_pos_param_type", "Optional[type]", "None"),
+            Field("bundle_pos_param_type", "Optional[type]", "None"),
 
             # args for these may only be associated with param by key
             # (key, type, optional)
             Field("kw_param_sigs", "tuple[ParamSig, ...]", "()"),
-            Field("splat_kw_param_type", "Optional[type]", "None"),
+            Field("bundle_kw_param_type", "Optional[type]", "None"),
 
             Field("return_type", "type", "AnyType()")
         ]),

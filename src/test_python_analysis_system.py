@@ -12,7 +12,7 @@ import pytest
 
 from tapas_lib.python_aux_construct_autogen import RecordType, make_RecordType
 
-package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache(False)
+package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()
 
 def load_source(name : str) -> str:
     path = us.project_path(f"tapas_res/python/{name}.py")
@@ -494,5 +494,35 @@ def test_072_ok():
 def test_073_ok():
     analyze("073_ok")
 
+def test_074_1_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("074_1_error")
+
+def test_074_ok():
+    analyze("074_ok")
+
+def test_075_1_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("075_1_error")
+
+def test_075_ok():
+    analyze("075_ok")
+
+def test_076_ok():
+    analyze("076_ok")
+
+def test_077_ok():
+    analyze("077_ok")
+
+def test_078_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("078_error")
+
+def test_079_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        analyze("079_error")
+
 if __name__ == "__main__":
+    code, aux = analyze("075_1_error")
+    print(code)
     pass

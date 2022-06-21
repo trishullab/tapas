@@ -338,9 +338,9 @@ def update_ModuleType(source_ModuleType : ModuleType,
 class FunctionType(type):
     pos_param_types : tuple[type, ...]
     pos_kw_param_sigs : tuple[ParamSig, ...]
-    splat_pos_param_type : Optional[type]
+    bundle_pos_param_type : Optional[type]
     kw_param_sigs : tuple[ParamSig, ...]
-    splat_kw_param_type : Optional[type]
+    bundle_kw_param_type : Optional[type]
     return_type : type
 
     def match(self, handlers : TypeHandlers[T]) -> T:
@@ -349,34 +349,34 @@ class FunctionType(type):
 def make_FunctionType(
     pos_param_types : tuple[type, ...] = (), 
     pos_kw_param_sigs : tuple[ParamSig, ...] = (), 
-    splat_pos_param_type : Optional[type] = None, 
+    bundle_pos_param_type : Optional[type] = None, 
     kw_param_sigs : tuple[ParamSig, ...] = (), 
-    splat_kw_param_type : Optional[type] = None, 
+    bundle_kw_param_type : Optional[type] = None, 
     return_type : type = AnyType()
 ) -> type:
     return FunctionType(
         pos_param_types,
         pos_kw_param_sigs,
-        splat_pos_param_type,
+        bundle_pos_param_type,
         kw_param_sigs,
-        splat_kw_param_type,
+        bundle_kw_param_type,
         return_type
     )
 
 def update_FunctionType(source_FunctionType : FunctionType,
     pos_param_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     pos_kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
-    splat_pos_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
+    bundle_pos_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
     kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
-    splat_kw_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
+    bundle_kw_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
     return_type : Union[type, SourceFlag] = SourceFlag()
 ) -> FunctionType:
     return FunctionType(
         source_FunctionType.pos_param_types if isinstance(pos_param_types, SourceFlag) else pos_param_types,
         source_FunctionType.pos_kw_param_sigs if isinstance(pos_kw_param_sigs, SourceFlag) else pos_kw_param_sigs,
-        source_FunctionType.splat_pos_param_type if isinstance(splat_pos_param_type, SourceFlag) else splat_pos_param_type,
+        source_FunctionType.bundle_pos_param_type if isinstance(bundle_pos_param_type, SourceFlag) else bundle_pos_param_type,
         source_FunctionType.kw_param_sigs if isinstance(kw_param_sigs, SourceFlag) else kw_param_sigs,
-        source_FunctionType.splat_kw_param_type if isinstance(splat_kw_param_type, SourceFlag) else splat_kw_param_type,
+        source_FunctionType.bundle_kw_param_type if isinstance(bundle_kw_param_type, SourceFlag) else bundle_kw_param_type,
         source_FunctionType.return_type if isinstance(return_type, SourceFlag) else return_type
     )
 
@@ -910,9 +910,9 @@ class SynthAux:
     param_sig : Optional[ParamSig]
     pos_param_types : tuple[type, ...]
     pos_kw_param_sigs : tuple[ParamSig, ...]
-    splat_pos_param_type : Optional[type]
+    bundle_pos_param_type : Optional[type]
     kw_param_sigs : tuple[ParamSig, ...]
-    splat_kw_param_type : Optional[type]
+    bundle_kw_param_type : Optional[type]
     import_names : PMap[str, str]
 
 
@@ -934,9 +934,9 @@ def make_SynthAux(
     param_sig : Optional[ParamSig] = None,
     pos_param_types : tuple[type, ...] = (),
     pos_kw_param_sigs : tuple[ParamSig, ...] = (),
-    splat_pos_param_type : Optional[type] = None,
+    bundle_pos_param_type : Optional[type] = None,
     kw_param_sigs : tuple[ParamSig, ...] = (),
-    splat_kw_param_type : Optional[type] = None,
+    bundle_kw_param_type : Optional[type] = None,
     import_names : PMap[str, str] = m()
 ) -> SynthAux:
     return SynthAux(
@@ -957,9 +957,9 @@ def make_SynthAux(
         param_sig,
         pos_param_types,
         pos_kw_param_sigs,
-        splat_pos_param_type,
+        bundle_pos_param_type,
         kw_param_sigs,
-        splat_kw_param_type,
+        bundle_kw_param_type,
         import_names)
 
 def update_SynthAux(source_SynthAux : SynthAux,
@@ -980,9 +980,9 @@ def update_SynthAux(source_SynthAux : SynthAux,
     param_sig : Union[Optional[ParamSig], SourceFlag] = SourceFlag(),
     pos_param_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     pos_kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
-    splat_pos_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
+    bundle_pos_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
     kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
-    splat_kw_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
+    bundle_kw_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
     import_names : Union[PMap[str, str], SourceFlag] = SourceFlag()
 ) -> SynthAux:
     return SynthAux(
@@ -1003,9 +1003,9 @@ def update_SynthAux(source_SynthAux : SynthAux,
         source_SynthAux.param_sig if isinstance(param_sig, SourceFlag) else param_sig, 
         source_SynthAux.pos_param_types if isinstance(pos_param_types, SourceFlag) else pos_param_types, 
         source_SynthAux.pos_kw_param_sigs if isinstance(pos_kw_param_sigs, SourceFlag) else pos_kw_param_sigs, 
-        source_SynthAux.splat_pos_param_type if isinstance(splat_pos_param_type, SourceFlag) else splat_pos_param_type, 
+        source_SynthAux.bundle_pos_param_type if isinstance(bundle_pos_param_type, SourceFlag) else bundle_pos_param_type, 
         source_SynthAux.kw_param_sigs if isinstance(kw_param_sigs, SourceFlag) else kw_param_sigs, 
-        source_SynthAux.splat_kw_param_type if isinstance(splat_kw_param_type, SourceFlag) else splat_kw_param_type, 
+        source_SynthAux.bundle_kw_param_type if isinstance(bundle_kw_param_type, SourceFlag) else bundle_kw_param_type, 
         source_SynthAux.import_names if isinstance(import_names, SourceFlag) else import_names)
 
     

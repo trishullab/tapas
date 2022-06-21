@@ -94,10 +94,11 @@ choices_schema : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "DictionarySplatParam",
+            "TransKwParam",
             [
+                Nonterm("head", "Param", InLine()),
                 Terminal("**"),
-                Nonterm("content", "Param", InLine())
+                Nonterm("tail", "Param", InLine())
             ]
         )
 
@@ -105,7 +106,7 @@ choices_schema : dict[str, list[Rule]] = {
 
     "parameters_c" : [
         Rule(
-            "SingleListSplatParam",
+            "SingleTupleBundleParam",
             [
                 Terminal("*"),
                 Nonterm("content", "Param", InLine())
@@ -113,7 +114,7 @@ choices_schema : dict[str, list[Rule]] = {
         ),
 
         Rule(
-            "TransListSplatParam",
+            "TransTupleBundleParam",
             [
                 Terminal("*"),
                 Nonterm("head", "Param", InLine()),
@@ -129,6 +130,24 @@ choices_schema : dict[str, list[Rule]] = {
                 Nonterm("content", "parameters_d", InLine())
             ]
         ),
+
+        Rule(
+            "DoubleBundleParam",
+            [
+                Terminal("*"),
+                Nonterm("tuple_param", "Param", InLine()),
+                Terminal("**"),
+                Nonterm("dict_param", "Param", InLine())
+            ]
+        ),
+
+        Rule(
+            "DictionaryBundleParam",
+            [
+                Terminal("**"),
+                Nonterm("content", "Param", InLine())
+            ]
+        )
     ],
 
     "parameters_b" : [
