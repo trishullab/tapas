@@ -2234,7 +2234,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert len(body_aux.observed_types) == 1
         inferred_type = make_FunctionType(
-            pos_param_types = params_aux.pos_param_types,
+            pos_kw_param_sigs = params_aux.pos_kw_param_sigs,
             return_type = body_aux.observed_types[0]
         )
         return paa.Result[SynthAux](

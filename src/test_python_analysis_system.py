@@ -522,5 +522,8 @@ def test_079_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
         analyze("079_error")
 
+def test_080_ok():
+    analyze("080_ok")
+
 if __name__ == "__main__":
     pass

@@ -1203,6 +1203,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
         lambda_params = [
             from_generic_tree_to_Param(param_node)
             for param_node in node.children
+            if param_node.syntax_part != ","
         ]
 
         return to_parameters([], lambda_params, None, [], None)
