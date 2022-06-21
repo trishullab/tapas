@@ -1,6 +1,7 @@
 from __future__ import annotations
 from asyncio import constants
 
+from typing import Sequence
 from dataclasses import dataclass
 from ftplib import all_errors
 from typing import Callable, Iterator, Iterable, Mapping
@@ -13,6 +14,8 @@ import os
 import pickle
 
 from importlib import resources
+
+from regex import P
 
 from tapas_base.line_format_construct_autogen import InLine, NewLine, IndentLine
 from tapas_base.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
@@ -148,8 +151,9 @@ def unionize_all_types(ts : Iterable[type]) -> type:
 
 
 def unionize_types(a : type, b : type) -> type:
-
-    if isinstance(a, AnyType):
+    if a == b:
+        return a
+    elif isinstance(a, AnyType):
         return b
     elif isinstance(b, AnyType):
         return a
@@ -386,12 +390,8 @@ def coerce_to_VarType(t : type) -> VarType:
 
 def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
-    # print(f"")
-    # print(f">>>>>>>>>>>>>>>>")
-    # print(f">>## sub_type : {sub_type}")
-    # print(f">>## super_type : {super_type}")
-    # print(f">>>>>>>>>>>>>>>>")
-    # print(f"")
+    if sub_type == super_type:
+        return True
 
     if isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
         return types_match_subsumed(sub_type.content, super_type.content, inher_aux)
@@ -431,12 +431,6 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
         class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
         if class_record:
             type_params = class_record.type_params
-
-
-            # print(f"##############################")
-            # print(f"### sub_type: {sub_type}")
-            # print(f"### type_params: {type_params}")
-            # print(f"##############################")
 
             assert len(sub_type.type_args) <= len(type_params)
             assert len(super_type.type_args) <= len(type_params)
@@ -487,23 +481,18 @@ def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, 
 def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
     super_type = generalize_type(inher_aux, super_type)
 
-    # print("")
-    # print("-------------------------------")
-    # print(f"## sub_type: {sub_type}")
-    # print(f"## super_type: {super_type}")
-    # print("-------------------------------")
-    # print("")
-
     return (
-        not isinstance(sub_type, VarType) and 
         not isinstance(sub_type, ModuleType) and
         (
 
             isinstance(sub_type, AnyType) or 
-
             isinstance(super_type, AnyType) or 
 
-            isinstance(super_type, VarType) or # if VarType hasn't been subbed, then it can't be inferred.
+            # VarType behaves like AnyType if it hasn't been substituted
+            isinstance(sub_type, VarType) or
+            isinstance(super_type, VarType) or
+
+            types_match_subsumed(sub_type, super_type, inher_aux) or 
 
             (
                 # TODO: figure out more genearl way to handle int <: float
@@ -514,15 +503,11 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             ) or
 
             (
-                isinstance(super_type, RecordType) and super_type.protocol and
+                isinstance(super_type, RecordType) and
                 (
                     cr := infer_class_record(super_type, inher_aux),
-                    print(f"----cr: {cr}"),
-                    print(f"----sub_type: {sub_type}"),
-                    cr and us.every(cr.instance_fields.items(), lambda p : (
-                        print(f"----p: {p}"),
+                    cr and cr.protocol and us.every(cr.instance_fields.items(), lambda p : (
                         fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux),
-                        print(f"----fe: {fe}"),
                         fe
                     )[-1])
                 )[-1]
@@ -538,7 +523,6 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
                 super_type.class_key == "builtins.slice"
             ) or
 
-            types_match_subsumed(sub_type, super_type, inher_aux) or 
 
             (isinstance(sub_type, InterType) and 
                 us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux))) or 
@@ -563,10 +547,6 @@ def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
     if not class_record:   
         return ObjectType()
 
-    # print(f"##############################")
-    # print(f"@@## t : {t}")
-    # print(f"@@## class_record.type_params: {class_record.type_params}")
-    # print(f"##############################")
     assert len(t.type_args) <= len(class_record.type_params)
     subst_map = pmap({
         var_type.name : t.type_args[i] if i < len(t.type_args) else AnyType()
@@ -611,6 +591,7 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
     )) 
 
 def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
+    t = generalize_type(inher_aux, t)
     class_key = get_class_key(t)
     class_record = from_static_path_to_ClassRecord(inher_aux, class_key) 
     if class_record:
@@ -695,6 +676,40 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
 
 
 
+def substitute_function_type_args(t : FunctionType, subst_map : PMap[str, type]) -> FunctionType:
+    return FunctionType(
+        pos_param_types = tuple(
+            substitute_type_args(param_type, subst_map)
+            for param_type in t.pos_param_types
+        ), # tuple[type, ...]
+        pos_kw_param_sigs = tuple(
+            ParamSig(
+                key = sig.key,
+                type = substitute_type_args(sig.type, subst_map),
+                optional = sig.optional 
+            )
+            for sig in t.pos_kw_param_sigs
+        ), # tuple[ParamSig, ...]
+        splat_pos_param_type = (
+            substitute_type_args(t.splat_pos_param_type, subst_map)
+            if t.splat_pos_param_type else
+            None
+        ), # Optional[type]
+        kw_param_sigs = tuple(
+            ParamSig(
+                key = sig.key,
+                type = substitute_type_args(sig.type, subst_map),
+                optional = sig.optional 
+            )
+            for sig in t.kw_param_sigs
+        ), # tuple[ParamSig, ...]
+        splat_kw_param_type = (
+            substitute_type_args(t.splat_kw_param_type, subst_map)
+            if t.splat_kw_param_type else
+            None
+        ), # Optional[type]
+        return_type = substitute_type_args(t.return_type, subst_map) # type
+    )
 def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     return match_type(t, TypeHandlers(
         case_ProtocolType = lambda t : t,
@@ -708,41 +723,7 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
         case_NoneType = lambda t : t, 
         case_ModuleType = lambda t : t,
         case_FunctionType = lambda t : (
-
-            FunctionType(
-                pos_param_types = tuple(
-                    substitute_type_args(param_type, subst_map)
-                    for param_type in t.pos_param_types
-                ), # tuple[type, ...]
-                pos_kw_param_sigs = tuple(
-                    ParamSig(
-                        key = sig.key,
-                        type = substitute_type_args(sig.type, subst_map),
-                        optional = sig.optional 
-                    )
-                    for sig in t.pos_kw_param_sigs
-                ), # tuple[ParamSig, ...]
-                splat_pos_param_type = (
-                    substitute_type_args(t.splat_pos_param_type, subst_map)
-                    if t.splat_pos_param_type else
-                    None
-                ), # Optional[type]
-                kw_param_sigs = tuple(
-                    ParamSig(
-                        key = sig.key,
-                        type = substitute_type_args(sig.type, subst_map),
-                        optional = sig.optional 
-                    )
-                    for sig in t.kw_param_sigs
-                ), # tuple[ParamSig, ...]
-                splat_kw_param_type = (
-                    substitute_type_args(t.splat_kw_param_type, subst_map)
-                    if t.splat_kw_param_type else
-                    None
-                ), # Optional[type]
-                return_type = substitute_type_args(t.return_type, subst_map) # type
-            )
-            
+            substitute_function_type_args(t, subst_map)
         ),
         case_UnionType = lambda t : (
 
@@ -886,7 +867,9 @@ def get_iterable_item_type(iter_type : type, inher_aux : InherAux) -> Optional[t
         case_GenericType = lambda t : None,
         case_OverloadType = lambda t : None,
         case_TypeType = lambda t : None,
-        case_VarType = lambda t : None,
+        case_VarType = lambda t : 
+            # treat VarType like AnyType if it hasn't been substituted
+            AnyType(), 
         case_EllipType = lambda t : None,
         case_AnyType = lambda t : AnyType(),
         case_ObjectType = lambda t : None,
@@ -1049,42 +1032,86 @@ def lookup_declaration(inher_aux : InherAux, key : str, builtins = True) -> Decl
     else:
         return None 
 
-from typing import Sequence
+
+def collect_subst_map(
+    inher_aux : InherAux, subst_map : PMap[str, type], 
+    vt : type, t : type
+) -> PMap[str, type]:
+    if isinstance(vt, VarType):
+        sub = subst_map.get(vt.name)
+        if not sub or subsumed(sub, t, inher_aux):
+            return subst_map.update(pmap({vt.name:t}))
+        else:
+            return subst_map
+    else:
+        return subst_map
+
 def check_application_args(
     pos_arg_types : Sequence[type],
     kw_arg_types : Mapping[str, type], 
     function_type : FunctionType,
     inher_aux : InherAux 
-) -> bool:
+) -> tuple[FunctionType | None, PMap[str, type]]:
+
+    subst_map : PMap[str, type] = pmap() # VarType |-> arg_type
 
     if len(pos_arg_types) + len(kw_arg_types) > (
         len(function_type.pos_param_types) +
         len(function_type.pos_kw_param_sigs) +
         len(function_type.kw_param_sigs)
     ):
-        return False
+        return (None, subst_map)
 
-    pos_param_compat : Iterable[bool] = [
-        subsumed(pos_arg_types[i], param_type, inher_aux)
+    checks : Iterable[bool] = [
+        (
+            subst_map := collect_subst_map(
+                inher_aux, subst_map, param_type, 
+                generalize_type(inher_aux, pos_arg_types[i])
+            ),
+            ss := subsumed(pos_arg_types[i], param_type, inher_aux),
+            ss
+        )[-1]
         for i, param_type in enumerate(function_type.pos_param_types) 
         if i < len(pos_arg_types)
     ] + [
-        subsumed(pos_arg_types[j], param_sig.type, inher_aux)
+        (
+            subst_map := collect_subst_map(
+                inher_aux, subst_map, 
+                param_sig.type, 
+                generalize_type(inher_aux, pos_arg_types[j])
+            ),
+            ss := subsumed(pos_arg_types[j], param_sig.type, inher_aux),
+            ss
+        )[-1]
         for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
         for j in [i + len(function_type.pos_param_types)]
         if j < len(pos_arg_types)
     ] + [
-        subsumed(pos_type_arg, function_type.splat_pos_param_type, inher_aux)
+        (
+            subst_map := collect_subst_map(
+                inher_aux, subst_map, 
+                function_type.splat_pos_param_type, 
+                generalize_type(inher_aux, pos_type_arg)
+            ),
+            ss := subsumed(pos_type_arg, function_type.splat_pos_param_type, inher_aux),
+            ss
+        )[-1]
         for i, pos_type_arg in enumerate(pos_arg_types)
         if i >= len(function_type.pos_param_types) + len(function_type.pos_kw_param_sigs)
         if function_type.splat_pos_param_type != None
-    ]
-
-    kw_param_compat : Iterable[bool] = [
+    ] + [
         param_sig.optional or
         (
             kw_arg_types.get(param_sig.key) != None and
-            subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux)
+            (
+                subst_map := collect_subst_map(
+                    inher_aux, subst_map, 
+                    param_sig.type, 
+                    generalize_type(inher_aux, kw_arg_types[param_sig.key])
+                ),
+                ss := subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux),
+                ss
+            )[-1]
         ) 
         for i, param_sig in enumerate(function_type.pos_kw_param_sigs) 
         for j in [i + len(function_type.pos_param_types)]
@@ -1093,11 +1120,26 @@ def check_application_args(
         param_sig.optional or
         (
             kw_arg_types.get(param_sig.key) != None and
-            subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux)
+            (
+                subst_map := collect_subst_map(
+                    inher_aux, subst_map, param_sig.type, 
+                    generalize_type(inher_aux, kw_arg_types[param_sig.key])
+                ),
+                ss := subsumed(kw_arg_types[param_sig.key], param_sig.type, inher_aux),
+                ss
+            )[-1]
         ) 
         for param_sig in function_type.kw_param_sigs 
     ] + [
-        subsumed(kw_arg_type, function_type.splat_kw_param_type, inher_aux)
+        (
+            subst_map := collect_subst_map(
+                inher_aux, subst_map, 
+                function_type.splat_kw_param_type, 
+                generalize_type(inher_aux, kw_arg_type)
+            ),
+            ss := subsumed(kw_arg_type, function_type.splat_kw_param_type, inher_aux),
+            ss
+        )[-1]
         for kw, kw_arg_type in kw_arg_types.items()
         if function_type.splat_kw_param_type != None
         if (
@@ -1106,12 +1148,10 @@ def check_application_args(
         )
     ]
 
-    compatible =  (
-        us.every(pos_param_compat, lambda x : x) and
-        us.every(kw_param_compat, lambda x : x)
-    )
-
-    return compatible
+    if us.every(checks, lambda c : c):
+        return (substitute_function_type_args(function_type, subst_map), subst_map)
+    else:
+        return (None, subst_map)
 
 
 def is_literal_string(content : str) -> bool:
@@ -1189,7 +1229,7 @@ def from_type_to_primitive(t : type) -> list:
         ],
         case_UnionType = lambda t : ["UnionType", [from_type_to_primitive(tc) for tc in t.type_choices]],
         case_InterType = lambda t : ["InterType", [from_type_to_primitive(tc) for tc in t.type_components]],
-        case_RecordType = lambda t : ["RecordType", t.class_key, t.class_uid, [
+        case_RecordType = lambda t : ["RecordType", t.class_key, t.class_version, [
             from_type_to_primitive(ta)
             for ta in t.type_args
         ]],
@@ -1684,9 +1724,6 @@ def spawn_analysis(
 
 def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
 
-    # print(f"--## pattern : {pattern}")
-    # print(f"--## iter_type : {iter_type}")
-
     if isinstance(iter_type, AnyType):
         return unify(pattern, AnyType(), inher_aux)
     else:
@@ -1781,18 +1818,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         pos_arg_types : Sequence[type],
         kw_arg_types : Mapping[str, type], 
         it : InterType
-    ) -> FunctionType | None:
-        passing_func_type = None
+    ) -> tuple[FunctionType | None, PMap[str, type]]:
+        chosen_func_type = None
         for ft in it.type_components:
             self.check(ApplyRatorTypeCheck(), lambda:
                 isinstance(ft, FunctionType)
             )
             assert isinstance(ft, FunctionType)
-
-            if check_application_args(pos_arg_types, kw_arg_types, ft, inher_aux):
-                passing_func_type = ft
-                return passing_func_type
-        return passing_func_type
+            chosen_func_type, subst_map = check_application_args(pos_arg_types, kw_arg_types, ft, inher_aux)
+            if chosen_func_type:
+                return chosen_func_type, subst_map
+        return chosen_func_type, pmap()
 
  
 
@@ -1983,17 +2019,17 @@ class Server(paa.Server[InherAux, SynthAux]):
             # print(f"@@## right_type: {right_type}")
             
 
-            self.check(ApplyArgTypeCheck(), lambda: 
-                check_application_args(
-                    [right_type], {}, 
-                    method_type, inher_aux
-                )
+            precise_method_type, _ = check_application_args(
+                [right_type], {}, 
+                method_type, inher_aux
             )
+            self.check(ApplyArgTypeCheck(), lambda: precise_method_type != None)
+            assert precise_method_type 
 
-            expr_type = method_type.return_type
+            expr_type = precise_method_type.return_type
 
         elif isinstance(method_type, InterType):
-            chosen_method_type = self.match_function_type(
+            chosen_method_type, _ = self.match_function_type(
                 inher_aux,
                 [right_type], {}, 
                 method_type
@@ -2102,17 +2138,19 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"@@## right_tree: {right_tree}")
                 # print(f"@@## right_type: {right_type}")
 
-                self.check(ApplyArgTypeCheck(), lambda: 
-                    check_application_args(
-                        [right_type], {}, 
-                        method_type, inher_aux
-                    )
+                precise_method_type, _ = check_application_args(
+                    [right_type], {}, 
+                    method_type, inher_aux
                 )
+                self.check(ApplyArgTypeCheck(), lambda: 
+                    precise_method_type != None
+                )
+                assert precise_method_type 
 
-                expr_type = method_type.return_type
+                expr_type = precise_method_type.return_type
 
             elif isinstance(method_type, InterType):
-                chosen_method_type = self.match_function_type(
+                chosen_method_type, _ = self.match_function_type(
                     inher_aux,
                     [right_type], {}, 
                     method_type
@@ -2143,21 +2181,30 @@ class Server(paa.Server[InherAux, SynthAux]):
         method_type = lookup_field_type(rand_type, method_name, inher_aux)
         return_type = AnyType()
         if isinstance(method_type, FunctionType):
-            self.check(ApplyArgTypeCheck(), lambda: 
-                check_application_args(
-                    [], {}, 
-                    method_type, inher_aux
-                )
+
+            precise_method_type, _ = check_application_args(
+                [], {}, 
+                method_type, inher_aux
             )
+            self.check(ApplyArgTypeCheck(), lambda: 
+                precise_method_type != None
+            )
+            assert precise_method_type 
+
+            return_type = precise_method_type.return_type
 
         elif isinstance(method_type, InterType):
-            self.check(ApplyArgTypeCheck(), lambda: 
-                self.match_function_type(
-                    inher_aux,
-                    [], {}, 
-                    method_type
-                ) != None
+
+            chosen_method_type, _ = self.match_function_type(
+                inher_aux,
+                [], {}, 
+                method_type
             )
+            self.check(ApplyArgTypeCheck(), lambda: 
+                chosen_method_type != None
+            )
+            assert chosen_method_type
+            return_type = chosen_method_type.return_type
         else:
             return_type = AnyType() 
 
@@ -2533,6 +2580,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(left_aux.observed_types) == 1
         left_type = left_aux.observed_types[0]
 
+        return_type = AnyType()
         assert len(comps_aux.observed_types) == len(comps_aux.cmp_names) 
         for i, method_name in enumerate(comps_aux.cmp_names):
             right_type = comps_aux.observed_types[i]
@@ -2545,15 +2593,18 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"##@@ right_type {right_type}") 
                 # print(f"##@@ method_name {method_name}") 
                 # print(f"##@@ method_type {method_type}") 
-                compatible = check_application_args(
+                precise_method_type, _ = check_application_args(
                     [right_type], {}, 
                     method_type, inher_aux
                 )
 
-                self.check(ApplyArgTypeCheck(), lambda: compatible)
+                self.check(ApplyArgTypeCheck(), lambda: precise_method_type != None)
+                assert precise_method_type
+
+                return_type = precise_method_type.return_type
 
             elif isinstance(method_type, InterType):
-                chosen_method_type = self.match_function_type(
+                chosen_method_type, _ = self.match_function_type(
                     inher_aux,
                     [right_type], {}, 
                     method_type
@@ -2561,6 +2612,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 self.check(ApplyArgTypeCheck(), lambda: 
                     chosen_method_type != None
                 )
+                assert chosen_method_type
+                return_type = chosen_method_type.return_type
 
             # update:
             left_type = right_type
@@ -2568,7 +2621,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return paa.Result[SynthAux](
             tree = pas.Compare(left_tree, comps_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([left_aux, comps_aux])),
-                observed_types= tuple([make_RecordType("builtins.bool")]),
+                observed_types= (return_type,),
                 cmp_names = () 
             )
         )
@@ -2583,18 +2636,24 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
-            self.check(ApplyArgTypeCheck(), lambda: check_application_args((), {}, func_type, inher_aux))
-            inferred_type = func_type.return_type
+            precise_func_type, _ = check_application_args((), {}, func_type, inher_aux)
+            self.check(ApplyArgTypeCheck(), lambda: precise_func_type != None)
+            assert precise_func_type
+
+            inferred_type = precise_func_type.return_type
         elif isinstance(func_type, InterType):
-            passing_func_type = self.match_function_type(inher_aux, (), {}, func_type) 
-            self.check(ApplyArgTypeCheck(), lambda: passing_func_type != None)
-            assert passing_func_type
-            inferred_type = passing_func_type.return_type
+            chosen_func_type, _ = self.match_function_type(inher_aux, (), {}, func_type) 
+            self.check(ApplyArgTypeCheck(), lambda: chosen_func_type != None)
+            assert chosen_func_type
+            inferred_type = chosen_func_type.return_type
         elif isinstance(func_type, TypeType):
             inferred_type = func_type.content 
             self.check(ApplyRatorTypeCheck(), lambda:
                 not isinstance(inferred_type, RecordType) or
-                not inferred_type.protocol
+                (
+                    cr := infer_class_record(inferred_type, inher_aux),
+                    not cr or not cr.protocol
+                )[-1]
             )
 
         elif isinstance(func_type, AnyType):
@@ -2658,52 +2717,44 @@ class Server(paa.Server[InherAux, SynthAux]):
         args_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-
-
         expr_type = None
 
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
 
-            # print(f"")
-            # print(f"@@##########")
-            # print(f"@@## func_tree: {func_tree}")
-            # print(f"@@## func_type: {func_type}")
-            # print(f"@@## args_tree: {args_tree}")
-            # print(f"@@## args_aux.observed_types: {args_aux.observed_types}")
-            # for ot in args_aux.observed_types:
-            #     print(f"--- ot : {ot}")
-            # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
-            # for k, v in args_aux.kw_types.items():
-            #     print(f"--- kwt : {k} |-> {v}")
-            # print(f"")
-
-            self.check(ApplyArgTypeCheck(), lambda: 
-                check_application_args(
-                    args_aux.observed_types,
-                    args_aux.kw_types, 
-                    func_type, inher_aux
-                )
+            precise_func_type, _ = check_application_args(
+                args_aux.observed_types,
+                args_aux.kw_types, 
+                func_type, inher_aux
             )
 
-            expr_type = func_type.return_type
+            self.check(ApplyArgTypeCheck(), lambda: 
+                precise_func_type != None
+            )
+            assert precise_func_type 
+
+            expr_type = precise_func_type.return_type
 
         elif isinstance(func_type, InterType):
-            passing_func_type = self.match_function_type(inher_aux,
+
+            chosen_func_type, _ = self.match_function_type(inher_aux,
                 args_aux.observed_types,
                 args_aux.kw_types, 
                 func_type
             ) 
-            self.check(ApplyArgTypeCheck(), lambda: passing_func_type != None)
-            assert passing_func_type
-            expr_type = passing_func_type.return_type
+            self.check(ApplyArgTypeCheck(), lambda: chosen_func_type != None)
+            assert chosen_func_type
+            expr_type = chosen_func_type.return_type
 
         elif isinstance(func_type, TypeType):
 
             self.check(ApplyRatorTypeCheck(), lambda: 
                 not isinstance(func_type, RecordType) or
-                not func_type.protocol
+                (
+                    cr := infer_class_record(func_type, inher_aux),
+                    not cr or not cr.protocol
+                )[-1]
             )
 
             class_key = get_class_key(func_type.content)
@@ -2713,15 +2764,15 @@ class Server(paa.Server[InherAux, SynthAux]):
                 pos_arg_types = args_aux.observed_types
                 kw_arg_types = args_aux.kw_types
 
-                name = ""
+                local_name = ""
                 if len(pos_arg_types) > 0: 
                     name_type = pos_arg_types[0]
                     assert isinstance(name_type, StrLitType) 
-                    name = name_type.literal 
+                    local_name = eval(name_type.literal)
                 else:
                     name_type = kw_arg_types["name"]
                     assert isinstance(name_type, StrLitType) 
-                    name = name_type.literal 
+                    local_name = eval(name_type.literal)
 
 
                 variant = NoVariant()
@@ -2734,13 +2785,21 @@ class Server(paa.Server[InherAux, SynthAux]):
                     variant = CoVariant()
                 elif isinstance(kw_arg_types.get("contravariant"), TrueType):
                     variant = ContraVariant()
+
+
+                full_name = (
+                    f"{inher_aux.external_path}.{inher_aux.internal_path}.{local_name}"
+                    if inher_aux.internal_path else
+                    f"{inher_aux.external_path}.{local_name}"
+                )
             
-                expr_type = TypeType(class_key = "typing.TypeVar", content = VarType(name = name, variant = variant))
+                expr_type = TypeType(class_key = "typing.TypeVar", content = make_VarType(name = full_name, variant = variant))
             else:
 
                 class_key = get_class_key(func_type.content)
                 class_record = from_static_path_to_ClassRecord(inher_aux, class_key)
 
+                expr_type = func_type.content 
                 if class_record:
                     init_type = lookup_static_field_type(class_record, "__init__", inher_aux)
 
@@ -2750,28 +2809,32 @@ class Server(paa.Server[InherAux, SynthAux]):
                     # print(f"@@## args_aux.kw_types: {args_aux.kw_types}")
                     # print(f"@@## init_type: {init_type}")
 
+
                     if isinstance(init_type, FunctionType):
+                        precise_init_type, subst_map = check_application_args(
+                            args_aux.observed_types,
+                            args_aux.kw_types, 
+                            init_type, inher_aux
+                        )
                         self.check(ApplyArgTypeCheck(), lambda: 
-                            check_application_args(
-                                args_aux.observed_types,
-                                args_aux.kw_types, 
-                                init_type, inher_aux
-                            )
+                            precise_init_type != None
                         )
 
+                        expr_type = substitute_type_args(func_type.content, subst_map)
+
                     elif isinstance(init_type, InterType):
-                        chosen_func_type = self.match_function_type(
+                        chosen_func_type, subst_map = self.match_function_type(
                             inher_aux, 
                             args_aux.observed_types,
                             args_aux.kw_types, 
                             init_type
                         ) 
                         self.check(ApplyArgTypeCheck(), lambda: chosen_func_type != None)
+                        expr_type = substitute_type_args(func_type.content, subst_map)
 
                     else:
                         assert isinstance(init_type, AnyType) or init_type == None
 
-                expr_type = func_type.content 
         else:
             # print(f"")
             # print(f"@@##########")
@@ -3009,20 +3072,21 @@ class Server(paa.Server[InherAux, SynthAux]):
                 # print(f"### slice_type : {slice_type}")
                 # print(f"### slice_type : {method_type}")
 
-                self.check(ApplyArgTypeCheck(), lambda: 
-                    check_application_args(
-                        [slice_type], {}, 
-                        method_type, inher_aux
-                    )
+                precise_method_type, _ = check_application_args(
+                    [slice_type], {}, 
+                    method_type, inher_aux
                 )
 
-                assert method_type.return_type
-                expr_types = tuple([
-                    method_type.return_type
-                ])
+                self.check(ApplyArgTypeCheck(), lambda: 
+                    precise_method_type != None
+                )
+
+                assert precise_method_type
+                assert precise_method_type.return_type
+                expr_types = (precise_method_type.return_type,)
 
             elif isinstance(method_type, InterType):
-                chosen_method_type = self.match_function_type(
+                chosen_method_type, _ = self.match_function_type(
                     inher_aux, 
                     [slice_type], {}, 
                     method_type
@@ -3222,7 +3286,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             (),
             us.every(nested_usages, lambda sym : (
                 (dec := from_static_path_to_declaration(inher_aux, f"builtins.{sym}")),
-                not isinstance( dec.type, AnyType)
+                not isinstance(dec.type, AnyType)
             )[-1])
         )[-1])
 
@@ -3464,13 +3528,19 @@ class Server(paa.Server[InherAux, SynthAux]):
             super_types = super_types, # tuple[TypeType, ...]
 
             static_fields = static_fields, #, PMap[str, type]
-            instance_fields = instance_fields # PMap[str, type]
+            instance_fields = instance_fields, # PMap[str, type]
+            protocol = bs_aux.protocol
         )
 
-        instance_type = from_class_key_to_type(inher_aux, class_record.key)
-        if bs_aux.protocol and isinstance(instance_type, RecordType):
-            instance_type = update_RecordType(instance_type, protocol=bs_aux.protocol)
-
+        type_arg = (
+            TupleLitType(item_types=tuple(
+                TypeType(class_key="builtins.type", content=tp)
+                for tp in type_params
+            ))
+            if bool(type_params) else
+            None
+        ) 
+        instance_type = from_class_key_to_type(inher_aux, class_record.key, type_arg)
 
         return paa.Result[SynthAux](
             tree = pas.ClassDef(name_tree, bs_tree, body_tree),
@@ -4055,15 +4125,18 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         if isinstance(method_type, FunctionType):
 
-            self.check(ApplyArgTypeCheck(), lambda: 
-                check_application_args(
-                    [content_type], {}, 
-                    method_type, inher_aux
-                )
+
+            precise_method_type, _ = check_application_args(
+                [content_type], {}, 
+                method_type, inher_aux
             )
+            self.check(ApplyArgTypeCheck(), lambda: 
+                precise_method_type != None
+            )
+            assert precise_method_type
 
             self.check(AssignTypeCheck(), lambda: 
-                subsumed(method_type.return_type, target_type, inher_aux)
+                subsumed(precise_method_type.return_type, target_type, inher_aux)
             )
 
         elif isinstance(method_type, InterType):

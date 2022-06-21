@@ -7,9 +7,12 @@ from tapas_lib import python_abstract_token_system as pats
 from tapas_base import abstract_token_system as ats
 from tapas_base import util_system as us
 
+import json
 import pytest
 
-package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()
+from tapas_lib.python_aux_construct_autogen import RecordType, make_RecordType
+
+package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache(False)
 
 def load_source(name : str) -> str:
     path = us.project_path(f"tapas_res/python/{name}.py")
@@ -441,6 +444,55 @@ def test_068_error():
 def test_069_ok():
     analyze("069_ok")
 
+
+def test_070_0_ok():
+    code, aux = analyze("070_0_ok",2)
+    print(code)
+    print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    x = aux.local_env.get("x")
+    assert x
+    x_type = x.type
+    assert isinstance(x_type, RecordType)
+    assert x_type.class_key == "builtins.list"
+    x_type_args = x_type.type_args
+    assert len(x_type_args) == 1 
+    assert x_type_args[0] == make_RecordType(class_key="builtins.int")
+
+def test_070_1_ok():
+    analyze("070_1_ok")
+
+def test_070_2_ok():
+    analyze("070_2_ok")
+
+def test_070_3_ok():
+    code, aux = analyze("070_3_ok", 9)
+    print(code)
+    print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    a = aux.local_env.get("a")
+    assert a
+    assert a.type == make_RecordType(class_key="070_3_ok.A", type_args=(
+        make_RecordType(class_key="builtins.int"),
+    ))
+
+def test_070_4_ok():
+    code, aux = analyze("070_4_ok", 7)
+    print(code)
+    print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    x = aux.local_env.get("x")
+    assert x
+    assert x.type == make_RecordType(class_key="builtins.int")
+
+def test_070_ok():
+    analyze("070_ok")
+
+def test_071_ok():
+    analyze("071_ok")
+
+def test_072_ok():
+    analyze("072_ok")
+
+def test_073_ok():
+    analyze("073_ok")
+
 if __name__ == "__main__":
-    # analyze("example")
     pass

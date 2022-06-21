@@ -205,6 +205,7 @@ def update_TypeType(source_TypeType : TypeType,
 @dataclass(frozen=True, eq=True)
 class VarType(type):
     name : str
+    version : int
     variant : variant
 
     def match(self, handlers : TypeHandlers[T]) -> T:
@@ -212,19 +213,23 @@ class VarType(type):
 
 def make_VarType(
     name : str, 
+    version : int = 0, 
     variant : variant = NoVariant()
 ) -> type:
     return VarType(
         name,
+        version,
         variant
     )
 
 def update_VarType(source_VarType : VarType,
     name : Union[str, SourceFlag] = SourceFlag(),
+    version : Union[int, SourceFlag] = SourceFlag(),
     variant : Union[variant, SourceFlag] = SourceFlag()
 ) -> VarType:
     return VarType(
         source_VarType.name if isinstance(name, SourceFlag) else name,
+        source_VarType.version if isinstance(version, SourceFlag) else version,
         source_VarType.variant if isinstance(variant, SourceFlag) else variant
     )
 
@@ -426,37 +431,32 @@ def update_InterType(source_InterType : InterType,
 @dataclass(frozen=True, eq=True)
 class RecordType(type):
     class_key : str
-    class_uid : int
+    class_version : int
     type_args : tuple[type, ...]
-    protocol : bool
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_RecordType(self)
 
 def make_RecordType(
     class_key : str, 
-    class_uid : int = 0, 
-    type_args : tuple[type, ...] = (), 
-    protocol : bool = False
+    class_version : int = 0, 
+    type_args : tuple[type, ...] = ()
 ) -> type:
     return RecordType(
         class_key,
-        class_uid,
-        type_args,
-        protocol
+        class_version,
+        type_args
     )
 
 def update_RecordType(source_RecordType : RecordType,
     class_key : Union[str, SourceFlag] = SourceFlag(),
-    class_uid : Union[int, SourceFlag] = SourceFlag(),
-    type_args : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
-    protocol : Union[bool, SourceFlag] = SourceFlag()
+    class_version : Union[int, SourceFlag] = SourceFlag(),
+    type_args : Union[tuple[type, ...], SourceFlag] = SourceFlag()
 ) -> RecordType:
     return RecordType(
         source_RecordType.class_key if isinstance(class_key, SourceFlag) else class_key,
-        source_RecordType.class_uid if isinstance(class_uid, SourceFlag) else class_uid,
-        source_RecordType.type_args if isinstance(type_args, SourceFlag) else type_args,
-        source_RecordType.protocol if isinstance(protocol, SourceFlag) else protocol
+        source_RecordType.class_version if isinstance(class_version, SourceFlag) else class_version,
+        source_RecordType.type_args if isinstance(type_args, SourceFlag) else type_args
     )
 
         
@@ -702,6 +702,7 @@ class ClassRecord:
     super_types : tuple[TypeType, ...]
     static_fields : PMap[str, type]
     instance_fields : PMap[str, type]
+    protocol : bool
 
 
 def make_ClassRecord(
@@ -709,28 +710,32 @@ def make_ClassRecord(
     type_params : tuple[VarType, ...],
     super_types : tuple[TypeType, ...],
     static_fields : PMap[str, type],
-    instance_fields : PMap[str, type]
+    instance_fields : PMap[str, type],
+    protocol : bool = False
 ) -> ClassRecord:
     return ClassRecord(
         key,
         type_params,
         super_types,
         static_fields,
-        instance_fields)
+        instance_fields,
+        protocol)
 
 def update_ClassRecord(source_ClassRecord : ClassRecord,
     key : Union[str, SourceFlag] = SourceFlag(),
     type_params : Union[tuple[VarType, ...], SourceFlag] = SourceFlag(),
     super_types : Union[tuple[TypeType, ...], SourceFlag] = SourceFlag(),
     static_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
-    instance_fields : Union[PMap[str, type], SourceFlag] = SourceFlag()
+    instance_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
+    protocol : Union[bool, SourceFlag] = SourceFlag()
 ) -> ClassRecord:
     return ClassRecord(
         source_ClassRecord.key if isinstance(key, SourceFlag) else key, 
         source_ClassRecord.type_params if isinstance(type_params, SourceFlag) else type_params, 
         source_ClassRecord.super_types if isinstance(super_types, SourceFlag) else super_types, 
         source_ClassRecord.static_fields if isinstance(static_fields, SourceFlag) else static_fields, 
-        source_ClassRecord.instance_fields if isinstance(instance_fields, SourceFlag) else instance_fields)
+        source_ClassRecord.instance_fields if isinstance(instance_fields, SourceFlag) else instance_fields, 
+        source_ClassRecord.protocol if isinstance(protocol, SourceFlag) else protocol)
 
     
 

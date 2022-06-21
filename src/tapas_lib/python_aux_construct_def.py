@@ -15,7 +15,8 @@ singles = [
         Field("type_params", "tuple[VarType, ...]", ""),
         Field("super_types", "tuple[TypeType, ...]", ""),
         Field("static_fields", "PMap[str, type]", ""),
-        Field("instance_fields", "PMap[str, type]", "")
+        Field("instance_fields", "PMap[str, type]", ""),
+        Field("protocol", "bool", "False")
     ]),
 
     Constructor("ModulePackage", [], [
@@ -139,6 +140,7 @@ choices = {
 
         Constructor("VarType", [], [
             Field("name", "str", ""),
+            Field("version", "int", "0"),
             Field("variant", "variant", "NoVariant()")
         ]),
 
@@ -193,9 +195,8 @@ choices = {
         # related to product type in PLT
         Constructor("RecordType", [], [
             Field("class_key", "str", ""),
-            Field("class_uid", "int", "0"),
+            Field("class_version", "int", "0"),
             Field("type_args", "tuple[type, ...]", "()"),
-            Field("protocol", "bool", "False"),
         ]),
 
         Constructor("TupleLitType", [], [
