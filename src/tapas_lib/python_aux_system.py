@@ -2636,6 +2636,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
+        inferred_type = AnyType() 
         if isinstance(func_type, FunctionType):
             precise_func_type, _ = check_application_args((), {}, func_type, inher_aux)
             self.check(ApplyArgTypeCheck(), lambda: precise_func_type != None)
