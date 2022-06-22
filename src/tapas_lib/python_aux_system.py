@@ -345,7 +345,7 @@ def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
         case_ProtocolType = lambda t : t,
         case_GenericType = lambda t : t,
         case_OverloadType = lambda t : t,
-        case_TypeType = lambda t : t,
+        case_TypeType = lambda t : make_RecordType(class_key="builtins.type", type_args=(t.content,)),
         case_VarType = lambda t : t,
         case_EllipType = lambda t : t,
         case_AnyType = lambda t : t,
@@ -386,7 +386,8 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-
+import sys
+sys.setrecursionlimit(10 ** 6)
 
 def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
@@ -423,11 +424,16 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
         ] if sub_type.bundle_kw_param_type and super_type.bundle_kw_param_type else [] 
 
         return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
+        return_subsumption = True 
+
 
         return us.every(param_subsumptions, lambda x : x) and return_subsumption
 
     elif isinstance(sub_type, RecordType):
         assert isinstance(super_type, RecordType)
+        if sub_type.class_key != super_type.class_key:
+            return False
+
         class_record = from_static_path_to_ClassRecord(inher_aux, sub_type.class_key)
         if class_record:
             type_params = class_record.type_params
@@ -477,7 +483,6 @@ def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, 
     else:
         return False
 
-
 def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
     super_type = generalize_type(inher_aux, super_type)
 
@@ -492,6 +497,8 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             isinstance(sub_type, VarType) or
             isinstance(super_type, VarType) or
 
+            isinstance(super_type, RecordType) and super_type.class_key == "builtins.object" or
+
             types_match_subsumed(sub_type, super_type, inher_aux) or 
 
             (
@@ -500,17 +507,6 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
                 super_type.class_key == "builtins.float" and
                 isinstance(sub_type, RecordType) and
                 sub_type.class_key == "builtins.int"
-            ) or
-
-            (
-                isinstance(super_type, RecordType) and
-                (
-                    cr := infer_class_record(super_type, inher_aux),
-                    cr and cr.protocol and us.every(cr.instance_fields.items(), lambda p : (
-                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux),
-                        fe
-                    )[-1])
-                )[-1]
             ) or
 
             ( 
@@ -522,7 +518,6 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             (isinstance(super_type, RecordType) and
                 super_type.class_key == "builtins.slice"
             ) or
-
 
             (isinstance(sub_type, InterType) and 
                 us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux))) or 
@@ -537,7 +532,23 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
                 us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux))) or
 
             (parent_type := get_parent_type(sub_type, inher_aux),
-                parent_type != None and subsumed(parent_type, super_type, inher_aux))[-1]
+                parent_type != None and subsumed(parent_type, super_type, inher_aux))[-1] or
+
+            (
+                isinstance(super_type, RecordType) and
+                (
+                    cr := infer_class_record(super_type, inher_aux),
+                    cr and cr.protocol and us.every(cr.instance_fields.items(), lambda p : (
+                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux),
+                        fe
+                    )[-1])
+                )[-1]
+            ) or
+
+            
+            False 
+
+
         )
     )
 
@@ -568,7 +579,7 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
         case_ProtocolType = lambda t : None,
         case_GenericType = lambda t : None,
         case_OverloadType = lambda t : None,
-        case_TypeType = lambda t : ObjectType(),
+        case_TypeType = lambda t : make_RecordType(class_key="builtins.type"),
         case_VarType = lambda t : None,
         case_EllipType = lambda t : ObjectType(),
         case_AnyType = lambda t : None,
@@ -1847,10 +1858,12 @@ class Server(paa.Server[InherAux, SynthAux]):
             self.check(ApplyRatorTypeCheck(), lambda:
                 isinstance(ft, FunctionType)
             )
-            assert isinstance(ft, FunctionType)
-            chosen_func_type, subst_map = check_application_args(pos_arg_types, kw_arg_types, ft, inher_aux)
-            if chosen_func_type:
-                return chosen_func_type, subst_map
+            if isinstance(ft, FunctionType):
+                chosen_func_type, subst_map = check_application_args(pos_arg_types, kw_arg_types, ft, inher_aux)
+                if chosen_func_type:
+                    return chosen_func_type, subst_map
+            else:
+                return chosen_func_type, pmap()
         return chosen_func_type, pmap()
 
  
@@ -2039,9 +2052,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 method_type, inher_aux
             )
             self.check(ApplyArgTypeCheck(), lambda: precise_method_type != None)
-            assert precise_method_type 
-
-            expr_type = precise_method_type.return_type
+            if precise_method_type: 
+                expr_type = precise_method_type.return_type
 
         elif isinstance(method_type, InterType):
             chosen_method_type, _ = self.match_function_type(
@@ -2050,8 +2062,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 method_type
             ) 
             self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
-            assert chosen_method_type
-            expr_type = chosen_method_type.return_type
+            if chosen_method_type:
+                expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
             tree = pas.BoolOp(left_tree, rator_tree, right_tree),
@@ -2073,14 +2085,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         # TODO: if source is of TypeType(VarType), check that target symbol matches VarType's symbol
 
         # check name compatability between target and source expressions 
-        for name in content_aux.usage_additions:
-            self.check(UpdateCheck(), lambda: 
+        self.check(UpdateCheck(), lambda: 
+            us.every(content_aux.usage_additions, lambda name : 
                 name not in target_aux.usage_additions or 
                 name in inher_aux.declared_globals or 
                 name in inher_aux.declared_nonlocals or 
                 name in inher_aux.local_env
             )
-
+        )
 
         updated_usage_additions : PMap[str, Usage] = m()
         for name, usage in target_aux.usage_additions.items():
@@ -2153,9 +2165,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 self.check(ApplyArgTypeCheck(), lambda: 
                     precise_method_type != None
                 )
-                assert precise_method_type 
-
-                expr_type = precise_method_type.return_type
+                if precise_method_type: 
+                    expr_type = precise_method_type.return_type
 
             elif isinstance(method_type, InterType):
 
@@ -2165,8 +2176,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                     method_type
                 ) 
                 self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
-                assert chosen_method_type
-                expr_type = chosen_method_type.return_type
+                if chosen_method_type:
+                    expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
             tree = pas.BinOp(left_tree, rator_tree, right_tree),
@@ -2198,9 +2209,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             self.check(ApplyArgTypeCheck(), lambda: 
                 precise_method_type != None
             )
-            assert precise_method_type 
-
-            return_type = precise_method_type.return_type
+            if precise_method_type:
+                return_type = precise_method_type.return_type
 
         elif isinstance(method_type, InterType):
 
@@ -2212,8 +2222,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             self.check(ApplyArgTypeCheck(), lambda: 
                 chosen_method_type != None
             )
-            assert chosen_method_type
-            return_type = chosen_method_type.return_type
+            if chosen_method_type: 
+                return_type = chosen_method_type.return_type
         else:
             return_type = AnyType() 
 
@@ -2602,9 +2612,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 )
 
                 self.check(ApplyArgTypeCheck(), lambda: precise_method_type != None)
-                assert precise_method_type
-
-                return_type = precise_method_type.return_type
+                if precise_method_type:
+                    return_type = precise_method_type.return_type
 
             elif isinstance(method_type, InterType):
                 chosen_method_type, _ = self.match_function_type(
@@ -2615,8 +2624,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 self.check(ApplyArgTypeCheck(), lambda: 
                     chosen_method_type != None
                 )
-                assert chosen_method_type
-                return_type = chosen_method_type.return_type
+                if chosen_method_type:
+                    return_type = chosen_method_type.return_type
 
             # update:
             left_type = right_type
@@ -2638,17 +2647,17 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
+        inferred_type = AnyType() 
         if isinstance(func_type, FunctionType):
             precise_func_type, _ = check_application_args((), {}, func_type, inher_aux)
             self.check(ApplyArgTypeCheck(), lambda: precise_func_type != None)
-            assert precise_func_type
-
-            inferred_type = precise_func_type.return_type
+            if precise_func_type:
+                inferred_type = precise_func_type.return_type
         elif isinstance(func_type, InterType):
             chosen_func_type, _ = self.match_function_type(inher_aux, (), {}, func_type) 
             self.check(ApplyArgTypeCheck(), lambda: chosen_func_type != None)
-            assert chosen_func_type
-            inferred_type = chosen_func_type.return_type
+            if chosen_func_type:
+                inferred_type = chosen_func_type.return_type
         elif isinstance(func_type, TypeType):
             inferred_type = func_type.content 
             self.check(ApplyRatorTypeCheck(), lambda:
@@ -2732,11 +2741,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         args_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        expr_type = None
+        expr_type = AnyType() 
 
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
+
 
             precise_func_type, _ = check_application_args(
                 args_aux.observed_types,
@@ -2747,9 +2757,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             self.check(ApplyArgTypeCheck(), lambda: 
                 precise_func_type != None
             )
-            assert precise_func_type 
-
-            expr_type = precise_func_type.return_type
+            if precise_func_type:
+                expr_type = precise_func_type.return_type
 
         elif isinstance(func_type, InterType):
 
@@ -2759,8 +2768,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 func_type
             ) 
             self.check(ApplyArgTypeCheck(), lambda: chosen_func_type != None)
-            assert chosen_func_type
-            expr_type = chosen_func_type.return_type
+            if chosen_func_type:
+                expr_type = chosen_func_type.return_type
 
         elif isinstance(func_type, TypeType):
 
@@ -2848,11 +2857,10 @@ class Server(paa.Server[InherAux, SynthAux]):
             expr_type = AnyType()
 
 
-        assert expr_type
         return paa.Result[SynthAux](
             tree = pas.CallArgs(func_tree, args_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([func_aux, args_aux])),
-                observed_types = tuple([expr_type])
+                observed_types = (expr_type,)
             )
         )
     
@@ -2931,7 +2939,6 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
 
         assert len(content_aux.observed_types) > 0
-        index_0_type = content_aux.observed_types[0]
 
         expr_type = (
             content_aux.observed_types[0]
@@ -3077,9 +3084,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                     precise_method_type != None
                 )
 
-                assert precise_method_type
-                assert precise_method_type.return_type
-                expr_types = (precise_method_type.return_type,)
+                if precise_method_type and precise_method_type.return_type:
+                    expr_types = (precise_method_type.return_type,)
 
             elif isinstance(method_type, InterType):
                 chosen_method_type, _ = self.match_function_type(
@@ -3088,9 +3094,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                     method_type
                 ) 
                 self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
-                assert chosen_method_type
-
-                expr_types = (chosen_method_type.return_type,)
+                if chosen_method_type:
+                    expr_types = (chosen_method_type.return_type,)
             else:
                 expr_types = (AnyType(),)
 
@@ -3790,8 +3795,11 @@ class Server(paa.Server[InherAux, SynthAux]):
         sig_type = (
             coerce_to_TypeType(anno_aux.observed_types[0]).content
             if len(anno_aux.observed_types) == 1 else 
+            default_aux.observed_types[0]
+            if len(default_aux.observed_types) == 1 else 
             AnyType()
         )
+
         if len(default_aux.observed_types) > 0:
             default_type = default_aux.observed_types[0]
             self.check(AssignTypeCheck(), lambda: 
@@ -4217,9 +4225,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             self.check(ApplyArgTypeCheck(), lambda: 
                 precise_method_type != None
             )
-            assert precise_method_type
 
             self.check(AssignTypeCheck(), lambda: 
+                precise_method_type != None and
                 subsumed(precise_method_type.return_type, target_type, inher_aux)
             )
 
@@ -4904,13 +4912,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         alias_tree : pas.expr, 
         alias_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        # check name compatability between target and source expressions 
-        for name in content_aux.usage_additions:
-            assert (
-                not (name in alias_aux.usage_additions) or (
-                    name in inher_aux.local_env
-                )
+
+        self.check(UpdateCheck(), lambda: 
+            us.every(content_aux.usage_additions, lambda name : 
+                name not in alias_aux.usage_additions or 
+                name in inher_aux.declared_globals or 
+                name in inher_aux.declared_nonlocals or 
+                name in inher_aux.local_env
             )
+        )
 
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
