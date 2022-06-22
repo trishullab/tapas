@@ -2741,7 +2741,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         args_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        expr_type = None
+        expr_type = AnyType() 
 
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
@@ -2857,11 +2857,10 @@ class Server(paa.Server[InherAux, SynthAux]):
             expr_type = AnyType()
 
 
-        assert expr_type
         return paa.Result[SynthAux](
             tree = pas.CallArgs(func_tree, args_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([func_aux, args_aux])),
-                observed_types = tuple([expr_type])
+                observed_types = (expr_type,)
             )
         )
     
