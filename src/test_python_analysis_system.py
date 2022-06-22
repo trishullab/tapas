@@ -525,5 +525,27 @@ def test_079_error():
 def test_080_ok():
     analyze("080_ok")
 
+def test_081_ok():
+    code, aux = analyze("081_ok", 4)
+    # print(code)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    x = aux.local_env.get("x")
+    assert x and x.type == pals.IntLitType('1')
+    y = aux.local_env.get("y")
+    assert y and y.type == pals.IntLitType('2')
+    z = aux.local_env.get("z")
+    assert z and z.type == pals.make_RecordType(class_key="builtins.int")
+
+def test_082_ok():
+    # test for convergence in subsumption with combined inheritance and protocols in Generator <: Iterator
+    analyze("082_ok")
+
+def test_083_ok():
+    # test class type as param type 
+    analyze("083_ok")
+
+def test_084_ok():
+    analyze("084_ok")
+
 if __name__ == "__main__":
     pass
