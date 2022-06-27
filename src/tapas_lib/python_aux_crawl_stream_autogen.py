@@ -8095,19 +8095,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     def traverse_return_annotation_SomeReturnAnno_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse except_arg <-- SomeExceptArg"
     def traverse_except_arg_SomeExceptArg_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse except_arg <-- SomeExceptArgName"
     def traverse_except_arg_SomeExceptArgName_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse except_arg <-- SomeExceptArgName"
     def traverse_except_arg_SomeExceptArgName_name(self, 
@@ -8115,25 +8115,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'str') 
     
     # traverse param_annotation <-- SomeParamAnno"
     def traverse_param_annotation_SomeParamAnno_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse param_default <-- SomeParamDefault"
     def traverse_param_default_SomeParamDefault_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse parameters_d <-- ConsKwParam"
     def traverse_parameters_d_ConsKwParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_d <-- ConsKwParam"
     def traverse_parameters_d_ConsKwParam_tail(self, 
@@ -8141,19 +8141,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_d') 
     
     # traverse parameters_d <-- SingleKwParam"
     def traverse_parameters_d_SingleKwParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_d <-- TransKwParam"
     def traverse_parameters_d_TransKwParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_d <-- TransKwParam"
     def traverse_parameters_d_TransKwParam_tail(self, 
@@ -8161,19 +8161,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'Param') 
     
     # traverse parameters_c <-- SingleTupleBundleParam"
     def traverse_parameters_c_SingleTupleBundleParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_c <-- TransTupleBundleParam"
     def traverse_parameters_c_TransTupleBundleParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_c <-- TransTupleBundleParam"
     def traverse_parameters_c_TransTupleBundleParam_tail(self, 
@@ -8181,19 +8181,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_d') 
     
     # traverse parameters_c <-- ParamsD"
     def traverse_parameters_c_ParamsD_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'parameters_d') 
     
     # traverse parameters_c <-- DoubleBundleParam"
     def traverse_parameters_c_DoubleBundleParam_tuple_param(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_c <-- DoubleBundleParam"
     def traverse_parameters_c_DoubleBundleParam_dict_param(self, 
@@ -8201,19 +8201,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tuple_param_tree : Param, 
         tuple_param_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (tuple_param_aux,)) 
+        return self.traverse_auxes(inher_aux, (tuple_param_aux,), 'Param') 
     
     # traverse parameters_c <-- DictionaryBundleParam"
     def traverse_parameters_c_DictionaryBundleParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_b <-- ConsPosKeyParam"
     def traverse_parameters_b_ConsPosKeyParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_b <-- ConsPosKeyParam"
     def traverse_parameters_b_ConsPosKeyParam_tail(self, 
@@ -8221,25 +8221,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_b') 
     
     # traverse parameters_b <-- SinglePosKeyParam"
     def traverse_parameters_b_SinglePosKeyParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_b <-- ParamsC"
     def traverse_parameters_b_ParamsC_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'parameters_c') 
     
     # traverse parameters_a <-- ConsPosParam"
     def traverse_parameters_a_ConsPosParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_a <-- ConsPosParam"
     def traverse_parameters_a_ConsPosParam_tail(self, 
@@ -8247,19 +8247,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_a') 
     
     # traverse parameters_a <-- SinglePosParam"
     def traverse_parameters_a_SinglePosParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_a <-- TransPosParam"
     def traverse_parameters_a_TransPosParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'Param') 
     
     # traverse parameters_a <-- TransPosParam"
     def traverse_parameters_a_TransPosParam_tail(self, 
@@ -8267,25 +8267,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_b') 
     
     # traverse parameters <-- ParamsA"
     def traverse_parameters_ParamsA_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'parameters_a') 
     
     # traverse parameters <-- ParamsB"
     def traverse_parameters_ParamsB_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'parameters_b') 
     
     # traverse keyword <-- NamedKeyword"
     def traverse_keyword_NamedKeyword_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse keyword <-- NamedKeyword"
     def traverse_keyword_NamedKeyword_content(self, 
@@ -8293,19 +8293,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'expr') 
     
     # traverse keyword <-- SplatKeyword"
     def traverse_keyword_SplatKeyword_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse import_name <-- ImportNameAlias"
     def traverse_import_name_ImportNameAlias_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse import_name <-- ImportNameAlias"
     def traverse_import_name_ImportNameAlias_alias(self, 
@@ -8313,19 +8313,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'str') 
     
     # traverse import_name <-- ImportNameOnly"
     def traverse_import_name_ImportNameOnly_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse with_item <-- WithItemAlias"
     def traverse_with_item_WithItemAlias_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse with_item <-- WithItemAlias"
     def traverse_with_item_WithItemAlias_alias(self, 
@@ -8333,25 +8333,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'expr') 
     
     # traverse with_item <-- WithItemOnly"
     def traverse_with_item_WithItemOnly_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse bases <-- SomeBases"
     def traverse_bases_SomeBases_bases(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'bases_a') 
     
     # traverse bases_a <-- ConsBase"
     def traverse_bases_a_ConsBase_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse bases_a <-- ConsBase"
     def traverse_bases_a_ConsBase_tail(self, 
@@ -8359,25 +8359,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'bases_a') 
     
     # traverse bases_a <-- SingleBase"
     def traverse_bases_a_SingleBase_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse bases_a <-- KeywordBases"
     def traverse_bases_a_KeywordBases_kws(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'keywords') 
     
     # traverse keywords <-- ConsKeyword"
     def traverse_keywords_ConsKeyword_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'keyword') 
     
     # traverse keywords <-- ConsKeyword"
     def traverse_keywords_ConsKeyword_tail(self, 
@@ -8385,19 +8385,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : keyword, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'keywords') 
     
     # traverse keywords <-- SingleKeyword"
     def traverse_keywords_SingleKeyword_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'keyword') 
     
     # traverse comparisons <-- ConsCompareRight"
     def traverse_comparisons_ConsCompareRight_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'CompareRight') 
     
     # traverse comparisons <-- ConsCompareRight"
     def traverse_comparisons_ConsCompareRight_tail(self, 
@@ -8405,25 +8405,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : CompareRight, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'comparisons') 
     
     # traverse comparisons <-- SingleCompareRight"
     def traverse_comparisons_SingleCompareRight_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'CompareRight') 
     
     # traverse option_expr <-- SomeExpr"
     def traverse_option_expr_SomeExpr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse comma_exprs <-- ConsExpr"
     def traverse_comma_exprs_ConsExpr_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse comma_exprs <-- ConsExpr"
     def traverse_comma_exprs_ConsExpr_tail(self, 
@@ -8431,19 +8431,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'comma_exprs') 
     
     # traverse comma_exprs <-- SingleExpr"
     def traverse_comma_exprs_SingleExpr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse target_exprs <-- ConsTargetExpr"
     def traverse_target_exprs_ConsTargetExpr_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse target_exprs <-- ConsTargetExpr"
     def traverse_target_exprs_ConsTargetExpr_tail(self, 
@@ -8451,19 +8451,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'target_exprs') 
     
     # traverse target_exprs <-- SingleTargetExpr"
     def traverse_target_exprs_SingleTargetExpr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse decorators <-- ConsDec"
     def traverse_decorators_ConsDec_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse decorators <-- ConsDec"
     def traverse_decorators_ConsDec_tail(self, 
@@ -8471,13 +8471,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'decorators') 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_tail(self, 
@@ -8485,19 +8485,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'constraint_filters') 
     
     # traverse constraint_filters <-- SingleFilter"
     def traverse_constraint_filters_SingleFilter_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse sequence_string <-- ConsStr"
     def traverse_sequence_string_ConsStr_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse sequence_string <-- ConsStr"
     def traverse_sequence_string_ConsStr_tail(self, 
@@ -8505,19 +8505,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : str, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_string') 
     
     # traverse sequence_string <-- SingleStr"
     def traverse_sequence_string_SingleStr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse arguments <-- ConsArg"
     def traverse_arguments_ConsArg_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse arguments <-- ConsArg"
     def traverse_arguments_ConsArg_tail(self, 
@@ -8525,25 +8525,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'arguments') 
     
     # traverse arguments <-- SingleArg"
     def traverse_arguments_SingleArg_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse arguments <-- KeywordsArg"
     def traverse_arguments_KeywordsArg_kws(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'keywords') 
     
     # traverse dictionary_item <-- Field"
     def traverse_dictionary_item_Field_key(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse dictionary_item <-- Field"
     def traverse_dictionary_item_Field_content(self, 
@@ -8551,19 +8551,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         key_tree : expr, 
         key_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (key_aux,)) 
+        return self.traverse_auxes(inher_aux, (key_aux,), 'expr') 
     
     # traverse dictionary_item <-- DictionarySplatFields"
     def traverse_dictionary_item_DictionarySplatFields_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse dictionary_content <-- ConsDictionaryItem"
     def traverse_dictionary_content_ConsDictionaryItem_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'dictionary_item') 
     
     # traverse dictionary_content <-- ConsDictionaryItem"
     def traverse_dictionary_content_ConsDictionaryItem_tail(self, 
@@ -8571,19 +8571,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : dictionary_item, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'dictionary_content') 
     
     # traverse dictionary_content <-- SingleDictionaryItem"
     def traverse_dictionary_content_SingleDictionaryItem_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'dictionary_item') 
     
     # traverse sequence_name <-- ConsId"
     def traverse_sequence_name_ConsId_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse sequence_name <-- ConsId"
     def traverse_sequence_name_ConsId_tail(self, 
@@ -8591,19 +8591,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : str, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_name') 
     
     # traverse sequence_name <-- SingleId"
     def traverse_sequence_name_SingleId_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse sequence_import_name <-- ConsImportName"
     def traverse_sequence_import_name_ConsImportName_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'import_name') 
     
     # traverse sequence_import_name <-- ConsImportName"
     def traverse_sequence_import_name_ConsImportName_tail(self, 
@@ -8611,19 +8611,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : import_name, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_import_name') 
     
     # traverse sequence_import_name <-- SingleImportName"
     def traverse_sequence_import_name_SingleImportName_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'import_name') 
     
     # traverse sequence_with_item <-- ConsWithItem"
     def traverse_sequence_with_item_ConsWithItem_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'with_item') 
     
     # traverse sequence_with_item <-- ConsWithItem"
     def traverse_sequence_with_item_ConsWithItem_tail(self, 
@@ -8631,19 +8631,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : with_item, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_with_item') 
     
     # traverse sequence_with_item <-- SingleWithItem"
     def traverse_sequence_with_item_SingleWithItem_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'with_item') 
     
     # traverse module <-- FutureMod"
     def traverse_module_FutureMod_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_import_name') 
     
     # traverse module <-- FutureMod"
     def traverse_module_FutureMod_body(self, 
@@ -8651,19 +8651,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         names_tree : sequence_import_name, 
         names_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (names_aux,)) 
+        return self.traverse_auxes(inher_aux, (names_aux,), 'statements') 
     
     # traverse module <-- SimpleMod"
     def traverse_module_SimpleMod_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse statements <-- ConsStmt"
     def traverse_statements_ConsStmt_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'stmt') 
     
     # traverse statements <-- ConsStmt"
     def traverse_statements_ConsStmt_tail(self, 
@@ -8671,19 +8671,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : stmt, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'statements') 
     
     # traverse statements <-- SingleStmt"
     def traverse_statements_SingleStmt_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'stmt') 
     
     # traverse comprehension_constraints <-- ConsConstraint"
     def traverse_comprehension_constraints_ConsConstraint_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'constraint') 
     
     # traverse comprehension_constraints <-- ConsConstraint"
     def traverse_comprehension_constraints_ConsConstraint_tail(self, 
@@ -8691,19 +8691,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : constraint, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'comprehension_constraints') 
     
     # traverse comprehension_constraints <-- SingleConstraint"
     def traverse_comprehension_constraints_SingleConstraint_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'constraint') 
     
     # traverse sequence_ExceptHandler <-- ConsExceptHandler"
     def traverse_sequence_ExceptHandler_ConsExceptHandler_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'ExceptHandler') 
     
     # traverse sequence_ExceptHandler <-- ConsExceptHandler"
     def traverse_sequence_ExceptHandler_ConsExceptHandler_tail(self, 
@@ -8711,19 +8711,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : ExceptHandler, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,)) 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_ExceptHandler') 
     
     # traverse sequence_ExceptHandler <-- SingleExceptHandler"
     def traverse_sequence_ExceptHandler_SingleExceptHandler_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'ExceptHandler') 
     
     # traverse conditions <-- ElifCond"
     def traverse_conditions_ElifCond_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'ElifBlock') 
     
     # traverse conditions <-- ElifCond"
     def traverse_conditions_ElifCond_tail(self, 
@@ -8731,19 +8731,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : ElifBlock, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'conditions') 
     
     # traverse conditions <-- ElseCond"
     def traverse_conditions_ElseCond_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'ElseBlock') 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_params(self, 
@@ -8751,7 +8751,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'parameters') 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_ret_anno(self, 
@@ -8761,7 +8761,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_tree : parameters, 
         params_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, params_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux,), 'return_annotation') 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_body(self, 
@@ -8773,13 +8773,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,), 'statements') 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_params(self, 
@@ -8787,7 +8787,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'parameters') 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_ret_anno(self, 
@@ -8797,7 +8797,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_tree : parameters, 
         params_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, params_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux,), 'return_annotation') 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_body(self, 
@@ -8809,13 +8809,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,), 'statements') 
     
     # traverse stmt <-- DecFunctionDef"
     def traverse_stmt_DecFunctionDef_decs(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'decorators') 
     
     # traverse stmt <-- DecFunctionDef"
     def traverse_stmt_DecFunctionDef_fun_def(self, 
@@ -8823,13 +8823,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         decs_tree : decorators, 
         decs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (decs_aux,)) 
+        return self.traverse_auxes(inher_aux, (decs_aux,), 'function_def') 
     
     # traverse stmt <-- DecClassDef"
     def traverse_stmt_DecClassDef_decs(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'decorators') 
     
     # traverse stmt <-- DecClassDef"
     def traverse_stmt_DecClassDef_class_def(self, 
@@ -8837,25 +8837,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         decs_tree : decorators, 
         decs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (decs_aux,)) 
+        return self.traverse_auxes(inher_aux, (decs_aux,), 'ClassDef') 
     
     # traverse stmt <-- ReturnSomething"
     def traverse_stmt_ReturnSomething_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- Delete"
     def traverse_stmt_Delete_targets(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'comma_exprs') 
     
     # traverse stmt <-- Assign"
     def traverse_stmt_Assign_targets(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'target_exprs') 
     
     # traverse stmt <-- Assign"
     def traverse_stmt_Assign_content(self, 
@@ -8863,13 +8863,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         targets_tree : target_exprs, 
         targets_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (targets_aux,)) 
+        return self.traverse_auxes(inher_aux, (targets_aux,), 'expr') 
     
     # traverse stmt <-- AugAssign"
     def traverse_stmt_AugAssign_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AugAssign"
     def traverse_stmt_AugAssign_op(self, 
@@ -8877,7 +8877,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'bin_rator') 
     
     # traverse stmt <-- AugAssign"
     def traverse_stmt_AugAssign_content(self, 
@@ -8887,13 +8887,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         op_tree : bin_rator, 
         op_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, op_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, op_aux,), 'expr') 
     
     # traverse stmt <-- AnnoAssign"
     def traverse_stmt_AnnoAssign_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AnnoAssign"
     def traverse_stmt_AnnoAssign_anno(self, 
@@ -8901,7 +8901,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- AnnoAssign"
     def traverse_stmt_AnnoAssign_content(self, 
@@ -8911,13 +8911,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         anno_tree : expr, 
         anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, anno_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, anno_aux,), 'expr') 
     
     # traverse stmt <-- AnnoDeclar"
     def traverse_stmt_AnnoDeclar_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AnnoDeclar"
     def traverse_stmt_AnnoDeclar_anno(self, 
@@ -8925,13 +8925,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- For"
     def traverse_stmt_For_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- For"
     def traverse_stmt_For_iter(self, 
@@ -8939,7 +8939,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- For"
     def traverse_stmt_For_body(self, 
@@ -8949,13 +8949,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_iter(self, 
@@ -8963,7 +8963,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_body(self, 
@@ -8973,7 +8973,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_orelse(self, 
@@ -8985,13 +8985,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,), 'ElseBlock') 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_iter(self, 
@@ -8999,7 +8999,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_body(self, 
@@ -9009,13 +9009,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_iter(self, 
@@ -9023,7 +9023,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_body(self, 
@@ -9033,7 +9033,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_orelse(self, 
@@ -9045,13 +9045,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,), 'ElseBlock') 
     
     # traverse stmt <-- While"
     def traverse_stmt_While_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- While"
     def traverse_stmt_While_body(self, 
@@ -9059,13 +9059,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_body(self, 
@@ -9073,7 +9073,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_orelse(self, 
@@ -9083,13 +9083,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux, body_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux, body_aux,), 'ElseBlock') 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_body(self, 
@@ -9097,7 +9097,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_orelse(self, 
@@ -9107,13 +9107,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux, body_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux, body_aux,), 'conditions') 
     
     # traverse stmt <-- With"
     def traverse_stmt_With_items(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_with_item') 
     
     # traverse stmt <-- With"
     def traverse_stmt_With_body(self, 
@@ -9121,13 +9121,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         items_tree : sequence_with_item, 
         items_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (items_aux,)) 
+        return self.traverse_auxes(inher_aux, (items_aux,), 'statements') 
     
     # traverse stmt <-- AsyncWith"
     def traverse_stmt_AsyncWith_items(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_with_item') 
     
     # traverse stmt <-- AsyncWith"
     def traverse_stmt_AsyncWith_body(self, 
@@ -9135,19 +9135,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         items_tree : sequence_with_item, 
         items_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (items_aux,)) 
+        return self.traverse_auxes(inher_aux, (items_aux,), 'statements') 
     
     # traverse stmt <-- RaiseExc"
     def traverse_stmt_RaiseExc_exc(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- RaiseFrom"
     def traverse_stmt_RaiseFrom_exc(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- RaiseFrom"
     def traverse_stmt_RaiseFrom_caus(self, 
@@ -9155,13 +9155,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         exc_tree : expr, 
         exc_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (exc_aux,)) 
+        return self.traverse_auxes(inher_aux, (exc_aux,), 'expr') 
     
     # traverse stmt <-- Try"
     def traverse_stmt_Try_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse stmt <-- Try"
     def traverse_stmt_Try_handlers(self, 
@@ -9169,13 +9169,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_handlers(self, 
@@ -9183,7 +9183,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_orelse(self, 
@@ -9193,13 +9193,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,), 'ElseBlock') 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_handlers(self, 
@@ -9207,7 +9207,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_fin(self, 
@@ -9217,13 +9217,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,), 'FinallyBlock') 
     
     # traverse stmt <-- TryFin"
     def traverse_stmt_TryFin_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse stmt <-- TryFin"
     def traverse_stmt_TryFin_fin(self, 
@@ -9231,13 +9231,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'FinallyBlock') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_handlers(self, 
@@ -9245,7 +9245,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_orelse(self, 
@@ -9255,7 +9255,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,), 'ElseBlock') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_fin(self, 
@@ -9267,19 +9267,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_tree : ElseBlock, 
         orelse_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux, orelse_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux, orelse_aux,), 'FinallyBlock') 
     
     # traverse stmt <-- Assert"
     def traverse_stmt_Assert_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AssertMsg"
     def traverse_stmt_AssertMsg_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- AssertMsg"
     def traverse_stmt_AssertMsg_msg(self, 
@@ -9287,19 +9287,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'expr') 
     
     # traverse stmt <-- Import"
     def traverse_stmt_Import_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_import_name') 
     
     # traverse stmt <-- ImportFrom"
     def traverse_stmt_ImportFrom_module(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- ImportFrom"
     def traverse_stmt_ImportFrom_names(self, 
@@ -9307,37 +9307,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         module_tree : str, 
         module_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (module_aux,)) 
+        return self.traverse_auxes(inher_aux, (module_aux,), 'sequence_import_name') 
     
     # traverse stmt <-- ImportWildCard"
     def traverse_stmt_ImportWildCard_module(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- Global"
     def traverse_stmt_Global_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_name') 
     
     # traverse stmt <-- Nonlocal"
     def traverse_stmt_Nonlocal_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_name') 
     
     # traverse stmt <-- Expr"
     def traverse_stmt_Expr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_left(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_op(self, 
@@ -9345,7 +9345,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux,)) 
+        return self.traverse_auxes(inher_aux, (left_aux,), 'bool_rator') 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_right(self, 
@@ -9355,13 +9355,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         op_tree : bool_rator, 
         op_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux, op_aux,)) 
+        return self.traverse_auxes(inher_aux, (left_aux, op_aux,), 'expr') 
     
     # traverse expr <-- AssignExpr"
     def traverse_expr_AssignExpr_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- AssignExpr"
     def traverse_expr_AssignExpr_content(self, 
@@ -9369,13 +9369,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_left(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_rator(self, 
@@ -9383,7 +9383,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux,)) 
+        return self.traverse_auxes(inher_aux, (left_aux,), 'bin_rator') 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_right(self, 
@@ -9393,13 +9393,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rator_tree : bin_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux, rator_aux,)) 
+        return self.traverse_auxes(inher_aux, (left_aux, rator_aux,), 'expr') 
     
     # traverse expr <-- UnaryOp"
     def traverse_expr_UnaryOp_rator(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'unary_rator') 
     
     # traverse expr <-- UnaryOp"
     def traverse_expr_UnaryOp_rand(self, 
@@ -9407,13 +9407,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rator_tree : unary_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (rator_aux,)) 
+        return self.traverse_auxes(inher_aux, (rator_aux,), 'expr') 
     
     # traverse expr <-- Lambda"
     def traverse_expr_Lambda_params(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'parameters') 
     
     # traverse expr <-- Lambda"
     def traverse_expr_Lambda_body(self, 
@@ -9421,13 +9421,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_tree : parameters, 
         params_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (params_aux,)) 
+        return self.traverse_auxes(inher_aux, (params_aux,), 'expr') 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_test(self, 
@@ -9435,7 +9435,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : expr, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'expr') 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_orelse(self, 
@@ -9445,25 +9445,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, test_aux,)) 
+        return self.traverse_auxes(inher_aux, (body_aux, test_aux,), 'expr') 
     
     # traverse expr <-- Dictionary"
     def traverse_expr_Dictionary_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'dictionary_content') 
     
     # traverse expr <-- Set"
     def traverse_expr_Set_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'comma_exprs') 
     
     # traverse expr <-- ListComp"
     def traverse_expr_ListComp_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- ListComp"
     def traverse_expr_ListComp_constraints(self, 
@@ -9471,13 +9471,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'comprehension_constraints') 
     
     # traverse expr <-- SetComp"
     def traverse_expr_SetComp_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- SetComp"
     def traverse_expr_SetComp_constraints(self, 
@@ -9485,13 +9485,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'comprehension_constraints') 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_key(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_content(self, 
@@ -9499,7 +9499,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         key_tree : expr, 
         key_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (key_aux,)) 
+        return self.traverse_auxes(inher_aux, (key_aux,), 'expr') 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_constraints(self, 
@@ -9509,13 +9509,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (key_aux, content_aux,)) 
+        return self.traverse_auxes(inher_aux, (key_aux, content_aux,), 'comprehension_constraints') 
     
     # traverse expr <-- GeneratorExp"
     def traverse_expr_GeneratorExp_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- GeneratorExp"
     def traverse_expr_GeneratorExp_constraints(self, 
@@ -9523,31 +9523,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'comprehension_constraints') 
     
     # traverse expr <-- Await"
     def traverse_expr_Await_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Yield"
     def traverse_expr_Yield_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- YieldFrom"
     def traverse_expr_YieldFrom_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Compare"
     def traverse_expr_Compare_left(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Compare"
     def traverse_expr_Compare_comps(self, 
@@ -9555,19 +9555,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux,)) 
+        return self.traverse_auxes(inher_aux, (left_aux,), 'comparisons') 
     
     # traverse expr <-- Call"
     def traverse_expr_Call_func(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- CallArgs"
     def traverse_expr_CallArgs_func(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- CallArgs"
     def traverse_expr_CallArgs_args(self, 
@@ -9575,31 +9575,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         func_tree : expr, 
         func_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (func_aux,)) 
+        return self.traverse_auxes(inher_aux, (func_aux,), 'arguments') 
     
     # traverse expr <-- Integer"
     def traverse_expr_Integer_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse expr <-- Float"
     def traverse_expr_Float_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse expr <-- ConcatString"
     def traverse_expr_ConcatString_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'sequence_string') 
     
     # traverse expr <-- Attribute"
     def traverse_expr_Attribute_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Attribute"
     def traverse_expr_Attribute_name(self, 
@@ -9607,13 +9607,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'str') 
     
     # traverse expr <-- Subscript"
     def traverse_expr_Subscript_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Subscript"
     def traverse_expr_Subscript_slice(self, 
@@ -9621,37 +9621,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,)) 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'expr') 
     
     # traverse expr <-- Starred"
     def traverse_expr_Starred_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Name"
     def traverse_expr_Name_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse expr <-- List"
     def traverse_expr_List_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'comma_exprs') 
     
     # traverse expr <-- Tuple"
     def traverse_expr_Tuple_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'comma_exprs') 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_lower(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'option_expr') 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_upper(self, 
@@ -9659,7 +9659,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         lower_tree : option_expr, 
         lower_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (lower_aux,)) 
+        return self.traverse_auxes(inher_aux, (lower_aux,), 'option_expr') 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_step(self, 
@@ -9669,13 +9669,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         upper_tree : option_expr, 
         upper_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (lower_aux, upper_aux,)) 
+        return self.traverse_auxes(inher_aux, (lower_aux, upper_aux,), 'option_expr') 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_search_space(self, 
@@ -9683,7 +9683,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_filts(self, 
@@ -9693,13 +9693,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         search_space_tree : expr, 
         search_space_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,), 'constraint_filters') 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_search_space(self, 
@@ -9707,7 +9707,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_filts(self, 
@@ -9717,14 +9717,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         search_space_tree : expr, 
         search_space_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,)) 
+        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,), 'constraint_filters') 
      
     
     # traverse CompareRight
     def traverse_CompareRight_rator(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'cmp_rator') 
     
     # traverse CompareRight
     def traverse_CompareRight_rand(self,
@@ -9732,13 +9732,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rator_tree : cmp_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (rator_aux,)) 
+        return self.traverse_auxes(inher_aux, (rator_aux,), 'expr') 
     
     # traverse ExceptHandler
     def traverse_ExceptHandler_arg(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'except_arg') 
     
     # traverse ExceptHandler
     def traverse_ExceptHandler_body(self,
@@ -9746,13 +9746,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         arg_tree : except_arg, 
         arg_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (arg_aux,)) 
+        return self.traverse_auxes(inher_aux, (arg_aux,), 'statements') 
     
     # traverse Param
     def traverse_Param_name(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse Param
     def traverse_Param_anno(self,
@@ -9760,7 +9760,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'param_annotation') 
     
     # traverse Param
     def traverse_Param_default(self,
@@ -9770,13 +9770,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         anno_tree : param_annotation, 
         anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, anno_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux, anno_aux,), 'param_default') 
     
     # traverse ClassDef
     def traverse_ClassDef_name(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse ClassDef
     def traverse_ClassDef_bs(self,
@@ -9784,7 +9784,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'bases') 
     
     # traverse ClassDef
     def traverse_ClassDef_body(self,
@@ -9794,13 +9794,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         bs_tree : bases, 
         bs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, bs_aux,)) 
+        return self.traverse_auxes(inher_aux, (name_aux, bs_aux,), 'statements') 
     
     # traverse ElifBlock
     def traverse_ElifBlock_test(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse ElifBlock
     def traverse_ElifBlock_body(self,
@@ -9808,19 +9808,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,)) 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
     
     # traverse ElseBlock
     def traverse_ElseBlock_body(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
     
     # traverse FinallyBlock
     def traverse_FinallyBlock_body(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, ()) 
+        return self.traverse_auxes(inher_aux, (), 'statements') 
      
 
     
@@ -12044,7 +12044,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.inspect_str(token, inher_aux)
 
     @abstractmethod
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...]) -> InherAux:
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type : str) -> InherAux:
         pass
 
     @abstractmethod

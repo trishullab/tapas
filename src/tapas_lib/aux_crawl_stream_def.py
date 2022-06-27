@@ -125,7 +125,7 @@ def generate_traverse_choice_rule(type_name : str, rule : Rule) -> str:
             f"{rule_system.relation_from_item(inner_item)}_aux,"
             for i, inner_item in enumerate(abstract_items)
             if i < index 
-        ])})) 
+        ])}), '{rule_system.type_from_item(item)}') 
     """
         for index, item in enumerate(abstract_items)
     ])
@@ -147,7 +147,7 @@ def generate_traverse_single_rule(rule : Rule) -> str:
             f"{rule_system.relation_from_item(inner_item)}_aux,"
             for i, inner_item in enumerate(abstract_items)
             if i < index 
-        ])})) 
+        ])}), '{rule_system.type_from_item(item)}') 
     """
         for index, item in enumerate(abstract_items)
     ])
@@ -465,7 +465,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.inspect_str(token, inher_aux)
 
     @abstractmethod
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...]) -> InherAux:
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type : str) -> InherAux:
         pass
 
     @abstractmethod

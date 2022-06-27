@@ -1919,14 +1919,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
     # override parent class method
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...]) -> InherAux:
-        last_synth_aux = (
-            synth_auxes[-1]
-            if len(synth_auxes) > 0 else
-            None
-        )
-        if last_synth_aux:
-            return traverse_aux(inher_aux, last_synth_aux)
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type) -> InherAux:
+        if target_syntax_type in ['expr', 'stmt', 'statements']:
+            last_synth_aux = (
+                synth_auxes[-1]
+                if len(synth_auxes) > 0 else
+                None
+            )
+            if last_synth_aux:
+                return traverse_aux(inher_aux, last_synth_aux)
+            else:
+                return inher_aux
         else:
             return inher_aux
 
