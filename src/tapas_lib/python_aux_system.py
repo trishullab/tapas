@@ -386,9 +386,6 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-import sys
-sys.setrecursionlimit(10 ** 6)
-
 def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
     if sub_type == super_type:
@@ -473,7 +470,6 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
 
         return us.every(subsumptions, lambda x : x)
     
-
 
 def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, inher_aux : InherAux) -> bool:
 
@@ -604,6 +600,7 @@ def get_parent_type(t : type, inher_aux : InherAux) -> Optional[type]:
 def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
     t = generalize_type(inher_aux, t)
     class_key = get_class_key(t)
+
     class_record = from_static_path_to_ClassRecord(inher_aux, class_key) 
     if class_record:
         type_args : tuple[type, ...] = get_type_args(t)
@@ -647,15 +644,15 @@ def lookup_static_field_type(class_record : ClassRecord, field_name : str, inher
             return None
 
             
-
 def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> type | None:
+
     if isinstance(anchor_type, ModuleType):
         assert anchor_type.key
         path = f"{anchor_type.key}.{field_name}" 
         dec = from_static_path_to_declaration(inher_aux, path)
         return dec.type
 
-    elif isinstance(anchor_type, TypeType) or isinstance(anchor_type, TypeType):
+    elif isinstance(anchor_type, TypeType):
         content_class_record = infer_class_record(anchor_type.content, inher_aux)
         if content_class_record:
             return lookup_static_field_type(content_class_record, field_name, inher_aux)
@@ -664,6 +661,7 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
 
     else:
         class_record = infer_class_record(anchor_type, inher_aux)
+
         if class_record:
             fields = class_record.instance_fields
             result = fields.get(field_name)
@@ -950,7 +948,8 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
 
 def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRecord | None:
     if path.startswith(inher_aux.external_path + "."):
-        return inher_aux.class_env.get(path[len(inher_aux.external_path + ".")])
+        class_record = inher_aux.class_env.get(path[len(inher_aux.external_path + "."):])
+        return class_record 
 
     sep = "."
     levels = path.split(sep)
@@ -967,7 +966,8 @@ def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRe
             if i + 1 < l: 
                 remaining_path = ".".join(levels[i + 1:])
                 class_record = class_env.get(remaining_path)
-                if class_record: return class_record
+                if class_record: 
+                    return class_record
 
     return None
 

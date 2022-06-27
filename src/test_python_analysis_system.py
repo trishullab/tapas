@@ -76,14 +76,14 @@ def analyze_test(module_name : str, line_limit: int = -1) -> tuple[str, pals.Inh
                 return (partial_code, inher_aux)
     return (partial_code, inher_aux)
 
-def spawn_inspect(module_name : str) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
+def spawn_inspect(module_name : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     code = load_source(module_name) 
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
 
     partial_tokens = [] 
-    client : pals.Client = pals.spawn_analysis(package, module_name)
+    client : pals.Client = pals.spawn_analysis(package, module_name, checks)
     partial_code = ""
     inher_aux : pals.InherAux = client.init
     max_len = len(abstract_tokens)
@@ -96,6 +96,7 @@ def spawn_inspect(module_name : str) -> tuple[Callable[[int], tuple[str, pals.In
     def inspect(l : int) -> tuple[str, pals.InherAux]:
         nonlocal partial_code
         nonlocal inher_aux
+        l = l if l >= 0 else max_len
         i : int = len(partial_tokens) 
         while i < min(l, max_len):
             token = abstract_tokens[i]
@@ -596,6 +597,15 @@ def test_params_dont_traverse():
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
         for sym in 'x', 'y', 'zs', 'a', 'b', 'cs':
             assert sym in aux.local_env
+    finally:
+        kill()
+
+def test_converges():
+    (inspect, kill) = spawn_inspect("converges", pset())
+    try:
+        code, aux = inspect(-1)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     finally:
         kill()
 
