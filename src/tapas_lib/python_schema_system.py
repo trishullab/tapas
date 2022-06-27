@@ -97,7 +97,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TransKwParam",
             [
                 Nonterm("head", "Param", InLine()),
-                Terminal("**"),
+                Terminal(", **"),
                 Nonterm("tail", "Param", InLine())
             ]
         )
