@@ -1934,7 +1934,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "ConsKwParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_d", "ConsKwParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -1990,7 +1990,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "SingleKwParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_d", "SingleKwParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2033,7 +2033,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -2053,7 +2053,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2207,7 +2207,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2263,7 +2263,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_b", "SinglePosKeyParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_b", "SinglePosKeyParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2302,7 +2302,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters_c(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_b", "ParamsC"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_b", "ParamsC"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2349,7 +2349,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "ConsPosParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_a", "ConsPosParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2405,7 +2405,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "SinglePosParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2448,7 +2448,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -2468,7 +2468,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters_b(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2717,7 +2717,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("bases_a", "ConsBase"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("bases_a", "ConsBase"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2773,7 +2773,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("bases_a", "SingleBase"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("bases_a", "SingleBase"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2812,7 +2812,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keywords(child_token, child_inher_aux)
 
-            stack.append((Grammar("bases_a", "KeywordBases"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("bases_a", "KeywordBases"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2859,7 +2859,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keyword(child_token, child_inher_aux)
 
-            stack.append((Grammar("keywords", "ConsKeyword"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("keywords", "ConsKeyword"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2915,7 +2915,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keyword(child_token, child_inher_aux)
 
-            stack.append((Grammar("keywords", "SingleKeyword"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("keywords", "SingleKeyword"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2962,7 +2962,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_CompareRight(child_token, child_inher_aux)
 
-            stack.append((Grammar("comparisons", "ConsCompareRight"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("comparisons", "ConsCompareRight"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3018,7 +3018,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_CompareRight(child_token, child_inher_aux)
 
-            stack.append((Grammar("comparisons", "SingleCompareRight"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("comparisons", "SingleCompareRight"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3090,7 +3090,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("comma_exprs", "ConsExpr"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("comma_exprs", "ConsExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3146,7 +3146,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("comma_exprs", "SingleExpr"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("comma_exprs", "SingleExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3193,7 +3193,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3249,7 +3249,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("target_exprs", "SingleTargetExpr"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("target_exprs", "SingleTargetExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3296,7 +3296,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("decorators", "ConsDec"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3381,7 +3381,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("constraint_filters", "ConsFilter"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("constraint_filters", "ConsFilter"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3437,7 +3437,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("constraint_filters", "SingleFilter"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("constraint_filters", "SingleFilter"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3505,7 +3505,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_string", "ConsStr"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_string", "ConsStr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3561,7 +3561,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_string", "SingleStr"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_string", "SingleStr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3608,7 +3608,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("arguments", "ConsArg"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("arguments", "ConsArg"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3664,7 +3664,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("arguments", "SingleArg"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("arguments", "SingleArg"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3703,7 +3703,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keywords(child_token, child_inher_aux)
 
-            stack.append((Grammar("arguments", "KeywordsArg"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("arguments", "KeywordsArg"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3795,7 +3795,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_dictionary_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3851,7 +3851,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_dictionary_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("dictionary_content", "SingleDictionaryItem"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("dictionary_content", "SingleDictionaryItem"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3898,7 +3898,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_name", "ConsId"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_name", "ConsId"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3954,7 +3954,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_name", "SingleId"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_name", "SingleId"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4001,7 +4001,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_import_name(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4057,7 +4057,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_import_name(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4104,7 +4104,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_with_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4160,7 +4160,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_with_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_with_item", "SingleWithItem"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_with_item", "SingleWithItem"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4252,7 +4252,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_stmt(child_token, child_inher_aux)
 
-            stack.append((Grammar("statements", "ConsStmt"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("statements", "ConsStmt"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4308,7 +4308,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_stmt(child_token, child_inher_aux)
 
-            stack.append((Grammar("statements", "SingleStmt"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("statements", "SingleStmt"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4355,7 +4355,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_constraint(child_token, child_inher_aux)
 
-            stack.append((Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4411,7 +4411,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_constraint(child_token, child_inher_aux)
 
-            stack.append((Grammar("comprehension_constraints", "SingleConstraint"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("comprehension_constraints", "SingleConstraint"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4458,7 +4458,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4514,7 +4514,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_ExceptHandler", "SingleExceptHandler"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("sequence_ExceptHandler", "SingleExceptHandler"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4561,7 +4561,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ElifBlock(child_token, child_inher_aux)
 
-            stack.append((Grammar("conditions", "ElifCond"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("conditions", "ElifCond"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4617,7 +4617,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ElseBlock(child_token, child_inher_aux)
 
-            stack.append((Grammar("conditions", "ElseCond"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("conditions", "ElseCond"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -5831,7 +5831,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_bool_rator(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "BoolOp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "BoolOp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -5985,7 +5985,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_bin_rator(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "BinOp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "BinOp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6067,7 +6067,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_unary_rator(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "UnaryOp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "UnaryOp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6131,7 +6131,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Lambda"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6277,7 +6277,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_dictionary_content(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Dictionary"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Dictionary"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6337,7 +6337,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Set"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Set"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6389,7 +6389,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "ListComp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "ListComp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6453,7 +6453,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "SetComp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "SetComp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6526,7 +6526,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "DictionaryComp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "DictionaryComp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6608,7 +6608,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "GeneratorExp"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "GeneratorExp"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6816,7 +6816,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comparisons(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Compare"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Compare"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6921,7 +6921,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_arguments(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "CallArgs"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "CallArgs"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6972,7 +6972,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Integer"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Integer"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7011,7 +7011,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Float"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Float"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7050,7 +7050,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_sequence_string(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "ConcatString"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "ConcatString"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7186,7 +7186,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Attribute"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Attribute"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7341,7 +7341,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Name"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Name"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7380,7 +7380,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "List"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "List"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7440,7 +7440,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Tuple"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Tuple"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7508,7 +7508,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Slice"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -7528,7 +7528,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Slice"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -7553,7 +7553,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Slice"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -8095,19 +8095,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     def traverse_return_annotation_SomeReturnAnno_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse except_arg <-- SomeExceptArg"
     def traverse_except_arg_SomeExceptArg_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse except_arg <-- SomeExceptArgName"
     def traverse_except_arg_SomeExceptArgName_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse except_arg <-- SomeExceptArgName"
     def traverse_except_arg_SomeExceptArgName_name(self, 
@@ -8115,25 +8115,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse param_annotation <-- SomeParamAnno"
     def traverse_param_annotation_SomeParamAnno_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse param_default <-- SomeParamDefault"
     def traverse_param_default_SomeParamDefault_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_d <-- ConsKwParam"
     def traverse_parameters_d_ConsKwParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_d <-- ConsKwParam"
     def traverse_parameters_d_ConsKwParam_tail(self, 
@@ -8141,19 +8141,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse parameters_d <-- SingleKwParam"
     def traverse_parameters_d_SingleKwParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_d <-- TransKwParam"
     def traverse_parameters_d_TransKwParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_d <-- TransKwParam"
     def traverse_parameters_d_TransKwParam_tail(self, 
@@ -8161,19 +8161,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse parameters_c <-- SingleTupleBundleParam"
     def traverse_parameters_c_SingleTupleBundleParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_c <-- TransTupleBundleParam"
     def traverse_parameters_c_TransTupleBundleParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_c <-- TransTupleBundleParam"
     def traverse_parameters_c_TransTupleBundleParam_tail(self, 
@@ -8181,19 +8181,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse parameters_c <-- ParamsD"
     def traverse_parameters_c_ParamsD_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_c <-- DoubleBundleParam"
     def traverse_parameters_c_DoubleBundleParam_tuple_param(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_c <-- DoubleBundleParam"
     def traverse_parameters_c_DoubleBundleParam_dict_param(self, 
@@ -8201,19 +8201,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tuple_param_tree : Param, 
         tuple_param_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([tuple_param_aux])) 
+        return self.traverse_auxes(inher_aux, (tuple_param_aux,)) 
     
     # traverse parameters_c <-- DictionaryBundleParam"
     def traverse_parameters_c_DictionaryBundleParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_b <-- ConsPosKeyParam"
     def traverse_parameters_b_ConsPosKeyParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_b <-- ConsPosKeyParam"
     def traverse_parameters_b_ConsPosKeyParam_tail(self, 
@@ -8221,25 +8221,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse parameters_b <-- SinglePosKeyParam"
     def traverse_parameters_b_SinglePosKeyParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_b <-- ParamsC"
     def traverse_parameters_b_ParamsC_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_a <-- ConsPosParam"
     def traverse_parameters_a_ConsPosParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_a <-- ConsPosParam"
     def traverse_parameters_a_ConsPosParam_tail(self, 
@@ -8247,19 +8247,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse parameters_a <-- SinglePosParam"
     def traverse_parameters_a_SinglePosParam_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_a <-- TransPosParam"
     def traverse_parameters_a_TransPosParam_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters_a <-- TransPosParam"
     def traverse_parameters_a_TransPosParam_tail(self, 
@@ -8267,25 +8267,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : Param, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse parameters <-- ParamsA"
     def traverse_parameters_ParamsA_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse parameters <-- ParamsB"
     def traverse_parameters_ParamsB_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse keyword <-- NamedKeyword"
     def traverse_keyword_NamedKeyword_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse keyword <-- NamedKeyword"
     def traverse_keyword_NamedKeyword_content(self, 
@@ -8293,19 +8293,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux,)) 
     
     # traverse keyword <-- SplatKeyword"
     def traverse_keyword_SplatKeyword_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse import_name <-- ImportNameAlias"
     def traverse_import_name_ImportNameAlias_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse import_name <-- ImportNameAlias"
     def traverse_import_name_ImportNameAlias_alias(self, 
@@ -8313,19 +8313,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux,)) 
     
     # traverse import_name <-- ImportNameOnly"
     def traverse_import_name_ImportNameOnly_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse with_item <-- WithItemAlias"
     def traverse_with_item_WithItemAlias_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse with_item <-- WithItemAlias"
     def traverse_with_item_WithItemAlias_alias(self, 
@@ -8333,25 +8333,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse with_item <-- WithItemOnly"
     def traverse_with_item_WithItemOnly_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse bases <-- SomeBases"
     def traverse_bases_SomeBases_bases(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse bases_a <-- ConsBase"
     def traverse_bases_a_ConsBase_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse bases_a <-- ConsBase"
     def traverse_bases_a_ConsBase_tail(self, 
@@ -8359,25 +8359,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse bases_a <-- SingleBase"
     def traverse_bases_a_SingleBase_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse bases_a <-- KeywordBases"
     def traverse_bases_a_KeywordBases_kws(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse keywords <-- ConsKeyword"
     def traverse_keywords_ConsKeyword_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse keywords <-- ConsKeyword"
     def traverse_keywords_ConsKeyword_tail(self, 
@@ -8385,19 +8385,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : keyword, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse keywords <-- SingleKeyword"
     def traverse_keywords_SingleKeyword_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse comparisons <-- ConsCompareRight"
     def traverse_comparisons_ConsCompareRight_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse comparisons <-- ConsCompareRight"
     def traverse_comparisons_ConsCompareRight_tail(self, 
@@ -8405,25 +8405,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : CompareRight, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse comparisons <-- SingleCompareRight"
     def traverse_comparisons_SingleCompareRight_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse option_expr <-- SomeExpr"
     def traverse_option_expr_SomeExpr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse comma_exprs <-- ConsExpr"
     def traverse_comma_exprs_ConsExpr_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse comma_exprs <-- ConsExpr"
     def traverse_comma_exprs_ConsExpr_tail(self, 
@@ -8431,19 +8431,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse comma_exprs <-- SingleExpr"
     def traverse_comma_exprs_SingleExpr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse target_exprs <-- ConsTargetExpr"
     def traverse_target_exprs_ConsTargetExpr_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse target_exprs <-- ConsTargetExpr"
     def traverse_target_exprs_ConsTargetExpr_tail(self, 
@@ -8451,19 +8451,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse target_exprs <-- SingleTargetExpr"
     def traverse_target_exprs_SingleTargetExpr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse decorators <-- ConsDec"
     def traverse_decorators_ConsDec_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse decorators <-- ConsDec"
     def traverse_decorators_ConsDec_tail(self, 
@@ -8471,13 +8471,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_tail(self, 
@@ -8485,19 +8485,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse constraint_filters <-- SingleFilter"
     def traverse_constraint_filters_SingleFilter_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_string <-- ConsStr"
     def traverse_sequence_string_ConsStr_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_string <-- ConsStr"
     def traverse_sequence_string_ConsStr_tail(self, 
@@ -8505,19 +8505,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : str, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse sequence_string <-- SingleStr"
     def traverse_sequence_string_SingleStr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse arguments <-- ConsArg"
     def traverse_arguments_ConsArg_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse arguments <-- ConsArg"
     def traverse_arguments_ConsArg_tail(self, 
@@ -8525,25 +8525,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse arguments <-- SingleArg"
     def traverse_arguments_SingleArg_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse arguments <-- KeywordsArg"
     def traverse_arguments_KeywordsArg_kws(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse dictionary_item <-- Field"
     def traverse_dictionary_item_Field_key(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse dictionary_item <-- Field"
     def traverse_dictionary_item_Field_content(self, 
@@ -8551,19 +8551,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         key_tree : expr, 
         key_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([key_aux])) 
+        return self.traverse_auxes(inher_aux, (key_aux,)) 
     
     # traverse dictionary_item <-- DictionarySplatFields"
     def traverse_dictionary_item_DictionarySplatFields_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse dictionary_content <-- ConsDictionaryItem"
     def traverse_dictionary_content_ConsDictionaryItem_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse dictionary_content <-- ConsDictionaryItem"
     def traverse_dictionary_content_ConsDictionaryItem_tail(self, 
@@ -8571,19 +8571,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : dictionary_item, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse dictionary_content <-- SingleDictionaryItem"
     def traverse_dictionary_content_SingleDictionaryItem_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_name <-- ConsId"
     def traverse_sequence_name_ConsId_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_name <-- ConsId"
     def traverse_sequence_name_ConsId_tail(self, 
@@ -8591,19 +8591,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : str, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse sequence_name <-- SingleId"
     def traverse_sequence_name_SingleId_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_import_name <-- ConsImportName"
     def traverse_sequence_import_name_ConsImportName_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_import_name <-- ConsImportName"
     def traverse_sequence_import_name_ConsImportName_tail(self, 
@@ -8611,19 +8611,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : import_name, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse sequence_import_name <-- SingleImportName"
     def traverse_sequence_import_name_SingleImportName_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_with_item <-- ConsWithItem"
     def traverse_sequence_with_item_ConsWithItem_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_with_item <-- ConsWithItem"
     def traverse_sequence_with_item_ConsWithItem_tail(self, 
@@ -8631,19 +8631,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : with_item, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse sequence_with_item <-- SingleWithItem"
     def traverse_sequence_with_item_SingleWithItem_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse module <-- FutureMod"
     def traverse_module_FutureMod_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse module <-- FutureMod"
     def traverse_module_FutureMod_body(self, 
@@ -8651,19 +8651,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         names_tree : sequence_import_name, 
         names_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([names_aux])) 
+        return self.traverse_auxes(inher_aux, (names_aux,)) 
     
     # traverse module <-- SimpleMod"
     def traverse_module_SimpleMod_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse statements <-- ConsStmt"
     def traverse_statements_ConsStmt_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse statements <-- ConsStmt"
     def traverse_statements_ConsStmt_tail(self, 
@@ -8671,19 +8671,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : stmt, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse statements <-- SingleStmt"
     def traverse_statements_SingleStmt_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse comprehension_constraints <-- ConsConstraint"
     def traverse_comprehension_constraints_ConsConstraint_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse comprehension_constraints <-- ConsConstraint"
     def traverse_comprehension_constraints_ConsConstraint_tail(self, 
@@ -8691,19 +8691,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : constraint, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse comprehension_constraints <-- SingleConstraint"
     def traverse_comprehension_constraints_SingleConstraint_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_ExceptHandler <-- ConsExceptHandler"
     def traverse_sequence_ExceptHandler_ConsExceptHandler_head(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse sequence_ExceptHandler <-- ConsExceptHandler"
     def traverse_sequence_ExceptHandler_ConsExceptHandler_tail(self, 
@@ -8711,19 +8711,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         head_tree : ExceptHandler, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([head_aux])) 
+        return self.traverse_auxes(inher_aux, (head_aux,)) 
     
     # traverse sequence_ExceptHandler <-- SingleExceptHandler"
     def traverse_sequence_ExceptHandler_SingleExceptHandler_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse conditions <-- ElifCond"
     def traverse_conditions_ElifCond_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse conditions <-- ElifCond"
     def traverse_conditions_ElifCond_tail(self, 
@@ -8731,19 +8731,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : ElifBlock, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse conditions <-- ElseCond"
     def traverse_conditions_ElseCond_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_params(self, 
@@ -8751,7 +8751,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux,)) 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_ret_anno(self, 
@@ -8761,7 +8761,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_tree : parameters, 
         params_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux, params_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux,)) 
     
     # traverse function_def <-- FunctionDef"
     def traverse_function_def_FunctionDef_body(self, 
@@ -8773,13 +8773,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux, params_aux, ret_anno_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,)) 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_name(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_params(self, 
@@ -8787,7 +8787,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux,)) 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_ret_anno(self, 
@@ -8797,7 +8797,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_tree : parameters, 
         params_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux, params_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux,)) 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_body(self, 
@@ -8809,13 +8809,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux, params_aux, ret_anno_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,)) 
     
     # traverse stmt <-- DecFunctionDef"
     def traverse_stmt_DecFunctionDef_decs(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- DecFunctionDef"
     def traverse_stmt_DecFunctionDef_fun_def(self, 
@@ -8823,13 +8823,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         decs_tree : decorators, 
         decs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([decs_aux])) 
+        return self.traverse_auxes(inher_aux, (decs_aux,)) 
     
     # traverse stmt <-- DecClassDef"
     def traverse_stmt_DecClassDef_decs(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- DecClassDef"
     def traverse_stmt_DecClassDef_class_def(self, 
@@ -8837,25 +8837,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         decs_tree : decorators, 
         decs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([decs_aux])) 
+        return self.traverse_auxes(inher_aux, (decs_aux,)) 
     
     # traverse stmt <-- ReturnSomething"
     def traverse_stmt_ReturnSomething_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Delete"
     def traverse_stmt_Delete_targets(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Assign"
     def traverse_stmt_Assign_targets(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Assign"
     def traverse_stmt_Assign_content(self, 
@@ -8863,13 +8863,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         targets_tree : target_exprs, 
         targets_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([targets_aux])) 
+        return self.traverse_auxes(inher_aux, (targets_aux,)) 
     
     # traverse stmt <-- AugAssign"
     def traverse_stmt_AugAssign_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AugAssign"
     def traverse_stmt_AugAssign_op(self, 
@@ -8877,7 +8877,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- AugAssign"
     def traverse_stmt_AugAssign_content(self, 
@@ -8887,13 +8887,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         op_tree : bin_rator, 
         op_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, op_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, op_aux,)) 
     
     # traverse stmt <-- AnnoAssign"
     def traverse_stmt_AnnoAssign_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AnnoAssign"
     def traverse_stmt_AnnoAssign_anno(self, 
@@ -8901,7 +8901,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- AnnoAssign"
     def traverse_stmt_AnnoAssign_content(self, 
@@ -8911,13 +8911,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         anno_tree : expr, 
         anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, anno_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, anno_aux,)) 
     
     # traverse stmt <-- AnnoDeclar"
     def traverse_stmt_AnnoDeclar_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AnnoDeclar"
     def traverse_stmt_AnnoDeclar_anno(self, 
@@ -8925,13 +8925,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- For"
     def traverse_stmt_For_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- For"
     def traverse_stmt_For_iter(self, 
@@ -8939,7 +8939,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- For"
     def traverse_stmt_For_body(self, 
@@ -8949,13 +8949,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, iter_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_iter(self, 
@@ -8963,7 +8963,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_body(self, 
@@ -8973,7 +8973,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, iter_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_orelse(self, 
@@ -8985,13 +8985,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, iter_aux, body_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,)) 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_iter(self, 
@@ -8999,7 +8999,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_body(self, 
@@ -9009,13 +9009,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, iter_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_iter(self, 
@@ -9023,7 +9023,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_body(self, 
@@ -9033,7 +9033,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, iter_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,)) 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_orelse(self, 
@@ -9045,13 +9045,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, iter_aux, body_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,)) 
     
     # traverse stmt <-- While"
     def traverse_stmt_While_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- While"
     def traverse_stmt_While_body(self, 
@@ -9059,13 +9059,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux,)) 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_body(self, 
@@ -9073,7 +9073,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux,)) 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_orelse(self, 
@@ -9083,13 +9083,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux, body_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux, body_aux,)) 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_body(self, 
@@ -9097,7 +9097,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux,)) 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_orelse(self, 
@@ -9107,13 +9107,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux, body_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux, body_aux,)) 
     
     # traverse stmt <-- With"
     def traverse_stmt_With_items(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- With"
     def traverse_stmt_With_body(self, 
@@ -9121,13 +9121,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         items_tree : sequence_with_item, 
         items_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([items_aux])) 
+        return self.traverse_auxes(inher_aux, (items_aux,)) 
     
     # traverse stmt <-- AsyncWith"
     def traverse_stmt_AsyncWith_items(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AsyncWith"
     def traverse_stmt_AsyncWith_body(self, 
@@ -9135,19 +9135,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         items_tree : sequence_with_item, 
         items_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([items_aux])) 
+        return self.traverse_auxes(inher_aux, (items_aux,)) 
     
     # traverse stmt <-- RaiseExc"
     def traverse_stmt_RaiseExc_exc(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- RaiseFrom"
     def traverse_stmt_RaiseFrom_exc(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- RaiseFrom"
     def traverse_stmt_RaiseFrom_caus(self, 
@@ -9155,13 +9155,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         exc_tree : expr, 
         exc_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([exc_aux])) 
+        return self.traverse_auxes(inher_aux, (exc_aux,)) 
     
     # traverse stmt <-- Try"
     def traverse_stmt_Try_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Try"
     def traverse_stmt_Try_handlers(self, 
@@ -9169,13 +9169,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux,)) 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_handlers(self, 
@@ -9183,7 +9183,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux,)) 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_orelse(self, 
@@ -9193,13 +9193,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux, handlers_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,)) 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_handlers(self, 
@@ -9207,7 +9207,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux,)) 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_fin(self, 
@@ -9217,13 +9217,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux, handlers_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,)) 
     
     # traverse stmt <-- TryFin"
     def traverse_stmt_TryFin_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- TryFin"
     def traverse_stmt_TryFin_fin(self, 
@@ -9231,13 +9231,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux,)) 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_handlers(self, 
@@ -9245,7 +9245,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux,)) 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_orelse(self, 
@@ -9255,7 +9255,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux, handlers_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,)) 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_fin(self, 
@@ -9267,19 +9267,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_tree : ElseBlock, 
         orelse_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux, handlers_aux, orelse_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux, orelse_aux,)) 
     
     # traverse stmt <-- Assert"
     def traverse_stmt_Assert_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AssertMsg"
     def traverse_stmt_AssertMsg_test(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- AssertMsg"
     def traverse_stmt_AssertMsg_msg(self, 
@@ -9287,19 +9287,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux,)) 
     
     # traverse stmt <-- Import"
     def traverse_stmt_Import_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- ImportFrom"
     def traverse_stmt_ImportFrom_module(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- ImportFrom"
     def traverse_stmt_ImportFrom_names(self, 
@@ -9307,37 +9307,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         module_tree : str, 
         module_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([module_aux])) 
+        return self.traverse_auxes(inher_aux, (module_aux,)) 
     
     # traverse stmt <-- ImportWildCard"
     def traverse_stmt_ImportWildCard_module(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Global"
     def traverse_stmt_Global_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Nonlocal"
     def traverse_stmt_Nonlocal_names(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse stmt <-- Expr"
     def traverse_stmt_Expr_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_left(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_op(self, 
@@ -9345,7 +9345,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([left_aux])) 
+        return self.traverse_auxes(inher_aux, (left_aux,)) 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_right(self, 
@@ -9355,13 +9355,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         op_tree : bool_rator, 
         op_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([left_aux, op_aux])) 
+        return self.traverse_auxes(inher_aux, (left_aux, op_aux,)) 
     
     # traverse expr <-- AssignExpr"
     def traverse_expr_AssignExpr_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- AssignExpr"
     def traverse_expr_AssignExpr_content(self, 
@@ -9369,13 +9369,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_left(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_rator(self, 
@@ -9383,7 +9383,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([left_aux])) 
+        return self.traverse_auxes(inher_aux, (left_aux,)) 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_right(self, 
@@ -9393,13 +9393,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rator_tree : bin_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([left_aux, rator_aux])) 
+        return self.traverse_auxes(inher_aux, (left_aux, rator_aux,)) 
     
     # traverse expr <-- UnaryOp"
     def traverse_expr_UnaryOp_rator(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- UnaryOp"
     def traverse_expr_UnaryOp_rand(self, 
@@ -9407,13 +9407,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rator_tree : unary_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([rator_aux])) 
+        return self.traverse_auxes(inher_aux, (rator_aux,)) 
     
     # traverse expr <-- Lambda"
     def traverse_expr_Lambda_params(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Lambda"
     def traverse_expr_Lambda_body(self, 
@@ -9421,13 +9421,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_tree : parameters, 
         params_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([params_aux])) 
+        return self.traverse_auxes(inher_aux, (params_aux,)) 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_body(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_test(self, 
@@ -9435,7 +9435,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_tree : expr, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux,)) 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_orelse(self, 
@@ -9445,25 +9445,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([body_aux, test_aux])) 
+        return self.traverse_auxes(inher_aux, (body_aux, test_aux,)) 
     
     # traverse expr <-- Dictionary"
     def traverse_expr_Dictionary_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Set"
     def traverse_expr_Set_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- ListComp"
     def traverse_expr_ListComp_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- ListComp"
     def traverse_expr_ListComp_constraints(self, 
@@ -9471,13 +9471,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse expr <-- SetComp"
     def traverse_expr_SetComp_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- SetComp"
     def traverse_expr_SetComp_constraints(self, 
@@ -9485,13 +9485,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_key(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_content(self, 
@@ -9499,7 +9499,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         key_tree : expr, 
         key_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([key_aux])) 
+        return self.traverse_auxes(inher_aux, (key_aux,)) 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_constraints(self, 
@@ -9509,13 +9509,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([key_aux, content_aux])) 
+        return self.traverse_auxes(inher_aux, (key_aux, content_aux,)) 
     
     # traverse expr <-- GeneratorExp"
     def traverse_expr_GeneratorExp_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- GeneratorExp"
     def traverse_expr_GeneratorExp_constraints(self, 
@@ -9523,31 +9523,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse expr <-- Await"
     def traverse_expr_Await_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Yield"
     def traverse_expr_Yield_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- YieldFrom"
     def traverse_expr_YieldFrom_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Compare"
     def traverse_expr_Compare_left(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Compare"
     def traverse_expr_Compare_comps(self, 
@@ -9555,19 +9555,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([left_aux])) 
+        return self.traverse_auxes(inher_aux, (left_aux,)) 
     
     # traverse expr <-- Call"
     def traverse_expr_Call_func(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- CallArgs"
     def traverse_expr_CallArgs_func(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- CallArgs"
     def traverse_expr_CallArgs_args(self, 
@@ -9575,31 +9575,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         func_tree : expr, 
         func_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([func_aux])) 
+        return self.traverse_auxes(inher_aux, (func_aux,)) 
     
     # traverse expr <-- Integer"
     def traverse_expr_Integer_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Float"
     def traverse_expr_Float_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- ConcatString"
     def traverse_expr_ConcatString_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Attribute"
     def traverse_expr_Attribute_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Attribute"
     def traverse_expr_Attribute_name(self, 
@@ -9607,13 +9607,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse expr <-- Subscript"
     def traverse_expr_Subscript_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Subscript"
     def traverse_expr_Subscript_slice(self, 
@@ -9621,37 +9621,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([content_aux])) 
+        return self.traverse_auxes(inher_aux, (content_aux,)) 
     
     # traverse expr <-- Starred"
     def traverse_expr_Starred_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Name"
     def traverse_expr_Name_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- List"
     def traverse_expr_List_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Tuple"
     def traverse_expr_Tuple_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_lower(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_upper(self, 
@@ -9659,7 +9659,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         lower_tree : option_expr, 
         lower_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([lower_aux])) 
+        return self.traverse_auxes(inher_aux, (lower_aux,)) 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_step(self, 
@@ -9669,13 +9669,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         upper_tree : option_expr, 
         upper_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([lower_aux, upper_aux])) 
+        return self.traverse_auxes(inher_aux, (lower_aux, upper_aux,)) 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_search_space(self, 
@@ -9683,7 +9683,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_filts(self, 
@@ -9693,13 +9693,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         search_space_tree : expr, 
         search_space_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, search_space_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,)) 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_target(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_search_space(self, 
@@ -9707,7 +9707,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux,)) 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_filts(self, 
@@ -9717,14 +9717,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         search_space_tree : expr, 
         search_space_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([target_aux, search_space_aux])) 
+        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,)) 
      
     
     # traverse CompareRight
     def traverse_CompareRight_rator(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse CompareRight
     def traverse_CompareRight_rand(self,
@@ -9732,13 +9732,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rator_tree : cmp_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([rator_aux])) 
+        return self.traverse_auxes(inher_aux, (rator_aux,)) 
     
     # traverse ExceptHandler
     def traverse_ExceptHandler_arg(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse ExceptHandler
     def traverse_ExceptHandler_body(self,
@@ -9746,13 +9746,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         arg_tree : except_arg, 
         arg_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([arg_aux])) 
+        return self.traverse_auxes(inher_aux, (arg_aux,)) 
     
     # traverse Param
     def traverse_Param_name(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse Param
     def traverse_Param_anno(self,
@@ -9760,7 +9760,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux,)) 
     
     # traverse Param
     def traverse_Param_default(self,
@@ -9770,13 +9770,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         anno_tree : param_annotation, 
         anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux, anno_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux, anno_aux,)) 
     
     # traverse ClassDef
     def traverse_ClassDef_name(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse ClassDef
     def traverse_ClassDef_bs(self,
@@ -9784,7 +9784,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux,)) 
     
     # traverse ClassDef
     def traverse_ClassDef_body(self,
@@ -9794,13 +9794,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         bs_tree : bases, 
         bs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([name_aux, bs_aux])) 
+        return self.traverse_auxes(inher_aux, (name_aux, bs_aux,)) 
     
     # traverse ElifBlock
     def traverse_ElifBlock_test(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse ElifBlock
     def traverse_ElifBlock_body(self,
@@ -9808,19 +9808,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([test_aux])) 
+        return self.traverse_auxes(inher_aux, (test_aux,)) 
     
     # traverse ElseBlock
     def traverse_ElseBlock_body(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
     
     # traverse FinallyBlock
     def traverse_FinallyBlock_body(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([])) 
+        return self.traverse_auxes(inher_aux, ()) 
      
 
     
@@ -9832,7 +9832,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeReturnAnno(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: return_annotation <-- NoReturnAnno
@@ -9841,7 +9841,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoReturnAnno(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: except_arg <-- SomeExceptArg
@@ -9852,7 +9852,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeExceptArg(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: except_arg <-- SomeExceptArgName
@@ -9865,7 +9865,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeExceptArgName(content_tree, name_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, name_aux])) 
+            aux = self.synthesize_auxes((content_aux, name_aux,)) 
         )
     
     # synthesize: except_arg <-- NoExceptArg
@@ -9874,7 +9874,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoExceptArg(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: param_annotation <-- SomeParamAnno
@@ -9885,7 +9885,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeParamAnno(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: param_annotation <-- NoParamAnno
@@ -9894,7 +9894,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoParamAnno(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: param_default <-- SomeParamDefault
@@ -9905,7 +9905,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeParamDefault(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: param_default <-- NoParamDefault
@@ -9914,7 +9914,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoParamDefault(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: parameters_d <-- ConsKwParam
@@ -9927,7 +9927,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsKwParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_d <-- SingleKwParam
@@ -9938,7 +9938,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleKwParam(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_d <-- TransKwParam
@@ -9951,7 +9951,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TransKwParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_c <-- SingleTupleBundleParam
@@ -9962,7 +9962,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleTupleBundleParam(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_c <-- TransTupleBundleParam
@@ -9975,7 +9975,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TransTupleBundleParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_c <-- ParamsD
@@ -9986,7 +9986,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ParamsD(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_c <-- DoubleBundleParam
@@ -9999,7 +9999,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = DoubleBundleParam(tuple_param_tree, dict_param_tree),
-            aux = self.synthesize_auxes(tuple([tuple_param_aux, dict_param_aux])) 
+            aux = self.synthesize_auxes((tuple_param_aux, dict_param_aux,)) 
         )
     
     # synthesize: parameters_c <-- DictionaryBundleParam
@@ -10010,7 +10010,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = DictionaryBundleParam(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_b <-- ConsPosKeyParam
@@ -10023,7 +10023,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsPosKeyParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_b <-- SinglePosKeyParam
@@ -10034,7 +10034,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SinglePosKeyParam(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_b <-- ParamsC
@@ -10045,7 +10045,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ParamsC(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_a <-- ConsPosParam
@@ -10058,7 +10058,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsPosParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_a <-- SinglePosParam
@@ -10069,7 +10069,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SinglePosParam(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters_a <-- TransPosParam
@@ -10082,7 +10082,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TransPosParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: parameters <-- ParamsA
@@ -10093,7 +10093,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ParamsA(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters <-- ParamsB
@@ -10104,7 +10104,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ParamsB(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: parameters <-- NoParam
@@ -10113,7 +10113,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoParam(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: keyword <-- NamedKeyword
@@ -10126,7 +10126,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NamedKeyword(name_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([name_aux, content_aux])) 
+            aux = self.synthesize_auxes((name_aux, content_aux,)) 
         )
     
     # synthesize: keyword <-- SplatKeyword
@@ -10137,7 +10137,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SplatKeyword(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: import_name <-- ImportNameAlias
@@ -10150,7 +10150,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ImportNameAlias(name_tree, alias_tree),
-            aux = self.synthesize_auxes(tuple([name_aux, alias_aux])) 
+            aux = self.synthesize_auxes((name_aux, alias_aux,)) 
         )
     
     # synthesize: import_name <-- ImportNameOnly
@@ -10161,7 +10161,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ImportNameOnly(name_tree),
-            aux = self.synthesize_auxes(tuple([name_aux])) 
+            aux = self.synthesize_auxes((name_aux,)) 
         )
     
     # synthesize: with_item <-- WithItemAlias
@@ -10174,7 +10174,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = WithItemAlias(content_tree, alias_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, alias_aux])) 
+            aux = self.synthesize_auxes((content_aux, alias_aux,)) 
         )
     
     # synthesize: with_item <-- WithItemOnly
@@ -10185,7 +10185,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = WithItemOnly(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: bases <-- SomeBases
@@ -10196,7 +10196,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeBases(bases_tree),
-            aux = self.synthesize_auxes(tuple([bases_aux])) 
+            aux = self.synthesize_auxes((bases_aux,)) 
         )
     
     # synthesize: bases <-- NoBases
@@ -10205,7 +10205,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoBases(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bases_a <-- ConsBase
@@ -10218,7 +10218,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsBase(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: bases_a <-- SingleBase
@@ -10229,7 +10229,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleBase(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: bases_a <-- KeywordBases
@@ -10240,7 +10240,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = KeywordBases(kws_tree),
-            aux = self.synthesize_auxes(tuple([kws_aux])) 
+            aux = self.synthesize_auxes((kws_aux,)) 
         )
     
     # synthesize: keywords <-- ConsKeyword
@@ -10253,7 +10253,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsKeyword(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: keywords <-- SingleKeyword
@@ -10264,7 +10264,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleKeyword(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: comparisons <-- ConsCompareRight
@@ -10277,7 +10277,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsCompareRight(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: comparisons <-- SingleCompareRight
@@ -10288,7 +10288,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleCompareRight(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: option_expr <-- SomeExpr
@@ -10299,7 +10299,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SomeExpr(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: option_expr <-- NoExpr
@@ -10308,7 +10308,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoExpr(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: comma_exprs <-- ConsExpr
@@ -10321,7 +10321,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsExpr(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: comma_exprs <-- SingleExpr
@@ -10332,7 +10332,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleExpr(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: target_exprs <-- ConsTargetExpr
@@ -10345,7 +10345,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsTargetExpr(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: target_exprs <-- SingleTargetExpr
@@ -10356,7 +10356,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleTargetExpr(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: decorators <-- ConsDec
@@ -10369,7 +10369,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsDec(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: decorators <-- NoDec
@@ -10378,7 +10378,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoDec(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: constraint_filters <-- ConsFilter
@@ -10391,7 +10391,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsFilter(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: constraint_filters <-- SingleFilter
@@ -10402,7 +10402,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleFilter(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: constraint_filters <-- NoFilter
@@ -10411,7 +10411,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoFilter(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: sequence_string <-- ConsStr
@@ -10424,7 +10424,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsStr(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_string <-- SingleStr
@@ -10435,7 +10435,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleStr(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: arguments <-- ConsArg
@@ -10448,7 +10448,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsArg(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: arguments <-- SingleArg
@@ -10459,7 +10459,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleArg(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: arguments <-- KeywordsArg
@@ -10470,7 +10470,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = KeywordsArg(kws_tree),
-            aux = self.synthesize_auxes(tuple([kws_aux])) 
+            aux = self.synthesize_auxes((kws_aux,)) 
         )
     
     # synthesize: dictionary_item <-- Field
@@ -10483,7 +10483,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Field(key_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([key_aux, content_aux])) 
+            aux = self.synthesize_auxes((key_aux, content_aux,)) 
         )
     
     # synthesize: dictionary_item <-- DictionarySplatFields
@@ -10494,7 +10494,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = DictionarySplatFields(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: dictionary_content <-- ConsDictionaryItem
@@ -10507,7 +10507,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsDictionaryItem(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: dictionary_content <-- SingleDictionaryItem
@@ -10518,7 +10518,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleDictionaryItem(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: sequence_name <-- ConsId
@@ -10531,7 +10531,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsId(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_name <-- SingleId
@@ -10542,7 +10542,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleId(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: sequence_import_name <-- ConsImportName
@@ -10555,7 +10555,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsImportName(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_import_name <-- SingleImportName
@@ -10566,7 +10566,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleImportName(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: sequence_with_item <-- ConsWithItem
@@ -10579,7 +10579,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsWithItem(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_with_item <-- SingleWithItem
@@ -10590,7 +10590,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleWithItem(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: module <-- FutureMod
@@ -10603,7 +10603,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = FutureMod(names_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([names_aux, body_aux])) 
+            aux = self.synthesize_auxes((names_aux, body_aux,)) 
         )
     
     # synthesize: module <-- SimpleMod
@@ -10614,7 +10614,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SimpleMod(body_tree),
-            aux = self.synthesize_auxes(tuple([body_aux])) 
+            aux = self.synthesize_auxes((body_aux,)) 
         )
     
     # synthesize: statements <-- ConsStmt
@@ -10627,7 +10627,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsStmt(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: statements <-- SingleStmt
@@ -10638,7 +10638,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleStmt(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: comprehension_constraints <-- ConsConstraint
@@ -10651,7 +10651,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsConstraint(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: comprehension_constraints <-- SingleConstraint
@@ -10662,7 +10662,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleConstraint(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: sequence_ExceptHandler <-- ConsExceptHandler
@@ -10675,7 +10675,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConsExceptHandler(head_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([head_aux, tail_aux])) 
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_ExceptHandler <-- SingleExceptHandler
@@ -10686,7 +10686,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SingleExceptHandler(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: conditions <-- ElifCond
@@ -10699,7 +10699,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ElifCond(content_tree, tail_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, tail_aux])) 
+            aux = self.synthesize_auxes((content_aux, tail_aux,)) 
         )
     
     # synthesize: conditions <-- ElseCond
@@ -10710,7 +10710,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ElseCond(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: conditions <-- NoCond
@@ -10719,7 +10719,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NoCond(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: function_def <-- FunctionDef
@@ -10736,7 +10736,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([name_aux, params_aux, ret_anno_aux, body_aux])) 
+            aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, body_aux,)) 
         )
     
     # synthesize: function_def <-- AsyncFunctionDef
@@ -10753,7 +10753,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([name_aux, params_aux, ret_anno_aux, body_aux])) 
+            aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- DecFunctionDef
@@ -10766,7 +10766,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = DecFunctionDef(decs_tree, fun_def_tree),
-            aux = self.synthesize_auxes(tuple([decs_aux, fun_def_aux])) 
+            aux = self.synthesize_auxes((decs_aux, fun_def_aux,)) 
         )
     
     # synthesize: stmt <-- DecClassDef
@@ -10779,7 +10779,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = DecClassDef(decs_tree, class_def_tree),
-            aux = self.synthesize_auxes(tuple([decs_aux, class_def_aux])) 
+            aux = self.synthesize_auxes((decs_aux, class_def_aux,)) 
         )
     
     # synthesize: stmt <-- ReturnSomething
@@ -10790,7 +10790,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ReturnSomething(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: stmt <-- Return
@@ -10799,7 +10799,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Return(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: stmt <-- Delete
@@ -10810,7 +10810,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Delete(targets_tree),
-            aux = self.synthesize_auxes(tuple([targets_aux])) 
+            aux = self.synthesize_auxes((targets_aux,)) 
         )
     
     # synthesize: stmt <-- Assign
@@ -10823,7 +10823,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Assign(targets_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([targets_aux, content_aux])) 
+            aux = self.synthesize_auxes((targets_aux, content_aux,)) 
         )
     
     # synthesize: stmt <-- AugAssign
@@ -10838,7 +10838,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AugAssign(target_tree, op_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, op_aux, content_aux])) 
+            aux = self.synthesize_auxes((target_aux, op_aux, content_aux,)) 
         )
     
     # synthesize: stmt <-- AnnoAssign
@@ -10853,7 +10853,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AnnoAssign(target_tree, anno_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, anno_aux, content_aux])) 
+            aux = self.synthesize_auxes((target_aux, anno_aux, content_aux,)) 
         )
     
     # synthesize: stmt <-- AnnoDeclar
@@ -10866,7 +10866,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AnnoDeclar(target_tree, anno_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, anno_aux])) 
+            aux = self.synthesize_auxes((target_aux, anno_aux,)) 
         )
     
     # synthesize: stmt <-- For
@@ -10881,7 +10881,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = For(target_tree, iter_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux])) 
+            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- ForElse
@@ -10898,7 +10898,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])) 
+            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- AsyncFor
@@ -10913,7 +10913,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AsyncFor(target_tree, iter_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux])) 
+            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- AsyncForElse
@@ -10930,7 +10930,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])) 
+            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- While
@@ -10943,7 +10943,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = While(test_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([test_aux, body_aux])) 
+            aux = self.synthesize_auxes((test_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- WhileElse
@@ -10958,7 +10958,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = WhileElse(test_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])) 
+            aux = self.synthesize_auxes((test_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- If
@@ -10973,7 +10973,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = If(test_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])) 
+            aux = self.synthesize_auxes((test_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- With
@@ -10986,7 +10986,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = With(items_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([items_aux, body_aux])) 
+            aux = self.synthesize_auxes((items_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- AsyncWith
@@ -10999,7 +10999,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AsyncWith(items_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([items_aux, body_aux])) 
+            aux = self.synthesize_auxes((items_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- Raise
@@ -11008,7 +11008,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Raise(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: stmt <-- RaiseExc
@@ -11019,7 +11019,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = RaiseExc(exc_tree),
-            aux = self.synthesize_auxes(tuple([exc_aux])) 
+            aux = self.synthesize_auxes((exc_aux,)) 
         )
     
     # synthesize: stmt <-- RaiseFrom
@@ -11032,7 +11032,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = RaiseFrom(exc_tree, caus_tree),
-            aux = self.synthesize_auxes(tuple([exc_aux, caus_aux])) 
+            aux = self.synthesize_auxes((exc_aux, caus_aux,)) 
         )
     
     # synthesize: stmt <-- Try
@@ -11045,7 +11045,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Try(body_tree, handlers_tree),
-            aux = self.synthesize_auxes(tuple([body_aux, handlers_aux])) 
+            aux = self.synthesize_auxes((body_aux, handlers_aux,)) 
         )
     
     # synthesize: stmt <-- TryElse
@@ -11060,7 +11060,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TryElse(body_tree, handlers_tree, orelse_tree),
-            aux = self.synthesize_auxes(tuple([body_aux, handlers_aux, orelse_aux])) 
+            aux = self.synthesize_auxes((body_aux, handlers_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- TryExceptFin
@@ -11075,7 +11075,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TryExceptFin(body_tree, handlers_tree, fin_tree),
-            aux = self.synthesize_auxes(tuple([body_aux, handlers_aux, fin_aux])) 
+            aux = self.synthesize_auxes((body_aux, handlers_aux, fin_aux,)) 
         )
     
     # synthesize: stmt <-- TryFin
@@ -11088,7 +11088,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TryFin(body_tree, fin_tree),
-            aux = self.synthesize_auxes(tuple([body_aux, fin_aux])) 
+            aux = self.synthesize_auxes((body_aux, fin_aux,)) 
         )
     
     # synthesize: stmt <-- TryElseFin
@@ -11105,7 +11105,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = TryElseFin(body_tree, handlers_tree, orelse_tree, fin_tree),
-            aux = self.synthesize_auxes(tuple([body_aux, handlers_aux, orelse_aux, fin_aux])) 
+            aux = self.synthesize_auxes((body_aux, handlers_aux, orelse_aux, fin_aux,)) 
         )
     
     # synthesize: stmt <-- Assert
@@ -11116,7 +11116,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Assert(test_tree),
-            aux = self.synthesize_auxes(tuple([test_aux])) 
+            aux = self.synthesize_auxes((test_aux,)) 
         )
     
     # synthesize: stmt <-- AssertMsg
@@ -11129,7 +11129,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AssertMsg(test_tree, msg_tree),
-            aux = self.synthesize_auxes(tuple([test_aux, msg_aux])) 
+            aux = self.synthesize_auxes((test_aux, msg_aux,)) 
         )
     
     # synthesize: stmt <-- Import
@@ -11140,7 +11140,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Import(names_tree),
-            aux = self.synthesize_auxes(tuple([names_aux])) 
+            aux = self.synthesize_auxes((names_aux,)) 
         )
     
     # synthesize: stmt <-- ImportFrom
@@ -11153,7 +11153,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ImportFrom(module_tree, names_tree),
-            aux = self.synthesize_auxes(tuple([module_aux, names_aux])) 
+            aux = self.synthesize_auxes((module_aux, names_aux,)) 
         )
     
     # synthesize: stmt <-- ImportWildCard
@@ -11164,7 +11164,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ImportWildCard(module_tree),
-            aux = self.synthesize_auxes(tuple([module_aux])) 
+            aux = self.synthesize_auxes((module_aux,)) 
         )
     
     # synthesize: stmt <-- Global
@@ -11175,7 +11175,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Global(names_tree),
-            aux = self.synthesize_auxes(tuple([names_aux])) 
+            aux = self.synthesize_auxes((names_aux,)) 
         )
     
     # synthesize: stmt <-- Nonlocal
@@ -11186,7 +11186,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Nonlocal(names_tree),
-            aux = self.synthesize_auxes(tuple([names_aux])) 
+            aux = self.synthesize_auxes((names_aux,)) 
         )
     
     # synthesize: stmt <-- Expr
@@ -11197,7 +11197,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Expr(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: stmt <-- Pass
@@ -11206,7 +11206,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Pass(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: stmt <-- Break
@@ -11215,7 +11215,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Break(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: stmt <-- Continue
@@ -11224,7 +11224,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Continue(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- BoolOp
@@ -11239,7 +11239,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = BoolOp(left_tree, op_tree, right_tree),
-            aux = self.synthesize_auxes(tuple([left_aux, op_aux, right_aux])) 
+            aux = self.synthesize_auxes((left_aux, op_aux, right_aux,)) 
         )
     
     # synthesize: expr <-- AssignExpr
@@ -11252,7 +11252,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AssignExpr(target_tree, content_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, content_aux])) 
+            aux = self.synthesize_auxes((target_aux, content_aux,)) 
         )
     
     # synthesize: expr <-- BinOp
@@ -11267,7 +11267,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = BinOp(left_tree, rator_tree, right_tree),
-            aux = self.synthesize_auxes(tuple([left_aux, rator_aux, right_aux])) 
+            aux = self.synthesize_auxes((left_aux, rator_aux, right_aux,)) 
         )
     
     # synthesize: expr <-- UnaryOp
@@ -11280,7 +11280,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = UnaryOp(rator_tree, rand_tree),
-            aux = self.synthesize_auxes(tuple([rator_aux, rand_aux])) 
+            aux = self.synthesize_auxes((rator_aux, rand_aux,)) 
         )
     
     # synthesize: expr <-- Lambda
@@ -11293,7 +11293,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Lambda(params_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([params_aux, body_aux])) 
+            aux = self.synthesize_auxes((params_aux, body_aux,)) 
         )
     
     # synthesize: expr <-- IfExp
@@ -11308,7 +11308,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = IfExp(body_tree, test_tree, orelse_tree),
-            aux = self.synthesize_auxes(tuple([body_aux, test_aux, orelse_aux])) 
+            aux = self.synthesize_auxes((body_aux, test_aux, orelse_aux,)) 
         )
     
     # synthesize: expr <-- Dictionary
@@ -11319,7 +11319,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Dictionary(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- EmptyDictionary
@@ -11328,7 +11328,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = EmptyDictionary(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- Set
@@ -11339,7 +11339,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Set(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- ListComp
@@ -11352,7 +11352,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ListComp(content_tree, constraints_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, constraints_aux])) 
+            aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
         )
     
     # synthesize: expr <-- SetComp
@@ -11365,7 +11365,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = SetComp(content_tree, constraints_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, constraints_aux])) 
+            aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
         )
     
     # synthesize: expr <-- DictionaryComp
@@ -11380,7 +11380,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = DictionaryComp(key_tree, content_tree, constraints_tree),
-            aux = self.synthesize_auxes(tuple([key_aux, content_aux, constraints_aux])) 
+            aux = self.synthesize_auxes((key_aux, content_aux, constraints_aux,)) 
         )
     
     # synthesize: expr <-- GeneratorExp
@@ -11393,7 +11393,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = GeneratorExp(content_tree, constraints_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, constraints_aux])) 
+            aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
         )
     
     # synthesize: expr <-- Await
@@ -11404,7 +11404,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Await(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- YieldNothing
@@ -11413,7 +11413,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = YieldNothing(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- Yield
@@ -11424,7 +11424,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Yield(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- YieldFrom
@@ -11435,7 +11435,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = YieldFrom(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- Compare
@@ -11448,7 +11448,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Compare(left_tree, comps_tree),
-            aux = self.synthesize_auxes(tuple([left_aux, comps_aux])) 
+            aux = self.synthesize_auxes((left_aux, comps_aux,)) 
         )
     
     # synthesize: expr <-- Call
@@ -11459,7 +11459,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Call(func_tree),
-            aux = self.synthesize_auxes(tuple([func_aux])) 
+            aux = self.synthesize_auxes((func_aux,)) 
         )
     
     # synthesize: expr <-- CallArgs
@@ -11472,7 +11472,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = CallArgs(func_tree, args_tree),
-            aux = self.synthesize_auxes(tuple([func_aux, args_aux])) 
+            aux = self.synthesize_auxes((func_aux, args_aux,)) 
         )
     
     # synthesize: expr <-- Integer
@@ -11483,7 +11483,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Integer(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- Float
@@ -11494,7 +11494,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Float(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- ConcatString
@@ -11505,7 +11505,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ConcatString(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- True_
@@ -11514,7 +11514,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = True_(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- False_
@@ -11523,7 +11523,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = False_(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- None_
@@ -11532,7 +11532,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = None_(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- Ellip
@@ -11541,7 +11541,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Ellip(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- Attribute
@@ -11554,7 +11554,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Attribute(content_tree, name_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, name_aux])) 
+            aux = self.synthesize_auxes((content_aux, name_aux,)) 
         )
     
     # synthesize: expr <-- Subscript
@@ -11567,7 +11567,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Subscript(content_tree, slice_tree),
-            aux = self.synthesize_auxes(tuple([content_aux, slice_aux])) 
+            aux = self.synthesize_auxes((content_aux, slice_aux,)) 
         )
     
     # synthesize: expr <-- Starred
@@ -11578,7 +11578,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Starred(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- Name
@@ -11589,7 +11589,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Name(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- List
@@ -11600,7 +11600,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = List(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- EmptyList
@@ -11609,7 +11609,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = EmptyList(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- Tuple
@@ -11620,7 +11620,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Tuple(content_tree),
-            aux = self.synthesize_auxes(tuple([content_aux])) 
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: expr <-- EmptyTuple
@@ -11629,7 +11629,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = EmptyTuple(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: expr <-- Slice
@@ -11644,7 +11644,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Slice(lower_tree, upper_tree, step_tree),
-            aux = self.synthesize_auxes(tuple([lower_aux, upper_aux, step_aux])) 
+            aux = self.synthesize_auxes((lower_aux, upper_aux, step_aux,)) 
         )
     
     # synthesize: bool_rator <-- And
@@ -11653,7 +11653,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = And(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bool_rator <-- Or
@@ -11662,7 +11662,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Or(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- Add
@@ -11671,7 +11671,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Add(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- Sub
@@ -11680,7 +11680,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Sub(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- Mult
@@ -11689,7 +11689,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Mult(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- MatMult
@@ -11698,7 +11698,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = MatMult(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- Div
@@ -11707,7 +11707,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Div(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- Mod
@@ -11716,7 +11716,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Mod(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- Pow
@@ -11725,7 +11725,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Pow(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- LShift
@@ -11734,7 +11734,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = LShift(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- RShift
@@ -11743,7 +11743,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = RShift(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- BitOr
@@ -11752,7 +11752,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = BitOr(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- BitXor
@@ -11761,7 +11761,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = BitXor(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- BitAnd
@@ -11770,7 +11770,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = BitAnd(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: bin_rator <-- FloorDiv
@@ -11779,7 +11779,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = FloorDiv(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: unary_rator <-- Invert
@@ -11788,7 +11788,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Invert(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: unary_rator <-- Not
@@ -11797,7 +11797,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Not(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: unary_rator <-- UAdd
@@ -11806,7 +11806,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = UAdd(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: unary_rator <-- USub
@@ -11815,7 +11815,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = USub(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- Eq
@@ -11824,7 +11824,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Eq(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- NotEq
@@ -11833,7 +11833,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NotEq(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- Lt
@@ -11842,7 +11842,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Lt(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- LtE
@@ -11851,7 +11851,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = LtE(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- Gt
@@ -11860,7 +11860,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Gt(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- GtE
@@ -11869,7 +11869,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = GtE(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- Is
@@ -11878,7 +11878,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Is(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- IsNot
@@ -11887,7 +11887,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = IsNot(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- In
@@ -11896,7 +11896,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = In(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: cmp_rator <-- NotIn
@@ -11905,7 +11905,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = NotIn(),
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         )
     
     # synthesize: constraint <-- AsyncConstraint
@@ -11920,7 +11920,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = AsyncConstraint(target_tree, search_space_tree, filts_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, search_space_aux, filts_aux])) 
+            aux = self.synthesize_auxes((target_aux, search_space_aux, filts_aux,)) 
         )
     
     # synthesize: constraint <-- Constraint
@@ -11935,7 +11935,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Constraint(target_tree, search_space_tree, filts_tree),
-            aux = self.synthesize_auxes(tuple([target_aux, search_space_aux, filts_aux])) 
+            aux = self.synthesize_auxes((target_aux, search_space_aux, filts_aux,)) 
         )
      
     
@@ -11949,7 +11949,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = CompareRight(rator_tree, rand_tree),
-            aux = self.synthesize_auxes(tuple([rator_aux, rand_aux])) 
+            aux = self.synthesize_auxes((rator_aux, rand_aux,)) 
         )
     
     # synthesize: ExceptHandler
@@ -11962,7 +11962,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ExceptHandler(arg_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([arg_aux, body_aux])) 
+            aux = self.synthesize_auxes((arg_aux, body_aux,)) 
         )
     
     # synthesize: Param
@@ -11977,7 +11977,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = Param(name_tree, anno_tree, default_tree),
-            aux = self.synthesize_auxes(tuple([name_aux, anno_aux, default_aux])) 
+            aux = self.synthesize_auxes((name_aux, anno_aux, default_aux,)) 
         )
     
     # synthesize: ClassDef
@@ -11992,7 +11992,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ClassDef(name_tree, bs_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([name_aux, bs_aux, body_aux])) 
+            aux = self.synthesize_auxes((name_aux, bs_aux, body_aux,)) 
         )
     
     # synthesize: ElifBlock
@@ -12005,7 +12005,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ElifBlock(test_tree, body_tree),
-            aux = self.synthesize_auxes(tuple([test_aux, body_aux])) 
+            aux = self.synthesize_auxes((test_aux, body_aux,)) 
         )
     
     # synthesize: ElseBlock
@@ -12016,7 +12016,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = ElseBlock(body_tree),
-            aux = self.synthesize_auxes(tuple([body_aux])) 
+            aux = self.synthesize_auxes((body_aux,)) 
         )
     
     # synthesize: FinallyBlock
@@ -12027,7 +12027,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = FinallyBlock(body_tree),
-            aux = self.synthesize_auxes(tuple([body_aux])) 
+            aux = self.synthesize_auxes((body_aux,)) 
         )
      
 
@@ -12036,7 +12036,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     def inspect_str(self, token : Vocab, inher_aux : InherAux) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = token.selection,
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         ) 
 
     def crawl_str(self, token : abstract_token, inher_aux : InherAux) -> Result[SynthAux]:
@@ -12048,7 +12048,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         pass
 
     @abstractmethod
-    def synthesize_auxes(self, auxes : tuple[SynthAux]) -> SynthAux:
+    def synthesize_auxes(self, auxes : tuple[SynthAux, ...]) -> SynthAux:
         pass
 
     
