@@ -583,19 +583,19 @@ def test_084_ok():
     analyze_test("084_ok")
 
 if __name__ == "__main__":
-    # (inspect, kill) = spawn_inspect("params_dont_traverse")
-    # try:
-    #     for param_sep in 9, 14, 24, 31, 40, 47, 53:
-    #         code, aux = inspect(param_sep)
-    #         assert not aux.local_env
-    #         print(code)
-    #         print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    (inspect, kill) = spawn_inspect("params_dont_traverse")
+    try:
+        for param_sep in 9, 14, 24, 31, 40, 47, 53:
+            code, aux = inspect(param_sep)
+            # assert not aux.local_env
+            print(code)
+            print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
 
-    #     code, aux = inspect(54)
-    #     print(code)
-    #     print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    #     for sym in 'x', 'y', 'zs', 'a', 'b', 'cs':
-    #         assert sym in aux.local_env
-    # finally:
-    #     kill()
+        code, aux = inspect(54)
+        print(code)
+        print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        # for sym in 'x', 'y', 'zs', 'a', 'b', 'cs':
+        #     assert sym in aux.local_env
+    finally:
+        kill()
     pass

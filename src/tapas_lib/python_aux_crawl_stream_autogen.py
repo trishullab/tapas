@@ -1903,7 +1903,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -2176,7 +2176,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -2318,7 +2318,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -2686,7 +2686,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -2828,7 +2828,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -2931,7 +2931,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3059,7 +3059,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3162,7 +3162,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3265,7 +3265,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3350,7 +3350,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3474,7 +3474,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3577,7 +3577,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3764,7 +3764,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3867,7 +3867,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -3970,7 +3970,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -4073,7 +4073,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -4221,7 +4221,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -4324,7 +4324,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -4427,7 +4427,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -4530,7 +4530,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -5791,7 +5791,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 3
@@ -5882,7 +5882,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -5945,7 +5945,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 3
@@ -6036,7 +6036,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -6100,7 +6100,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -6164,7 +6164,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 3
@@ -6353,7 +6353,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -6417,7 +6417,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -6481,7 +6481,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 3
@@ -6572,7 +6572,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -6636,7 +6636,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 1
@@ -6698,7 +6698,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 1
@@ -6739,7 +6739,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 1
@@ -6780,7 +6780,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -6844,7 +6844,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 1
@@ -6885,7 +6885,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -7150,7 +7150,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -7214,7 +7214,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 2
@@ -7277,7 +7277,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         
 
         total_num_children = 1
@@ -12044,7 +12044,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.inspect_str(token, inher_aux)
 
     @abstractmethod
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux]) -> InherAux:
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...]) -> InherAux:
         pass
 
     @abstractmethod
