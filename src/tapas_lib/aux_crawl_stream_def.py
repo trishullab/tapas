@@ -47,7 +47,7 @@ def generate_inspect_inductive_choice_rule(type_name : str, rule : Rule):
         {f'''
         if stack_result:
             # get the result from the child in the stack
-            children = children + tuple([stack_result]) 
+            children = children + (stack_result,)
         ''' if rule_system.is_inductive(type_name, [rule]) else ''}
 
         total_num_children = {len(abstract_items)}
@@ -81,7 +81,7 @@ def generate_inspect_inductive_choice_rule(type_name : str, rule : Rule):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, child_inher_aux)
 
-            stack.append((Grammar("{type_name}", "{rule.name}"), inher_aux, children + tuple([child_synth])))
+            stack.append((Grammar("{type_name}", "{rule.name}"), inher_aux, children + (child_synth,)))
             return None
             '''
             for i, item in enumerate(abstract_items)
@@ -121,11 +121,11 @@ def generate_traverse_choice_rule(type_name : str, rule : Rule) -> str:
         if i < index 
         ])}
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([{f', '.join([
-            f"{rule_system.relation_from_item(inner_item)}_aux"
+        return self.traverse_auxes(inher_aux, ({f' '.join([
+            f"{rule_system.relation_from_item(inner_item)}_aux,"
             for i, inner_item in enumerate(abstract_items)
             if i < index 
-        ])}])) 
+        ])}), '{rule_system.type_from_item(item)}') 
     """
         for index, item in enumerate(abstract_items)
     ])
@@ -143,11 +143,11 @@ def generate_traverse_single_rule(rule : Rule) -> str:
         if i < index 
         ])}
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, tuple([{f', '.join([
-            f"{rule_system.relation_from_item(inner_item)}_aux"
+        return self.traverse_auxes(inher_aux, ({f' '.join([
+            f"{rule_system.relation_from_item(inner_item)}_aux,"
             for i, inner_item in enumerate(abstract_items)
             if i < index 
-        ])}])) 
+        ])}), '{rule_system.type_from_item(item)}') 
     """
         for index, item in enumerate(abstract_items)
     ])
@@ -314,10 +314,10 @@ def generate_synthesize_rule(type_name : Optional[str], rule : Rule) -> str:
                 f"{rule_system.relation_from_item(item)}_tree"
                 for item in abstract_items
             ])}),
-            aux = self.synthesize_auxes(tuple([{f', '.join([
-                f"{rule_system.relation_from_item(item)}_aux"
+            aux = self.synthesize_auxes(({f' '.join([
+                f"{rule_system.relation_from_item(item)}_aux,"
                 for item in abstract_items
-            ])}])) 
+            ])})) 
         )
     """
 
@@ -457,7 +457,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     def inspect_str(self, token : Vocab, inher_aux : InherAux) -> Result[SynthAux]:
         return Result[SynthAux](
             tree = token.selection,
-            aux = self.synthesize_auxes(tuple([])) 
+            aux = self.synthesize_auxes(()) 
         ) 
 
     def crawl_str(self, token : abstract_token, inher_aux : InherAux) -> Result[SynthAux]:
@@ -465,11 +465,11 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.inspect_str(token, inher_aux)
 
     @abstractmethod
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux]) -> InherAux:
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type : str) -> InherAux:
         pass
 
     @abstractmethod
-    def synthesize_auxes(self, auxes : tuple[SynthAux]) -> SynthAux:
+    def synthesize_auxes(self, auxes : tuple[SynthAux, ...]) -> SynthAux:
         pass
 
     """)
