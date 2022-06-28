@@ -8,4 +8,5 @@ src/tapas_res/grammars.so
 src/tapas_res/apps/**
 src/tapas_res/py150/**
 src/tapas_res/cubert/**
+src/tapas_res/typeshed_object
 .DS_Store
