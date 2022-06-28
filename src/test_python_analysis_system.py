@@ -78,6 +78,9 @@ def analyze_test(module_name : str, line_limit: int = -1) -> tuple[str, pals.Inh
 
 def spawn_inspect(module_name : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     code = load_source(module_name) 
+    return spawn_inspect_code(module_name, code, checks)
+
+def spawn_inspect_code(module_name, code : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
