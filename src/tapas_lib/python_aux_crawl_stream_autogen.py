@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, TypeVar, Any, Generic, Union, Optional, Iterable
 from collections.abc import Callable
 
-from tapas_base.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
+from tapas_base.abstract_token_construct_autogen import abstract_token, Vocab, Grammar, make_Grammar
 
 from queue import Queue
 
@@ -1934,13 +1934,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "ConsKwParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_d", "ConsKwParam"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("parameters_d", "ConsKwParam"), inher_aux, children))
+            stack.append((make_Grammar("parameters_d", "ConsKwParam"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -1990,7 +1990,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "SingleKwParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_d", "SingleKwParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2033,7 +2033,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_d", "TransKwParam"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -2053,7 +2053,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_d", "TransKwParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_d", "TransKwParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2207,13 +2207,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children))
+            stack.append((make_Grammar("parameters_b", "ConsPosKeyParam"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -2263,7 +2263,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_b", "SinglePosKeyParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_b", "SinglePosKeyParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2302,7 +2302,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters_c(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_b", "ParamsC"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_b", "ParamsC"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2349,13 +2349,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "ConsPosParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_a", "ConsPosParam"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("parameters_a", "ConsPosParam"), inher_aux, children))
+            stack.append((make_Grammar("parameters_a", "ConsPosParam"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -2405,7 +2405,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2448,7 +2448,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -2468,7 +2468,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters_b(child_token, child_inher_aux)
 
-            stack.append((Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2717,13 +2717,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("bases_a", "ConsBase"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("bases_a", "ConsBase"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("bases_a", "ConsBase"), inher_aux, children))
+            stack.append((make_Grammar("bases_a", "ConsBase"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -2773,7 +2773,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("bases_a", "SingleBase"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("bases_a", "SingleBase"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2812,7 +2812,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keywords(child_token, child_inher_aux)
 
-            stack.append((Grammar("bases_a", "KeywordBases"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("bases_a", "KeywordBases"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2859,13 +2859,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keyword(child_token, child_inher_aux)
 
-            stack.append((Grammar("keywords", "ConsKeyword"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("keywords", "ConsKeyword"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("keywords", "ConsKeyword"), inher_aux, children))
+            stack.append((make_Grammar("keywords", "ConsKeyword"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -2915,7 +2915,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keyword(child_token, child_inher_aux)
 
-            stack.append((Grammar("keywords", "SingleKeyword"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("keywords", "SingleKeyword"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -2962,13 +2962,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_CompareRight(child_token, child_inher_aux)
 
-            stack.append((Grammar("comparisons", "ConsCompareRight"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("comparisons", "ConsCompareRight"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("comparisons", "ConsCompareRight"), inher_aux, children))
+            stack.append((make_Grammar("comparisons", "ConsCompareRight"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3018,7 +3018,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_CompareRight(child_token, child_inher_aux)
 
-            stack.append((Grammar("comparisons", "SingleCompareRight"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("comparisons", "SingleCompareRight"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3090,13 +3090,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("comma_exprs", "ConsExpr"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("comma_exprs", "ConsExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("comma_exprs", "ConsExpr"), inher_aux, children))
+            stack.append((make_Grammar("comma_exprs", "ConsExpr"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3146,7 +3146,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("comma_exprs", "SingleExpr"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("comma_exprs", "SingleExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3193,13 +3193,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children))
+            stack.append((make_Grammar("target_exprs", "ConsTargetExpr"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3249,7 +3249,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("target_exprs", "SingleTargetExpr"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("target_exprs", "SingleTargetExpr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3296,13 +3296,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("decorators", "ConsDec"), inher_aux, children))
+            stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3381,13 +3381,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("constraint_filters", "ConsFilter"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("constraint_filters", "ConsFilter"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("constraint_filters", "ConsFilter"), inher_aux, children))
+            stack.append((make_Grammar("constraint_filters", "ConsFilter"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3437,7 +3437,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("constraint_filters", "SingleFilter"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("constraint_filters", "SingleFilter"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3505,13 +3505,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_string", "ConsStr"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_string", "ConsStr"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("sequence_string", "ConsStr"), inher_aux, children))
+            stack.append((make_Grammar("sequence_string", "ConsStr"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3561,7 +3561,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_string", "SingleStr"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_string", "SingleStr"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3608,13 +3608,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("arguments", "ConsArg"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("arguments", "ConsArg"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("arguments", "ConsArg"), inher_aux, children))
+            stack.append((make_Grammar("arguments", "ConsArg"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3664,7 +3664,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("arguments", "SingleArg"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("arguments", "SingleArg"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3703,7 +3703,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_keywords(child_token, child_inher_aux)
 
-            stack.append((Grammar("arguments", "KeywordsArg"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("arguments", "KeywordsArg"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3795,13 +3795,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_dictionary_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children))
+            stack.append((make_Grammar("dictionary_content", "ConsDictionaryItem"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3851,7 +3851,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_dictionary_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("dictionary_content", "SingleDictionaryItem"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("dictionary_content", "SingleDictionaryItem"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -3898,13 +3898,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_name", "ConsId"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_name", "ConsId"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("sequence_name", "ConsId"), inher_aux, children))
+            stack.append((make_Grammar("sequence_name", "ConsId"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -3954,7 +3954,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_name", "SingleId"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_name", "SingleId"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4001,13 +4001,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_import_name(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("sequence_import_name", "ConsImportName"), inher_aux, children))
+            stack.append((make_Grammar("sequence_import_name", "ConsImportName"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -4057,7 +4057,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_import_name(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4104,13 +4104,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_with_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children))
+            stack.append((make_Grammar("sequence_with_item", "ConsWithItem"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -4160,7 +4160,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_with_item(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_with_item", "SingleWithItem"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_with_item", "SingleWithItem"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4252,13 +4252,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_stmt(child_token, child_inher_aux)
 
-            stack.append((Grammar("statements", "ConsStmt"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("statements", "ConsStmt"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("statements", "ConsStmt"), inher_aux, children))
+            stack.append((make_Grammar("statements", "ConsStmt"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -4308,7 +4308,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_stmt(child_token, child_inher_aux)
 
-            stack.append((Grammar("statements", "SingleStmt"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("statements", "SingleStmt"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4355,13 +4355,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_constraint(child_token, child_inher_aux)
 
-            stack.append((Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children))
+            stack.append((make_Grammar("comprehension_constraints", "ConsConstraint"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -4411,7 +4411,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_constraint(child_token, child_inher_aux)
 
-            stack.append((Grammar("comprehension_constraints", "SingleConstraint"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("comprehension_constraints", "SingleConstraint"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4458,13 +4458,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children))
+            stack.append((make_Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children))
 
             
             head_tree = children[0].tree
@@ -4514,7 +4514,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
 
-            stack.append((Grammar("sequence_ExceptHandler", "SingleExceptHandler"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("sequence_ExceptHandler", "SingleExceptHandler"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -4561,13 +4561,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ElifBlock(child_token, child_inher_aux)
 
-            stack.append((Grammar("conditions", "ElifCond"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("conditions", "ElifCond"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("conditions", "ElifCond"), inher_aux, children))
+            stack.append((make_Grammar("conditions", "ElifCond"), inher_aux, children))
 
             
             content_tree = children[0].tree
@@ -4617,7 +4617,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ElseBlock(child_token, child_inher_aux)
 
-            stack.append((Grammar("conditions", "ElseCond"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("conditions", "ElseCond"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -5831,13 +5831,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_bool_rator(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "BoolOp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "BoolOp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children))
 
             
 
@@ -5850,7 +5850,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 2 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "BoolOp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children))
 
             
             left_tree = children[0].tree
@@ -5905,7 +5905,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "AssignExpr"), inher_aux, children))
+            stack.append((make_Grammar("expr", "AssignExpr"), inher_aux, children))
 
             
 
@@ -5918,7 +5918,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "AssignExpr"), inher_aux, children))
+            stack.append((make_Grammar("expr", "AssignExpr"), inher_aux, children))
 
             
             target_tree = children[0].tree
@@ -5985,13 +5985,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_bin_rator(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "BinOp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "BinOp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "BinOp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "BinOp"), inher_aux, children))
 
             
 
@@ -6004,7 +6004,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 2 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "BinOp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "BinOp"), inher_aux, children))
 
             
             left_tree = children[0].tree
@@ -6067,13 +6067,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_unary_rator(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "UnaryOp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "UnaryOp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "UnaryOp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "UnaryOp"), inher_aux, children))
 
             
             rator_tree = children[0].tree
@@ -6131,13 +6131,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Lambda"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Lambda"), inher_aux, children))
 
             
             params_tree = children[0].tree
@@ -6191,7 +6191,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "IfExp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children))
 
             
 
@@ -6204,7 +6204,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "IfExp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children))
 
             
             body_tree = children[0].tree
@@ -6222,7 +6222,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 2 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "IfExp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children))
 
             
             body_tree = children[0].tree
@@ -6277,7 +6277,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_dictionary_content(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Dictionary"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Dictionary"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6337,7 +6337,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Set"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Set"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -6389,13 +6389,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "ListComp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "ListComp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "ListComp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "ListComp"), inher_aux, children))
 
             
 
@@ -6453,13 +6453,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "SetComp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "SetComp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "SetComp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "SetComp"), inher_aux, children))
 
             
 
@@ -6526,13 +6526,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "DictionaryComp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "DictionaryComp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "DictionaryComp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "DictionaryComp"), inher_aux, children))
 
             
 
@@ -6545,7 +6545,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "DictionaryComp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "DictionaryComp"), inher_aux, children))
 
             
             key_tree = children[0].tree
@@ -6608,13 +6608,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "GeneratorExp"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "GeneratorExp"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "GeneratorExp"), inher_aux, children))
+            stack.append((make_Grammar("expr", "GeneratorExp"), inher_aux, children))
 
             
 
@@ -6655,7 +6655,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Await"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Await"), inher_aux, children))
 
             
 
@@ -6717,7 +6717,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Yield"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Yield"), inher_aux, children))
 
             
 
@@ -6758,7 +6758,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "YieldFrom"), inher_aux, children))
+            stack.append((make_Grammar("expr", "YieldFrom"), inher_aux, children))
 
             
 
@@ -6816,13 +6816,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comparisons(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Compare"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Compare"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Compare"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Compare"), inher_aux, children))
 
             
 
@@ -6863,7 +6863,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Call"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Call"), inher_aux, children))
 
             
 
@@ -6921,13 +6921,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_arguments(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "CallArgs"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "CallArgs"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "CallArgs"), inher_aux, children))
+            stack.append((make_Grammar("expr", "CallArgs"), inher_aux, children))
 
             
 
@@ -6972,7 +6972,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Integer"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Integer"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7011,7 +7011,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Float"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Float"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7050,7 +7050,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_sequence_string(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "ConcatString"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "ConcatString"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7186,13 +7186,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Attribute"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Attribute"), inher_aux, children + (child_synth,)))
             return None
             
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Attribute"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Attribute"), inher_aux, children))
 
             
 
@@ -7237,7 +7237,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Subscript"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Subscript"), inher_aux, children))
 
             
 
@@ -7250,7 +7250,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         elif index == 1 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Subscript"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Subscript"), inher_aux, children))
 
             
             content_tree = children[0].tree
@@ -7296,7 +7296,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("expr", "Starred"), inher_aux, children))
+            stack.append((make_Grammar("expr", "Starred"), inher_aux, children))
 
             
 
@@ -7341,7 +7341,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Name"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Name"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7380,7 +7380,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "List"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "List"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7440,7 +7440,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comma_exprs(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Tuple"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Tuple"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -7508,7 +7508,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -7528,7 +7528,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
             
 
@@ -7553,7 +7553,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
 
-            stack.append((Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
             
         
@@ -9831,7 +9831,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeReturnAnno(content_tree),
+            tree = make_SomeReturnAnno(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9840,7 +9840,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoReturnAnno(),
+            tree = make_NoReturnAnno(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -9851,7 +9851,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeExceptArg(content_tree),
+            tree = make_SomeExceptArg(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9864,7 +9864,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeExceptArgName(content_tree, name_tree),
+            tree = make_SomeExceptArgName(content_tree, name_tree),
             aux = self.synthesize_auxes((content_aux, name_aux,)) 
         )
     
@@ -9873,7 +9873,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoExceptArg(),
+            tree = make_NoExceptArg(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -9884,7 +9884,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeParamAnno(content_tree),
+            tree = make_SomeParamAnno(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9893,7 +9893,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoParamAnno(),
+            tree = make_NoParamAnno(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -9904,7 +9904,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeParamDefault(content_tree),
+            tree = make_SomeParamDefault(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9913,7 +9913,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoParamDefault(),
+            tree = make_NoParamDefault(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -9926,7 +9926,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsKwParam(head_tree, tail_tree),
+            tree = make_ConsKwParam(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -9937,7 +9937,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleKwParam(content_tree),
+            tree = make_SingleKwParam(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9950,7 +9950,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TransKwParam(head_tree, tail_tree),
+            tree = make_TransKwParam(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -9961,7 +9961,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleTupleBundleParam(content_tree),
+            tree = make_SingleTupleBundleParam(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9974,7 +9974,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TransTupleBundleParam(head_tree, tail_tree),
+            tree = make_TransTupleBundleParam(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -9985,7 +9985,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ParamsD(content_tree),
+            tree = make_ParamsD(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -9998,7 +9998,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         dict_param_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DoubleBundleParam(tuple_param_tree, dict_param_tree),
+            tree = make_DoubleBundleParam(tuple_param_tree, dict_param_tree),
             aux = self.synthesize_auxes((tuple_param_aux, dict_param_aux,)) 
         )
     
@@ -10009,7 +10009,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DictionaryBundleParam(content_tree),
+            tree = make_DictionaryBundleParam(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10022,7 +10022,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsPosKeyParam(head_tree, tail_tree),
+            tree = make_ConsPosKeyParam(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10033,7 +10033,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SinglePosKeyParam(content_tree),
+            tree = make_SinglePosKeyParam(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10044,7 +10044,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ParamsC(content_tree),
+            tree = make_ParamsC(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10057,7 +10057,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsPosParam(head_tree, tail_tree),
+            tree = make_ConsPosParam(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10068,7 +10068,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SinglePosParam(content_tree),
+            tree = make_SinglePosParam(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10081,7 +10081,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TransPosParam(head_tree, tail_tree),
+            tree = make_TransPosParam(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10092,7 +10092,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ParamsA(content_tree),
+            tree = make_ParamsA(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10103,7 +10103,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ParamsB(content_tree),
+            tree = make_ParamsB(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10112,7 +10112,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoParam(),
+            tree = make_NoParam(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10125,7 +10125,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NamedKeyword(name_tree, content_tree),
+            tree = make_NamedKeyword(name_tree, content_tree),
             aux = self.synthesize_auxes((name_aux, content_aux,)) 
         )
     
@@ -10136,7 +10136,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SplatKeyword(content_tree),
+            tree = make_SplatKeyword(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10149,7 +10149,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         alias_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ImportNameAlias(name_tree, alias_tree),
+            tree = make_ImportNameAlias(name_tree, alias_tree),
             aux = self.synthesize_auxes((name_aux, alias_aux,)) 
         )
     
@@ -10160,7 +10160,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ImportNameOnly(name_tree),
+            tree = make_ImportNameOnly(name_tree),
             aux = self.synthesize_auxes((name_aux,)) 
         )
     
@@ -10173,7 +10173,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         alias_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = WithItemAlias(content_tree, alias_tree),
+            tree = make_WithItemAlias(content_tree, alias_tree),
             aux = self.synthesize_auxes((content_aux, alias_aux,)) 
         )
     
@@ -10184,7 +10184,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = WithItemOnly(content_tree),
+            tree = make_WithItemOnly(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10195,7 +10195,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         bases_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeBases(bases_tree),
+            tree = make_SomeBases(bases_tree),
             aux = self.synthesize_auxes((bases_aux,)) 
         )
     
@@ -10204,7 +10204,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoBases(),
+            tree = make_NoBases(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10217,7 +10217,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsBase(head_tree, tail_tree),
+            tree = make_ConsBase(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10228,7 +10228,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleBase(content_tree),
+            tree = make_SingleBase(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10239,7 +10239,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         kws_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = KeywordBases(kws_tree),
+            tree = make_KeywordBases(kws_tree),
             aux = self.synthesize_auxes((kws_aux,)) 
         )
     
@@ -10252,7 +10252,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsKeyword(head_tree, tail_tree),
+            tree = make_ConsKeyword(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10263,7 +10263,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleKeyword(content_tree),
+            tree = make_SingleKeyword(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10276,7 +10276,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsCompareRight(head_tree, tail_tree),
+            tree = make_ConsCompareRight(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10287,7 +10287,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleCompareRight(content_tree),
+            tree = make_SingleCompareRight(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10298,7 +10298,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SomeExpr(content_tree),
+            tree = make_SomeExpr(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10307,7 +10307,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoExpr(),
+            tree = make_NoExpr(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10320,7 +10320,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsExpr(head_tree, tail_tree),
+            tree = make_ConsExpr(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10331,7 +10331,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleExpr(content_tree),
+            tree = make_SingleExpr(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10344,7 +10344,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsTargetExpr(head_tree, tail_tree),
+            tree = make_ConsTargetExpr(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10355,7 +10355,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleTargetExpr(content_tree),
+            tree = make_SingleTargetExpr(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10368,7 +10368,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsDec(head_tree, tail_tree),
+            tree = make_ConsDec(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10377,7 +10377,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoDec(),
+            tree = make_NoDec(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10390,7 +10390,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsFilter(head_tree, tail_tree),
+            tree = make_ConsFilter(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10401,7 +10401,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleFilter(content_tree),
+            tree = make_SingleFilter(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10410,7 +10410,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoFilter(),
+            tree = make_NoFilter(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10423,7 +10423,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsStr(head_tree, tail_tree),
+            tree = make_ConsStr(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10434,7 +10434,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleStr(content_tree),
+            tree = make_SingleStr(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10447,7 +10447,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsArg(head_tree, tail_tree),
+            tree = make_ConsArg(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10458,7 +10458,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleArg(content_tree),
+            tree = make_SingleArg(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10469,7 +10469,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         kws_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = KeywordsArg(kws_tree),
+            tree = make_KeywordsArg(kws_tree),
             aux = self.synthesize_auxes((kws_aux,)) 
         )
     
@@ -10482,7 +10482,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Field(key_tree, content_tree),
+            tree = make_Field(key_tree, content_tree),
             aux = self.synthesize_auxes((key_aux, content_aux,)) 
         )
     
@@ -10493,7 +10493,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DictionarySplatFields(content_tree),
+            tree = make_DictionarySplatFields(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10506,7 +10506,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsDictionaryItem(head_tree, tail_tree),
+            tree = make_ConsDictionaryItem(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10517,7 +10517,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleDictionaryItem(content_tree),
+            tree = make_SingleDictionaryItem(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10530,7 +10530,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsId(head_tree, tail_tree),
+            tree = make_ConsId(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10541,7 +10541,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleId(content_tree),
+            tree = make_SingleId(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10554,7 +10554,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsImportName(head_tree, tail_tree),
+            tree = make_ConsImportName(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10565,7 +10565,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleImportName(content_tree),
+            tree = make_SingleImportName(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10578,7 +10578,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsWithItem(head_tree, tail_tree),
+            tree = make_ConsWithItem(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10589,7 +10589,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleWithItem(content_tree),
+            tree = make_SingleWithItem(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10602,7 +10602,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = FutureMod(names_tree, body_tree),
+            tree = make_FutureMod(names_tree, body_tree),
             aux = self.synthesize_auxes((names_aux, body_aux,)) 
         )
     
@@ -10613,7 +10613,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SimpleMod(body_tree),
+            tree = make_SimpleMod(body_tree),
             aux = self.synthesize_auxes((body_aux,)) 
         )
     
@@ -10626,7 +10626,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsStmt(head_tree, tail_tree),
+            tree = make_ConsStmt(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10637,7 +10637,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleStmt(content_tree),
+            tree = make_SingleStmt(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10650,7 +10650,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsConstraint(head_tree, tail_tree),
+            tree = make_ConsConstraint(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10661,7 +10661,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleConstraint(content_tree),
+            tree = make_SingleConstraint(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10674,7 +10674,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConsExceptHandler(head_tree, tail_tree),
+            tree = make_ConsExceptHandler(head_tree, tail_tree),
             aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
@@ -10685,7 +10685,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SingleExceptHandler(content_tree),
+            tree = make_SingleExceptHandler(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10698,7 +10698,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ElifCond(content_tree, tail_tree),
+            tree = make_ElifCond(content_tree, tail_tree),
             aux = self.synthesize_auxes((content_aux, tail_aux,)) 
         )
     
@@ -10709,7 +10709,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ElseCond(content_tree),
+            tree = make_ElseCond(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10718,7 +10718,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NoCond(),
+            tree = make_NoCond(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10735,7 +10735,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
+            tree = make_FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
             aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, body_aux,)) 
         )
     
@@ -10752,7 +10752,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
+            tree = make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
             aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, body_aux,)) 
         )
     
@@ -10765,7 +10765,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fun_def_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DecFunctionDef(decs_tree, fun_def_tree),
+            tree = make_DecFunctionDef(decs_tree, fun_def_tree),
             aux = self.synthesize_auxes((decs_aux, fun_def_aux,)) 
         )
     
@@ -10778,7 +10778,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         class_def_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DecClassDef(decs_tree, class_def_tree),
+            tree = make_DecClassDef(decs_tree, class_def_tree),
             aux = self.synthesize_auxes((decs_aux, class_def_aux,)) 
         )
     
@@ -10789,7 +10789,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ReturnSomething(content_tree),
+            tree = make_ReturnSomething(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -10798,7 +10798,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Return(),
+            tree = make_Return(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -10809,7 +10809,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         targets_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Delete(targets_tree),
+            tree = make_Delete(targets_tree),
             aux = self.synthesize_auxes((targets_aux,)) 
         )
     
@@ -10822,7 +10822,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Assign(targets_tree, content_tree),
+            tree = make_Assign(targets_tree, content_tree),
             aux = self.synthesize_auxes((targets_aux, content_aux,)) 
         )
     
@@ -10837,7 +10837,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AugAssign(target_tree, op_tree, content_tree),
+            tree = make_AugAssign(target_tree, op_tree, content_tree),
             aux = self.synthesize_auxes((target_aux, op_aux, content_aux,)) 
         )
     
@@ -10852,7 +10852,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AnnoAssign(target_tree, anno_tree, content_tree),
+            tree = make_AnnoAssign(target_tree, anno_tree, content_tree),
             aux = self.synthesize_auxes((target_aux, anno_aux, content_aux,)) 
         )
     
@@ -10865,7 +10865,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         anno_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AnnoDeclar(target_tree, anno_tree),
+            tree = make_AnnoDeclar(target_tree, anno_tree),
             aux = self.synthesize_auxes((target_aux, anno_aux,)) 
         )
     
@@ -10880,7 +10880,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = For(target_tree, iter_tree, body_tree),
+            tree = make_For(target_tree, iter_tree, body_tree),
             aux = self.synthesize_auxes((target_aux, iter_aux, body_aux,)) 
         )
     
@@ -10897,7 +10897,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ForElse(target_tree, iter_tree, body_tree, orelse_tree),
+            tree = make_ForElse(target_tree, iter_tree, body_tree, orelse_tree),
             aux = self.synthesize_auxes((target_aux, iter_aux, body_aux, orelse_aux,)) 
         )
     
@@ -10912,7 +10912,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AsyncFor(target_tree, iter_tree, body_tree),
+            tree = make_AsyncFor(target_tree, iter_tree, body_tree),
             aux = self.synthesize_auxes((target_aux, iter_aux, body_aux,)) 
         )
     
@@ -10929,7 +10929,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
+            tree = make_AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
             aux = self.synthesize_auxes((target_aux, iter_aux, body_aux, orelse_aux,)) 
         )
     
@@ -10942,7 +10942,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = While(test_tree, body_tree),
+            tree = make_While(test_tree, body_tree),
             aux = self.synthesize_auxes((test_aux, body_aux,)) 
         )
     
@@ -10957,7 +10957,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = WhileElse(test_tree, body_tree, orelse_tree),
+            tree = make_WhileElse(test_tree, body_tree, orelse_tree),
             aux = self.synthesize_auxes((test_aux, body_aux, orelse_aux,)) 
         )
     
@@ -10972,7 +10972,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = If(test_tree, body_tree, orelse_tree),
+            tree = make_If(test_tree, body_tree, orelse_tree),
             aux = self.synthesize_auxes((test_aux, body_aux, orelse_aux,)) 
         )
     
@@ -10985,7 +10985,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = With(items_tree, body_tree),
+            tree = make_With(items_tree, body_tree),
             aux = self.synthesize_auxes((items_aux, body_aux,)) 
         )
     
@@ -10998,7 +10998,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AsyncWith(items_tree, body_tree),
+            tree = make_AsyncWith(items_tree, body_tree),
             aux = self.synthesize_auxes((items_aux, body_aux,)) 
         )
     
@@ -11007,7 +11007,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Raise(),
+            tree = make_Raise(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11018,7 +11018,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         exc_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = RaiseExc(exc_tree),
+            tree = make_RaiseExc(exc_tree),
             aux = self.synthesize_auxes((exc_aux,)) 
         )
     
@@ -11031,7 +11031,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         caus_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = RaiseFrom(exc_tree, caus_tree),
+            tree = make_RaiseFrom(exc_tree, caus_tree),
             aux = self.synthesize_auxes((exc_aux, caus_aux,)) 
         )
     
@@ -11044,7 +11044,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Try(body_tree, handlers_tree),
+            tree = make_Try(body_tree, handlers_tree),
             aux = self.synthesize_auxes((body_aux, handlers_aux,)) 
         )
     
@@ -11059,7 +11059,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TryElse(body_tree, handlers_tree, orelse_tree),
+            tree = make_TryElse(body_tree, handlers_tree, orelse_tree),
             aux = self.synthesize_auxes((body_aux, handlers_aux, orelse_aux,)) 
         )
     
@@ -11074,7 +11074,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TryExceptFin(body_tree, handlers_tree, fin_tree),
+            tree = make_TryExceptFin(body_tree, handlers_tree, fin_tree),
             aux = self.synthesize_auxes((body_aux, handlers_aux, fin_aux,)) 
         )
     
@@ -11087,7 +11087,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TryFin(body_tree, fin_tree),
+            tree = make_TryFin(body_tree, fin_tree),
             aux = self.synthesize_auxes((body_aux, fin_aux,)) 
         )
     
@@ -11104,7 +11104,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = TryElseFin(body_tree, handlers_tree, orelse_tree, fin_tree),
+            tree = make_TryElseFin(body_tree, handlers_tree, orelse_tree, fin_tree),
             aux = self.synthesize_auxes((body_aux, handlers_aux, orelse_aux, fin_aux,)) 
         )
     
@@ -11115,7 +11115,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Assert(test_tree),
+            tree = make_Assert(test_tree),
             aux = self.synthesize_auxes((test_aux,)) 
         )
     
@@ -11128,7 +11128,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         msg_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AssertMsg(test_tree, msg_tree),
+            tree = make_AssertMsg(test_tree, msg_tree),
             aux = self.synthesize_auxes((test_aux, msg_aux,)) 
         )
     
@@ -11139,7 +11139,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Import(names_tree),
+            tree = make_Import(names_tree),
             aux = self.synthesize_auxes((names_aux,)) 
         )
     
@@ -11152,7 +11152,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ImportFrom(module_tree, names_tree),
+            tree = make_ImportFrom(module_tree, names_tree),
             aux = self.synthesize_auxes((module_aux, names_aux,)) 
         )
     
@@ -11163,7 +11163,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         module_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ImportWildCard(module_tree),
+            tree = make_ImportWildCard(module_tree),
             aux = self.synthesize_auxes((module_aux,)) 
         )
     
@@ -11174,7 +11174,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Global(names_tree),
+            tree = make_Global(names_tree),
             aux = self.synthesize_auxes((names_aux,)) 
         )
     
@@ -11185,7 +11185,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Nonlocal(names_tree),
+            tree = make_Nonlocal(names_tree),
             aux = self.synthesize_auxes((names_aux,)) 
         )
     
@@ -11196,7 +11196,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Expr(content_tree),
+            tree = make_Expr(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11205,7 +11205,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Pass(),
+            tree = make_Pass(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11214,7 +11214,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Break(),
+            tree = make_Break(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11223,7 +11223,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Continue(),
+            tree = make_Continue(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11238,7 +11238,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         right_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = BoolOp(left_tree, op_tree, right_tree),
+            tree = make_BoolOp(left_tree, op_tree, right_tree),
             aux = self.synthesize_auxes((left_aux, op_aux, right_aux,)) 
         )
     
@@ -11251,7 +11251,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AssignExpr(target_tree, content_tree),
+            tree = make_AssignExpr(target_tree, content_tree),
             aux = self.synthesize_auxes((target_aux, content_aux,)) 
         )
     
@@ -11266,7 +11266,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         right_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = BinOp(left_tree, rator_tree, right_tree),
+            tree = make_BinOp(left_tree, rator_tree, right_tree),
             aux = self.synthesize_auxes((left_aux, rator_aux, right_aux,)) 
         )
     
@@ -11279,7 +11279,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rand_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = UnaryOp(rator_tree, rand_tree),
+            tree = make_UnaryOp(rator_tree, rand_tree),
             aux = self.synthesize_auxes((rator_aux, rand_aux,)) 
         )
     
@@ -11292,7 +11292,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Lambda(params_tree, body_tree),
+            tree = make_Lambda(params_tree, body_tree),
             aux = self.synthesize_auxes((params_aux, body_aux,)) 
         )
     
@@ -11307,7 +11307,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = IfExp(body_tree, test_tree, orelse_tree),
+            tree = make_IfExp(body_tree, test_tree, orelse_tree),
             aux = self.synthesize_auxes((body_aux, test_aux, orelse_aux,)) 
         )
     
@@ -11318,7 +11318,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Dictionary(content_tree),
+            tree = make_Dictionary(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11327,7 +11327,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = EmptyDictionary(),
+            tree = make_EmptyDictionary(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11338,7 +11338,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Set(content_tree),
+            tree = make_Set(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11351,7 +11351,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         constraints_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ListComp(content_tree, constraints_tree),
+            tree = make_ListComp(content_tree, constraints_tree),
             aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
         )
     
@@ -11364,7 +11364,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         constraints_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = SetComp(content_tree, constraints_tree),
+            tree = make_SetComp(content_tree, constraints_tree),
             aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
         )
     
@@ -11379,7 +11379,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         constraints_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = DictionaryComp(key_tree, content_tree, constraints_tree),
+            tree = make_DictionaryComp(key_tree, content_tree, constraints_tree),
             aux = self.synthesize_auxes((key_aux, content_aux, constraints_aux,)) 
         )
     
@@ -11392,7 +11392,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         constraints_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = GeneratorExp(content_tree, constraints_tree),
+            tree = make_GeneratorExp(content_tree, constraints_tree),
             aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
         )
     
@@ -11403,7 +11403,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Await(content_tree),
+            tree = make_Await(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11412,7 +11412,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = YieldNothing(),
+            tree = make_YieldNothing(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11423,7 +11423,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Yield(content_tree),
+            tree = make_Yield(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11434,7 +11434,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = YieldFrom(content_tree),
+            tree = make_YieldFrom(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11447,7 +11447,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         comps_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Compare(left_tree, comps_tree),
+            tree = make_Compare(left_tree, comps_tree),
             aux = self.synthesize_auxes((left_aux, comps_aux,)) 
         )
     
@@ -11458,7 +11458,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         func_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Call(func_tree),
+            tree = make_Call(func_tree),
             aux = self.synthesize_auxes((func_aux,)) 
         )
     
@@ -11471,7 +11471,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         args_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = CallArgs(func_tree, args_tree),
+            tree = make_CallArgs(func_tree, args_tree),
             aux = self.synthesize_auxes((func_aux, args_aux,)) 
         )
     
@@ -11482,7 +11482,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Integer(content_tree),
+            tree = make_Integer(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11493,7 +11493,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Float(content_tree),
+            tree = make_Float(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11504,7 +11504,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ConcatString(content_tree),
+            tree = make_ConcatString(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11513,7 +11513,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = True_(),
+            tree = make_True_(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11522,7 +11522,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = False_(),
+            tree = make_False_(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11531,7 +11531,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = None_(),
+            tree = make_None_(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11540,7 +11540,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Ellip(),
+            tree = make_Ellip(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11553,7 +11553,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Attribute(content_tree, name_tree),
+            tree = make_Attribute(content_tree, name_tree),
             aux = self.synthesize_auxes((content_aux, name_aux,)) 
         )
     
@@ -11566,7 +11566,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         slice_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Subscript(content_tree, slice_tree),
+            tree = make_Subscript(content_tree, slice_tree),
             aux = self.synthesize_auxes((content_aux, slice_aux,)) 
         )
     
@@ -11577,7 +11577,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Starred(content_tree),
+            tree = make_Starred(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11588,7 +11588,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Name(content_tree),
+            tree = make_Name(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11599,7 +11599,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = List(content_tree),
+            tree = make_List(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11608,7 +11608,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = EmptyList(),
+            tree = make_EmptyList(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11619,7 +11619,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Tuple(content_tree),
+            tree = make_Tuple(content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -11628,7 +11628,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = EmptyTuple(),
+            tree = make_EmptyTuple(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11643,7 +11643,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         step_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Slice(lower_tree, upper_tree, step_tree),
+            tree = make_Slice(lower_tree, upper_tree, step_tree),
             aux = self.synthesize_auxes((lower_aux, upper_aux, step_aux,)) 
         )
     
@@ -11652,7 +11652,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = And(),
+            tree = make_And(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11661,7 +11661,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Or(),
+            tree = make_Or(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11670,7 +11670,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Add(),
+            tree = make_Add(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11679,7 +11679,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Sub(),
+            tree = make_Sub(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11688,7 +11688,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Mult(),
+            tree = make_Mult(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11697,7 +11697,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = MatMult(),
+            tree = make_MatMult(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11706,7 +11706,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Div(),
+            tree = make_Div(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11715,7 +11715,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Mod(),
+            tree = make_Mod(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11724,7 +11724,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Pow(),
+            tree = make_Pow(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11733,7 +11733,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = LShift(),
+            tree = make_LShift(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11742,7 +11742,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = RShift(),
+            tree = make_RShift(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11751,7 +11751,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = BitOr(),
+            tree = make_BitOr(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11760,7 +11760,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = BitXor(),
+            tree = make_BitXor(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11769,7 +11769,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = BitAnd(),
+            tree = make_BitAnd(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11778,7 +11778,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = FloorDiv(),
+            tree = make_FloorDiv(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11787,7 +11787,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Invert(),
+            tree = make_Invert(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11796,7 +11796,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Not(),
+            tree = make_Not(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11805,7 +11805,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = UAdd(),
+            tree = make_UAdd(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11814,7 +11814,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = USub(),
+            tree = make_USub(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11823,7 +11823,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Eq(),
+            tree = make_Eq(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11832,7 +11832,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NotEq(),
+            tree = make_NotEq(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11841,7 +11841,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Lt(),
+            tree = make_Lt(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11850,7 +11850,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = LtE(),
+            tree = make_LtE(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11859,7 +11859,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Gt(),
+            tree = make_Gt(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11868,7 +11868,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = GtE(),
+            tree = make_GtE(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11877,7 +11877,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Is(),
+            tree = make_Is(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11886,7 +11886,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = IsNot(),
+            tree = make_IsNot(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11895,7 +11895,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = In(),
+            tree = make_In(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11904,7 +11904,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = NotIn(),
+            tree = make_NotIn(),
             aux = self.synthesize_auxes(()) 
         )
     
@@ -11919,7 +11919,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         filts_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = AsyncConstraint(target_tree, search_space_tree, filts_tree),
+            tree = make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
             aux = self.synthesize_auxes((target_aux, search_space_aux, filts_aux,)) 
         )
     
@@ -11934,7 +11934,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         filts_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Constraint(target_tree, search_space_tree, filts_tree),
+            tree = make_Constraint(target_tree, search_space_tree, filts_tree),
             aux = self.synthesize_auxes((target_aux, search_space_aux, filts_aux,)) 
         )
      
@@ -11948,7 +11948,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         rand_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = CompareRight(rator_tree, rand_tree),
+            tree = make_CompareRight(rator_tree, rand_tree),
             aux = self.synthesize_auxes((rator_aux, rand_aux,)) 
         )
     
@@ -11961,7 +11961,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ExceptHandler(arg_tree, body_tree),
+            tree = make_ExceptHandler(arg_tree, body_tree),
             aux = self.synthesize_auxes((arg_aux, body_aux,)) 
         )
     
@@ -11976,7 +11976,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         default_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = Param(name_tree, anno_tree, default_tree),
+            tree = make_Param(name_tree, anno_tree, default_tree),
             aux = self.synthesize_auxes((name_aux, anno_aux, default_aux,)) 
         )
     
@@ -11991,7 +11991,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ClassDef(name_tree, bs_tree, body_tree),
+            tree = make_ClassDef(name_tree, bs_tree, body_tree),
             aux = self.synthesize_auxes((name_aux, bs_aux, body_aux,)) 
         )
     
@@ -12004,7 +12004,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ElifBlock(test_tree, body_tree),
+            tree = make_ElifBlock(test_tree, body_tree),
             aux = self.synthesize_auxes((test_aux, body_aux,)) 
         )
     
@@ -12015,7 +12015,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = ElseBlock(body_tree),
+            tree = make_ElseBlock(body_tree),
             aux = self.synthesize_auxes((body_aux,)) 
         )
     
@@ -12026,7 +12026,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = FinallyBlock(body_tree),
+            tree = make_FinallyBlock(body_tree),
             aux = self.synthesize_auxes((body_aux,)) 
         )
      

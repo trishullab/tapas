@@ -81,7 +81,7 @@ def generate_inspect_inductive_choice_rule(type_name : str, rule : Rule):
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_{rule_system.type_from_item(item, "")}(child_token, child_inher_aux)
 
-            stack.append((Grammar("{type_name}", "{rule.name}"), inher_aux, children + (child_synth,)))
+            stack.append((make_Grammar("{type_name}", "{rule.name}"), inher_aux, children + (child_synth,)))
             return None
             '''
             for i, item in enumerate(abstract_items)
@@ -91,7 +91,7 @@ def generate_inspect_inductive_choice_rule(type_name : str, rule : Rule):
             f'''
         elif index == {i} : # index refers to an inductive child
             # put back current node
-            stack.append((Grammar("{type_name}", "{rule.name}"), inher_aux, children))
+            stack.append((make_Grammar("{type_name}", "{rule.name}"), inher_aux, children))
 
             {assign_synths(rule, i)}
 
@@ -310,7 +310,7 @@ def generate_synthesize_rule(type_name : Optional[str], rule : Rule) -> str:
         ])}
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = {rule.name}({f', '.join([
+            tree = make_{rule.name}({f', '.join([
                 f"{rule_system.relation_from_item(item)}_tree"
                 for item in abstract_items
             ])}),
@@ -373,7 +373,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, TypeVar, Any, Generic, Union, Optional, Iterable
 from collections.abc import Callable
 
-from tapas_base.abstract_token_construct_autogen import abstract_token, Vocab, Grammar
+from tapas_base.abstract_token_construct_autogen import abstract_token, Vocab, Grammar, make_Grammar
 
 from queue import Queue
 """)

@@ -57,6 +57,9 @@ def to_constructor(n : Rule) -> construct_def.Constructor:
             )) 
             for item in n.content
             if not isinstance(item, Terminal)
+        ] + [
+            construct_def.Field(attr = "source_start", typ = 'int', default = "0"),
+            construct_def.Field(attr = "source_end", typ = 'int', default = "0"),
         ]
     )
 

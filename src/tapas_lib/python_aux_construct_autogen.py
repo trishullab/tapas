@@ -105,6 +105,18 @@ class VariantHandlers(Generic[T]):
 # matching for type variant
 def match_variant(o : variant, handlers : VariantHandlers[T]) -> T :
     return o.match(handlers)
+
+
+variant_union = Union[CoVariant, ContraVariant, NoVariant]
+
+# unguarding for type variant
+def unguard_variant(o : variant) -> variant_union :
+    return match_variant(o, VariantHandlers(
+        case_CoVariant = lambda x : x, 
+        case_ContraVariant = lambda x : x, 
+        case_NoVariant = lambda x : x
+
+    ))
     
 
 # type type
@@ -691,6 +703,38 @@ class TypeHandlers(Generic[T]):
 # matching for type type
 def match_type(o : type, handlers : TypeHandlers[T]) -> T :
     return o.match(handlers)
+
+
+type_union = Union[ProtocolType, GenericType, OverloadType, TypeType, VarType, EllipType, AnyType, ObjectType, NoneType, ModuleType, FunctionType, UnionType, InterType, RecordType, TupleLitType, VariedTupleType, ListLitType, DictLitType, TrueType, FalseType, IntLitType, FloatLitType, StrLitType]
+
+# unguarding for type type
+def unguard_type(o : type) -> type_union :
+    return match_type(o, TypeHandlers(
+        case_ProtocolType = lambda x : x, 
+        case_GenericType = lambda x : x, 
+        case_OverloadType = lambda x : x, 
+        case_TypeType = lambda x : x, 
+        case_VarType = lambda x : x, 
+        case_EllipType = lambda x : x, 
+        case_AnyType = lambda x : x, 
+        case_ObjectType = lambda x : x, 
+        case_NoneType = lambda x : x, 
+        case_ModuleType = lambda x : x, 
+        case_FunctionType = lambda x : x, 
+        case_UnionType = lambda x : x, 
+        case_InterType = lambda x : x, 
+        case_RecordType = lambda x : x, 
+        case_TupleLitType = lambda x : x, 
+        case_VariedTupleType = lambda x : x, 
+        case_ListLitType = lambda x : x, 
+        case_DictLitType = lambda x : x, 
+        case_TrueType = lambda x : x, 
+        case_FalseType = lambda x : x, 
+        case_IntLitType = lambda x : x, 
+        case_FloatLitType = lambda x : x, 
+        case_StrLitType = lambda x : x
+
+    ))
      
 
 
@@ -1339,5 +1383,26 @@ class SemanticCheckHandlers(Generic[T]):
 # matching for type semantic_check
 def match_semantic_check(o : semantic_check, handlers : SemanticCheckHandlers[T]) -> T :
     return o.match(handlers)
+
+
+semantic_check_union = Union[LookupTypeCheck, ApplyArgTypeCheck, ApplyRatorTypeCheck, SplatKeywordArgTypeCheck, ReturnTypeCheck, UnifyTypeCheck, AssignTypeCheck, IterateTypeCheck, LookupDecCheck, LookupInitCheck, UpdateCheck, DeclareCheck]
+
+# unguarding for type semantic_check
+def unguard_semantic_check(o : semantic_check) -> semantic_check_union :
+    return match_semantic_check(o, SemanticCheckHandlers(
+        case_LookupTypeCheck = lambda x : x, 
+        case_ApplyArgTypeCheck = lambda x : x, 
+        case_ApplyRatorTypeCheck = lambda x : x, 
+        case_SplatKeywordArgTypeCheck = lambda x : x, 
+        case_ReturnTypeCheck = lambda x : x, 
+        case_UnifyTypeCheck = lambda x : x, 
+        case_AssignTypeCheck = lambda x : x, 
+        case_IterateTypeCheck = lambda x : x, 
+        case_LookupDecCheck = lambda x : x, 
+        case_LookupInitCheck = lambda x : x, 
+        case_UpdateCheck = lambda x : x, 
+        case_DeclareCheck = lambda x : x
+
+    ))
      
     
