@@ -28,7 +28,9 @@ def from_{rule.name}(
     return (
         tuple([make_Grammar(
             options = '{rule.name}',
-            selection = '{rule.name}'
+            selection = '{rule.name}',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]){f' +{nl}' if rule.content else ''}
 {f' +{nl}'.join([
 
@@ -88,7 +90,9 @@ def generate_rule_handler(type_name : str, rule : Rule):
                 stack.append(
                     tuple([make_Grammar(
                         options = '{type_name}',
-                        selection = '{rule.name}'
+                        selection = '{rule.name}',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     """)

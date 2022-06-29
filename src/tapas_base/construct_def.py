@@ -161,6 +161,19 @@ class {handlers_name}(Generic[T]):
 # matching for type {type_name}
 def match_{type_name}(o : {type_name}, handlers : {handlers_name}[T]) -> T :
     return o.match(handlers)
+
+
+{type_name}_union = Union[{', '.join([ constructor.name for constructor in constructors ])}]
+
+# unguarding for type {type_name}
+def unguard_{type_name}(o : {type_name}) -> {type_name}_union :
+    return match_{type_name}(o, {handlers_name}(
+{f', {nl}'.join([
+f"        case_{constructor.name} = lambda x : x"
+    for constructor in constructors 
+])}
+
+    ))
     """)
     return code 
 

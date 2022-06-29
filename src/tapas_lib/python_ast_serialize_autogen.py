@@ -36,7 +36,9 @@ def from_return_annotation(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'return_annotation',
-                        selection = 'SomeReturnAnno'
+                        selection = 'SomeReturnAnno',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -46,7 +48,9 @@ def from_return_annotation(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'return_annotation',
-                        selection = 'NoReturnAnno'
+                        selection = 'NoReturnAnno',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -87,7 +91,9 @@ def from_except_arg(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'except_arg',
-                        selection = 'SomeExceptArg'
+                        selection = 'SomeExceptArg',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -108,7 +114,9 @@ def from_except_arg(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'except_arg',
-                        selection = 'SomeExceptArgName'
+                        selection = 'SomeExceptArgName',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -118,7 +126,9 @@ def from_except_arg(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'except_arg',
-                        selection = 'NoExceptArg'
+                        selection = 'NoExceptArg',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -160,7 +170,9 @@ def from_param_annotation(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'param_annotation',
-                        selection = 'SomeParamAnno'
+                        selection = 'SomeParamAnno',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -170,7 +182,9 @@ def from_param_annotation(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'param_annotation',
-                        selection = 'NoParamAnno'
+                        selection = 'NoParamAnno',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -211,7 +225,9 @@ def from_param_default(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'param_default',
-                        selection = 'SomeParamDefault'
+                        selection = 'SomeParamDefault',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -221,7 +237,9 @@ def from_param_default(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'param_default',
-                        selection = 'NoParamDefault'
+                        selection = 'NoParamDefault',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -264,7 +282,9 @@ def from_parameters_d(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
-                        selection = 'ConsKwParam'
+                        selection = 'ConsKwParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -275,7 +295,9 @@ def from_parameters_d(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
-                        selection = 'SingleKwParam'
+                        selection = 'SingleKwParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -289,7 +311,9 @@ def from_parameters_d(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
-                        selection = 'TransKwParam'
+                        selection = 'TransKwParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -331,7 +355,9 @@ def from_parameters_c(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'SingleTupleBundleParam'
+                        selection = 'SingleTupleBundleParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -346,7 +372,9 @@ def from_parameters_c(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'TransTupleBundleParam'
+                        selection = 'TransTupleBundleParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -358,7 +386,9 @@ def from_parameters_c(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'ParamsD'
+                        selection = 'ParamsD',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -373,7 +403,9 @@ def from_parameters_c(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'DoubleBundleParam'
+                        selection = 'DoubleBundleParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -385,7 +417,9 @@ def from_parameters_c(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
-                        selection = 'DictionaryBundleParam'
+                        selection = 'DictionaryBundleParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -431,7 +465,9 @@ def from_parameters_b(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_b',
-                        selection = 'ConsPosKeyParam'
+                        selection = 'ConsPosKeyParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -442,7 +478,9 @@ def from_parameters_b(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_b',
-                        selection = 'SinglePosKeyParam'
+                        selection = 'SinglePosKeyParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -453,7 +491,9 @@ def from_parameters_b(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_b',
-                        selection = 'ParamsC'
+                        selection = 'ParamsC',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -497,7 +537,9 @@ def from_parameters_a(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_a',
-                        selection = 'ConsPosParam'
+                        selection = 'ConsPosParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -509,7 +551,9 @@ def from_parameters_a(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_a',
-                        selection = 'SinglePosParam'
+                        selection = 'SinglePosParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -523,7 +567,9 @@ def from_parameters_a(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_a',
-                        selection = 'TransPosParam'
+                        selection = 'TransPosParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -564,7 +610,9 @@ def from_parameters(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters',
-                        selection = 'ParamsA'
+                        selection = 'ParamsA',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -575,7 +623,9 @@ def from_parameters(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters',
-                        selection = 'ParamsB'
+                        selection = 'ParamsB',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -585,7 +635,9 @@ def from_parameters(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters',
-                        selection = 'NoParam'
+                        selection = 'NoParam',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -635,7 +687,9 @@ def from_keyword(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'keyword',
-                        selection = 'NamedKeyword'
+                        selection = 'NamedKeyword',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -647,7 +701,9 @@ def from_keyword(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'keyword',
-                        selection = 'SplatKeyword'
+                        selection = 'SplatKeyword',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -702,7 +758,9 @@ def from_import_name(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'import_name',
-                        selection = 'ImportNameAlias'
+                        selection = 'ImportNameAlias',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -719,7 +777,9 @@ def from_import_name(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'import_name',
-                        selection = 'ImportNameOnly'
+                        selection = 'ImportNameOnly',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -762,7 +822,9 @@ def from_with_item(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'with_item',
-                        selection = 'WithItemAlias'
+                        selection = 'WithItemAlias',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -773,7 +835,9 @@ def from_with_item(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'with_item',
-                        selection = 'WithItemOnly'
+                        selection = 'WithItemOnly',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -815,7 +879,9 @@ def from_bases(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases',
-                        selection = 'SomeBases'
+                        selection = 'SomeBases',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -825,7 +891,9 @@ def from_bases(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases',
-                        selection = 'NoBases'
+                        selection = 'NoBases',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -868,7 +936,9 @@ def from_bases_a(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases_a',
-                        selection = 'ConsBase'
+                        selection = 'ConsBase',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -879,7 +949,9 @@ def from_bases_a(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases_a',
-                        selection = 'SingleBase'
+                        selection = 'SingleBase',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -890,7 +962,9 @@ def from_bases_a(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases_a',
-                        selection = 'KeywordBases'
+                        selection = 'KeywordBases',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -934,7 +1008,9 @@ def from_keywords(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'keywords',
-                        selection = 'ConsKeyword'
+                        selection = 'ConsKeyword',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -945,7 +1021,9 @@ def from_keywords(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'keywords',
-                        selection = 'SingleKeyword'
+                        selection = 'SingleKeyword',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -988,7 +1066,9 @@ def from_comparisons(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'comparisons',
-                        selection = 'ConsCompareRight'
+                        selection = 'ConsCompareRight',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -999,7 +1079,9 @@ def from_comparisons(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'comparisons',
-                        selection = 'SingleCompareRight'
+                        selection = 'SingleCompareRight',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1039,7 +1121,9 @@ def from_option_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'option_expr',
-                        selection = 'SomeExpr'
+                        selection = 'SomeExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1049,7 +1133,9 @@ def from_option_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'option_expr',
-                        selection = 'NoExpr'
+                        selection = 'NoExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1092,7 +1178,9 @@ def from_comma_exprs(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'comma_exprs',
-                        selection = 'ConsExpr'
+                        selection = 'ConsExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1103,7 +1191,9 @@ def from_comma_exprs(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'comma_exprs',
-                        selection = 'SingleExpr'
+                        selection = 'SingleExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1146,7 +1236,9 @@ def from_target_exprs(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'target_exprs',
-                        selection = 'ConsTargetExpr'
+                        selection = 'ConsTargetExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1157,7 +1249,9 @@ def from_target_exprs(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'target_exprs',
-                        selection = 'SingleTargetExpr'
+                        selection = 'SingleTargetExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1200,7 +1294,9 @@ def from_decorators(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'decorators',
-                        selection = 'ConsDec'
+                        selection = 'ConsDec',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1210,7 +1306,9 @@ def from_decorators(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'decorators',
-                        selection = 'NoDec'
+                        selection = 'NoDec',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1253,7 +1351,9 @@ def from_constraint_filters(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'constraint_filters',
-                        selection = 'ConsFilter'
+                        selection = 'ConsFilter',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1265,7 +1365,9 @@ def from_constraint_filters(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'constraint_filters',
-                        selection = 'SingleFilter'
+                        selection = 'SingleFilter',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1275,7 +1377,9 @@ def from_constraint_filters(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'constraint_filters',
-                        selection = 'NoFilter'
+                        selection = 'NoFilter',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1325,7 +1429,9 @@ def from_sequence_string(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_string',
-                        selection = 'ConsStr'
+                        selection = 'ConsStr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1342,7 +1448,9 @@ def from_sequence_string(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_string',
-                        selection = 'SingleStr'
+                        selection = 'SingleStr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1385,7 +1493,9 @@ def from_arguments(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'arguments',
-                        selection = 'ConsArg'
+                        selection = 'ConsArg',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1396,7 +1506,9 @@ def from_arguments(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'arguments',
-                        selection = 'SingleArg'
+                        selection = 'SingleArg',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1407,7 +1519,9 @@ def from_arguments(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'arguments',
-                        selection = 'KeywordsArg'
+                        selection = 'KeywordsArg',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1451,7 +1565,9 @@ def from_dictionary_item(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'dictionary_item',
-                        selection = 'Field'
+                        selection = 'Field',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1463,7 +1579,9 @@ def from_dictionary_item(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'dictionary_item',
-                        selection = 'DictionarySplatFields'
+                        selection = 'DictionarySplatFields',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1506,7 +1624,9 @@ def from_dictionary_content(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'dictionary_content',
-                        selection = 'ConsDictionaryItem'
+                        selection = 'ConsDictionaryItem',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1517,7 +1637,9 @@ def from_dictionary_content(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'dictionary_content',
-                        selection = 'SingleDictionaryItem'
+                        selection = 'SingleDictionaryItem',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1566,7 +1688,9 @@ def from_sequence_name(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_name',
-                        selection = 'ConsId'
+                        selection = 'ConsId',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1583,7 +1707,9 @@ def from_sequence_name(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_name',
-                        selection = 'SingleId'
+                        selection = 'SingleId',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1626,7 +1752,9 @@ def from_sequence_import_name(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_import_name',
-                        selection = 'ConsImportName'
+                        selection = 'ConsImportName',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1637,7 +1765,9 @@ def from_sequence_import_name(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_import_name',
-                        selection = 'SingleImportName'
+                        selection = 'SingleImportName',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1680,7 +1810,9 @@ def from_sequence_with_item(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_with_item',
-                        selection = 'ConsWithItem'
+                        selection = 'ConsWithItem',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1691,7 +1823,9 @@ def from_sequence_with_item(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_with_item',
-                        selection = 'SingleWithItem'
+                        selection = 'SingleWithItem',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1734,7 +1868,9 @@ def from_module(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'module',
-                        selection = 'FutureMod'
+                        selection = 'FutureMod',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1745,7 +1881,9 @@ def from_module(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'module',
-                        selection = 'SimpleMod'
+                        selection = 'SimpleMod',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1787,7 +1925,9 @@ def from_statements(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'statements',
-                        selection = 'ConsStmt'
+                        selection = 'ConsStmt',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1798,7 +1938,9 @@ def from_statements(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'statements',
-                        selection = 'SingleStmt'
+                        selection = 'SingleStmt',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1840,7 +1982,9 @@ def from_comprehension_constraints(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'comprehension_constraints',
-                        selection = 'ConsConstraint'
+                        selection = 'ConsConstraint',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1851,7 +1995,9 @@ def from_comprehension_constraints(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'comprehension_constraints',
-                        selection = 'SingleConstraint'
+                        selection = 'SingleConstraint',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1893,7 +2039,9 @@ def from_sequence_ExceptHandler(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_ExceptHandler',
-                        selection = 'ConsExceptHandler'
+                        selection = 'ConsExceptHandler',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1904,7 +2052,9 @@ def from_sequence_ExceptHandler(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_ExceptHandler',
-                        selection = 'SingleExceptHandler'
+                        selection = 'SingleExceptHandler',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1946,7 +2096,9 @@ def from_conditions(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'conditions',
-                        selection = 'ElifCond'
+                        selection = 'ElifCond',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1957,7 +2109,9 @@ def from_conditions(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'conditions',
-                        selection = 'ElseCond'
+                        selection = 'ElseCond',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -1967,7 +2121,9 @@ def from_conditions(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'conditions',
-                        selection = 'NoCond'
+                        selection = 'NoCond',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2024,7 +2180,9 @@ def from_function_def(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'function_def',
-                        selection = 'FunctionDef'
+                        selection = 'FunctionDef',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2051,7 +2209,9 @@ def from_function_def(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'function_def',
-                        selection = 'AsyncFunctionDef'
+                        selection = 'AsyncFunctionDef',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2093,7 +2253,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'DecFunctionDef'
+                        selection = 'DecFunctionDef',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2106,7 +2268,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'DecClassDef'
+                        selection = 'DecClassDef',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2118,7 +2282,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'ReturnSomething'
+                        selection = 'ReturnSomething',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2128,7 +2294,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Return'
+                        selection = 'Return',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2140,7 +2308,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Delete'
+                        selection = 'Delete',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2154,7 +2324,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Assign'
+                        selection = 'Assign',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2171,7 +2343,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AugAssign'
+                        selection = 'AugAssign',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2188,7 +2362,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AnnoAssign'
+                        selection = 'AnnoAssign',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2202,7 +2378,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AnnoDeclar'
+                        selection = 'AnnoDeclar',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2220,7 +2398,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'For'
+                        selection = 'For',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2240,7 +2420,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'ForElse'
+                        selection = 'ForElse',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2258,7 +2440,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AsyncFor'
+                        selection = 'AsyncFor',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2278,7 +2462,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AsyncForElse'
+                        selection = 'AsyncForElse',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2293,7 +2479,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'While'
+                        selection = 'While',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2310,7 +2498,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'WhileElse'
+                        selection = 'WhileElse',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2327,7 +2517,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'If'
+                        selection = 'If',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2342,7 +2534,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'With'
+                        selection = 'With',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2357,7 +2551,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AsyncWith'
+                        selection = 'AsyncWith',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2367,7 +2563,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Raise'
+                        selection = 'Raise',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2379,7 +2577,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'RaiseExc'
+                        selection = 'RaiseExc',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2394,7 +2594,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'RaiseFrom'
+                        selection = 'RaiseFrom',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2408,7 +2610,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Try'
+                        selection = 'Try',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2424,7 +2628,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'TryElse'
+                        selection = 'TryElse',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2440,7 +2646,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'TryExceptFin'
+                        selection = 'TryExceptFin',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2454,7 +2662,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'TryFin'
+                        selection = 'TryFin',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2472,7 +2682,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'TryElseFin'
+                        selection = 'TryElseFin',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2484,7 +2696,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Assert'
+                        selection = 'Assert',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2499,7 +2713,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'AssertMsg'
+                        selection = 'AssertMsg',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2511,7 +2727,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Import'
+                        selection = 'Import',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2532,7 +2750,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'ImportFrom'
+                        selection = 'ImportFrom',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2551,7 +2771,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'ImportWildCard'
+                        selection = 'ImportWildCard',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2563,7 +2785,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Global'
+                        selection = 'Global',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2575,7 +2799,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Nonlocal'
+                        selection = 'Nonlocal',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2586,7 +2812,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Expr'
+                        selection = 'Expr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2596,7 +2824,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Pass'
+                        selection = 'Pass',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2606,7 +2836,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Break'
+                        selection = 'Break',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2616,7 +2848,9 @@ def from_stmt(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
-                        selection = 'Continue'
+                        selection = 'Continue',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2699,7 +2933,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'BoolOp'
+                        selection = 'BoolOp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2713,7 +2949,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'AssignExpr'
+                        selection = 'AssignExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2732,7 +2970,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'BinOp'
+                        selection = 'BinOp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2748,7 +2988,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'UnaryOp'
+                        selection = 'UnaryOp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2763,7 +3005,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Lambda'
+                        selection = 'Lambda',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2780,7 +3024,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'IfExp'
+                        selection = 'IfExp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2793,7 +3039,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Dictionary'
+                        selection = 'Dictionary',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2803,7 +3051,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'EmptyDictionary'
+                        selection = 'EmptyDictionary',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2816,7 +3066,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Set'
+                        selection = 'Set',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2831,7 +3083,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'ListComp'
+                        selection = 'ListComp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2846,7 +3100,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'SetComp'
+                        selection = 'SetComp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2864,7 +3120,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'DictionaryComp'
+                        selection = 'DictionaryComp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2879,7 +3137,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'GeneratorExp'
+                        selection = 'GeneratorExp',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2891,7 +3151,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Await'
+                        selection = 'Await',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2901,7 +3163,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'YieldNothing'
+                        selection = 'YieldNothing',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2913,7 +3177,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Yield'
+                        selection = 'Yield',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2925,7 +3191,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'YieldFrom'
+                        selection = 'YieldFrom',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2939,7 +3207,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Compare'
+                        selection = 'Compare',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2951,7 +3221,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Call'
+                        selection = 'Call',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2966,7 +3238,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'CallArgs'
+                        selection = 'CallArgs',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -2983,7 +3257,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Integer'
+                        selection = 'Integer',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3000,7 +3276,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Float'
+                        selection = 'Float',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3011,7 +3289,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'ConcatString'
+                        selection = 'ConcatString',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3021,7 +3301,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'True_'
+                        selection = 'True_',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3031,7 +3313,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'False_'
+                        selection = 'False_',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3041,7 +3325,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'None_'
+                        selection = 'None_',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3051,7 +3337,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Ellip'
+                        selection = 'Ellip',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3071,7 +3359,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Attribute'
+                        selection = 'Attribute',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3086,7 +3376,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Subscript'
+                        selection = 'Subscript',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3098,7 +3390,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Starred'
+                        selection = 'Starred',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3115,7 +3409,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Name'
+                        selection = 'Name',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3128,7 +3424,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'List'
+                        selection = 'List',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3138,7 +3436,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'EmptyList'
+                        selection = 'EmptyList',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3151,7 +3451,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Tuple'
+                        selection = 'Tuple',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3161,7 +3463,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'EmptyTuple'
+                        selection = 'EmptyTuple',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3178,7 +3482,9 @@ def from_expr(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
-                        selection = 'Slice'
+                        selection = 'Slice',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3251,7 +3557,9 @@ def from_bool_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bool_rator',
-                        selection = 'And'
+                        selection = 'And',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3261,7 +3569,9 @@ def from_bool_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bool_rator',
-                        selection = 'Or'
+                        selection = 'Or',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3300,7 +3610,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'Add'
+                        selection = 'Add',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3310,7 +3622,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'Sub'
+                        selection = 'Sub',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3320,7 +3634,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'Mult'
+                        selection = 'Mult',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3330,7 +3646,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'MatMult'
+                        selection = 'MatMult',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3340,7 +3658,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'Div'
+                        selection = 'Div',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3350,7 +3670,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'Mod'
+                        selection = 'Mod',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3360,7 +3682,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'Pow'
+                        selection = 'Pow',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3370,7 +3694,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'LShift'
+                        selection = 'LShift',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3380,7 +3706,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'RShift'
+                        selection = 'RShift',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3390,7 +3718,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'BitOr'
+                        selection = 'BitOr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3400,7 +3730,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'BitXor'
+                        selection = 'BitXor',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3410,7 +3742,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'BitAnd'
+                        selection = 'BitAnd',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3420,7 +3754,9 @@ def from_bin_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bin_rator',
-                        selection = 'FloorDiv'
+                        selection = 'FloorDiv',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3470,7 +3806,9 @@ def from_unary_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'unary_rator',
-                        selection = 'Invert'
+                        selection = 'Invert',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3480,7 +3818,9 @@ def from_unary_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'unary_rator',
-                        selection = 'Not'
+                        selection = 'Not',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3490,7 +3830,9 @@ def from_unary_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'unary_rator',
-                        selection = 'UAdd'
+                        selection = 'UAdd',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3500,7 +3842,9 @@ def from_unary_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'unary_rator',
-                        selection = 'USub'
+                        selection = 'USub',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3541,7 +3885,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'Eq'
+                        selection = 'Eq',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3551,7 +3897,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'NotEq'
+                        selection = 'NotEq',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3561,7 +3909,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'Lt'
+                        selection = 'Lt',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3571,7 +3921,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'LtE'
+                        selection = 'LtE',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3581,7 +3933,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'Gt'
+                        selection = 'Gt',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3591,7 +3945,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'GtE'
+                        selection = 'GtE',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3601,7 +3957,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'Is'
+                        selection = 'Is',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3611,7 +3969,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'IsNot'
+                        selection = 'IsNot',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3621,7 +3981,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'In'
+                        selection = 'In',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3631,7 +3993,9 @@ def from_cmp_rator(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'cmp_rator',
-                        selection = 'NotIn'
+                        selection = 'NotIn',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3685,7 +4049,9 @@ def from_constraint(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'constraint',
-                        selection = 'AsyncConstraint'
+                        selection = 'AsyncConstraint',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3702,7 +4068,9 @@ def from_constraint(
                 stack.append(
                     tuple([make_Grammar(
                         options = 'constraint',
-                        selection = 'Constraint'
+                        selection = 'Constraint',
+                        source_start = o.source_start,
+                        source_end = o.source_end
                     )])
                 )
     
@@ -3732,7 +4100,9 @@ def from_CompareRight(
     return (
         tuple([make_Grammar(
             options = 'CompareRight',
-            selection = 'CompareRight'
+            selection = 'CompareRight',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         from_cmp_rator(o.rator) +
@@ -3751,7 +4121,9 @@ def from_ExceptHandler(
     return (
         tuple([make_Grammar(
             options = 'ExceptHandler',
-            selection = 'ExceptHandler'
+            selection = 'ExceptHandler',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         from_except_arg(o.arg) +
@@ -3770,7 +4142,9 @@ def from_Param(
     return (
         tuple([make_Grammar(
             options = 'Param',
-            selection = 'Param'
+            selection = 'Param',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         tuple([make_Vocab(options = 'identifier', selection = o.name)]) +
@@ -3790,7 +4164,9 @@ def from_ClassDef(
     return (
         tuple([make_Grammar(
             options = 'ClassDef',
-            selection = 'ClassDef'
+            selection = 'ClassDef',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         tuple([make_Vocab(options = 'identifier', selection = o.name)]) +
@@ -3810,7 +4186,9 @@ def from_ElifBlock(
     return (
         tuple([make_Grammar(
             options = 'ElifBlock',
-            selection = 'ElifBlock'
+            selection = 'ElifBlock',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         from_expr(o.test) +
@@ -3829,7 +4207,9 @@ def from_ElseBlock(
     return (
         tuple([make_Grammar(
             options = 'ElseBlock',
-            selection = 'ElseBlock'
+            selection = 'ElseBlock',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         from_statements(o.body)
@@ -3847,7 +4227,9 @@ def from_FinallyBlock(
     return (
         tuple([make_Grammar(
             options = 'FinallyBlock',
-            selection = 'FinallyBlock'
+            selection = 'FinallyBlock',
+            source_start = o.source_start,
+            source_end = o.source_end
         )]) +
 
         from_statements(o.body)

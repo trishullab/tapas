@@ -125,6 +125,18 @@ class ItemHandlers(Generic[T]):
 # matching for type item
 def match_item(o : item, handlers : ItemHandlers[T]) -> T :
     return o.match(handlers)
+
+
+item_union = Union[Terminal, Nonterm, Vocab]
+
+# unguarding for type item
+def unguard_item(o : item) -> item_union :
+    return match_item(o, ItemHandlers(
+        case_Terminal = lambda x : x, 
+        case_Nonterm = lambda x : x, 
+        case_Vocab = lambda x : x
+
+    ))
     
 
 

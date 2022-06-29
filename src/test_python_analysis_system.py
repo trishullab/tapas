@@ -2,6 +2,7 @@ from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
 
 from typing import Callable
+from tapas_base.abstract_token_construct_autogen import unguard_abstract_token
 
 from tapas_lib import python_aux_system as pals
 from tapas_lib import python_ast_system as pas
@@ -45,13 +46,6 @@ def translate(module_name : str):
 def analyze_test(module_name : str, line_limit: int = -1) -> tuple[str, pals.InherAux]:
 
     code = load_source(module_name) 
-    # print(f"***************************************")
-    # print(f"module: {module_name}")
-    # print(f"-------------------------------------")
-    # tokens = pas.serialize(pas.parse(code))
-    # print(pats.dump(tokens))
-    # print(f"***************************************")
-
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
@@ -78,6 +72,9 @@ def analyze_test(module_name : str, line_limit: int = -1) -> tuple[str, pals.Inh
 
 def spawn_inspect(module_name : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     code = load_source(module_name) 
+    return spawn_inspect_code(module_name, code, checks)
+
+def spawn_inspect_code(module_name, code : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     gnode = pgs.parse(code)
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
@@ -610,4 +607,29 @@ def test_converges():
         kill()
 
 if __name__ == "__main__":
+    code = load_source("example") 
+    gnode = pgs.parse(code)
+    mod = pas.parse_from_generic_tree(gnode)
+    abstract_tokens = pas.serialize(mod)
+    last_token = abstract_tokens[0]
+    last_index = 0
+    i = 0
+    for ti, tok in enumerate(abstract_tokens):
+        if isinstance(tok, ats.Grammar):
+            i = tok.source_start 
+
+        print(i)
+        if i < last_index:
+            print(f"")
+            print(f"*** regress: {tok} @ {ti}")
+            print(f"---concretize---\n{pats.concretize(tuple(abstract_tokens[:ti]))}")
+            print(f"*** prev_tok: {last_token}")
+            print(f"*** regress: {tok} @ {ti}")
+            print(f"*** i={i} < last_index={last_index}")
+            print(f"")
+            break
+
+        last_token = tok
+        last_index = i
+
     pass

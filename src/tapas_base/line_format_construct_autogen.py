@@ -100,6 +100,18 @@ class LineFormatHandlers(Generic[T]):
 # matching for type line_format
 def match_line_format(o : line_format, handlers : LineFormatHandlers[T]) -> T :
     return o.match(handlers)
+
+
+line_format_union = Union[InLine, NewLine, IndentLine]
+
+# unguarding for type line_format
+def unguard_line_format(o : line_format) -> line_format_union :
+    return match_line_format(o, LineFormatHandlers(
+        case_InLine = lambda x : x, 
+        case_NewLine = lambda x : x, 
+        case_IndentLine = lambda x : x
+
+    ))
      
 
  

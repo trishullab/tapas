@@ -15,10 +15,12 @@ T = TypeVar('T')
 
 
 # type and constructor GenericNode
-@dataclass
+@dataclass(frozen=True, eq=True)
 class GenericNode:
     syntax_part : str
     text : str
+    source_start : int
+    source_end : int
     children : list[GenericNode]
 
 
@@ -43,6 +45,12 @@ class GenericNode:
 #     )
 
 
+
+def start_end_encoded(source_bytes, encoding : str, start : int, end : int) -> tuple[int, int]:
+    start = len(source_bytes[:start].decode(encoding))
+    end = len(source_bytes[:end].decode(encoding))
+    return (start, end)
+
 # Stack version
 def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encoding : str) -> GenericNode :
 
@@ -54,12 +62,17 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
         ]
 
     text_0 = source_bytes[node.start_byte:node.end_byte].decode(encoding)
-    stack : list[tuple[str, str, list[GenericNode], list[tree_sitter.Node]]] = [(node.type, text_0, [], sans_comments(node.children))]
+    (start_0, end_0) = start_end_encoded(source_bytes, encoding, node.start_byte, node.end_byte)
+
+    stack : list[tuple[str, str, int, int, list[GenericNode], list[tree_sitter.Node]]] = [(
+        node.type, text_0, start_0, end_0, 
+        [], sans_comments(node.children)
+    )]
 
     result = None 
 
     while stack:
-        (syntax_part, text, gnodes, tsnodes) = stack.pop()
+        (syntax_part, text, start, end, gnodes, tsnodes) = stack.pop()
 
         next_gnodes = gnodes
         if result:
@@ -70,15 +83,18 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
             result = GenericNode(
                 syntax_part = syntax_part, 
                 text = text,
+                source_start = start,
+                source_end = end,
                 children = next_gnodes 
             )
 
         else: 
-            stack.append((syntax_part, text, next_gnodes, tsnodes))
+            stack.append((syntax_part, text, start, end, next_gnodes, tsnodes))
             child_index = len(next_gnodes) 
             child_tsnode = tsnodes[child_index]
             child_text = source_bytes[child_tsnode.start_byte:child_tsnode.end_byte].decode(encoding)
-            stack.append((child_tsnode.type, child_text, [], sans_comments(child_tsnode.children)))
+            (child_start, child_end) = start_end_encoded(source_bytes, encoding, child_tsnode.start_byte, child_tsnode.end_byte)
+            stack.append((child_tsnode.type, child_text, child_start, child_end, [], sans_comments(child_tsnode.children)))
 
     assert result
     return result 

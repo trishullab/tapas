@@ -36,26 +36,36 @@ class abstract_token(ABC):
 class Grammar(abstract_token):
     options : str
     selection : str
+    source_start : int
+    source_end : int
 
     def match(self, handlers : AbstractTokenHandlers[T]) -> T:
         return handlers.case_Grammar(self)
 
 def make_Grammar(
     options : str, 
-    selection : str
+    selection : str, 
+    source_start : int = 0, 
+    source_end : int = 0
 ) -> abstract_token:
     return Grammar(
         options,
-        selection
+        selection,
+        source_start,
+        source_end
     )
 
 def update_Grammar(source_Grammar : Grammar,
     options : Union[str, SourceFlag] = SourceFlag(),
-    selection : Union[str, SourceFlag] = SourceFlag()
+    selection : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Grammar:
     return Grammar(
         source_Grammar.options if isinstance(options, SourceFlag) else options,
-        source_Grammar.selection if isinstance(selection, SourceFlag) else selection
+        source_Grammar.selection if isinstance(selection, SourceFlag) else selection,
+        source_Grammar.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_Grammar.source_end if isinstance(source_end, SourceFlag) else source_end
     )
 
         
@@ -118,6 +128,18 @@ class AbstractTokenHandlers(Generic[T]):
 # matching for type abstract_token
 def match_abstract_token(o : abstract_token, handlers : AbstractTokenHandlers[T]) -> T :
     return o.match(handlers)
+
+
+abstract_token_union = Union[Grammar, Vocab, Hole]
+
+# unguarding for type abstract_token
+def unguard_abstract_token(o : abstract_token) -> abstract_token_union :
+    return match_abstract_token(o, AbstractTokenHandlers(
+        case_Grammar = lambda x : x, 
+        case_Vocab = lambda x : x, 
+        case_Hole = lambda x : x
+
+    ))
      
 
  
