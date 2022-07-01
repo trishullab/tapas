@@ -3,7 +3,7 @@ from tapas_lib import python_data_system
 
 if __name__ == "__main__":
 
-    package = pals.analyze_typeshed()
+    package = pals.analyze_typeshed_cache()
     # python_data_system.generate_dir(package, 'mbpp')
 
     # python_data_system.generate_dir(package, 'apps')

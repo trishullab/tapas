@@ -72,7 +72,7 @@ def generate_file(
     dirname : str, 
     name : str, 
     vocab : dict, 
-    dir_count : int
+    abstract_dir_name : str
 ) -> dict[str, Any]:
 
     count_map : PMap[str, int] = m() 
@@ -85,7 +85,7 @@ def generate_file(
 
     abstract_data_base = name.split(".")[0]  
 
-    abstract_data_dirpath = project_path(f"tapas_res/{dirname}/abstract_data_{dir_count}")
+    abstract_data_dirpath = project_path(f"tapas_res/{dirname}/{abstract_dir_name}")
     write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', '')
 
     from datetime import datetime
@@ -198,7 +198,7 @@ def generate_file_tuple(tup) -> dict[str, Any]:
     stats = generate_file(tup[0], tup[1], tup[2], tup[3], tup[4])
     return stats
 
-def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
+def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix = ""):
     concrete_data_dirpath = project_path(f"tapas_res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
@@ -210,13 +210,19 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str):
 
         # skip chunks
         # if i in [0]: continue 
+        abstract_dir_name = (
+            f"abstract_data_{suffix}_{i}"
+            if suffix else
+            f"abstract_data_{i}"
+        ) 
+        # abstract_data_{dir_count}
 
-        abstract_data_dirpath = project_path(f"tapas_res/{dirname}/abstract_data_{i}")
+        abstract_data_dirpath = project_path(f"tapas_res/{dirname}/{abstract_dir_name}")
         write(abstract_data_dirpath, f'vocab.json', '')
     
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
         with multiprocessing.Pool(cpu_count) as pool:
-            stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, i) for n in chunk])
+            stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
         stats = {} 
         for next_stats in stats_collection:
