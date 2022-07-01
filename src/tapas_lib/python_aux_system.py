@@ -2737,7 +2737,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             content_tree = func_tree.content
             if isinstance(content_tree, pas.Name):
                 prev_decl = lookup_declaration(inher_aux, content_tree.content)
-                if prev_decl:
+                if prev_decl and not prev_decl.annotated:
                     generlized_content_type = generalize_type(inher_aux, prev_decl.type)
                     decl_additions += pmap({
                         content_tree.content : update_Declaration(prev_decl, type = generlized_content_type)
@@ -2934,8 +2934,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             content_tree = func_tree.content
             if isinstance(content_tree, pas.Name):
                 prev_decl = lookup_declaration(inher_aux, content_tree.content)
-                if prev_decl:
-
+                if prev_decl and not prev_decl.annotated:
                     generlized_content_type = substitute_type_args(generalize_type(inher_aux, prev_decl.type), subst_map)
                     decl_additions += pmap({
                         content_tree.content : update_Declaration(prev_decl, type = generlized_content_type)
