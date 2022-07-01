@@ -6,7 +6,6 @@ dependencies:
   - inflection=0.5.1
   - iniconfig=1.1.1
   - jinja2=3.0.1
-  - libcxx=10.0.0
   - libffi=3.3
   - markupsafe=2.0.1
   - ncurses=6.2
