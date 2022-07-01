@@ -14,7 +14,7 @@ from tapas_base import util_system as us
 import json
 import pytest
 
-from tapas_lib.python_aux_construct_autogen import RecordType, make_RecordType
+from tapas_lib.python_aux_construct_autogen import RecordType, UnionType, make_RecordType, make_VarType
 
 package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()
 
@@ -437,8 +437,8 @@ def test_065_ok():
         type_args=(pals.make_RecordType(class_key="builtins.int"),)
     )
 
-def test_066_ok():
-    code_pre, aux_pre = analyze_test("066_ok", 2)
+def test_goldilocks_object():
+    code_pre, aux_pre = analyze_test("goldilocks_object", 2)
     # print(code_pre)
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
     xs_pre = aux_pre.local_env.get('xs')
@@ -446,18 +446,26 @@ def test_066_ok():
     assert xs_pre 
     assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
 
-    code_post, aux_post = analyze_test("066_ok", 3)
+    code_post, aux_post = analyze_test("goldilocks_object", 3)
     xs_post = aux_post.local_env.get('xs')
     # print(code_post)
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
     assert xs_post 
     xs_post_type = xs_post.type
-    assert (
-        isinstance(xs_post_type, pals.RecordType) and
-        xs_post_type.class_key == "builtins.list" and
-        pals.make_RecordType(class_key="builtins.int") in xs_post_type.type_args and
-        pals.make_RecordType(class_key="builtins.str") in xs_post_type.type_args
-    )
+    assert isinstance(xs_post_type, pals.RecordType) and xs_post_type.class_key == "builtins.list"
+    assert len(xs_post_type.type_args) == 1
+    xs_post_content_type = xs_post_type.type_args[0]
+    assert isinstance(xs_post_content_type, pals.UnionType)
+    xs_post_type_choices = xs_post_content_type.type_choices
+    assert len(xs_post_type_choices) == 2
+    choice_0 = xs_post_type_choices[0]
+    assert isinstance(choice_0, pals.RecordType) and choice_0.class_key == "builtins.int"
+    choice_1 = xs_post_type_choices[1]
+    assert isinstance(choice_1, pals.UnionType)
+    choice_1_choices = choice_1.type_choices
+    assert len(choice_1_choices) == 2
+    choice_1_0 = choice_1_choices[0]
+    assert isinstance(choice_1_0, pals.RecordType) and choice_1_0.class_key == "builtins.str"
 
 def test_067_ok():
     code, aux = analyze_test("067_ok", 4)
@@ -480,8 +488,8 @@ def test_069_ok():
 
 def test_070_0_ok():
     code, aux = analyze_test("070_0_ok",2)
-    print(code)
-    print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    # print(code)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     x = aux.local_env.get("x")
     assert x
     x_type = x.type
@@ -489,7 +497,10 @@ def test_070_0_ok():
     assert x_type.class_key == "builtins.list"
     x_type_args = x_type.type_args
     assert len(x_type_args) == 1 
-    assert x_type_args[0] == make_RecordType(class_key="builtins.int")
+    x_content_type = x_type_args[0]
+    assert isinstance(x_content_type, pals.UnionType)
+    x_content_choices = x_content_type.type_choices
+    assert x_content_choices[0] == make_RecordType(class_key="builtins.int")
 
 def test_070_1_ok():
     analyze_test("070_1_ok")
@@ -499,12 +510,15 @@ def test_070_2_ok():
 
 def test_070_3_ok():
     code, aux = analyze_test("070_3_ok", 9)
-    print(code)
-    print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    # print(code)
+    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     a = aux.local_env.get("a")
     assert a
     assert a.type == make_RecordType(class_key="070_3_ok.A", type_args=(
-        make_RecordType(class_key="builtins.int"),
+        pals.make_UnionType(type_choices=(
+            make_RecordType(class_key="builtins.int"),
+            make_VarType(name="070_3_ok.X")
+        )),
     ))
 
 def test_070_4_ok():
@@ -607,29 +621,4 @@ def test_converges():
         kill()
 
 if __name__ == "__main__":
-    code = load_source("example") 
-    gnode = pgs.parse(code)
-    mod = pas.parse_from_generic_tree(gnode)
-    abstract_tokens = pas.serialize(mod)
-    last_token = abstract_tokens[0]
-    last_index = 0
-    i = 0
-    for ti, tok in enumerate(abstract_tokens):
-        if isinstance(tok, ats.Grammar):
-            i = tok.source_start 
-
-        print(i)
-        if i < last_index:
-            print(f"")
-            print(f"*** regress: {tok} @ {ti}")
-            print(f"---concretize---\n{pats.concretize(tuple(abstract_tokens[:ti]))}")
-            print(f"*** prev_tok: {last_token}")
-            print(f"*** regress: {tok} @ {ti}")
-            print(f"*** i={i} < last_index={last_index}")
-            print(f"")
-            break
-
-        last_token = tok
-        last_index = i
-
     pass

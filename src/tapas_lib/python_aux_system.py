@@ -358,13 +358,22 @@ def generalize_type(inher_aux : InherAux, spec_type : type) -> type:
         case_RecordType = lambda t : t,
         case_TupleLitType = lambda t : t,
         case_VariedTupleType = lambda t : t,
-        case_ListLitType = lambda t : make_RecordType(
-            class_key="builtins.list", 
-            type_args=(unionize_all_types(
+        case_ListLitType = lambda t : (
+            class_record := from_static_path_to_ClassRecord(inher_aux, "builtins.list"),
+            content_type := unionize_all_types(
                 generalize_type(inher_aux, it)
                 for it in t.item_types
-            ),)        
-        ),
+            ),
+            content_type := (
+                unionize_types(content_type, class_record.type_params[0])
+                if class_record else
+                content_type
+            ),
+            make_RecordType(
+                class_key="builtins.list", 
+                type_args=(content_type,)        
+            )
+        )[-1],
         case_DictLitType = lambda t : make_RecordType(
             class_key="builtins.dict", 
             type_args=(
@@ -1033,18 +1042,59 @@ def lookup_declaration(inher_aux : InherAux, key : str, builtins = True) -> Decl
         return None 
 
 
-def collect_subst_map(
+def infer_subst_map(
     inher_aux : InherAux, subst_map : PMap[str, type], 
     vt : type, t : type
 ) -> PMap[str, type]:
-    if isinstance(vt, VarType):
-        sub = subst_map.get(vt.name)
-        if not sub or subsumed(sub, t, inher_aux):
-            return subst_map.update(pmap({vt.name:t}))
-        else:
-            return subst_map
-    else:
-        return subst_map
+
+    # TODO: fill out the rest of substitution cases
+
+    def flatten_maps(maps : Sequence[PMap]):
+        result = m()
+        for map in maps:
+            result = result.update(map) 
+        return result
+
+    return match_type(vt, TypeHandlers(
+        case_ProtocolType = lambda vt : subst_map, 
+        case_GenericType = lambda vt : subst_map,
+        case_OverloadType = lambda vt : subst_map,
+        case_TypeType = lambda vt : subst_map,
+        case_VarType = lambda vt : (
+            (sub := subst_map.get(vt.name), (
+                subst_map.update(pmap({vt.name:t}))
+                if not sub or subsumed(sub, t, inher_aux) else
+                subst_map
+            ))[-1]
+            if isinstance(vt, VarType) else
+            subst_map
+        ),
+        case_EllipType = lambda vt : subst_map,
+        case_AnyType = lambda vt : subst_map,
+        case_ObjectType = lambda vt : subst_map,
+        case_NoneType = lambda vt : subst_map,
+        case_ModuleType = lambda vt : subst_map,
+        case_FunctionType = lambda vt : subst_map,
+        case_UnionType = lambda vt : (
+            subst_maps := [
+                infer_subst_map(inher_aux, subst_map, tc, t) 
+                for tc in vt.type_choices 
+            ], 
+            flatten_maps([subst_map] + subst_maps)
+        )[-1],
+        case_InterType = lambda vt : subst_map,
+        case_RecordType = lambda vt : subst_map,
+        case_TupleLitType = lambda vt : subst_map,
+        case_VariedTupleType = lambda vt : subst_map,
+        case_ListLitType = lambda vt : subst_map,
+        case_DictLitType = lambda vt : subst_map,
+        case_TrueType = lambda vt : subst_map,
+        case_FalseType = lambda vt : subst_map,
+        case_IntLitType = lambda vt : subst_map,
+        case_FloatLitType = lambda vt : subst_map,
+        case_StrLitType = lambda vt : subst_map,
+    ))
+
 
 def check_application_args(
     pos_arg_types : Sequence[type],
@@ -1097,7 +1147,7 @@ def check_application_args(
 
     checks : Iterable[bool] = [
         (
-            subst_map := collect_subst_map(
+            subst_map := infer_subst_map(
                 inher_aux, subst_map, param_type, 
                 generalize_type(inher_aux, pos_arg_types[i])
             ),
@@ -1107,7 +1157,7 @@ def check_application_args(
         for i, param_type in enumerate(function_type.pos_param_types) 
     ] + [
         (
-            subst_map := collect_subst_map(
+            subst_map := infer_subst_map(
                 inher_aux, subst_map, 
                 param_sig.type, 
                 generalize_type(inher_aux, pos_arg_types[j])
@@ -1121,7 +1171,7 @@ def check_application_args(
     ] + (
         [
             (
-                subst_map := collect_subst_map(
+                subst_map := infer_subst_map(
                     inher_aux, subst_map, 
                     function_type.bundle_pos_param_type, 
                     generalize_type(inher_aux, pos_type_arg)
@@ -1139,7 +1189,7 @@ def check_application_args(
             (
                 kw_arg_types.get(param_sig.key) != None and
                 (
-                    subst_map := collect_subst_map(
+                    subst_map := infer_subst_map(
                         inher_aux, subst_map, 
                         param_sig.type, 
                         generalize_type(inher_aux, kw_arg_types[param_sig.key])
@@ -1156,7 +1206,7 @@ def check_application_args(
         (
             kw_arg_types.get(param_sig.key) != None and
             (
-                subst_map := collect_subst_map(
+                subst_map := infer_subst_map(
                     inher_aux, subst_map, param_sig.type, 
                     generalize_type(inher_aux, kw_arg_types[param_sig.key])
                 ),
@@ -1167,7 +1217,7 @@ def check_application_args(
         for param_sig in function_type.kw_param_sigs 
     ] + [
         (
-            subst_map := collect_subst_map(
+            subst_map := infer_subst_map(
                 inher_aux, subst_map, 
                 function_type.bundle_kw_param_type, 
                 generalize_type(inher_aux, kw_arg_type)
@@ -1183,10 +1233,15 @@ def check_application_args(
         )
     ]
 
+    unionized_subst_map = pmap({
+        k:unionize_types(t, make_VarType(k))
+        for k, t in subst_map.items()
+    })
+
     if us.every(checks, lambda c : c):
-        return (substitute_function_type_args(function_type, subst_map), subst_map)
+        return (substitute_function_type_args(function_type, subst_map), unionized_subst_map)
     else:
-        return (None, subst_map)
+        return (None, unionized_subst_map)
 
 
 def is_literal_string(content : str) -> bool:
@@ -2050,7 +2105,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         if isinstance(method_type, FunctionType):
 
-            precise_method_type, _ = check_application_args(
+            precise_method_type, subst_map = check_application_args(
                 [right_type], {}, 
                 method_type, inher_aux
             )
@@ -2161,7 +2216,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
             if isinstance(method_type, FunctionType):
 
-                precise_method_type, _ = check_application_args(
+                precise_method_type, subst_map = check_application_args(
                     [right_type], {}, 
                     method_type, inher_aux
                 )
@@ -2205,7 +2260,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         return_type = AnyType()
         if isinstance(method_type, FunctionType):
 
-            precise_method_type, _ = check_application_args(
+            precise_method_type, subst_map = check_application_args(
                 [], {}, 
                 method_type, inher_aux
             )
@@ -2609,7 +2664,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             method_type = lookup_field_type(left_type, method_name, inher_aux)
 
             if isinstance(method_type, FunctionType):
-                precise_method_type, _ = check_application_args(
+                precise_method_type, subst_map = check_application_args(
                     [right_type], {}, 
                     method_type, inher_aux
                 )
@@ -2652,7 +2707,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         func_type = func_aux.observed_types[0]
         inferred_type = AnyType() 
         if isinstance(func_type, FunctionType):
-            precise_func_type, _ = check_application_args((), {}, func_type, inher_aux)
+            precise_func_type, subst_map = check_application_args((), {}, func_type, inher_aux)
             self.check(ApplyArgTypeCheck(), lambda: precise_func_type != None)
             if precise_func_type:
                 inferred_type = precise_func_type.return_type
@@ -2676,6 +2731,17 @@ class Server(paa.Server[InherAux, SynthAux]):
         else:
             self.check(ApplyRatorTypeCheck(), lambda: False)
             inferred_type = AnyType() 
+
+        decl_additions = func_aux.decl_additions
+        if isinstance(func_tree, pas.Attribute):
+            content_tree = func_tree.content
+            if isinstance(content_tree, pas.Name):
+                prev_decl = lookup_declaration(inher_aux, content_tree.content)
+                if prev_decl:
+                    generlized_content_type = generalize_type(inher_aux, prev_decl.type)
+                    decl_additions += pmap({
+                        content_tree.content : update_Declaration(prev_decl, type = generlized_content_type)
+                    })
 
         return paa.Result[SynthAux](
             tree = pas.make_Call(func_tree),
@@ -2745,17 +2811,17 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
 
         expr_type = AnyType() 
-
+        subst_map = m()
         assert len(func_aux.observed_types) == 1
         func_type = func_aux.observed_types[0]
         if isinstance(func_type, FunctionType):
 
-
-            precise_func_type, _ = check_application_args(
+            precise_func_type, subst_map = check_application_args(
                 args_aux.observed_types,
                 args_aux.kw_types, 
                 func_type, inher_aux
             )
+
 
             self.check(ApplyArgTypeCheck(), lambda: 
                 precise_func_type != None
@@ -2765,7 +2831,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         elif isinstance(func_type, InterType):
 
-            chosen_func_type, _ = self.match_function_type(inher_aux,
+            chosen_func_type, subst_map = self.match_function_type(inher_aux,
                 args_aux.observed_types,
                 args_aux.kw_types, 
                 func_type
@@ -2860,10 +2926,26 @@ class Server(paa.Server[InherAux, SynthAux]):
             expr_type = AnyType()
 
 
+        synth_aux = self.synthesize_auxes((func_aux, args_aux))
+
+        decl_additions = synth_aux.decl_additions
+
+        if isinstance(func_tree, pas.Attribute):
+            content_tree = func_tree.content
+            if isinstance(content_tree, pas.Name):
+                prev_decl = lookup_declaration(inher_aux, content_tree.content)
+                if prev_decl:
+
+                    generlized_content_type = substitute_type_args(generalize_type(inher_aux, prev_decl.type), subst_map)
+                    decl_additions += pmap({
+                        content_tree.content : update_Declaration(prev_decl, type = generlized_content_type)
+                    })
+
         return paa.Result[SynthAux](
             tree = pas.make_CallArgs(func_tree, args_tree),
-            aux = update_SynthAux(self.synthesize_auxes((func_aux, args_aux)),
-                observed_types = (expr_type,)
+            aux = update_SynthAux(synth_aux,
+                observed_types = (expr_type,),
+                decl_additions = decl_additions
             )
         )
     
@@ -3022,7 +3104,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             # )
             if not expr_type:
                 expr_type = AnyType()
-
+        
         return paa.Result[SynthAux](
             tree = pas.make_Attribute(content_tree, name_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, name_aux)),
@@ -3078,7 +3160,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             method_type = lookup_field_type(content_type, "__getitem__", inher_aux)
             if isinstance(method_type, FunctionType): 
 
-                precise_method_type, _ = check_application_args(
+                precise_method_type, subst_map = check_application_args(
                     [slice_type], {}, 
                     method_type, inher_aux
                 )
@@ -4221,7 +4303,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         if isinstance(method_type, FunctionType):
 
 
-            precise_method_type, _ = check_application_args(
+            precise_method_type, subst_map = check_application_args(
                 [content_type], {}, 
                 method_type, inher_aux
             )
