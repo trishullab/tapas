@@ -159,15 +159,15 @@ def unionize_types(a : type, b : type) -> type:
         return a
     elif isinstance(a, UnionType) and isinstance(b, UnionType):
         return UnionType(
-            type_choices = (a.type_choices + b.type_choices)
+            type_choices = tuple(set(a.type_choices + b.type_choices))
         )
     elif isinstance(a, UnionType):
         return UnionType(
-            type_choices = a.type_choices + (b,)
+            type_choices = tuple(set(a.type_choices + (b,)))
         )
     elif isinstance(b, UnionType):
         return UnionType(
-            type_choices = (a,) + b.type_choices
+            type_choices = tuple(set((a,) + b.type_choices))
         )
     elif isinstance(a, TypeType):
         assert isinstance(b, TypeType)
@@ -179,7 +179,7 @@ def unionize_types(a : type, b : type) -> type:
         return TypeType(class_key = a.class_key, content = unionize_types(a.content, b.content))
     else:
         return UnionType(
-            type_choices = (a, b)
+            type_choices = tuple(set((a, b)))
         )
 
 def get_type_args(t : type) -> tuple[type, ...]:
@@ -738,12 +738,11 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
         ),
         case_UnionType = lambda t : (
 
-            UnionType(
-                type_choices = tuple(
-                    substitute_type_args(type_choice, subst_map)
-                    for type_choice in t.type_choices
-                ), # tuple[type, ...]
+            unionize_all_types(
+                substitute_type_args(type_choice, subst_map)
+                for type_choice in t.type_choices
             )
+
         ),
         case_InterType = lambda t : (
             InterType(

@@ -432,9 +432,16 @@ def test_065_ok():
     xs_post = aux_post.local_env.get('xs')
     il = pals.IntLitType
     assert xs_post 
-    assert xs_post.type == pals.make_RecordType(
-        class_key="builtins.list",
-        type_args=(pals.make_RecordType(class_key="builtins.int"),)
+    xs_post_type = xs_post.type
+    assert isinstance(xs_post_type, pals.RecordType) and xs_post_type.class_key == "builtins.list"
+    assert len(xs_post_type.type_args) == 1
+    assert len(xs_post_type.type_args) == 1
+    xs_post_content_type = xs_post_type.type_args[0]
+    assert isinstance(xs_post_content_type, pals.UnionType)
+    xs_post_type_choices = xs_post_content_type.type_choices
+    assert len(xs_post_type_choices) == 2
+    assert us.exists(xs_post_type_choices, lambda choice :
+        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
     )
 
 def test_goldilocks_object():
@@ -457,15 +464,13 @@ def test_goldilocks_object():
     xs_post_content_type = xs_post_type.type_args[0]
     assert isinstance(xs_post_content_type, pals.UnionType)
     xs_post_type_choices = xs_post_content_type.type_choices
-    assert len(xs_post_type_choices) == 2
-    choice_0 = xs_post_type_choices[0]
-    assert isinstance(choice_0, pals.RecordType) and choice_0.class_key == "builtins.int"
-    choice_1 = xs_post_type_choices[1]
-    assert isinstance(choice_1, pals.UnionType)
-    choice_1_choices = choice_1.type_choices
-    assert len(choice_1_choices) == 2
-    choice_1_0 = choice_1_choices[0]
-    assert isinstance(choice_1_0, pals.RecordType) and choice_1_0.class_key == "builtins.str"
+    assert len(xs_post_type_choices) == 3
+    assert us.exists(xs_post_type_choices, lambda choice :
+        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+    )
+    assert us.exists(xs_post_type_choices, lambda choice :
+        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.str"
+    )
 
 def test_067_ok():
     code, aux = analyze_test("067_ok", 4)
@@ -484,7 +489,6 @@ def test_068_error():
 
 def test_069_ok():
     analyze_test("069_ok")
-
 
 def test_070_0_ok():
     code, aux = analyze_test("070_0_ok",2)
@@ -514,12 +518,19 @@ def test_070_3_ok():
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     a = aux.local_env.get("a")
     assert a
-    assert a.type == make_RecordType(class_key="070_3_ok.A", type_args=(
-        pals.make_UnionType(type_choices=(
-            make_RecordType(class_key="builtins.int"),
-            make_VarType(name="070_3_ok.X")
-        )),
-    ))
+    a_type = a.type 
+    assert isinstance(a_type, pals.RecordType)
+    assert len(a_type.type_args) == 1
+    a_type_content = a_type.type_args[0]
+    assert isinstance(a_type_content, pals.UnionType)
+    xs_post_type_choices = a_type_content.type_choices
+    assert len(xs_post_type_choices) == 2
+    assert us.exists(xs_post_type_choices, lambda choice :
+        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+    )
+    assert us.exists(xs_post_type_choices, lambda choice :
+        isinstance(choice, pals.VarType)
+    )
 
 def test_070_4_ok():
     code, aux = analyze_test("070_4_ok", 7)
@@ -621,4 +632,5 @@ def test_converges():
         kill()
 
 if __name__ == "__main__":
+
     pass
