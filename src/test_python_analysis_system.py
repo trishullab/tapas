@@ -504,7 +504,9 @@ def test_070_0_ok():
     x_content_type = x_type_args[0]
     assert isinstance(x_content_type, pals.UnionType)
     x_content_choices = x_content_type.type_choices
-    assert x_content_choices[0] == make_RecordType(class_key="builtins.int")
+    assert us.exists(x_content_choices, lambda choice :
+        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+    )
 
 def test_070_1_ok():
     analyze_test("070_1_ok")
@@ -632,5 +634,4 @@ def test_converges():
         kill()
 
 if __name__ == "__main__":
-
     pass
