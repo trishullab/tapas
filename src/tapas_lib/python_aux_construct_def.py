@@ -91,8 +91,8 @@ singles = [
     ]),
 
     Constructor("Declaration", [], [
-        Field("annotated", "bool", ""), # used to determine if types may be generalized or not
-        Field("constant", "bool", ""), # def/class are constant; assignment is not constant
+        Field("updatable", "Optional[type]", ""), # def/class are constant; assignment is not constant
+
         Field("initialized", "bool", "False"),
         Field("type", "type", "AnyType()"),
         Field("decorator_types", "tuple[type, ...]", "()"),
@@ -245,7 +245,7 @@ choices_type_base = {
         Constructor("LookupInitCheck", [], []),
         Constructor("UpdateCheck", [], []),
         Constructor("DeclareCheck", [], []),
-
+        Constructor("BranchDeclareCheck", [], []),
     ]
 }
 

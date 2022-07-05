@@ -634,4 +634,19 @@ def test_converges():
         kill()
 
 if __name__ == "__main__":
+    (inspect, kill) = spawn_inspect_code("main", '''
+from typing import Generic, TypeVar
+
+_T = TypeVar("_T")
+class A(Generic[_T]): pass
+
+A()
+pass
+    ''')
+    try:
+        code, aux = inspect(-1)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    finally:
+        kill()
     pass

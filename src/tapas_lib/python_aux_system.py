@@ -48,7 +48,8 @@ all_checks : PSet[semantic_check] = pset({
     LookupDecCheck(),
     LookupInitCheck(),
     UpdateCheck(),
-    DeclareCheck()
+    DeclareCheck(),
+    BranchDeclareCheck(),
 })
 
 
@@ -153,10 +154,6 @@ def unionize_all_types(ts : Iterable[type]) -> type:
 def unionize_types(a : type, b : type) -> type:
     if a == b:
         return a
-    elif isinstance(a, AnyType):
-        return b
-    elif isinstance(b, AnyType):
-        return a
     elif isinstance(a, UnionType) and isinstance(b, UnionType):
         return UnionType(
             type_choices = tuple(set(a.type_choices + b.type_choices))
@@ -179,7 +176,7 @@ def unionize_types(a : type, b : type) -> type:
         return TypeType(class_key = a.class_key, content = unionize_types(a.content, b.content))
     else:
         return UnionType(
-            type_choices = tuple(set((a, b)))
+            type_choices = (a, b)
         )
 
 def get_type_args(t : type) -> tuple[type, ...]:
@@ -839,6 +836,10 @@ def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux)
     
     class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
     if class_record:
+        # print(f"-----------")
+        # print(f"--class_record.key: {class_record.key}")
+        # print(f"--class_record.type_params: {class_record.type_params}")
+        # print(f"-----------")
         substitution_map : PMap[str, type] = pmap({
             class_record.type_params[i].name : type_arg
             for i, type_arg in enumerate(t.type_args) 
@@ -984,7 +985,7 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
     if path == inher_aux.external_path:
          
         return make_Declaration(
-            annotated = True, initialized = True, constant = True, 
+            updatable=None, initialized = True, 
             type = ModuleType(inher_aux.external_path)
         )
 
@@ -994,11 +995,11 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
             if inher_aux.local_env.get(name):
                 return inher_aux.local_env[name]
             else:
-                return make_Declaration(annotated = True, initialized = True, constant = True, type = AnyType())
+                return make_Declaration(updatable=None, initialized = True, type = AnyType())
         elif inher_aux.global_env.get(name): 
             return inher_aux.global_env[name]
         else:
-            return make_Declaration(annotated = True, initialized = True, constant = True, type = AnyType())
+            return make_Declaration(updatable=None, initialized = True, type = AnyType())
 
 
     sep = "."
@@ -1017,10 +1018,10 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
                 module_level = levels[i + 1]
                 return module[module_level]
         else:
-            return make_Declaration(annotated = True, initialized = True, constant = True, type = AnyType())
+            return make_Declaration(updatable = None, initialized = True, type = AnyType())
     
     return make_Declaration(
-        annotated = True, initialized = True, constant = True, 
+        updatable = None, initialized = True,
         type = ModuleType(key = path)
     )
 
@@ -1034,7 +1035,7 @@ def lookup_declaration(inher_aux : InherAux, key : str, builtins = True) -> Decl
     elif inher_aux.global_env.get(key):
         return inher_aux.global_env[key]
     elif key == "Ellipsis": # don't expose the type of builtins.Ellipsis
-        return make_Declaration(annotated=True, initialized = True, constant=True)
+        return make_Declaration(updatable=None, initialized = True)
     elif builtins:
         return from_static_path_to_declaration(inher_aux, f"builtins.{key}")
     else:
@@ -1270,9 +1271,8 @@ def from_variant_to_primitive(v : variant) -> str:
 
 def from_declaration_to_primitive(dec : Declaration) -> list: 
     return [
-        dec.annotated,
+        dec.updatable,
         dec.initialized,
-        dec.constant,
         from_type_to_primitive(dec.type)
     ]
 
@@ -1368,6 +1368,7 @@ def analyze_modules_once(
             .remove(LookupDecCheck())
             .remove(DeclareCheck())
             .remove(AssignTypeCheck())
+            .remove(BranchDeclareCheck())
         )
 
         try:
@@ -1379,6 +1380,10 @@ def analyze_modules_once(
                 else:
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
+        # except AssertionError as ex:
+        #     continue
+        # except ApplyRatorTypeCheck:
+        #     continue
         except Exception as ex:
             # raise ex
             continue
@@ -1491,7 +1496,8 @@ def from_semantic_check_to_string(sc : semantic_check) -> str:
         case_LookupDecCheck = lambda _ :  "lookup_dec_check",
         case_LookupInitCheck = lambda _ : "lookup_init_check", 
         case_UpdateCheck = lambda _ : "update_check", 
-        case_DeclareCheck = lambda _ : "declare_check"
+        case_DeclareCheck = lambda _ : "declare_check",
+        case_BranchDeclareCheck = lambda _ : "branch_declare_check",
     ))
 
 def analyze_summary(
@@ -1543,7 +1549,7 @@ def from_env_to_primitive(env : PMap[str, Declaration]) -> dict:
 
 def from_env_to_primitive_verbose(env : PMap[str, Declaration]) -> dict:
     return {
-        symbol : [f'initialized={p.initialized}', f'constant={p.constant}', from_type_to_primitive(p.type)]
+        symbol : [f'initialized={p.initialized}', f'updatable={p.updatable}', from_type_to_primitive(p.type)]
         for symbol, p in env.items()
     }
 
@@ -1594,50 +1600,6 @@ def to_change_decl(body_aux : SynthAux) -> Change[Declaration]:
     return Change(
         subtractions=body_aux.decl_subtractions,
         additions=body_aux.decl_additions
-    )
-
-
-def cross_join_aux_decls(true_body_aux : Change[Declaration], false_body_aux : Change[Declaration]) -> Change[Declaration]:
-
-    subtractions : PSet[str] = s()
-    for sub in true_body_aux.subtractions:
-        if sub in false_body_aux.subtractions:
-            subtractions = subtractions.add(sub)
-
-    body_additions : PMap[str, Declaration] = m()
-    for target, dec in true_body_aux.additions.items():
-        if target in false_body_aux.additions:
-            false_body_dec = false_body_aux.additions[target]   
-            initialized = dec.initialized and false_body_dec.initialized
-            annotated = dec.annotated or false_body_dec.annotated
-            constant = dec.constant or false_body_dec.constant
-            decorator_types = (
-                dec.decorator_types 
-                if dec.annotated else
-                false_body_dec.decorator_types
-            )
-
-            type = (
-                dec.type
-                if dec.annotated else
-                false_body_dec.type
-                if false_body_dec.annotated else
-                unionize_types(dec.type, false_body_dec.type)
-            )
-
-            new_declaration = make_Declaration(
-                annotated=annotated,
-                initialized=initialized,
-                constant = constant,
-                type = type,
-                decorator_types=decorator_types
-            ) 
-            body_additions = body_additions + pmap({target : new_declaration})
-
-
-    return Change(
-        subtractions = subtractions,
-        additions = body_additions
     )
 
 
@@ -1902,6 +1864,59 @@ class Server(paa.Server[InherAux, SynthAux]):
         super().__init__(in_stream, out_stream)
         self.checks = checks
 
+
+    def cross_join_aux_decls(self, inher_aux : InherAux, true_body_aux : Change[Declaration], false_body_aux : Change[Declaration]) -> Change[Declaration]:
+
+        subtractions : PSet[str] = s()
+        for sub in true_body_aux.subtractions:
+            if sub in false_body_aux.subtractions:
+                subtractions = subtractions.add(sub)
+
+        body_additions : PMap[str, Declaration] = m()
+        for target, true_body_dec in true_body_aux.additions.items():
+            if target in false_body_aux.additions:
+                false_body_dec = false_body_aux.additions[target]   
+
+                self.check(BranchDeclareCheck(), lambda: (
+                    bool(true_body_dec.decorator_types == false_body_dec.decorator_types) and
+                    bool(
+                        (not (true_body_dec.updatable) and not false_body_dec.updatable) or 
+                        (
+                            true_body_dec.updatable and false_body_dec.updatable and 
+                            subsumed(true_body_dec.updatable, false_body_dec.updatable, inher_aux) and 
+                            subsumed(true_body_dec.type, false_body_dec.updatable, inher_aux) and 
+                            subsumed(false_body_dec.updatable, true_body_dec.updatable, inher_aux) and
+                            subsumed(false_body_dec.type, true_body_dec.updatable, inher_aux) 
+                        )
+                    )
+                ))
+
+                updatable = true_body_dec.updatable and false_body_dec.updatable and (
+                    unionize_types(true_body_dec.updatable, false_body_dec.updatable)
+                )
+                initialized = true_body_dec.initialized and false_body_dec.initialized
+                type = (
+                    unionize_types(true_body_dec.type, false_body_dec.type)
+                    if BranchDeclareCheck() in self.checks else
+                    true_body_dec.type
+                )
+                decorator_types = true_body_dec.decorator_types
+
+                new_declaration = make_Declaration(
+                    updatable=updatable,
+                    initialized=initialized,
+                    type = type,
+                    decorator_types=decorator_types
+                ) 
+                body_additions = body_additions + pmap({target : new_declaration})
+
+
+        return Change(
+            subtractions = subtractions,
+            additions = body_additions
+        )
+
+
     def match_function_type(self, inher_aux : InherAux, 
         pos_arg_types : Sequence[type],
         kw_arg_types : Mapping[str, type], 
@@ -1940,7 +1955,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 nested_usages = nested_usages.remove(symbol)
                 self.check(UpdateCheck(), lambda: 
                     us.every(symbol_usages, lambda symbol_usage:
-                        not symbol_usage.updated or not dec.constant
+                        not symbol_usage.updated or bool(dec.updatable)
                     )
                 )
 
@@ -2168,7 +2183,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 decl_additions = (
                     content_aux.decl_additions +
                     pmap({
-                        k : make_Declaration(annotated = False, constant=False, initialized=True, type = t)
+                        k : make_Declaration(updatable = AnyType(), initialized=True, type = t)
                         for k, t in unified_env.items() 
                     })
                 ),
@@ -2433,7 +2448,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             tree = pas.make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
                 decl_additions = pmap({
-                    k : make_Declaration(annotated = False, constant=True, initialized=True, type=t)
+                    k : make_Declaration(updatable=None, initialized=True, type=t)
                     for k, t in item_env.items()
                 })
             )
@@ -2456,7 +2471,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             tree = pas.make_Constraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
                 decl_additions = pmap({
-                    k : make_Declaration(annotated = False, constant=True, initialized=True, type=t)
+                    k : make_Declaration(updatable=None, initialized=True, type=t)
                     for k, t in item_env.items()
                 })
             )
@@ -2736,7 +2751,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             content_tree = func_tree.content
             if isinstance(content_tree, pas.Name):
                 prev_decl = lookup_declaration(inher_aux, content_tree.content)
-                if prev_decl and not prev_decl.annotated:
+                if prev_decl:
                     generlized_content_type = generalize_type(inher_aux, prev_decl.type)
                     decl_additions += pmap({
                         content_tree.content : update_Declaration(prev_decl, type = generlized_content_type)
@@ -2933,7 +2948,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             content_tree = func_tree.content
             if isinstance(content_tree, pas.Name):
                 prev_decl = lookup_declaration(inher_aux, content_tree.content)
-                if prev_decl and not prev_decl.annotated:
+                if prev_decl:
                     generlized_content_type = substitute_type_args(generalize_type(inher_aux, prev_decl.type), subst_map)
                     decl_additions += pmap({
                         content_tree.content : update_Declaration(prev_decl, type = generlized_content_type)
@@ -3128,6 +3143,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         var_types : tuple[VarType, ...]= ()
         expr_types = ()
         protocol : bool = False
+
+
+        print(f"----||--")
+        print(f"local_env: {inher_aux.local_env}")
+        print(f"content_tree: {content_tree}")
+        print(f"content_type: {content_type}")
+        print(f"------")
 
         if isinstance(content_type, TypeType):
             core_type = content_type.content
@@ -3409,8 +3431,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         env_additions = pmap({
             name : make_Declaration(
-                annotated = dec.annotated,
-                constant = dec.constant,
+                updatable = dec.updatable,
                 initialized = dec.initialized, 
                 type = dec.type,
                 decorator_types = decs_aux.observed_types   
@@ -3600,8 +3621,8 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         # TODO: check that covariant type params are only used as outputs
         # TODO: check that contravariant type params are only used as inputs
-        
-
+        print(f"---class_key: {class_key}")
+        print(f"---type_params: {type_params}")
         class_record = ClassRecord(
             key = class_key,
             type_params = type_params,
@@ -3628,8 +3649,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 decl_subtractions=s(),
                 decl_additions=pmap({
                     name_tree : make_Declaration(
-                        annotated=True,
-                        constant=True,
+                        updatable=None,
                         initialized=True, 
                         type=TypeType("builtins.type", instance_type)
                     )
@@ -3652,7 +3672,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(fun_decls) == 1
 
         (name, decl) = next(p for p in fun_decls)
-        assert decl.constant
+        assert not decl.updatable
 
         ####### update overloaded type 
         prev_decl = inher_aux.local_env.get(name)
@@ -3669,7 +3689,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             ) 
 
             decl = update_Declaration(decl,
-                annotated = prev_decl and prev_decl.annotated or decl.annotated,
+                updatable=None,
                 # type = AnyType(), 
                 type = InterType(type_components=overloaded_types), 
                 decorator_types = (prev_decl and prev_decl.decorator_types or ()) + decs_aux.observed_types,
@@ -3682,7 +3702,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 decl = update_Declaration(decl,
                     # type = AnyType(), 
                     type = prev_decl.type,
-                    annotated = prev_decl and prev_decl.annotated or decl.annotated,
+                    updatable=None,
                     decorator_types = decs_aux.observed_types,
                     overloading = False
                 )
@@ -3827,8 +3847,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             aux = make_SynthAux(
                 decl_subtractions = s(),
                 decl_additions = pmap({name_tree : make_Declaration(
-                    annotated = isinstance(ret_anno_tree, pas.SomeReturnAnno),# this refers to the return annotation
-                    constant = True, initialized = True, type = type)
+                    updatable=None, initialized = True, type = type)
                 }),
                 usage_additions=m(),
                 nested_usages=nested_usages
@@ -3856,8 +3875,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             aux = make_SynthAux(
                 decl_subtractions = s(),
                 decl_additions = pmap({name_tree : make_Declaration(
-                    annotated = isinstance(ret_anno_tree, pas.SomeReturnAnno),# this refers to the return annotation
-                    constant = True, initialized=True
+                    updatable=None,
+                    initialized=True
                 )}),
                 usage_additions=m(),
                 nested_usages=nested_usages
@@ -3874,7 +3893,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         default_tree : pas.param_default, 
         default_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-
+        print(anno_aux.observed_types)
         sig_type = (
             coerce_to_TypeType(anno_aux.observed_types[0]).content
             if len(anno_aux.observed_types) == 1 else 
@@ -3894,8 +3913,9 @@ class Server(paa.Server[InherAux, SynthAux]):
 
             aux = make_SynthAux(
                 decl_additions = pmap({name_tree : make_Declaration(
-                    annotated = isinstance(anno_tree, pas.SomeParamAnno),
-                    constant = False, initialized=True, type=sig_type
+                    updatable = sig_type,
+                    initialized=True, 
+                    type=sig_type
                 )}),
 
                 param_sig = ParamSig(
@@ -3955,8 +3975,13 @@ class Server(paa.Server[InherAux, SynthAux]):
                 bundle_kw_param_type = tail_aux.param_sig.type,
                 decl_additions=head_aux.decl_additions + pmap({
                     tail_aux.param_sig.key : make_Declaration(
-                        annotated = True,
-                        constant = False,
+                        updatable=make_RecordType(
+                            class_key = "builtins.dict",
+                            type_args=(
+                                make_RecordType(class_key="builtins.str"),
+                                tail_aux.param_sig.type,
+                            )
+                        ),
                         initialized = True,
                         type = make_RecordType(
                             class_key = "builtins.dict",
@@ -3987,16 +4012,22 @@ class Server(paa.Server[InherAux, SynthAux]):
                 bundle_kw_param_type = dict_param_aux.param_sig.type,
                 decl_additions=pmap({
                     tuple_param_aux.param_sig.key : make_Declaration(
-                        annotated = True,
-                        constant = False,
+                        updatable = make_VariedTupleType(
+                            item_type=tuple_param_aux.param_sig.type
+                        ),
                         initialized = True,
                         type = make_VariedTupleType(
                             item_type=tuple_param_aux.param_sig.type
                         )
                     ),
                     dict_param_aux.param_sig.key : make_Declaration(
-                        annotated = True,
-                        constant = False,
+                        updatable = make_RecordType(
+                            class_key = "builtins.dict",
+                            type_args=(
+                                make_RecordType(class_key="builtins.str"),
+                                dict_param_aux.param_sig.type,
+                            )
+                        ),
                         initialized = True,
                         type = make_RecordType(
                             class_key = "builtins.dict",
@@ -4025,8 +4056,13 @@ class Server(paa.Server[InherAux, SynthAux]):
                 bundle_kw_param_type = content_aux.param_sig.type,
                 decl_additions=pmap({
                     content_aux.param_sig.key : make_Declaration(
-                        annotated = True,
-                        constant = False,
+                        updatable = make_RecordType(
+                            class_key = "builtins.dict",
+                            type_args=(
+                                make_RecordType(class_key="builtins.str"),
+                                content_aux.param_sig.type,
+                            )
+                        ),
                         initialized = True,
                         type = make_RecordType(
                             class_key = "builtins.dict",
@@ -4053,8 +4089,9 @@ class Server(paa.Server[InherAux, SynthAux]):
                 bundle_pos_param_type = content_aux.param_sig.type,
                 decl_additions=pmap({
                     content_aux.param_sig.key : make_Declaration(
-                        annotated = True,
-                        constant = False,
+                        updatable = make_VariedTupleType(
+                            item_type=content_aux.param_sig.type
+                        ),
                         initialized = True,
                         type = make_VariedTupleType(
                             item_type=content_aux.param_sig.type
@@ -4079,8 +4116,9 @@ class Server(paa.Server[InherAux, SynthAux]):
                 bundle_pos_param_type = head_aux.param_sig.type,
                 decl_additions=pmap({
                     head_aux.param_sig.key : make_Declaration(
-                        annotated = True,
-                        constant = False,
+                        updatable = make_VariedTupleType(
+                            item_type=head_aux.param_sig.type
+                        ),
                         initialized = True,
                         type = make_VariedTupleType(
                             item_type=head_aux.param_sig.type
@@ -4230,7 +4268,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 sym := entry[0],
                 observed_type := entry[1],
                 dec := lookup_declaration(inher_aux, sym, builtins = False),
-                not dec or not dec.annotated or subsumed(observed_type, dec.type, inher_aux)
+                not dec or not dec.updatable or subsumed(observed_type, dec.updatable, inher_aux)
             )[-1])
         )
 
@@ -4238,7 +4276,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         decl_additions : PMap[str, Declaration] = m() 
         decl_additions = pmap({
-            k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
+            k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
             for k, t in env_types.items()
         })
 
@@ -4255,7 +4293,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 original_type.class_key == "builtins.object"
             ):
                 decl_additions = pmap({
-                    'Any' : make_Declaration(annotated = True, constant=True, initialized=True, type=TypeType("builtins.object", AnyType()))
+                    'Any' : make_Declaration(updatable=None, initialized=True, type=TypeType("builtins.object", AnyType()))
                 })
 
         elif (len(env_types) == 1):
@@ -4266,7 +4304,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             ):
                 t = TypeType(original_type.class_key, AnyType())
                 decl_additions = pmap({
-                    symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
                 })
 
 
@@ -4384,7 +4422,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, GenericType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             inher_aux.external_path == "typing" and
@@ -4394,7 +4432,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, ProtocolType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             inher_aux.external_path == "typing_extensions" and
@@ -4404,7 +4442,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, ProtocolType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             (inher_aux.external_path == "typing" and
@@ -4416,7 +4454,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             inher_aux.external_path == "typing" and
@@ -4425,11 +4463,11 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         else:
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=False, initialized=True, type=sig_type)
+                symbol : make_Declaration(updatable=None, initialized=True, type=sig_type)
             })
 
 
@@ -4468,7 +4506,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             inher_aux.external_path == "typing" and
@@ -4477,7 +4515,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             inher_aux.external_path == "builtins" and
@@ -4487,7 +4525,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         elif (
             inher_aux.external_path == "typing_extensions" and
@@ -4497,11 +4535,11 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             t = TypeType(sig_type.class_key, AnyType())
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=True, initialized=True, type=t)
+                symbol : make_Declaration(updatable=None, initialized=True, type=t)
             })
         else:
             decl_additions = pmap({
-                symbol : make_Declaration(annotated = True, constant=False, initialized=False, type=sig_type)
+                symbol : make_Declaration(updatable=sig_type, initialized=False, type=sig_type)
             })
 
 
@@ -4526,7 +4564,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             inher_aux.local_env + 
             iter_aux.decl_additions +
             pmap({
-                k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
+                k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
                 for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
@@ -4569,7 +4607,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             inher_aux.local_env + 
             iter_aux.decl_additions +
             pmap({
-                k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
+                k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
                 for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
@@ -4593,7 +4631,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             orelse_aux.decl_additions,
         )
 
-        change_decl : Change[Declaration] = cross_join_aux_decls(
+        change_decl : Change[Declaration] = self.cross_join_aux_decls(inher_aux,
             to_change_decl(body_aux), 
             to_change_decl(orelse_aux)
         )
@@ -4650,7 +4688,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 decl_additions= (
                     new_synth_aux.decl_additions +
                     pmap({
-                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
+                        k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 ),
@@ -4693,7 +4731,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
-        change_decl : Change[Declaration] = cross_join_aux_decls(
+        change_decl : Change[Declaration] = self.cross_join_aux_decls(inher_aux,
             to_change_decl(body_aux), 
             to_change_decl(orelse_aux)
         )
@@ -4704,7 +4742,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 decl_additions= (
                     iter_aux.decl_additions + change_decl.additions +
                     pmap({
-                        k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
+                        k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
                         for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 ),
@@ -4860,7 +4898,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_tree : pas.ElseBlock, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        change_decl : Change[Declaration] = cross_join_aux_decls(
+        change_decl : Change[Declaration] = self.cross_join_aux_decls(inher_aux,
             to_change_decl(body_aux), 
             to_change_decl(orelse_aux)
         )
@@ -4895,7 +4933,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-        change_decl : Change[Declaration] = cross_join_aux_decls(
+        change_decl : Change[Declaration] = self.cross_join_aux_decls(inher_aux,
             to_change_decl(body_aux), 
             to_change_decl(orelse_aux)
         )
@@ -4926,7 +4964,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         tail_tree : pas.conditions, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        change_decl = cross_join_aux_decls(
+        change_decl = self.cross_join_aux_decls(inher_aux,
             
             to_change_decl(content_aux), 
             to_change_decl(tail_aux)
@@ -4973,7 +5011,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         t = type_type.content
 
         name_aux = make_SynthAux(decl_additions = pmap({
-            name_tree : make_Declaration(annotated = True, constant=False, initialized=False, type=t)
+            name_tree : make_Declaration(updatable=t, initialized=False, type=t)
         }))
 
         return paa.Result[SynthAux](
@@ -5013,7 +5051,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 decl_additions = (
                     content_aux.decl_additions +
                     pmap({
-                        k : make_Declaration(annotated = False, constant=False, initialized=True, type = t)
+                        k : make_Declaration(updatable=AnyType(), initialized=True, type = t)
                         for k, t in unify(alias_tree, content_type, inher_aux).items() 
                     })
                 )

@@ -1057,8 +1057,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
 # type and constructor Declaration
 @dataclass(frozen=True, eq=True)
 class Declaration:
-    annotated : bool
-    constant : bool
+    updatable : Optional[type]
     initialized : bool
     type : type
     decorator_types : tuple[type, ...]
@@ -1066,32 +1065,28 @@ class Declaration:
 
 
 def make_Declaration(
-    annotated : bool,
-    constant : bool,
+    updatable : Optional[type],
     initialized : bool = False,
     type : type = AnyType(),
     decorator_types : tuple[type, ...] = (),
     overloading : bool = False
 ) -> Declaration:
     return Declaration(
-        annotated,
-        constant,
+        updatable,
         initialized,
         type,
         decorator_types,
         overloading)
 
 def update_Declaration(source_Declaration : Declaration,
-    annotated : Union[bool, SourceFlag] = SourceFlag(),
-    constant : Union[bool, SourceFlag] = SourceFlag(),
+    updatable : Union[Optional[type], SourceFlag] = SourceFlag(),
     initialized : Union[bool, SourceFlag] = SourceFlag(),
     type : Union[type, SourceFlag] = SourceFlag(),
     decorator_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     overloading : Union[bool, SourceFlag] = SourceFlag()
 ) -> Declaration:
     return Declaration(
-        source_Declaration.annotated if isinstance(annotated, SourceFlag) else annotated, 
-        source_Declaration.constant if isinstance(constant, SourceFlag) else constant, 
+        source_Declaration.updatable if isinstance(updatable, SourceFlag) else updatable, 
         source_Declaration.initialized if isinstance(initialized, SourceFlag) else initialized, 
         source_Declaration.type if isinstance(type, SourceFlag) else type, 
         source_Declaration.decorator_types if isinstance(decorator_types, SourceFlag) else decorator_types, 
@@ -1363,6 +1358,25 @@ def update_DeclareCheck(source_DeclareCheck : DeclareCheck
 
         
 
+@dataclass(frozen=True, eq=True)
+class BranchDeclareCheck(semantic_check):
+
+
+    def match(self, handlers : SemanticCheckHandlers[T]) -> T:
+        return handlers.case_BranchDeclareCheck(self)
+
+def make_BranchDeclareCheck(
+) -> semantic_check:
+    return BranchDeclareCheck(
+    )
+
+def update_BranchDeclareCheck(source_BranchDeclareCheck : BranchDeclareCheck
+) -> BranchDeclareCheck:
+    return BranchDeclareCheck(
+    )
+
+        
+
 # case handlers for type semantic_check
 @dataclass(frozen=True, eq=True)
 class SemanticCheckHandlers(Generic[T]):
@@ -1378,6 +1392,7 @@ class SemanticCheckHandlers(Generic[T]):
     case_LookupInitCheck : Callable[[LookupInitCheck], T]
     case_UpdateCheck : Callable[[UpdateCheck], T]
     case_DeclareCheck : Callable[[DeclareCheck], T]
+    case_BranchDeclareCheck : Callable[[BranchDeclareCheck], T]
 
 
 # matching for type semantic_check
@@ -1385,7 +1400,7 @@ def match_semantic_check(o : semantic_check, handlers : SemanticCheckHandlers[T]
     return o.match(handlers)
 
 
-semantic_check_union = Union[LookupTypeCheck, ApplyArgTypeCheck, ApplyRatorTypeCheck, SplatKeywordArgTypeCheck, ReturnTypeCheck, UnifyTypeCheck, AssignTypeCheck, IterateTypeCheck, LookupDecCheck, LookupInitCheck, UpdateCheck, DeclareCheck]
+semantic_check_union = Union[LookupTypeCheck, ApplyArgTypeCheck, ApplyRatorTypeCheck, SplatKeywordArgTypeCheck, ReturnTypeCheck, UnifyTypeCheck, AssignTypeCheck, IterateTypeCheck, LookupDecCheck, LookupInitCheck, UpdateCheck, DeclareCheck, BranchDeclareCheck]
 
 # unguarding for type semantic_check
 def unguard_semantic_check(o : semantic_check) -> semantic_check_union :
@@ -1401,7 +1416,8 @@ def unguard_semantic_check(o : semantic_check) -> semantic_check_union :
         case_LookupDecCheck = lambda x : x, 
         case_LookupInitCheck = lambda x : x, 
         case_UpdateCheck = lambda x : x, 
-        case_DeclareCheck = lambda x : x
+        case_DeclareCheck = lambda x : x, 
+        case_BranchDeclareCheck = lambda x : x
 
     ))
      

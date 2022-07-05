@@ -46,7 +46,7 @@ def to_bases(bases : list[expr | None], keywords : list[keyword | None], default
             if bases and keywords else
             (bases[0], bases[-1])
             if bases else
-            (keywords[0], bases[-1])
+            (keywords[0], keywords[-1])
         )
 
         start = (
