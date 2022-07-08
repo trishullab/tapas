@@ -30,19 +30,17 @@ from tapas_lib import python_aux_crawl_stream_autogen as paa
 from tapas_lib.python_aux_construct_autogen import *
 
 from tapas_lib import python_ast_parse as pap
-
+from tapas_lib import python_aux_construct_def as paux_def
 
 T = TypeVar('T')
 
 
 
-def aux_vocab() -> PSet[str]:
-    from tapas_lib import python_aux_construct_def as paux_def
-    return pset({
-        c.name
-        for _, cs in paux_def.choices.items()
-        for c in cs
-    })
+aux_vocab : PSet[str] = pset({
+    c.name
+    for _, cs in paux_def.choices.items()
+    for c in cs
+})
 
 
 all_checks : PSet[semantic_check] = pset({
