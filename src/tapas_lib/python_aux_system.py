@@ -36,6 +36,15 @@ T = TypeVar('T')
 
 
 
+def aux_vocab() -> PSet[str]:
+    from tapas_lib import python_aux_construct_def as paux_def
+    return pset({
+        c.name
+        for _, cs in paux_def.choices.items()
+        for c in cs
+    })
+
+
 all_checks : PSet[semantic_check] = pset({
     LookupTypeCheck(),
     ApplyArgTypeCheck(),
