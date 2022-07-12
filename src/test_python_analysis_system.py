@@ -633,20 +633,32 @@ def test_converges():
     finally:
         kill()
 
-if __name__ == "__main__":
-    (inspect, kill) = spawn_inspect_code("main", '''
-from typing import Generic, TypeVar
-
-_T = TypeVar("_T")
-class A(Generic[_T]): pass
-
-A()
-pass
-    ''')
+def test_import_alias():
+    (inspect, kill) = spawn_inspect("import_alias", pset())
     try:
-        code, aux = inspect(-1)
+        code, aux = inspect(20)
+        dumps = aux.local_env.get("dumps")
+        assert dumps
+        assert isinstance(dumps.type, pals.FunctionType)
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        inspect(-1)
     finally:
         kill()
+
+def test_import_from_alias():
+    (inspect, kill) = spawn_inspect("import_from_alias", pset())
+    try:
+        code, aux = inspect(10)
+        d = aux.local_env.get("d")
+        assert d 
+        assert isinstance(d.type, pals.FunctionType)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        inspect(-1)
+    finally:
+        kill()
+
+if __name__ == "__main__":
+    test_import_from_alias()
     pass

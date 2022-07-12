@@ -843,10 +843,6 @@ def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux)
     
     class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
     if class_record:
-        # print(f"-----------")
-        # print(f"--class_record.key: {class_record.key}")
-        # print(f"--class_record.type_params: {class_record.type_params}")
-        # print(f"-----------")
         substitution_map : PMap[str, type] = pmap({
             class_record.type_params[i].name : type_arg
             for i, type_arg in enumerate(t.type_args) 
@@ -3151,13 +3147,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         expr_types = ()
         protocol : bool = False
 
-
-        print(f"----||--")
-        print(f"local_env: {inher_aux.local_env}")
-        print(f"content_tree: {content_tree}")
-        print(f"content_type: {content_type}")
-        print(f"------")
-
         if isinstance(content_type, TypeType):
             core_type = content_type.content
             if isinstance(core_type, ProtocolType):
@@ -3628,8 +3617,6 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         # TODO: check that covariant type params are only used as outputs
         # TODO: check that contravariant type params are only used as inputs
-        print(f"---class_key: {class_key}")
-        print(f"---type_params: {type_params}")
         class_record = ClassRecord(
             key = class_key,
             type_params = type_params,
