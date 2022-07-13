@@ -3887,7 +3887,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         default_tree : pas.param_default, 
         default_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        print(anno_aux.observed_types)
         sig_type = (
             coerce_to_TypeType(anno_aux.observed_types[0]).content
             if len(anno_aux.observed_types) == 1 else 
