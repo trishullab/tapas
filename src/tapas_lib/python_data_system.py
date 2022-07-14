@@ -131,6 +131,7 @@ def generate_file(
                         abstract_program_data.append(new_atok)
                         atok = new_atok
 
+                client.kill(Exception())
 
                 content = br + json.dumps(abstract_program_data)
                 if content.strip():
