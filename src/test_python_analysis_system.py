@@ -660,5 +660,4 @@ def test_import_from_alias():
         kill()
 
 if __name__ == "__main__":
-    test_import_from_alias()
     pass

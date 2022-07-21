@@ -11,7 +11,7 @@ import json
 
 from pyrsistent import pset
 
-from tapas_base.abstract_token_construct_autogen import AbstractTokenHandlers, match_abstract_token, Vocab
+from tapas_base.abstract_token_construct_autogen import AbstractTokenHandlers, abstract_token, match_abstract_token, Vocab
 from tapas_lib import generic_tree_system
 
 from tapas_lib import python_abstract_token_system
@@ -61,11 +61,65 @@ def error_to_string(err : Exception) -> str:
 from pyrsistent.typing import PMap
 from pyrsistent import pmap, m
 
+from typing import Iterable, Sequence
+
 def inc_key(map : PMap[str, int], error_key) -> PMap[str, int]:
     if error_key in map:
         return map + pmap({error_key : map[error_key] + 1}) 
     else:
         return map + pmap({error_key : 1}) 
+
+def write_data(
+    abstract_data_dirpath : str, 
+    file_name, package : 
+    PMap[str, pals.ModulePackage], 
+    data : Iterable[Sequence[abstract_token]]
+) -> PMap[str, int]:
+
+    count_map : PMap[str, int] = m() 
+
+    write(abstract_data_dirpath, file_name, '')
+    br = ""
+    for abstract_tokens in data:
+        try:
+            client : pals.Client = pals.spawn_analysis(package, "main",
+                checks=pset()
+                # checks=pals.all_checks.remove(pals.DeclareCheck())
+            )
+
+            atok = client.init_prim
+            abstract_program_data = [atok]
+
+            for tok in abstract_tokens:
+                abstract_program_data.append(ats.to_primitive(tok))
+
+                inher = client.next(tok)
+
+                new_atok = pals.from_inher_aux_to_primitive(inher)
+                if (new_atok != atok):
+                    abstract_program_data.append(new_atok)
+                    atok = new_atok
+
+            client.kill(Exception())
+
+            content = br + json.dumps(abstract_program_data)
+            if content.strip():
+                write(abstract_data_dirpath, file_name, content, append=True)
+
+            count_map = inc_key(count_map, 'processed')
+        except Exception as ex:
+            count_map = inc_key(count_map, error_to_string(ex))
+            count_map = inc_key(count_map, 'total_error')
+
+        # update
+        br = "\n"
+        count_map = inc_key(count_map, 'total')
+        print(f"")
+        print(f"programs processed in file: {count_map['processed']}/{count_map['total']}")
+        print(f"")
+
+    return count_map
+
 
 def generate_file(
     package : PMap[str, pals.ModulePackage], 
@@ -92,50 +146,17 @@ def generate_file(
 
     start = datetime.now()
 
-    with open(concrete_data_path, 'r') as f:
-        br = ""
-        line = f.readline()
-        while line: 
-            partial_program = []
-            try:
-
+    def code_gen():
+        with open(concrete_data_path, 'r') as f:
+            line = f.readline()
+            while line: 
                 line_obj = json.loads(line)
-
-                source_code = line_obj['code']
+                source_code : str = line_obj['code']
 
                 if len(source_code) > 50000:
                     raise BigCodeError(len(source_code))
 
-                tree = generic_tree_system.parse('python', source_code, 'utf8')
-
-                mod = python_ast_system.parse_from_generic_tree(tree)
-
-                abstract_tokens = python_ast_system.serialize(mod)
-
-                client : pals.Client = pals.spawn_analysis(package, "main",
-                    checks=pset()
-                    # checks=pals.all_checks.remove(pals.DeclareCheck())
-                )
-
-                atok = client.init_prim
-                abstract_program_data = [atok]
-
-                for tok in abstract_tokens:
-                    partial_program.append(tok)
-                    abstract_program_data.append(ats.to_primitive(tok))
-
-                    inher = client.next(tok)
-
-                    new_atok = pals.from_inher_aux_to_primitive(inher)
-                    if (new_atok != atok):
-                        abstract_program_data.append(new_atok)
-                        atok = new_atok
-
-                client.kill(Exception())
-
-                content = br + json.dumps(abstract_program_data)
-                if content.strip():
-                    write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', content, append=True)
+                abstract_tokens = python_ast_system.serialize(python_ast_system.parse(source_code))
 
                 def handle_Vocab(o : Vocab):
                     if o.options in vocab.keys():
@@ -151,36 +172,12 @@ def generate_file(
                         case_Vocab=handle_Vocab,
                         case_Hole=lambda _ : () 
                     )) 
+
+                yield abstract_tokens
+
+    count_map = write_data(abstract_data_dirpath, f'{abstract_data_base}.jsonl', package, code_gen())
+
                 
-                count_map = inc_key(count_map, 'processed')
-
-            except Exception as ex:
-                count_map = inc_key(count_map, error_to_string(ex))
-                count_map = inc_key(count_map, 'total_error')
-
-                # if isinstance(ex, pals.IterateTypeError):
-                #     print(f"")
-                #     print(f"** ERROR index: {count_map.get('total')}")
-                #     line_obj = json.loads(line)
-                #     source_code = line_obj['code']
-                #     print(f"** ERROR source code:\n{source_code}")
-                #     print(f"** ERROR index: {count_map.get('total')}")
-                #     print("** partial_program **")
-                #     print(python_abstract_token_system.concretize(tuple(partial_program)))
-                #     print("*********************")
-                #     print(f"")
-                #     raise ex
-
-            # update
-            br = "\n"
-            line = f.readline()
-            count_map = inc_key(count_map, 'total')
-            print(f"")
-            print(f"total_count : {count_map['total']}")
-            print(f"")
-            
-        #endwhile
-
     end = datetime.now()
 
 
