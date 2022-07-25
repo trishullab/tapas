@@ -39,7 +39,9 @@ singles = [
         Field("package", "PMap[str, ModulePackage]", "m()"),
         Field("external_path", "str", "''"),
         Field("internal_path", "str", "''"),
+        Field("method_kind", "Optional[method_kind]", "None"),
         Field("in_class", "bool", "False"),
+
         Field("global_env", "PMap[str, Declaration]", "m()"),
         Field("nonlocal_env", "PMap[str, Declaration]", "m()"),
         Field("local_env", "PMap[str, Declaration]", "m()"),
@@ -49,9 +51,17 @@ singles = [
         Field("usage_env", "PMap[str, Usage]", "m()"),
         Field("observed_types", "tuple[type, ...]", "()"),
         Field("class_env", "PMap[str, ClassRecord]", "m()"), # internal_path |-> ClassRecord
+
+        Field("anchor_symbol", "str", "''")
+
+
     ]),
 
     Constructor("SynthAux", [], [
+
+
+        Field("static_field_additions", "PMap[str, type]", "m()"),
+        Field("instance_field_additions", "PMap[str, type]", "m()"),
 
         Field("class_additions", "PMap[str, ClassRecord]", "m()"),
 
@@ -118,6 +128,12 @@ singles = [
 ]
 
 choices = {
+
+    "method_kind" : [
+        Constructor("InstanceMethod", [], []),
+        Constructor("StaticMethod", [], []),
+        Constructor("ClassMethod", [], []),
+    ],
 
     "variant" : [
         Constructor("CoVariant", [], []),

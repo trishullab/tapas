@@ -27,6 +27,7 @@ from tapas_lib import python_ast_system as pas
 from tapas_lib import python_abstract_token_system as pats 
 
 from tapas_lib import python_aux_crawl_stream_autogen as paa
+from tapas_lib.python_ast_construct_autogen import ParametersHandlers, match_parameters
 from tapas_lib.python_aux_construct_autogen import *
 
 from tapas_lib import python_ast_parse as pap
@@ -60,6 +61,39 @@ all_checks : PSet[semantic_check] = pset({
 })
 
 
+def get_first_param(params : pas.parameters) -> str:
+    if isinstance(params, pas.ParamsA):
+        params_a = params.content
+        if isinstance(params_a, pas.ConsPosParam):
+            p = params_a.head
+            if p: return p.name
+        elif isinstance(params_a, pas.SinglePosParam): 
+            p = params_a.content
+            if p: return p.name
+    elif isinstance(params, pas.ParamsB):
+        params_b = params.content
+        if isinstance(params_b, pas.ConsPosKeyParam):
+            p = params_b.head
+            if p: return p.name
+        elif isinstance(params_b, pas.SinglePosKeyParam): 
+            p = params_b.content
+            if p: return p.name
+    return "" 
+
+            
+        
+
+
+def method_kind_from_decorators(decorator_types : Sequence[type]) -> method_kind:
+    for dt in decorator_types:
+        if isinstance(dt, TypeType):
+            dt_class_key = get_class_key(dt.content)
+            if dt_class_key == "builtins.staticmethod":
+                return StaticMethod() 
+            elif dt_class_key == "builtins.classmethod":
+                return ClassMethod() 
+
+    return InstanceMethod()
 
 def declared_and_initialized(inher_aux : InherAux, name : str) -> bool:
     return (
@@ -902,7 +936,11 @@ def get_iterable_item_type(iter_type : type, inher_aux : InherAux) -> Optional[t
 
 
 
-def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, type]: 
+def unify(
+    pattern : pas.expr, type : type, 
+    inher_aux : InherAux
+) -> tuple[PMap[str, type], PMap[str, type]]: 
+    anchor_symbol : str = inher_aux.anchor_symbol
 
     def generate_items(exprs : pas.comma_exprs) -> Iterator[pas.expr]:
         while isinstance(exprs, pas.ConsExpr):
@@ -915,45 +953,54 @@ def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, ty
         yield exprs.content
 
     if isinstance(pattern, pas.Name):
-        return pmap({pattern.content : type})
+        return (pmap({pattern.content : type}), m())
     elif isinstance(pattern, pas.List):
         type_env : PMap[str, type] = m()
+        anchor_env : PMap[str, type] = m()
         assert pattern.content
         for p in generate_items(pattern.content):
             item_type = get_iterable_item_type(type, inher_aux)
             if item_type:
-                new_env = unify(p, item_type, inher_aux)
-                type_env += new_env
+                new_type_env, new_anchor_env = unify(p, item_type, inher_aux)
+                type_env += new_type_env
+                anchor_env += new_anchor_env
             else:
                 raise UnifyTypeCheck()
 
-        return type_env 
+        return (type_env, anchor_env)
     elif isinstance(pattern, pas.Tuple):
         if isinstance(type, TupleLitType):
-
             type_env : PMap[str, type] = m()
+            anchor_env : PMap[str, type] = m()
             assert pattern.content
             for i, p in enumerate(generate_items(pattern.content)):
-                new_env = unify(p, type.item_types[i], inher_aux)
-                type_env += new_env 
+                new_type_env, new_anchor_env = unify(p, type.item_types[i], inher_aux)
+                type_env += new_type_env 
+                anchor_env += new_anchor_env
 
-            return type_env 
+            return (type_env, anchor_env)
         else:
             type_env : PMap[str, type] = m()
+            anchor_env : PMap[str, type] = m()
             assert pattern.content
             for p in generate_items(pattern.content):
                 item_type = get_iterable_item_type(type, inher_aux)
                 if item_type:
-                    new_env = unify(p, item_type, inher_aux)
-                    type_env += new_env
+                    new_type_env, new_anchor_env = unify(p, item_type, inher_aux)
+                    type_env += new_type_env
+                    anchor_env += new_anchor_env
                 else:
                     raise UnifyTypeCheck()
 
-            return type_env 
+            return (type_env, anchor_env)
     elif isinstance(pattern, pas.Attribute):
-        return m()
+        content = pattern.content
+        if isinstance(content, pas.Name) and content.content == anchor_symbol:
+            return (m(), pmap({pattern.name : type}))
+        else:
+            return (m(), m())
     elif isinstance(pattern, pas.Subscript):
-        return m()
+        return (m(), m())
     else:
         raise UnifyTypeCheck()
 
@@ -1556,10 +1603,7 @@ def from_env_to_primitive_verbose(env : PMap[str, Declaration]) -> dict:
         for symbol, p in env.items()
     }
 
-
-
-
-def traverse_function_body(inher_aux : InherAux, path_extension : str) -> InherAux:
+def traverse_function_body(inher_aux : InherAux, path_extension : str, anchor_symbol : str) -> InherAux:
 
     if not inher_aux.internal_path:
         return update_InherAux(inher_aux,
@@ -1569,6 +1613,7 @@ def traverse_function_body(inher_aux : InherAux, path_extension : str) -> InherA
             local_env = m(), 
             internal_path = path_extension,
             in_class = False,
+            anchor_symbol = anchor_symbol if inher_aux.method_kind else ''
         )
     else:
         return update_InherAux(inher_aux,
@@ -1578,6 +1623,7 @@ def traverse_function_body(inher_aux : InherAux, path_extension : str) -> InherA
             local_env = m(), 
             internal_path = f"{inher_aux.internal_path}.{path_extension}",
             in_class = False,
+            anchor_symbol = anchor_symbol if inher_aux.method_kind else ''
         )
 
 
@@ -1586,12 +1632,20 @@ def traverse_aux(inher_aux : InherAux, synth_aux : SynthAux) -> InherAux:
     for sub in synth_aux.decl_subtractions:
         local_env.remove(sub)
 
+    # clear the anchor symbol if it has been overwritten
+    anchor_symbol = (
+        ""
+        if synth_aux.decl_additions.get(inher_aux.anchor_symbol) else
+        inher_aux.anchor_symbol
+    )
+
     return update_InherAux(inher_aux, 
         local_env = local_env + synth_aux.decl_additions,
         declared_globals = inher_aux.declared_globals.update(synth_aux.declared_globals),
         declared_nonlocals = inher_aux.declared_nonlocals.update(synth_aux.declared_nonlocals),
         class_env = inher_aux.class_env + synth_aux.class_additions,
-        observed_types = synth_aux.observed_types
+        observed_types = synth_aux.observed_types,
+        anchor_symbol=anchor_symbol
     )
 
 @dataclass(frozen=True, eq=True)
@@ -1778,11 +1832,11 @@ def spawn_analysis(
 def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
 
     if isinstance(iter_type, AnyType):
-        return unify(pattern, AnyType(), inher_aux)
+        return unify(pattern, AnyType(), inher_aux)[0]
     else:
         item_type = get_iterable_item_type(iter_type, inher_aux)
         if item_type:
-            target_types = unify(pattern, item_type, inher_aux)
+            target_types = unify(pattern, item_type, inher_aux)[0]
             for k, t in target_types.items():
                 dec = lookup_declaration(inher_aux, k)
                 if dec and not subsumed(t, dec.type, inher_aux):
@@ -2008,6 +2062,9 @@ class Server(paa.Server[InherAux, SynthAux]):
     # override parent class method
     def synthesize_auxes(self, auxes : tuple[SynthAux, ...]) -> SynthAux:
 
+        static_field_additions : PMap[str, type] = m() 
+        instance_field_additions : PMap[str, type] = m() 
+
         class_additions : PMap[str, ClassRecord] = m()
         decl_subtractions : PSet[str] = s()
         decl_additions : PMap[str, Declaration] = m()
@@ -2039,6 +2096,9 @@ class Server(paa.Server[InherAux, SynthAux]):
 
 
         for aux in auxes:
+
+            static_field_additions = static_field_additions + aux.static_field_additions
+            instance_field_additions = instance_field_additions + aux.instance_field_additions
 
             class_additions = class_additions + aux.class_additions
 
@@ -2076,6 +2136,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             import_names = import_names + aux.import_names
 
         return SynthAux(
+            static_field_additions,
+            instance_field_additions,
+
             class_additions,
             decl_subtractions, decl_additions, 
             declared_globals, declared_nonlocals, 
@@ -2178,7 +2241,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
 
-        unified_env = unify(target_tree, content_type, inher_aux)
+        unified_env, unified_anchor_env = unify(target_tree, content_type, inher_aux)
 
         return paa.Result[SynthAux](
             tree = pas.make_AssignExpr(target_tree, content_tree),
@@ -2190,7 +2253,17 @@ class Server(paa.Server[InherAux, SynthAux]):
                         for k, t in unified_env.items() 
                     })
                 ),
-                usage_additions = merge_usage_additions(updated_usage_additions, content_aux.usage_additions)
+                usage_additions = merge_usage_additions(updated_usage_additions, content_aux.usage_additions),
+                static_field_additions=(
+                    unified_anchor_env
+                    if isinstance(inher_aux.method_kind, ClassMethod) else
+                    m()
+                ),
+                instance_field_additions=(
+                    unified_anchor_env
+                    if isinstance(inher_aux.method_kind, InstanceMethod) else
+                    m()
+                ),
                 
             )
         )
@@ -3604,16 +3677,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         static_fields : PMap[str, type] = pmap({
             name : expose_static_method_type(name, p)
             for name, p in body_aux.decl_additions.items()
-        })
-
+        }) + body_aux.static_field_additions
 
         instance_fields : PMap[str, type] = pmap({
             k : t 
             for k, p in body_aux.decl_additions.items()
             for t in [expose_instance_method_type(p)]
             if t 
-        })
-
+        }) + body_aux.static_field_additions + body_aux.instance_field_additions 
 
         # TODO: check that covariant type params are only used as outputs
         # TODO: check that contravariant type params are only used as inputs
@@ -3650,6 +3721,30 @@ class Server(paa.Server[InherAux, SynthAux]):
                 }),
                 class_additions=pmap({internal_class_key : class_record}) + body_aux.class_additions
             ) 
+        )
+
+    # traverse stmt <-- DecFunctionDef"
+    def traverse_stmt_DecFunctionDef_fun_def(self, 
+        inher_aux : InherAux,
+        decs_tree : pas.decorators, 
+        decs_aux : SynthAux
+    ) -> InherAux:
+        method_kind = method_kind_from_decorators([ 
+            d.type
+            for d in decs_aux.decl_additions.values()
+        ])
+
+        return update_InherAux(inher_aux,
+            local_env = (
+                m() 
+                if inher_aux.in_class else
+                inher_aux.local_env
+            ),
+            method_kind = (
+                method_kind
+                if inher_aux.in_class else
+                None
+            )
         )
 
     # synthesize: stmt <-- DecFunctionDef
@@ -3741,7 +3836,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ret_anno_aux : SynthAux
     ) -> InherAux:
         assert len(params_aux.decl_subtractions) == 0
-        inher_aux = traverse_function_body(inher_aux, name_tree)
+        inher_aux = traverse_function_body(inher_aux, name_tree, get_first_param(params_tree))
         return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.decl_additions) 
 
     # traverse function_def <-- AsyncFunctionDef"
@@ -3765,7 +3860,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         ret_anno_aux : SynthAux
     ) -> InherAux:
         assert len(params_aux.decl_subtractions) == 0
-        inher_aux = traverse_function_body(inher_aux, name_tree)
+        inher_aux = traverse_function_body(inher_aux, name_tree, get_first_param(params_tree))
         return update_InherAux(inher_aux, local_env = inher_aux.local_env + params_aux.decl_additions) 
 
     
@@ -4250,10 +4345,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
         env_types : PMap[str, type] = m()
+        anchor_env : PMap[str, type] = m() 
         for pattern in patterns():
             if pattern:
-                next_env_types = unify(pattern, content_type, inher_aux)
+                next_env_types, next_anchor_env = unify(pattern, content_type, inher_aux)
                 env_types += next_env_types 
+                anchor_env += next_anchor_env
 
         # check observed type with declared type
         self.check(AssignTypeCheck(), lambda: 
@@ -4305,7 +4402,17 @@ class Server(paa.Server[InherAux, SynthAux]):
             tree = pas.make_Assign(targets_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([targets_aux, content_aux])),
                 usage_additions = merge_usage_additions(updated_usage_additions, content_aux.usage_additions),
-                decl_additions = decl_additions
+                decl_additions = decl_additions,
+                static_field_additions=(
+                    anchor_env
+                    if isinstance(inher_aux.method_kind, ClassMethod) else
+                    m()
+                ),
+                instance_field_additions=(
+                    anchor_env
+                    if isinstance(inher_aux.method_kind, InstanceMethod) else
+                    m()
+                ),
             ) 
         )
     
@@ -4398,77 +4505,95 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
         sig_type = coerce_to_TypeType(anno_aux.observed_types[0]).content
-        assert isinstance(target_tree, pas.Name)
-        symbol = target_tree.content
-
-        self.check(AssignTypeCheck(), lambda: 
-            subsumed(content_type, sig_type, inher_aux)
-        )
 
         decl_additions: PMap[str, Declaration] = m() 
-        # special consideration for declaration of special_form types
-        if (
-            inher_aux.external_path == "typing" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing._SpecialForm" and
-            symbol == "Generic"
-        ):
-            t = TypeType(sig_type.class_key, GenericType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            inher_aux.external_path == "typing" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing._SpecialForm" and 
-            symbol == "Protocol"
-        ):
-            t = TypeType(sig_type.class_key, ProtocolType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            inher_aux.external_path == "typing_extensions" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing_extensions._SpecialForm" and 
-            symbol == "Protocol"
-        ):
-            t = TypeType(sig_type.class_key, ProtocolType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            (inher_aux.external_path == "typing" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing._SpecialForm") or
-            (inher_aux.external_path == "typing_extensions" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing_extensions._SpecialForm")
-        ):
-            t = TypeType(sig_type.class_key, AnyType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            inher_aux.external_path == "typing" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing.NewType"
-        ):
-            t = TypeType(sig_type.class_key, AnyType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        else:
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=sig_type)
-            })
+        anchor_env : PMap[str, type] = m() 
+        if isinstance(target_tree, pas.Name):
+            symbol = target_tree.content
+
+            self.check(AssignTypeCheck(), lambda: 
+                subsumed(content_type, sig_type, inher_aux)
+            )
+
+            # special consideration for declaration of special_form types
+            if (
+                inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing._SpecialForm" and
+                symbol == "Generic"
+            ):
+                t = TypeType(sig_type.class_key, GenericType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing._SpecialForm" and 
+                symbol == "Protocol"
+            ):
+                t = TypeType(sig_type.class_key, ProtocolType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "typing_extensions" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing_extensions._SpecialForm" and 
+                symbol == "Protocol"
+            ):
+                t = TypeType(sig_type.class_key, ProtocolType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                (inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing._SpecialForm") or
+                (inher_aux.external_path == "typing_extensions" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing_extensions._SpecialForm")
+            ):
+                t = TypeType(sig_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing.NewType"
+            ):
+                t = TypeType(sig_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            else:
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=sig_type)
+                })
+
+        else: 
+            assert isinstance(target_tree, pas.Attribute)
+            content = target_tree.content
+            if isinstance(content, pas.Name) and content.content == inher_aux.anchor_symbol:
+                anchor_env += pmap({target_tree.name : sig_type})
 
 
         return paa.Result[SynthAux](
             tree = pas.make_AnnoAssign(target_tree, anno_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, anno_aux, content_aux])),
                 usage_additions = content_aux.usage_additions,
-                decl_additions = decl_additions
+                decl_additions = decl_additions,
+                static_field_additions=(
+                    anchor_env
+                    if isinstance(inher_aux.method_kind, ClassMethod) else
+                    m()
+                ),
+                instance_field_additions=(
+                    anchor_env
+                    if isinstance(inher_aux.method_kind, InstanceMethod) else
+                    m()
+                ),
             ) 
         )
 
@@ -5038,6 +5163,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
+        env_additions, anchor_env_additions = unify(alias_tree, content_type, inher_aux)
         return paa.Result[SynthAux](
             tree = pas.make_WithItemAlias(content_tree, alias_tree),
             aux = make_SynthAux(
@@ -5045,8 +5171,18 @@ class Server(paa.Server[InherAux, SynthAux]):
                     content_aux.decl_additions +
                     pmap({
                         k : make_Declaration(updatable=AnyType(), initialized=True, type = t)
-                        for k, t in unify(alias_tree, content_type, inher_aux).items() 
+                        for k, t in env_additions.items() 
                     })
-                )
+                ),
+                static_field_additions=(
+                    anchor_env_additions
+                    if isinstance(inher_aux.method_kind, ClassMethod) else
+                    m()
+                ),
+                instance_field_additions=(
+                    anchor_env_additions
+                    if isinstance(inher_aux.method_kind, InstanceMethod) else
+                    m()
+                ),
             )
         )

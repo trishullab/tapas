@@ -27,6 +27,98 @@ from tapas_lib.python_ast_construct_autogen import ast
     
 
 
+# type method_kind
+@dataclass(frozen=True, eq=True)
+class method_kind(ABC):
+    # @abstractmethod
+    def match(self, handlers : MethodKindHandlers[T]) -> T:
+        raise Exception()
+
+
+# constructors for type method_kind
+
+@dataclass(frozen=True, eq=True)
+class InstanceMethod(method_kind):
+
+
+    def match(self, handlers : MethodKindHandlers[T]) -> T:
+        return handlers.case_InstanceMethod(self)
+
+def make_InstanceMethod(
+) -> method_kind:
+    return InstanceMethod(
+    )
+
+def update_InstanceMethod(source_InstanceMethod : InstanceMethod
+) -> InstanceMethod:
+    return InstanceMethod(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class StaticMethod(method_kind):
+
+
+    def match(self, handlers : MethodKindHandlers[T]) -> T:
+        return handlers.case_StaticMethod(self)
+
+def make_StaticMethod(
+) -> method_kind:
+    return StaticMethod(
+    )
+
+def update_StaticMethod(source_StaticMethod : StaticMethod
+) -> StaticMethod:
+    return StaticMethod(
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class ClassMethod(method_kind):
+
+
+    def match(self, handlers : MethodKindHandlers[T]) -> T:
+        return handlers.case_ClassMethod(self)
+
+def make_ClassMethod(
+) -> method_kind:
+    return ClassMethod(
+    )
+
+def update_ClassMethod(source_ClassMethod : ClassMethod
+) -> ClassMethod:
+    return ClassMethod(
+    )
+
+        
+
+# case handlers for type method_kind
+@dataclass(frozen=True, eq=True)
+class MethodKindHandlers(Generic[T]):
+    case_InstanceMethod : Callable[[InstanceMethod], T]
+    case_StaticMethod : Callable[[StaticMethod], T]
+    case_ClassMethod : Callable[[ClassMethod], T]
+
+
+# matching for type method_kind
+def match_method_kind(o : method_kind, handlers : MethodKindHandlers[T]) -> T :
+    return o.match(handlers)
+
+
+method_kind_union = Union[InstanceMethod, StaticMethod, ClassMethod]
+
+# unguarding for type method_kind
+def unguard_method_kind(o : method_kind) -> method_kind_union :
+    return match_method_kind(o, MethodKindHandlers(
+        case_InstanceMethod = lambda x : x, 
+        case_StaticMethod = lambda x : x, 
+        case_ClassMethod = lambda x : x
+
+    ))
+    
+
 # type variant
 @dataclass(frozen=True, eq=True)
 class variant(ABC):
@@ -865,6 +957,7 @@ class InherAux:
     package : PMap[str, ModulePackage]
     external_path : str
     internal_path : str
+    method_kind : Optional[method_kind]
     in_class : bool
     global_env : PMap[str, Declaration]
     nonlocal_env : PMap[str, Declaration]
@@ -874,12 +967,14 @@ class InherAux:
     usage_env : PMap[str, Usage]
     observed_types : tuple[type, ...]
     class_env : PMap[str, ClassRecord]
+    anchor_symbol : str
 
 
 def make_InherAux(
     package : PMap[str, ModulePackage] = m(),
     external_path : str = '',
     internal_path : str = '',
+    method_kind : Optional[method_kind] = None,
     in_class : bool = False,
     global_env : PMap[str, Declaration] = m(),
     nonlocal_env : PMap[str, Declaration] = m(),
@@ -888,12 +983,14 @@ def make_InherAux(
     declared_nonlocals : PSet[str] = s(),
     usage_env : PMap[str, Usage] = m(),
     observed_types : tuple[type, ...] = (),
-    class_env : PMap[str, ClassRecord] = m()
+    class_env : PMap[str, ClassRecord] = m(),
+    anchor_symbol : str = ''
 ) -> InherAux:
     return InherAux(
         package,
         external_path,
         internal_path,
+        method_kind,
         in_class,
         global_env,
         nonlocal_env,
@@ -902,12 +999,14 @@ def make_InherAux(
         declared_nonlocals,
         usage_env,
         observed_types,
-        class_env)
+        class_env,
+        anchor_symbol)
 
 def update_InherAux(source_InherAux : InherAux,
     package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag(),
     external_path : Union[str, SourceFlag] = SourceFlag(),
     internal_path : Union[str, SourceFlag] = SourceFlag(),
+    method_kind : Union[Optional[method_kind], SourceFlag] = SourceFlag(),
     in_class : Union[bool, SourceFlag] = SourceFlag(),
     global_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
     nonlocal_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
@@ -916,12 +1015,14 @@ def update_InherAux(source_InherAux : InherAux,
     declared_nonlocals : Union[PSet[str], SourceFlag] = SourceFlag(),
     usage_env : Union[PMap[str, Usage], SourceFlag] = SourceFlag(),
     observed_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
-    class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag()
+    class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
+    anchor_symbol : Union[str, SourceFlag] = SourceFlag()
 ) -> InherAux:
     return InherAux(
         source_InherAux.package if isinstance(package, SourceFlag) else package, 
         source_InherAux.external_path if isinstance(external_path, SourceFlag) else external_path, 
         source_InherAux.internal_path if isinstance(internal_path, SourceFlag) else internal_path, 
+        source_InherAux.method_kind if isinstance(method_kind, SourceFlag) else method_kind, 
         source_InherAux.in_class if isinstance(in_class, SourceFlag) else in_class, 
         source_InherAux.global_env if isinstance(global_env, SourceFlag) else global_env, 
         source_InherAux.nonlocal_env if isinstance(nonlocal_env, SourceFlag) else nonlocal_env, 
@@ -930,13 +1031,16 @@ def update_InherAux(source_InherAux : InherAux,
         source_InherAux.declared_nonlocals if isinstance(declared_nonlocals, SourceFlag) else declared_nonlocals, 
         source_InherAux.usage_env if isinstance(usage_env, SourceFlag) else usage_env, 
         source_InherAux.observed_types if isinstance(observed_types, SourceFlag) else observed_types, 
-        source_InherAux.class_env if isinstance(class_env, SourceFlag) else class_env)
+        source_InherAux.class_env if isinstance(class_env, SourceFlag) else class_env, 
+        source_InherAux.anchor_symbol if isinstance(anchor_symbol, SourceFlag) else anchor_symbol)
 
     
 
 # type and constructor SynthAux
 @dataclass(frozen=True, eq=True)
 class SynthAux:
+    static_field_additions : PMap[str, type]
+    instance_field_additions : PMap[str, type]
     class_additions : PMap[str, ClassRecord]
     decl_subtractions : PSet[str]
     decl_additions : PMap[str, Declaration]
@@ -961,6 +1065,8 @@ class SynthAux:
 
 
 def make_SynthAux(
+    static_field_additions : PMap[str, type] = m(),
+    instance_field_additions : PMap[str, type] = m(),
     class_additions : PMap[str, ClassRecord] = m(),
     decl_subtractions : PSet[str] = s(),
     decl_additions : PMap[str, Declaration] = m(),
@@ -984,6 +1090,8 @@ def make_SynthAux(
     import_names : PMap[str, str] = m()
 ) -> SynthAux:
     return SynthAux(
+        static_field_additions,
+        instance_field_additions,
         class_additions,
         decl_subtractions,
         decl_additions,
@@ -1007,6 +1115,8 @@ def make_SynthAux(
         import_names)
 
 def update_SynthAux(source_SynthAux : SynthAux,
+    static_field_additions : Union[PMap[str, type], SourceFlag] = SourceFlag(),
+    instance_field_additions : Union[PMap[str, type], SourceFlag] = SourceFlag(),
     class_additions : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
     decl_subtractions : Union[PSet[str], SourceFlag] = SourceFlag(),
     decl_additions : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
@@ -1030,6 +1140,8 @@ def update_SynthAux(source_SynthAux : SynthAux,
     import_names : Union[PMap[str, str], SourceFlag] = SourceFlag()
 ) -> SynthAux:
     return SynthAux(
+        source_SynthAux.static_field_additions if isinstance(static_field_additions, SourceFlag) else static_field_additions, 
+        source_SynthAux.instance_field_additions if isinstance(instance_field_additions, SourceFlag) else instance_field_additions, 
         source_SynthAux.class_additions if isinstance(class_additions, SourceFlag) else class_additions, 
         source_SynthAux.decl_subtractions if isinstance(decl_subtractions, SourceFlag) else decl_subtractions, 
         source_SynthAux.decl_additions if isinstance(decl_additions, SourceFlag) else decl_additions, 

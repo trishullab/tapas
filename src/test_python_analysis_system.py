@@ -70,6 +70,11 @@ def analyze_test(module_name : str, line_limit: int = -1) -> tuple[str, pals.Inh
                 return (partial_code, inher_aux)
     return (partial_code, inher_aux)
 
+def check(module_name : str, checks = pals.all_checks) -> None:
+    (inspect, kill) = spawn_inspect(module_name, checks)
+    inspect(-1)
+    kill()
+
 def spawn_inspect(module_name : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     code = load_source(module_name) 
     return spawn_inspect_code(module_name, code, checks)
@@ -658,6 +663,45 @@ def test_import_from_alias():
         inspect(-1)
     finally:
         kill()
+
+def test_class_field_ok():
+    (inspect, kill) = spawn_inspect("class_field_ok")
+    try:
+        code, aux = inspect(20)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+        code, aux = inspect(30)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+        code, aux = inspect(40)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+        code, aux = inspect(45)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+        inspect(-1)
+    finally:
+        kill()
+
+# def test_class_field_error_1():
+#     with pytest.raises(pals.LookupDecCheck):
+#         check("class_field_error_1")
+
+# def test_class_field_error_2():
+#     with pytest.raises(pals.LookupDecCheck):
+#         check("class_field_error_2")
+
+# def test_class_field_error_3():
+#     with pytest.raises(pals.LookupDecCheck):
+#         check("class_field_error_3")
+
+# def test_class_field_error_4():
+#     with pytest.raises(pals.LookupDecCheck):
+#         check("class_field_error_4")
 
 if __name__ == "__main__":
     pass

@@ -67,5 +67,4 @@ def test_source_pointer_increasing():
 
 
 if __name__ == "__main__":
-    test_source_pointer_increasing()
     pass
