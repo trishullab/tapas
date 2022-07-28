@@ -10,5 +10,6 @@ src/tapas_res/py150/**
 src/tapas_res/cubert/**
 src/test_python_analysis_system.py
 src/tapas_res/typeshed_object
+src/tapas_res/stub_cache
 src/tapas_res/python_grammar.json
 .DS_Store

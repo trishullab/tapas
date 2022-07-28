@@ -283,11 +283,53 @@ def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
 
-def coerce_to_TypeType(t : type) -> TypeType:
+def lookup_path_type(path : str, inher_aux : InherAux) -> type:
+    parts = path.split(".")
+    assert len(parts) > 0
+    root = parts[0]
+    rest = parts[1:] 
+    decl = lookup_declaration(inher_aux, root)
+    if decl:
+        t = decl.type
+        for part in rest:
+            t = lookup_field_type(t, part, inher_aux)
+            if not t:
+                return AnyType()
+        return t
+    else:
+        return AnyType()
+
+def coerce_to_TypeType(t : type, inher_aux : InherAux) -> TypeType:
     if isinstance(t, AnyType):
+        return TypeType(class_key = "builtins.type", content = AnyType())
+    elif isinstance(t, EllipType):
         return TypeType(class_key = "builtins.type", content = AnyType())
     elif isinstance(t, NoneType):
         return TypeType(class_key = "builtins.type", content = NoneType())
+    elif isinstance(t, StrLitType):
+        annotation : str = eval(t.literal)
+
+        type_arg_start_index = annotation.find('[')
+        type_arg_end_index = annotation.find(']')
+
+        type_arg = (TupleLitType(tuple(
+            lookup_path_type(type_str.strip(), inher_aux)
+            for type_str in annotation[type_arg_start_index + 1:type_arg_end_index].split(",")
+        )) if type_arg_start_index > -1 else
+        None)
+
+
+        base_annotation = annotation[:type_arg_start_index] if type_arg_start_index > 0 else annotation
+        base_type = lookup_path_type(base_annotation, inher_aux)
+
+        if isinstance(t, AnyType):
+            return TypeType(class_key = "builtins.type", content = AnyType())
+        else:
+            assert isinstance(base_type, TypeType)
+            class_key = get_class_key(base_type.content)
+            content_type = from_class_key_to_type(inher_aux, class_key, type_arg)
+
+        return TypeType(class_key = "builtins.type", content = content_type)
     else:
         assert isinstance(t, TypeType)
         return t
@@ -300,22 +342,22 @@ def coerce_to_ListLitType(t : type) -> ListLitType:
     assert isinstance(t, ListLitType)
     return t
 
-def from_anno_seq_to_instance_types(ts : Iterable[type]) -> tuple[type, ...]:
+def from_anno_seq_to_instance_types(ts : Iterable[type], inher_aux : InherAux) -> tuple[type, ...]:
     return tuple(
-        coerce_to_TypeType(t).content
+        coerce_to_TypeType(t, inher_aux).content
         for t in ts 
     ) 
 
-def from_anno_option_to_instance_type(t : type | None) -> type:
+def from_anno_option_to_instance_type(t : type | None, inher_aux : InherAux) -> type:
     if t:
-        return coerce_to_TypeType(t).content
+        return coerce_to_TypeType(t, inher_aux).content
     else:
         return AnyType()
 
-def from_anno_pair_option_to_instance_type(t : type | None) -> tuple[type, type]: 
+def from_anno_pair_option_to_instance_type(t : type | None, inher_aux : InherAux) -> tuple[type, type]: 
     if t:
         ftt = coerce_to_TupleLitType(t)
-        ts = from_anno_seq_to_instance_types(ftt.item_types)
+        ts = from_anno_seq_to_instance_types(ftt.item_types, inher_aux)
         assert len(ts) == 2
         return (ts[0], ts[1])
     else:
@@ -333,15 +375,15 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         type_args = coerce_to_TupleLitType(type_arg).item_types
         assert len(type_args) == 2
         param_type_args = coerce_to_ListLitType(type_args[0]).item_types
-        pos_param_types = from_anno_seq_to_instance_types(param_type_args)
-        return_type = coerce_to_TypeType(type_arg.item_types[1]).content
+        pos_param_types = from_anno_seq_to_instance_types(param_type_args, inher_aux)
+        return_type = coerce_to_TypeType(type_arg.item_types[1], inher_aux).content
         return make_FunctionType(
             pos_param_types=pos_param_types,
             return_type=return_type
         )
     elif class_key == "typing.Union":
         assert type_arg
-        ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types)
+        ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types, inher_aux)
         return make_UnionType(type_choices=ts)
 
     elif class_key == "builtins.tuple":
@@ -350,14 +392,14 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
             len(type_arg.item_types) == 2 and
             isinstance(type_arg.item_types[1], EllipType)
         ):
-            return VariedTupleType(item_type = coerce_to_TypeType(type_arg.item_types[0]).content)
+            return VariedTupleType(item_type = coerce_to_TypeType(type_arg.item_types[0], inher_aux).content)
 
         elif isinstance(type_arg, TupleLitType):
-            item_types = from_anno_seq_to_instance_types(type_arg.item_types)
+            item_types = from_anno_seq_to_instance_types(type_arg.item_types, inher_aux)
             return TupleLitType(item_types=item_types)
 
         elif type_arg:
-            item_types = coerce_to_TypeType(type_arg).content,
+            item_types = coerce_to_TypeType(type_arg, inher_aux).content,
             return TupleLitType(item_types=item_types)
 
         else:
@@ -365,9 +407,9 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
 
     else:
         type_args = (
-            from_anno_seq_to_instance_types(type_arg.item_types)  
+            from_anno_seq_to_instance_types(type_arg.item_types, inher_aux)  
             if isinstance(type_arg, TupleLitType) else
-            (coerce_to_TypeType(type_arg).content,)
+            (coerce_to_TypeType(type_arg, inher_aux).content,)
             if type_arg else
             ()
         )
@@ -764,7 +806,8 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
         case_ProtocolType = lambda t : t,
         case_GenericType = lambda t : t,
         case_OverloadType = lambda t : t,
-        case_TypeType = lambda t : substitute_type_args(t.content, subst_map),
+        case_TypeType = lambda t : update_TypeType(t, content = substitute_type_args(t.content, subst_map)),
+        # case_TypeType = lambda t : substitute_type_args(t.content, subst_map),
         case_VarType = lambda t : subst_map[t.name] if subst_map.get(t.name) else t,
         case_EllipType = lambda t : t,
         case_AnyType = lambda t : t,
@@ -883,8 +926,9 @@ def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux)
         })
 
         for super_type in class_record.super_types:
-            super_type = substitute_type_args(super_type, substitution_map)
-            result = get_iterable_item_type(super_type, inher_aux)
+            super_type_content = substitute_type_args(super_type.content, substitution_map)
+
+            result = get_iterable_item_type(super_type_content, inher_aux)
             if result:
                 return result
 
@@ -1090,6 +1134,9 @@ def lookup_declaration(inher_aux : InherAux, key : str, builtins = True) -> Decl
         return from_static_path_to_declaration(inher_aux, f"builtins.{key}")
     else:
         return None 
+
+
+
 
 
 def infer_subst_map(
@@ -1412,14 +1459,15 @@ def analyze_modules_once(
 
         assert path.isfile(file_path)
 
-        checks = (
-            all_checks
-            .remove(LookupInitCheck())
-            .remove(LookupDecCheck())
-            .remove(DeclareCheck())
-            .remove(AssignTypeCheck())
-            .remove(BranchDeclareCheck())
-        )
+        checks = pset() 
+        # (
+        #     all_checks
+        #     .remove(LookupInitCheck())
+        #     .remove(LookupDecCheck())
+        #     .remove(DeclareCheck())
+        #     .remove(AssignTypeCheck())
+        #     .remove(BranchDeclareCheck())
+        # )
 
         try:
             with open(file_path) as f:
@@ -1430,10 +1478,6 @@ def analyze_modules_once(
                 else:
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
-        # except AssertionError as ex:
-        #     continue
-        # except ApplyRatorTypeCheck:
-        #     continue
         except Exception as ex:
             # raise ex
             continue
@@ -1491,12 +1535,16 @@ def analyze_modules_fixpoint(
     return out_package
 
 
-def analyze_typeshed_cache(cache_loadable : bool = True):
+def with_cache(cache_path : str, f : Callable[[], T], cache_loadable : bool = True) -> T:
     return (
-        us.load_object('tapas_res/typeshed_object')
-        if cache_loadable and os.path.exists(us.project_path('tapas_res/typeshed_object')) else
-        us.save_object(analyze_typeshed(), 'tapas_res/typeshed_object')
+        us.load_object(cache_path)
+        if cache_loadable and os.path.exists(us.project_path(cache_path)) else
+        us.save_object(f(), cache_path)
     )
+
+def analyze_typeshed_cache(cache_loadable : bool = True):
+    return with_cache('tapas_res/typeshed_object', analyze_typeshed, cache_loadable)
+
 
 def analyze_typeshed() -> PMap[str, ModulePackage]:
     stdlib_dirpath = us.project_path("tapas_res/typeshed/stdlib")
@@ -1509,6 +1557,17 @@ def analyze_typeshed() -> PMap[str, ModulePackage]:
     # other_module_paths = collect_module_paths(other_libs_dirpath)
     # package = analyze_modules_fixpoint(other_libs_dirpath, other_module_paths, package, limit) 
     return package 
+
+def analyze_numpy_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
+    stdlib_dirpath = us.project_path("tapas_res/numpyshed")
+    stdlib_module_paths = collect_module_paths(stdlib_dirpath)
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
+    return package
+
+def analyze_stubs() -> PMap[str, ModulePackage]:
+    package = analyze_typeshed()
+    package = analyze_numpy_stubs(package)
+    return package
 
 def analyze_code(
     package : PMap[str, ModulePackage], 
@@ -2290,8 +2349,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             (isinstance(left_type, TypeType) or isinstance(right_type, TypeType)) and
             isinstance(rator_tree, pas.BitOr)
         ):
-            left_instance_type = coerce_to_TypeType(left_type).content
-            right_instance_type = coerce_to_TypeType(right_type).content
+            left_instance_type = coerce_to_TypeType(left_type, inher_aux).content
+            right_instance_type = coerce_to_TypeType(right_type, inher_aux).content
             union_type = unionize_types(left_instance_type, right_instance_type)
             expr_type = TypeType(class_key = "builtins.type", content = union_type)
         else:
@@ -2912,7 +2971,6 @@ class Server(paa.Server[InherAux, SynthAux]):
                 func_type, inher_aux
             )
 
-
             self.check(ApplyArgTypeCheck(), lambda: 
                 precise_func_type != None
             )
@@ -3403,16 +3461,29 @@ class Server(paa.Server[InherAux, SynthAux]):
                 ),)
             )
         )
-    
+
     # synthesize: expr <-- Starred
     def synthesize_for_expr_Starred(self, 
         inher_aux : InherAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
+        # splat the observed type
+
+        observed_type = content_aux.observed_types[0]
+        if isinstance(observed_type, ListLitType):
+            splatted_types = observed_type.item_types
+        elif isinstance(observed_type, TupleLitType):
+            splatted_types = observed_type.item_types
+        else:
+            # cannot statically splat
+            splatted_types = (observed_type,)
+
         return paa.Result[SynthAux](
             tree = pas.make_Starred(content_tree),
-            aux = update_SynthAux(content_aux)
+            aux = update_SynthAux(content_aux,
+                observed_types=splatted_types
+            )
         )
 
     # synthesize: module <-- FutureMod
@@ -3578,7 +3649,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         type_params : tuple[VarType, ...] = bs_aux.var_types
 
         super_types : tuple[TypeType, ...] = tuple(
-            coerce_to_TypeType(t)
+            coerce_to_TypeType(t, inher_aux)
             for t in bs_aux.observed_types
         )
 
@@ -3614,11 +3685,13 @@ class Server(paa.Server[InherAux, SynthAux]):
 
             if name == "__init__": 
 
-                # first param is for newly constructed self
-                assert len(decl.type.pos_kw_param_sigs) > 0
-                return update_FunctionType(decl.type,
-                    pos_kw_param_sigs=decl.type.pos_kw_param_sigs[1:]
-                )
+                if len(decl.type.pos_kw_param_sigs) > 0:
+                    # first param is for newly constructed self
+                    return update_FunctionType(decl.type,
+                        pos_kw_param_sigs=decl.type.pos_kw_param_sigs[1:]
+                    )
+                else:
+                    return decl.type
 
             elif len(decl.type.pos_kw_param_sigs) == 0:
                 return decl.type 
@@ -3898,10 +3971,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             NoneType()
         )
 
-
         if isinstance(ret_anno_tree, pas.SomeReturnAnno): 
             assert len(ret_anno_aux.observed_types) == 1
-            function_sig_return_type = coerce_to_TypeType(ret_anno_aux.observed_types[0]).content
+            function_sig_return_type = coerce_to_TypeType(ret_anno_aux.observed_types[0], inher_aux).content
 
             self.check(ReturnTypeCheck(), lambda: 
                 is_a_stub_body(body_tree) or
@@ -3911,7 +3983,6 @@ class Server(paa.Server[InherAux, SynthAux]):
             function_return_type = function_sig_return_type
         else:
             function_return_type = function_body_return_type
-
 
         type = FunctionType(
             pos_param_types = params_aux.pos_param_types,
@@ -3983,7 +4054,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         default_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         sig_type = (
-            coerce_to_TypeType(anno_aux.observed_types[0]).content
+            coerce_to_TypeType(anno_aux.observed_types[0], inher_aux).content
             if len(anno_aux.observed_types) == 1 else 
             default_aux.observed_types[0]
             if len(default_aux.observed_types) == 1 else 
@@ -4504,7 +4575,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
-        sig_type = coerce_to_TypeType(anno_aux.observed_types[0]).content
+        sig_type = coerce_to_TypeType(anno_aux.observed_types[0], inher_aux).content
 
         decl_additions: PMap[str, Declaration] = m() 
         anchor_env : PMap[str, type] = m() 
@@ -4607,64 +4678,82 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
 
         assert len(anno_aux.observed_types) > 0
-        sig_type = coerce_to_TypeType(anno_aux.observed_types[0]).content
-        assert isinstance(target_tree, pas.Name)
-        symbol = target_tree.content
-
+        sig_type = coerce_to_TypeType(anno_aux.observed_types[0], inher_aux).content
 
         decl_additions: PMap[str, Declaration] = m() 
-        # special consideration for declaration of special_form types
-        if (
-            (inher_aux.external_path == "typing" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing._SpecialForm") or
-            (inher_aux.external_path == "typing_extensions" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing_extensions._SpecialForm")
-        ):
-            t = TypeType(sig_type.class_key, AnyType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            inher_aux.external_path == "typing" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "typing.NewType"
-        ):
-            t = TypeType(sig_type.class_key, AnyType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            inher_aux.external_path == "builtins" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "builtins._NotImplementedType" and
-            symbol == "NotImplemented"
-        ):
-            t = TypeType(sig_type.class_key, AnyType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
-        elif (
-            inher_aux.external_path == "typing_extensions" and
-            isinstance(sig_type, RecordType) and
-            sig_type.class_key == "builtins.object" and
-            symbol == "TypedDict"
-        ):
-            t = TypeType(sig_type.class_key, AnyType())
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=None, initialized=True, type=t)
-            })
+        anchor_env : PMap[str, type] = m() 
+
+        if isinstance(target_tree, pas.Name):
+            symbol = target_tree.content
+
+            decl_additions: PMap[str, Declaration] = m() 
+            # special consideration for declaration of special_form types
+            if (
+                (inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing._SpecialForm") or
+                (inher_aux.external_path == "typing_extensions" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing_extensions._SpecialForm")
+            ):
+                t = TypeType(sig_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing.NewType"
+            ):
+                t = TypeType(sig_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "builtins" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "builtins._NotImplementedType" and
+                symbol == "NotImplemented"
+            ):
+                t = TypeType(sig_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "typing_extensions" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "builtins.object" and
+                symbol == "TypedDict"
+            ):
+                t = TypeType(sig_type.class_key, AnyType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            else:
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=sig_type, initialized=False, type=sig_type)
+                })
         else:
-            decl_additions = pmap({
-                symbol : make_Declaration(updatable=sig_type, initialized=False, type=sig_type)
-            })
+            assert isinstance(target_tree, pas.Attribute)
+            content = target_tree.content
+            if isinstance(content, pas.Name) and content.content == inher_aux.anchor_symbol:
+                anchor_env += pmap({target_tree.name : sig_type})
 
 
         return paa.Result[SynthAux](
             tree = pas.make_AnnoDeclar(target_tree, anno_tree),
             aux = make_SynthAux(
-                decl_additions = decl_additions 
+                decl_additions = decl_additions,
+                static_field_additions=(
+                    anchor_env
+                    if isinstance(inher_aux.method_kind, ClassMethod) else
+                    m()
+                ),
+                instance_field_additions=(
+                    anchor_env
+                    if isinstance(inher_aux.method_kind, InstanceMethod) else
+                    m()
+                ),
             ) 
         )
 
@@ -5125,7 +5214,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
 
         assert len(content_aux.observed_types) == 1
-        type_type = coerce_to_TypeType(content_aux.observed_types[0])
+        type_type = coerce_to_TypeType(content_aux.observed_types[0], inher_aux)
         t = type_type.content
 
         name_aux = make_SynthAux(decl_additions = pmap({

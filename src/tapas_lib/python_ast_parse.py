@@ -28,10 +28,9 @@ class TreeSitterError(Exception):
 def obsolete(node : GenericNode):
     raise Obsolete(node.syntax_part)
 
-def hole_or_error(node : GenericNode) -> None:
+def node_error(node : GenericNode) -> None:
     if (node.syntax_part == "ERROR"):
-        return None
-        # raise ConcreteParsingError()
+        raise ConcreteParsingError()
     else:
         raise Unsupported(node.syntax_part)
 
@@ -253,7 +252,7 @@ def to_parameters_a(
         )
     )
 
-    for pp in reversed(pos_params):
+    for pp in reversed(pos_params[:-1]):
         result = ConsPosParam(pp, result,
             pp.source_start if pp else 0,
             result.source_end
@@ -543,7 +542,7 @@ def from_generic_tree(node : GenericNode) -> module:
             
             return SimpleMod(to_statements(statements), node.source_start, node.source_end)
     else:
-       hole_or_error(node) 
+       node_error(node) 
        raise ConcreteParsingError()
 
 
@@ -594,7 +593,7 @@ def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] =
         asname_text = asname_node.text
         return from_generic_tree_to_import_name(name_node, asname_text)
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 def from_generic_tree_to_unaryop(node):
     if (node.syntax_part == "~"):
@@ -604,7 +603,7 @@ def from_generic_tree_to_unaryop(node):
     elif (node.syntax_part == "-"):
        return USub(node.source_start, node.source_end) 
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 def from_generic_tree_to_boolop(node):
     if node.syntax_part == "and":
@@ -612,7 +611,7 @@ def from_generic_tree_to_boolop(node):
     elif node.syntax_part == "or":
        return Or(node.source_start, node.source_end) 
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator | None: 
 
@@ -656,7 +655,7 @@ def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator | None:
         return BitOr(node.source_start, node.source_end)
 
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 
 def split_rators_and_rands(
@@ -756,23 +755,30 @@ def from_generic_tree_to_ExceptHandler(node : GenericNode) -> ExceptHandler:
 def from_generic_tree_to_with_item(node : GenericNode) -> with_item:
     assert node.syntax_part == "with_item"
     children = node.children
-    context_node = children[0]
-    pattern_node = (
-        children[2]
-        if (len(children) == 3 and children[1].syntax_part == "as") 
-        
-        else None
-    )
 
-    context_expr = from_generic_tree_to_expr(context_node)
-    pattern_expr = from_generic_tree_to_expr(pattern_node) if pattern_node else None
+    if children[0].syntax_part == "as_pattern":
+        as_pattern_node = children[0]
+        assert (
+            len(as_pattern_node.children) == 3 and 
+            as_pattern_node.children[1].syntax_part == "as"
+        ) 
 
-    return (
-        WithItemAlias(context_expr, pattern_expr, node.source_start, node.source_end)
-        if pattern_expr else
+        content_node = as_pattern_node.children[0]
+        content_expr = from_generic_tree_to_expr(content_node)
 
-        WithItemOnly(context_expr, node.source_start, node.source_end) 
-    )
+
+        as_pattern_target_node = as_pattern_node.children[2]
+        assert as_pattern_target_node.syntax_part == "as_pattern_target"
+        pattern_node = as_pattern_target_node.children[0]
+        pattern_expr = from_generic_tree_to_expr(pattern_node) if pattern_node else None
+
+        return WithItemAlias(content_expr, pattern_expr, node.source_start, node.source_end)
+
+    else:
+        content_node = children[0]
+        content_expr = from_generic_tree_to_expr(content_node)
+
+        return WithItemOnly(content_expr, node.source_start, node.source_end) 
 
 
 def from_nodes_to_constraint(nodes : list[GenericNode]) -> constraint:
@@ -857,7 +863,7 @@ def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint] | N
                     collected_constraints
                 )
             else:
-                return hole_or_error(node)
+                return node_error(node)
 
     return collapse_constraint_nodes_r([n for n in reversed(nodes)])
 
@@ -980,7 +986,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             return CallArgs(func, to_arguments([from_generic_tree_to_expr(args_node)], []), node.source_start, node.source_end)
 
         else:
-            return hole_or_error(args_node)
+            return node_error(args_node)
 
     elif (node.syntax_part == "list"):
         items = [
@@ -1315,7 +1321,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
     else:
         # keyword_identifier / not sure if this is actually ever used
-        return hole_or_error(node)
+        return node_error(node)
 
 
 
@@ -1337,7 +1343,7 @@ def from_generic_tree_to_keyword(node) -> keyword | None:
         return SplatKeyword(value_expr, node.source_start, node.source_end)
 
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 
 
@@ -1430,7 +1436,7 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
     elif node.syntax_part == "tuple_pattern":
         obsolete(node)
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 
 def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
@@ -1457,31 +1463,30 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             if child.syntax_part != ","
         ]
 
-        # tree-sitter doesn't support position-only parameters
-        pos_params = []
-
-        def is_list_splat_node(n : GenericNode):
-            return (
-                n.syntax_part == "list_splat_pattern" or (
-                    n.syntax_part == "typed_parameter" and
-                    n.children[0].syntax_part == "list_splat_pattern"
-                )
-            )
 
 
-        def is_dictionary_splat_node(n : GenericNode):
-            return (
-                n.syntax_part == "dictionary_splat_pattern" or (
-                    n.syntax_part == "typed_parameter" and
-                    n.children[0].syntax_part == "dictionary_splat_pattern"
-                )
-            )
+        positional_separator_index = next(
+            (
+                i 
+                for i, n in enumerate(children)
+                if n.syntax_part == "positional_separator"
+            ),
+            -1 
+        )
 
         list_splat_index = next(
             (
                 i 
                 for i, n in enumerate(children)
-                if is_list_splat_node(n) 
+                if (
+                    n.syntax_part == "list_splat_pattern" or 
+                    (
+                        n.syntax_part == "typed_parameter" and
+                        n.children[0].syntax_part == "list_splat_pattern"
+                    ) or
+                    n.syntax_part == "keyword_separator"
+                )
+
             ),
             -1 
         )
@@ -1490,45 +1495,61 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             (
                 i 
                 for i, n in enumerate(children)
-                if is_dictionary_splat_node(n)
+                if (
+                    n.syntax_part == "dictionary_splat_pattern" or 
+                    (
+                        n.syntax_part == "typed_parameter" and
+                        n.children[0].syntax_part == "dictionary_splat_pattern"
+                    )
+                )
             ),
             -1 
+        )
+
+        pos_param_nodes = (
+            children[0:positional_separator_index]
+            if positional_separator_index > -1 else
+            []
         )
 
         (pos_kw_param_nodes, list_splat_node, kw_nodes, dictionary_splat_node) = (
 
             (
-                children[0:list_splat_index], 
+                children[positional_separator_index + 1:list_splat_index], 
                 children[list_splat_index], 
                 children[list_splat_index + 1: dictionary_splat_index], 
                 children[dictionary_splat_index]
             )
-            if (list_splat_index >= 0 and dictionary_splat_index >= 0)
-
-            else (
-                children[0:list_splat_index], 
+            if (list_splat_index >= 0 and dictionary_splat_index >= 0) else 
+            
+            (
+                children[positional_separator_index + 1:list_splat_index], 
                 children[list_splat_index], 
                 children[list_splat_index + 1:], 
                 None
             )
-            if list_splat_index >= 0 and dictionary_splat_index < 0
-
-            else (
-                children[0:list_splat_index], 
+            if list_splat_index >= 0 and dictionary_splat_index < 0 else 
+            
+            (
+                children[positional_separator_index + 1:-1], 
                 None,
                 [],
                 children[dictionary_splat_index]
             )
-            if list_splat_index < 0 and dictionary_splat_index >= 0
+            if list_splat_index < 0 and dictionary_splat_index >= 0 else 
 
-            else (
-                children,
+            (
+                children[positional_separator_index + 1:], 
                 None,
                 [],
                 None
             )
         )
 
+        pos_params = [
+            from_generic_tree_to_Param(n)
+            for n in pos_param_nodes
+        ]
 
         pos_kw_params = [
             from_generic_tree_to_Param(n)
@@ -1538,13 +1559,16 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
 
         list_splat_param = (
             None
-            if not list_splat_node or (
-                list_splat_node.syntax_part == "list_splat_pattern" and 
-                len(list_splat_node.children) == 0
-            )
+            if (
+                not list_splat_node or 
+                (
+                    list_splat_node.syntax_part == "list_splat_pattern" and 
+                    len(list_splat_node.children) == 0
+                ) or 
+                list_splat_node.syntax_part == "keyword_separator"
+            ) else 
 
-
-            else from_generic_tree_to_Param(list_splat_node)
+            from_generic_tree_to_Param(list_splat_node)
         )
 
         kw_params = [
@@ -1560,7 +1584,7 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
 
 
     else:
-        return hole_or_error(node)
+        return node_error(node)
 
 
 
@@ -1772,7 +1796,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                         ] 
 
                     else:
-                        return [hole_or_error(node)]
+                        return [node_error(node)]
 
 
             elif (estmt_node.syntax_part == "augmented_assignment"):
@@ -2426,4 +2450,4 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
     else:
         # exec_statement for Python 2
         # print_statement for Python 2
-        return [hole_or_error(node)]
+        return [node_error(node)]

@@ -11,3 +11,4 @@ class A():
 x : int = A().x
 y : int = A().y
 
+pass

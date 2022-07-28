@@ -4,7 +4,7 @@ from pyrsistent import pmap, m, pset, s
 from typing import Callable
 from tapas_base.abstract_token_construct_autogen import unguard_abstract_token
 
-from tapas_lib import python_aux_system as pals
+from tapas_lib import generic_tree_system, python_aux_system as pals
 from tapas_lib import python_ast_system as pas
 from tapas_lib import python_generic_tree_system as pgs 
 from tapas_lib import python_abstract_token_system as pats
@@ -14,9 +14,8 @@ from tapas_base import util_system as us
 import json
 import pytest
 
-from tapas_lib.python_aux_construct_autogen import RecordType, UnionType, make_RecordType, make_VarType
-
-package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed_cache()
+package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
+# package = pals.analyze_numpy_stubs(package)
 
 def load_source(name : str) -> str:
     path = us.project_path(f"tapas_res/python/{name}.py")
@@ -43,7 +42,7 @@ def translate(module_name : str):
     print(abstract_string)
     print(f"***************************************")
 
-def analyze_test(module_name : str, line_limit: int = -1) -> tuple[str, pals.InherAux]:
+def analyze_test(module_name : str, line_limit: int = -1, package = package) -> tuple[str, pals.InherAux]:
 
     code = load_source(module_name) 
     gnode = pgs.parse(code)
@@ -75,14 +74,19 @@ def check(module_name : str, checks = pals.all_checks) -> None:
     inspect(-1)
     kill()
 
-def spawn_inspect(module_name : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
+def spawn_inspect(module_name : str, checks = pals.all_checks, package = package) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     code = load_source(module_name) 
-    return spawn_inspect_code(module_name, code, checks)
+    return spawn_inspect_code(module_name, code, checks, package)
 
-def spawn_inspect_code(module_name, code : str, checks = pals.all_checks) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
+def spawn_inspect_code(module_name, code : str, checks = pals.all_checks, package = package) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     gnode = pgs.parse(code)
+    # print(pgs.dump(gnode))
+    # raise Exception()
+
     mod = pas.parse_from_generic_tree(gnode)
     abstract_tokens = pas.serialize(mod)
+    # print(pas.dump(mod))
+    # raise Exception()
 
     partial_tokens = [] 
     client : pals.Client = pals.spawn_analysis(package, module_name, checks)
@@ -112,215 +116,215 @@ def spawn_inspect_code(module_name, code : str, checks = pals.all_checks) -> tup
     return (inspect, kill)
 
 def test_000_0_ok():
-    analyze_test("000_0_ok")
+    check("000_0_ok")
 
 def test_000_1_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("000_1_error")
+        check("000_1_error")
 
 
 
 def test_000_2_error():
     with pytest.raises(pals.LookupInitCheck):
-        analyze_test("000_2_error")
+        check("000_2_error")
     code = load_source("000_2_error")
     assert pals.analyze_summary(package, "main", code) == "lookup_init_check"
 
 def test_000_3_ok():
-    analyze_test("000_3_ok")
+    check("000_3_ok")
 
 def test_000_4_error():
     with pytest.raises(pals.LookupInitCheck):
-        analyze_test("000_4_error")
+        check("000_4_error")
 
 def test_001_ok():
-    analyze_test("001_ok")
+    check("001_ok")
 
 def test_002_error():
     with pytest.raises(pals.AssignTypeCheck):
-        analyze_test("002_error")
+        check("002_error")
 
 def test_003_ok():
-    analyze_test("003_ok")
+    check("003_ok")
 
 def test_004_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("004_error")
+        check("004_error")
 
 def test_005_ok():
-        analyze_test("005_ok")
+        check("005_ok")
 
 def test_006_error():
     with pytest.raises(pals.AssignTypeCheck):
-        analyze_test("006_error")
+        check("006_error")
 
 def test_007_ok():
-    analyze_test("007_ok")
+    check("007_ok")
 
 def test_008_error():
     with pytest.raises(pals.AssignTypeCheck):
-        analyze_test("008_error")
+        check("008_error")
 
 def test_009_error():
     with pytest.raises(pals.AssignTypeCheck):
-        analyze_test("009_error")
+        check("009_error")
 
 def test_010_ok():
-    analyze_test("010_ok")
+    check("010_ok")
 
 def test_011_error():
     with pytest.raises(pals.AssignTypeCheck):
-        analyze_test("011_error")
+        check("011_error")
 
 def test_012_ok():
-    analyze_test("012_ok")
+    check("012_ok")
 
 def test_013_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("013_error")
+        check("013_error")
 
 def test_014_ok():
-    analyze_test("014_ok")
+    check("014_ok")
 
 def test_015_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("015_error")
+        check("015_error")
 
 def test_016_error():
     with pytest.raises(pals.ReturnTypeCheck):
-        analyze_test("016_error")
+        check("016_error")
 
 def test_017_ok():
-    analyze_test("017_ok")
+    check("017_ok")
 
 def test_018_ok():
-    analyze_test("018_ok")
+    check("018_ok")
 
 def test_019_error():
     with pytest.raises(pals.LookupTypeCheck):
-        analyze_test("019_error")
+        check("019_error")
 
 def test_020_ok():
-    analyze_test("020_ok")
+    check("020_ok")
 
 def test_021_error():
     with pytest.raises(pals.UpdateCheck):
-        analyze_test("021_error")
+        check("021_error")
 
 def test_022_ok():
-    analyze_test("022_ok")
+    check("022_ok")
 
 def test_023_ok():
-    analyze_test("023_ok")
+    check("023_ok")
 
 def test_024_ok():
-    analyze_test("024_ok")
+    check("024_ok")
 
 def test_025_error():
     with pytest.raises(pals.UpdateCheck):
-        analyze_test("025_error")
+        check("025_error")
 
 def test_026_error():
     with pytest.raises(pals.UpdateCheck):
-        analyze_test("026_error")
+        check("026_error")
 
 def test_027_error():
     with pytest.raises(pals.UpdateCheck):
-        analyze_test("027_error")
+        check("027_error")
 
 def test_028_ok():
-    analyze_test("028_ok")
+    check("028_ok")
 
 def test_029_ok():
-    analyze_test("029_ok")
+    check("029_ok")
 
 def test_030_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("030_error")
+        check("030_error")
 
 def test_031_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("031_error")
+        check("031_error")
 
 def test_032_error():
     with pytest.raises(pals.ApplyRatorTypeCheck):
-        analyze_test("032_error")
+        check("032_error")
 
 def test_034_ok():
-    analyze_test("034_ok")
+    check("034_ok")
 
 def test_035_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("035_error")
+        check("035_error")
 
 def test_036_ok():
-    analyze_test("036_ok")
+    check("036_ok")
 
 def test_037_ok():
-    analyze_test("037_ok")
+    check("037_ok")
 
 def test_038_ok():
-    analyze_test("038_ok")
+    check("038_ok")
 
 def test_039_error():
     with pytest.raises(Exception):
-        analyze_test("039_error")
+        check("039_error")
 
 def test_040_ok():
-    analyze_test("040_ok")
+    check("040_ok")
 
 def test_041_error():
     with pytest.raises(Exception):
-        analyze_test("041_error")
+        check("041_error")
 
 def test_042_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("042_error")
+        check("042_error")
 
 def test_043_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("043_error")
+        check("043_error")
 
 
 def test_044_ok():
-    analyze_test("044_ok")
+    check("044_ok")
 
 def test_045_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("045_error")
+        check("045_error")
 
 def test_046_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("046_error")
+        check("046_error")
 
 def test_047_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("047_error")
+        check("047_error")
 
 def test_048_error():
-    analyze_test("048_ok")
+    check("048_ok")
 
 def test_049_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("049_error")
+        check("049_error")
 
 def test_050_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("050_error")
+        check("050_error")
 
 def test_051_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("051_error")
+        check("051_error")
 
 def test_052_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("052_error")
+        check("052_error")
 
 def test_053_ok():
-    analyze_test("053_ok")
+    check("053_ok")
 
 def test_054_ok():
-    analyze_test("054_ok")
+    check("054_ok")
 
 def test_055_error():
     code, aux = analyze_test("055_error", 9)
@@ -333,10 +337,10 @@ def test_055_error():
         analyze_test("055_error", 10)
 
 def test_055_1_ok():
-    analyze_test("055_1_ok")
+    check("055_1_ok")
 
 def test_055_2_ok():
-    analyze_test("055_2_ok")
+    check("055_2_ok")
 
 def test_056_error():
     code, aux = analyze_test("056_error", 8)
@@ -346,7 +350,7 @@ def test_056_error():
     assert f 
     assert isinstance(f.type, pals.IntLitType)
     with pytest.raises(pals.ApplyRatorTypeCheck):
-        analyze_test("056_error")
+        check("056_error")
 
 def test_057_error():
     code, aux = analyze_test("057_error", 9)
@@ -355,15 +359,15 @@ def test_057_error():
     i = aux.local_env.get('i')
     assert i == None 
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("057_error")
+        check("057_error")
 
 def test_057_1_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("057_1_error")
+        check("057_1_error")
 
 def test_057_2_error():
     with pytest.raises(pals.LookupDecCheck):
-        analyze_test("057_2_error")
+        check("057_2_error")
 
 def test_058_ok():
     code, aux = analyze_test("058_ok", 5)
@@ -388,7 +392,7 @@ def test_058_ok():
     assert entry_two_vt == pals.StrLitType("'bye'")
 
 def test_059_ok():
-    analyze_test("059_ok")
+    check("059_ok")
 
 def test_060_ok():
     code, aux = analyze_test("060_ok", 4)
@@ -413,14 +417,14 @@ def test_061_ok():
     assert final_str_type.class_key == "builtins.str"
 
 def test_062_ok():
-    analyze_test("062_ok")
+    check("062_ok")
 
 def test_063_error():
     with pytest.raises(pals.AssignTypeCheck):
-        analyze_test("063_error")
+        check("063_error")
 
 def test_064_ok():
-    analyze_test("064_ok")
+    check("064_ok")
 
 def test_065_ok():
     code_pre, aux_pre = analyze_test("065_ok", 2)
@@ -490,10 +494,10 @@ def test_067_ok():
 
 def test_068_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("068_error")
+        check("068_error")
 
 def test_069_ok():
-    analyze_test("069_ok")
+    check("069_ok")
 
 def test_070_0_ok():
     code, aux = analyze_test("070_0_ok",2)
@@ -502,7 +506,7 @@ def test_070_0_ok():
     x = aux.local_env.get("x")
     assert x
     x_type = x.type
-    assert isinstance(x_type, RecordType)
+    assert isinstance(x_type, pals.RecordType)
     assert x_type.class_key == "builtins.list"
     x_type_args = x_type.type_args
     assert len(x_type_args) == 1 
@@ -514,10 +518,10 @@ def test_070_0_ok():
     )
 
 def test_070_1_ok():
-    analyze_test("070_1_ok")
+    check("070_1_ok")
 
 def test_070_2_ok():
-    analyze_test("070_2_ok")
+    check("070_2_ok")
 
 def test_070_3_ok():
     code, aux = analyze_test("070_3_ok", 9)
@@ -545,50 +549,22 @@ def test_070_4_ok():
     print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     x = aux.local_env.get("x")
     assert x
-    assert x.type == make_RecordType(class_key="builtins.int")
+    assert x.type == pals.make_RecordType(class_key="builtins.int")
 
 def test_070_ok():
-    analyze_test("070_ok")
+    check("070_ok")
 
 def test_071_ok():
-    analyze_test("071_ok")
+    check("071_ok")
 
 def test_072_ok():
-    analyze_test("072_ok")
+    check("072_ok")
 
 def test_073_ok():
-    analyze_test("073_ok")
-
-def test_074_1_error():
-    with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("074_1_error")
-
-def test_074_ok():
-    analyze_test("074_ok")
-
-def test_075_1_error():
-    with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("075_1_error")
-
-def test_075_ok():
-    analyze_test("075_ok")
-
-def test_076_ok():
-    analyze_test("076_ok")
-
-def test_077_ok():
-    analyze_test("077_ok")
-
-def test_078_error():
-    with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("078_error")
-
-def test_079_error():
-    with pytest.raises(pals.ApplyArgTypeCheck):
-        analyze_test("079_error")
+    check("073_ok")
 
 def test_080_ok():
-    analyze_test("080_ok")
+    check("080_ok")
 
 def test_081_ok():
     code, aux = analyze_test("081_ok", 4)
@@ -603,14 +579,14 @@ def test_081_ok():
 
 def test_082_ok():
     # test for convergence in subsumption with combined inheritance and protocols in Generator <: Iterator
-    analyze_test("082_ok")
+    check("082_ok")
 
 def test_083_ok():
     # test class type as param type 
-    analyze_test("083_ok")
+    check("083_ok")
 
 def test_084_ok():
-    analyze_test("084_ok")
+    check("084_ok")
 
 def test_params_dont_traverse():
     (inspect, kill) = spawn_inspect("params_dont_traverse")
@@ -639,7 +615,7 @@ def test_converges():
         kill()
 
 def test_import_alias():
-    (inspect, kill) = spawn_inspect("import_alias", pset())
+    (inspect, kill) = spawn_inspect("import_alias")
     try:
         code, aux = inspect(20)
         dumps = aux.local_env.get("dumps")
@@ -652,7 +628,7 @@ def test_import_alias():
         kill()
 
 def test_import_from_alias():
-    (inspect, kill) = spawn_inspect("import_from_alias", pset())
+    (inspect, kill) = spawn_inspect("import_from_alias")
     try:
         code, aux = inspect(10)
         d = aux.local_env.get("d")
@@ -663,6 +639,42 @@ def test_import_from_alias():
         inspect(-1)
     finally:
         kill()
+
+
+def test_params_1_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        check("params_1_error")
+
+def test_params_2_ok():
+    check("params_2_ok")
+
+def test_params_3_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        check("params_3_error")
+
+def test_args_splat_1_ok():
+    check("args_splat_1_ok")
+
+def test_splat_bundle_1_ok():
+    check("splat_bundle_1_ok")
+
+def test_params_4_ok():
+    check("params_4_ok")
+
+def test_params_5_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        check("params_5_error")
+
+def test_params_6_error():
+    with pytest.raises(pals.ApplyArgTypeCheck):
+        check("params_6_error")
+
+def test_params_7_ok():
+    check("params_7_ok")
+
+def test_params_8_ok():
+    check("params_8_ok")
+
 
 def test_class_field_ok():
     (inspect, kill) = spawn_inspect("class_field_ok")
@@ -702,6 +714,45 @@ def test_class_field_ok():
 # def test_class_field_error_4():
 #     with pytest.raises(pals.LookupDecCheck):
 #         check("class_field_error_4")
+
+def test_expression_list_splat_ok():
+    check("expression_list_splat_ok")
+
+# def test_expression_list_unbound_splat_ok():
+#     check("expression_list_unbound_splat_ok")
+
+# def test_import_numpy():
+#     (inspect, kill) = spawn_inspect("import_numpy")
+#     try:
+#         code, aux = inspect(8)
+#         arange = aux.local_env.get("arange")
+#         print(code)
+#         print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+#         assert arange
+#         assert not isinstance(arange.type, pals.AnyType)
+#         inspect(-1)
+#     finally:
+#         kill()
+
+def test_str_type_annotation():
+    (inspect, kill) = spawn_inspect("str_type_annotation")
+    try:
+        code, aux = inspect(16)
+        x = aux.local_env.get("x")
+        assert x
+        t = x.type
+        assert isinstance(t, pals.TupleLitType)
+        int_type = t.item_types[0]
+        assert isinstance(int_type, pals.RecordType)
+        assert int_type.class_key == "builtins.int"
+        str_type = t.item_types[1]
+        assert isinstance(str_type, pals.RecordType)
+        assert str_type.class_key == "builtins.str"
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        inspect(-1)
+    finally:
+        kill()
 
 if __name__ == "__main__":
     pass
