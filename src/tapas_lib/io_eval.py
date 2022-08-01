@@ -9,8 +9,8 @@ def eval_program(prog : str, input_data : str, expected_output : str) -> bool:
     ).stdout.decode('utf-8')
     
 #     print(f'''
-# actual_output: {actual_output}
-# expected_output: {expected_output}
+# actual_output: {actual_output}|
+# expected_output: {expected_output}|
 #     ''')
 
-    return actual_output == expected_output
+    return actual_output.strip() == expected_output.strip()
