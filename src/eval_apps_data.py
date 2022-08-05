@@ -12,7 +12,6 @@ def check():
     ''', f""))
 
 
-
 def eval_apps_data():
     ds = load_dataset("codeparrot/apps", split="test")
 
@@ -84,5 +83,12 @@ passed: {pass_count}/{total}
 errors: {errors}
         ''')
 if __name__ == "__main__":
-    eval_apps_data()
+    count = 0
+    for o in io_eval.get_good_apps_data(6):
+            print("^^^^^^^^^")
+            print(o['id'])
+            print("--")
+            print(o['solution'])
+            count+= 1
+            if count > 4: break
     pass

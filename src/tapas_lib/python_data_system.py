@@ -1,4 +1,3 @@
-
 from regex import W
 from tree_sitter import Language
 
@@ -221,7 +220,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         # multi processor:
         stats_collection = []
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
-        with multiprocessing.get_context("spawn").Pool(cpu_count) as pool:
+        with multiprocessing.Pool(cpu_count) as pool:
             stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
         ## single processor:
