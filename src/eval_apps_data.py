@@ -84,11 +84,15 @@ errors: {errors}
         ''')
 if __name__ == "__main__":
     count = 0
-    for o in io_eval.get_good_apps_data(6):
-            print("^^^^^^^^^")
-            print(o['id'])
-            print("--")
-            print(o['solution'])
-            count+= 1
-            if count > 4: break
+    # print(len(io_eval.filter_apps_data(6)))
+    for problem in io_eval.filter_apps_data(6):
+        assert isinstance(problem, dict)
+        print("^^^^^^^^^")
+        print(problem.keys())
+        print("##")
+        print(problem['problem_id'])
+        print("--")
+        print(problem['good_solution'])
+        count+= 1
+        if count > 4: break
     pass

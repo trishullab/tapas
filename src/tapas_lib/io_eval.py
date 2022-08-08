@@ -36,6 +36,7 @@ def get_good_solution(problem, def_count : int) -> Union[str, None]:
         if solution.count("def ") > def_count
     )
 
+
     first_solution = next((
         solution
         for solution in def_count_solutions
@@ -62,4 +63,22 @@ def get_good_apps_data(def_count = -1) -> Iterable[dict[str, str]]:
         if isinstance(problem, dict)
         for good_solution in [get_good_solution(problem, def_count)]
         if good_solution != None
+    )
+
+def add_good_solution(problem, solution):
+    problem['good_solution'] = solution
+    return problem
+
+def filter_apps_data(def_count = -1):
+    ds = load_dataset("codeparrot/apps", split="test")
+    assert isinstance(ds, Dataset)
+    # ds = ds.filter(lambda example, idx: idx < 20, with_indices=True)
+
+    return ds.map(lambda problem : 
+        add_good_solution(
+            problem, 
+            get_good_solution(problem, def_count) or ''
+        )
+    ).filter(
+        lambda problem : problem['good_solution'] != '' 
     )
