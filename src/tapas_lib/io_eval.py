@@ -23,46 +23,49 @@ def eval_program(prog : str, input_data : str, expected_output : str) -> bool:
 
 
 def get_good_solution(problem, def_count : int) -> Union[str, None]:
-    io_record = json.loads(problem['input_output'])
-    inputs = io_record['inputs']
-    outputs = io_record['outputs']
-    solutions = json.loads(problem['solutions'])
+    try:
+        io_record = json.loads(problem['input_output'])
+        inputs = io_record['inputs']
+        outputs = io_record['outputs']
+        solutions = json.loads(problem['solutions'])
 
 
-    def_count_solutions = (
-        solution
-        for solution in solutions
-        if solution.strip()
-        if solution.count("def ") > def_count
-    )
-
-
-    first_solution = next((
-        solution
-        for solution in def_count_solutions
-        if all(
-            not bool(err.strip()) and actual_output.strip() == output.strip()
-            for index, raw_input in enumerate(inputs)
-            for input in [
-                raw_input 
-                if isinstance(raw_input, str) else 
-                "\n".join(raw_input) 
-                if isinstance(raw_input, list) else
-                str(raw_input)
-            ]
-            for actual_output, err in [run_program(solution, input)]
-            for raw_output in [outputs[index]]
-            for output in [
-                raw_output 
-                if isinstance(raw_output, str) else 
-                "\n".join(raw_output) 
-                if isinstance(raw_output, list) else
-                str(raw_output)
-            ]
+        def_count_solutions = (
+            solution
+            for solution in solutions
+            if solution.strip()
+            if solution.count("def ") > def_count
         )
-    ), None)
 
-    return first_solution
+
+        first_solution = next((
+            solution
+            for solution in def_count_solutions
+            if all(
+                not bool(err.strip()) and actual_output.strip() == output.strip()
+                for index, raw_input in enumerate(inputs)
+                for input in [
+                    raw_input 
+                    if isinstance(raw_input, str) else 
+                    "\n".join(raw_input) 
+                    if isinstance(raw_input, list) else
+                    str(raw_input)
+                ]
+                for actual_output, err in [run_program(solution, input)]
+                for raw_output in [outputs[index]]
+                for output in [
+                    raw_output 
+                    if isinstance(raw_output, str) else 
+                    "\n".join(raw_output) 
+                    if isinstance(raw_output, list) else
+                    str(raw_output)
+                ]
+            )
+        ), None)
+
+        return first_solution
+    except:
+        return None
 
 
 def get_good_apps_data(def_count = -1) -> Iterable[dict[str, str]]:
