@@ -42,9 +42,23 @@ def get_good_solution(problem, def_count : int) -> Union[str, None]:
         for solution in def_count_solutions
         if all(
             not bool(err.strip()) and actual_output.strip() == output.strip()
-            for index, input in enumerate(inputs)
+            for index, raw_input in enumerate(inputs)
+            for input in [
+                raw_input 
+                if isinstance(raw_input, str) else 
+                "\n".join(raw_input) 
+                if isinstance(raw_input, list) else
+                str(raw_input)
+            ]
             for actual_output, err in [run_program(solution, input)]
-            for output in [outputs[index]]
+            for raw_output in [outputs[index]]
+            for output in [
+                raw_output 
+                if isinstance(raw_output, str) else 
+                "\n".join(raw_output) 
+                if isinstance(raw_output, list) else
+                str(raw_output)
+            ]
         )
     ), None)
 
@@ -72,7 +86,8 @@ def add_good_solution(problem, solution):
 def filter_apps_data(def_count = -1):
     ds = load_dataset("codeparrot/apps", split="test")
     assert isinstance(ds, Dataset)
-    # ds = ds.filter(lambda example, idx: idx < 20, with_indices=True)
+    # ds = ds.filter(lambda example, idx: idx <30, with_indices=True)
+    # ds = ds.filter(lambda example, idx: idx > 2672 and idx < 2687, with_indices=True)
 
     return ds.map(lambda problem : 
         add_good_solution(

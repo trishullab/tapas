@@ -91,6 +91,8 @@ if __name__ == "__main__":
         print(problem.keys())
         print("##")
         print(problem['problem_id'])
+        print("<<>>")
+        print(json.loads(problem['input_output'])['inputs'])
         print("--")
         print(problem['good_solution'])
         count+= 1
