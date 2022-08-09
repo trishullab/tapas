@@ -68,44 +68,49 @@ def inc_key(map : PMap[str, int], error_key) -> PMap[str, int]:
     else:
         return map + pmap({error_key : 1}) 
 
+def add_semantic_data(abstract_tokens : Sequence[abstract_token],  package : PMap[str, pals.ModulePackage]):
+
+    client : pals.Client = pals.spawn_analysis(package, "main",
+        checks=pset()
+        # checks=pals.all_checks.remove(pals.DeclareCheck())
+    )
+
+    atok = client.init_prim
+    abstract_program_data = [atok]
+
+    for tok in abstract_tokens:
+        abstract_program_data.append(ats.to_primitive(tok))
+
+        inher = client.next(tok)
+
+        new_atok = pals.from_inher_aux_to_primitive(inher)
+        if (new_atok != atok):
+            abstract_program_data.append(new_atok)
+            atok = new_atok
+
+    client.kill(Exception())
+    return abstract_program_data
+
+
 def write_data(
     abstract_data_dirpath : str, 
-    file_name, package : 
-    PMap[str, pals.ModulePackage], 
-    data : Iterable[Sequence[abstract_token]]
+    file_name : str, 
+    data : Iterable
 ) -> PMap[str, int]:
 
     count_map : PMap[str, int] = m() 
 
     write(abstract_data_dirpath, file_name, '')
     br = ""
-    for abstract_tokens in data:
+    for data_gen in data:
         try:
-            client : pals.Client = pals.spawn_analysis(package, "main",
-                checks=pset()
-                # checks=pals.all_checks.remove(pals.DeclareCheck())
-            )
 
-            atok = client.init_prim
-            abstract_program_data = [atok]
-
-            for tok in abstract_tokens:
-                abstract_program_data.append(ats.to_primitive(tok))
-
-                inher = client.next(tok)
-
-                new_atok = pals.from_inher_aux_to_primitive(inher)
-                if (new_atok != atok):
-                    abstract_program_data.append(new_atok)
-                    atok = new_atok
-
-            client.kill(Exception())
-
-            content = br + json.dumps(abstract_program_data)
+            content = br + json.dumps(data_gen())
             if content.strip():
                 write(abstract_data_dirpath, file_name, content, append=True)
 
             count_map = inc_key(count_map, 'processed')
+
         except Exception as ex:
             count_map = inc_key(count_map, error_to_string(ex))
             count_map = inc_key(count_map, 'total_error')
@@ -147,34 +152,35 @@ def generate_file(
 
     def code_gen():
         with open(concrete_data_path, 'r') as f:
-            line = f.readline()
-            while line: 
-                line_obj = json.loads(line)
-                source_code : str = line_obj['code']
+            for line in f: 
+                def data_gen(): 
+                    line_obj = json.loads(line)
+                    source_code : str = line_obj['code']
 
-                if len(source_code) > 50000:
-                    raise BigCodeError(len(source_code))
+                    if len(source_code) > 50000:
+                        raise BigCodeError(len(source_code))
 
-                abstract_tokens = python_ast_system.serialize(python_ast_system.parse(source_code))
+                    abstract_tokens = python_ast_system.serialize(python_ast_system.parse(source_code))
 
-                def handle_Vocab(o : Vocab):
-                    if o.options in vocab.keys():
-                        vocab[o.options].add(o.selection)
-                    else:
-                        vocab[o.options] = {o.selection}
+                    def handle_Vocab(o : Vocab):
+                        if o.options in vocab.keys():
+                            vocab[o.options].add(o.selection)
+                        else:
+                            vocab[o.options] = {o.selection}
 
-                # update vocabulary
-                for inst in abstract_tokens:
+                    # update vocabulary
+                    for inst in abstract_tokens:
 
-                    match_abstract_token(inst, AbstractTokenHandlers(
-                        case_Grammar=lambda _ : (),
-                        case_Vocab=handle_Vocab,
-                        case_Hole=lambda _ : () 
-                    )) 
+                        match_abstract_token(inst, AbstractTokenHandlers(
+                            case_Grammar=lambda _ : (),
+                            case_Vocab=handle_Vocab,
+                            case_Hole=lambda _ : () 
+                        )) 
 
-                yield abstract_tokens
+                    return add_semantic_data(abstract_tokens, package)
+                yield data_gen
 
-    count_map = write_data(abstract_data_dirpath, f'{abstract_data_base}.jsonl', package, code_gen())
+    count_map = write_data(abstract_data_dirpath, f'{abstract_data_base}.jsonl', code_gen())
 
                 
     end = datetime.now()
@@ -223,9 +229,10 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         with multiprocessing.Pool(cpu_count) as pool:
             stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
-        ## single processor:
+        # #single processor:
         # for n in chunk: 
         #     stats_collection.append(generate_file(package, dirname, n, vocab, abstract_dir_name))
+
 
         stats = {} 
         for next_stats in stats_collection:

@@ -47,11 +47,11 @@ if __name__ == "__main__":
             i = problem['problem_id']
             file_name = f'{name}_{str(i).zfill(5)}.jsonl'
             solutions = json.loads(problem['solutions'])
-            abstract_data = [
-                python_ast_system.serialize(python_ast_system.parse(solution))
+            data = [
+                lambda:python_data_system.add_semantic_data(python_ast_system.serialize(python_ast_system.parse(solution)), package)
                 for solution in solutions
             ]
-            new_count_map = python_data_system.write_data(abstract_data_dirpath, file_name, package, abstract_data)
+            new_count_map = python_data_system.write_data(abstract_data_dirpath, file_name, data)
             count_map = merge_count_map(count_map, new_count_map)
         return count_map
 
