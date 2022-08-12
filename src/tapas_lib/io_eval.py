@@ -22,7 +22,7 @@ def eval_program(prog : str, input_data : str, expected_output : str) -> bool:
     return actual_output.strip() == expected_output.strip()
 
 
-def get_good_solution(problem, def_count : int) -> Union[str, None]:
+def get_good_solution(problem, def_min_count : int, def_max_count : int) -> Union[str, None]:
     try:
         io_record = json.loads(problem['input_output'])
         inputs = io_record['inputs']
@@ -30,12 +30,12 @@ def get_good_solution(problem, def_count : int) -> Union[str, None]:
         solutions = json.loads(problem['solutions'])
 
 
-        def_count_solutions = (
+        def_count_solutions = sorted([ 
             solution
             for solution in solutions
             if solution.strip()
-            if solution.count("def ") > def_count
-        )
+            if def_min_count <= solution.count("def ") <= def_max_count
+        ], reverse=True, key=lambda sol: sol.count("def "))
 
 
         first_solution = next((
@@ -68,7 +68,7 @@ def get_good_solution(problem, def_count : int) -> Union[str, None]:
         return None
 
 
-def get_good_apps_data(def_count = -1) -> Iterable[dict[str, str]]:
+def get_good_apps_data(def_min_count = 0, def_max_count = 10) -> Iterable[dict[str, str]]:
     ds = load_dataset("codeparrot/apps", split="test")
     assert isinstance(ds, Dataset)
     return ( 
@@ -78,7 +78,7 @@ def get_good_apps_data(def_count = -1) -> Iterable[dict[str, str]]:
         }
         for problem in ds
         if isinstance(problem, dict)
-        for good_solution in [get_good_solution(problem, def_count)]
+        for good_solution in [get_good_solution(problem, def_min_count, def_max_count)]
         if good_solution != None
     )
 
@@ -86,7 +86,7 @@ def add_good_solution(problem, solution):
     problem['good_solution'] = solution
     return problem
 
-def filter_apps_data(def_count = -1):
+def filter_apps_data(def_min_count = 0, def_max_count = 10):
     ds = load_dataset("codeparrot/apps", split="test")
     assert isinstance(ds, Dataset)
     # ds = ds.filter(lambda example, idx: idx <30, with_indices=True)
@@ -95,7 +95,7 @@ def filter_apps_data(def_count = -1):
     return ds.map(lambda problem : 
         add_good_solution(
             problem, 
-            get_good_solution(problem, def_count) or ''
+            get_good_solution(problem, def_min_count, def_max_count) or ''
         )
     ).filter(
         lambda problem : problem['good_solution'] != '' 

@@ -85,7 +85,7 @@ errors: {errors}
 if __name__ == "__main__":
     count = 0
     # print(len(io_eval.filter_apps_data(6)))
-    for problem in io_eval.filter_apps_data(6):
+    for problem in io_eval.filter_apps_data(3, 5):
         assert isinstance(problem, dict)
         print("^^^^^^^^^")
         print(problem.keys())
