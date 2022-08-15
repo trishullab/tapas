@@ -118,9 +118,10 @@ def write_data(
         # update
         br = "\n"
         count_map = inc_key(count_map, 'total')
-        print(f"")
-        print(f"programs processed in file: {count_map.get('processed', 0)}/{count_map.get('total', 0)}")
-        print(f"")
+
+    print(f"")
+    print(f"programs processed in file: {count_map.get('processed', 0)}/{count_map.get('total', 0)}")
+    print(f"")
 
     return count_map
 
@@ -131,7 +132,7 @@ def generate_file(
     name : str, 
     vocab : dict, 
     abstract_dir_name : str
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], dict]:
 
     count_map : PMap[str, int] = m() 
 
@@ -151,6 +152,7 @@ def generate_file(
     start = datetime.now()
 
     def code_gen():
+        nonlocal vocab
         with open(concrete_data_path, 'r') as f:
             for line in f: 
                 def data_gen(): 
@@ -194,12 +196,12 @@ def generate_file(
     stats = dict(stats_supp + stats_cm)
     print(f"FILE STATS: {stats}")
     write(abstract_data_dirpath, f'{abstract_data_base}_stats.json', json.dumps(stats))
-    return stats
+    return stats, vocab
 
 
-def generate_file_tuple(tup) -> dict[str, Any]:
-    stats = generate_file(tup[0], tup[1], tup[2], tup[3], tup[4])
-    return stats
+def generate_file_tuple(tup) -> tuple[dict[str, Any], dict]:
+    stats, vocab = generate_file(tup[0], tup[1], tup[2], tup[3], tup[4])
+    return stats, vocab
 
 def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix = ""):
     concrete_data_dirpath = project_path(f"tapas_res/{dirname}/{concrete_dir_name}")
@@ -224,18 +226,19 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         write(abstract_data_dirpath, f'vocab.json', '')
     
         # multi processor:
-        stats_collection = []
+        stats_vocab_collection = []
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
         with multiprocessing.Pool(cpu_count) as pool:
-            stats_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
+            stats_vocab_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
         # #single processor:
         # for n in chunk: 
-        #     stats_collection.append(generate_file(package, dirname, n, vocab, abstract_dir_name))
+        #     stats, vocab = generate_file(package, dirname, n, vocab, abstract_dir_name)
+        #     stats_collection.append((stats, vocab))
 
 
         stats = {} 
-        for next_stats in stats_collection:
+        for next_stats, next_vocab in stats_vocab_collection:
 
             for k, v in next_stats.items():
                 if k == "id":
@@ -244,6 +247,8 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
                     stats[k] = stats[k] + v
                 else:
                     stats[k] = v
+            
+            vocab.update(next_vocab) 
             
         print(f"DIR STATS: {stats}")
         write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))

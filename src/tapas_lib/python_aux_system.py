@@ -644,8 +644,8 @@ def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
         return ObjectType()
 
     assert len(t.type_args) <= len(class_record.type_params)
-    subst_map = pmap({
-        var_type.name : t.type_args[i] if i < len(t.type_args) else AnyType()
+    subst_map : PMap[str, type] = pmap({
+        var_type.name : t.type_args[i] if i < len(t.type_args) else make_AnyType()
         for i, var_type in enumerate(class_record.type_params)
     })
     parent_types = tuple(
@@ -694,7 +694,7 @@ def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
     if class_record:
         type_args : tuple[type, ...] = get_type_args(t)
         subst_map = pmap({
-            tp.name : (type_args[i] if i < len(type_args) else AnyType())
+            tp.name : (type_args[i] if i < len(type_args) else make_AnyType())
             for i, tp in enumerate(class_record.type_params) 
         })
 
@@ -801,6 +801,7 @@ def substitute_function_type_args(t : FunctionType, subst_map : PMap[str, type])
         ), # Optional[type]
         return_type = substitute_type_args(t.return_type, subst_map) # type
     )
+
 def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     return match_type(t, TypeHandlers(
         case_ProtocolType = lambda t : t,

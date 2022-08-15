@@ -754,5 +754,6 @@ def test_str_type_annotation():
     finally:
         kill()
 
+
 if __name__ == "__main__":
     pass
