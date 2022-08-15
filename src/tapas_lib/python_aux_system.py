@@ -565,7 +565,7 @@ def instance_parent_type(t : RecordType, inher_aux : InherAux) -> type:
 
     assert len(t.type_args) <= len(class_record.type_params)
     subst_map = pmap({
-        var_type.name : t.type_args[i] if i < len(t.type_args) else AnyType()
+        var_type.name : t.type_args[i] if i < len(t.type_args) else make_AnyType()
         for i, var_type in enumerate(class_record.type_params)
     })
     parent_types = tuple(
@@ -614,7 +614,7 @@ def infer_class_record(t : type, inher_aux : InherAux) -> ClassRecord | None:
     if class_record:
         type_args : tuple[type, ...] = get_type_args(t)
         subst_map = pmap({
-            tp.name : (type_args[i] if i < len(type_args) else AnyType())
+            tp.name : (type_args[i] if i < len(type_args) else make_AnyType())
             for i, tp in enumerate(class_record.type_params) 
         })
 
