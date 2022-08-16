@@ -117,6 +117,8 @@ def generate_file(
                     # checks=pals.all_checks.remove(pals.DeclareCheck())
                 )
 
+                client : pals.Client = pals.spawn_analysis(package, "main", checks=pset())
+
                 atok = client.init_prim
                 abstract_program_data = [atok]
 

@@ -798,38 +798,6 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     ))
 
 
-def get_mapping_key_value_types(t : type, inher_aux : InherAux) -> tuple[type, type]:
-    if isinstance(t, RecordType):
-
-        if t.class_key == "typing.Mapping":
-            assert len(t.type_args) == 2
-            key_type = t.type_args[0] 
-            val_type = t.type_args[1] 
-            return (key_type, val_type)
-
-        class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
-        if class_record:
-            substitution_map : PMap[str, type] = pmap({
-                class_record.type_params[i].name : type_arg
-                for i, type_arg in enumerate(t.type_args) 
-            })
-
-            for super_type in class_record.super_types:
-                super_type = substitute_type_args(super_type, substitution_map)
-                result = get_mapping_key_value_types(super_type, inher_aux)
-                return result
-
-            raise IterateTypeCheck() 
-        else:
-            return (AnyType(), AnyType())
-
-    elif isinstance(t, AnyType):
-        return (AnyType(), AnyType())
-
-    else:
-        raise IterateTypeCheck() 
-
-
 def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux) -> type | None:
 
     if t.class_key == "typing.Iterable": 
@@ -896,62 +864,6 @@ def get_iterable_item_type(iter_type : type, inher_aux : InherAux) -> Optional[t
         case_StrLitType = lambda t : make_RecordType(class_key="builtins.str"),
     ))
 
-
-
-def unify(pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, type]: 
-
-    def generate_items(exprs : pas.comma_exprs) -> Iterator[pas.expr]:
-        while isinstance(exprs, pas.ConsExpr):
-            assert exprs.head
-            yield exprs.head
-            assert exprs.tail
-            exprs = exprs.tail 
-        assert isinstance(exprs, pas.SingleExpr)
-        assert exprs.content
-        yield exprs.content
-
-    if isinstance(pattern, pas.Name):
-        return pmap({pattern.content : type})
-    elif isinstance(pattern, pas.List):
-        type_env : PMap[str, type] = m()
-        assert pattern.content
-        for p in generate_items(pattern.content):
-            item_type = get_iterable_item_type(type, inher_aux)
-            if item_type:
-                new_env = unify(p, item_type, inher_aux)
-                type_env += new_env
-            else:
-                raise UnifyTypeCheck()
-
-        return type_env 
-    elif isinstance(pattern, pas.Tuple):
-        if isinstance(type, TupleLitType):
-
-            type_env : PMap[str, type] = m()
-            assert pattern.content
-            for i, p in enumerate(generate_items(pattern.content)):
-                new_env = unify(p, type.item_types[i], inher_aux)
-                type_env += new_env 
-
-            return type_env 
-        else:
-            type_env : PMap[str, type] = m()
-            assert pattern.content
-            for p in generate_items(pattern.content):
-                item_type = get_iterable_item_type(type, inher_aux)
-                if item_type:
-                    new_env = unify(p, item_type, inher_aux)
-                    type_env += new_env
-                else:
-                    raise UnifyTypeCheck()
-
-            return type_env 
-    elif isinstance(pattern, pas.Attribute):
-        return m()
-    elif isinstance(pattern, pas.Subscript):
-        return m()
-    else:
-        raise UnifyTypeCheck()
 
 
 def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRecord | None:
@@ -1810,23 +1722,6 @@ def spawn_analysis(
 
 
 
-def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
-
-    if isinstance(iter_type, AnyType):
-        return unify(pattern, AnyType(), inher_aux)
-    else:
-        item_type = get_iterable_item_type(iter_type, inher_aux)
-        if item_type:
-            target_types = unify(pattern, item_type, inher_aux)
-            for k, t in target_types.items():
-                dec = lookup_declaration(inher_aux, k)
-                if dec and not subsumed(t, dec.type, inher_aux):
-                    raise UnifyTypeCheck()
-            return target_types
-        else:
-            raise IterateTypeCheck()
-
-
 def analyze_statements(
     statements_ast : pas.statements, 
     inher_aux : InherAux, 
@@ -1894,6 +1789,10 @@ def analyze_expr(
 
 class Server(paa.Server[InherAux, SynthAux]):
 
+
+
+
+
     def __init__(self, 
         in_stream : Queue[abstract_token | Exception], 
         out_stream : Queue[InherAux | Exception],
@@ -1901,6 +1800,115 @@ class Server(paa.Server[InherAux, SynthAux]):
     ):  
         super().__init__(in_stream, out_stream)
         self.checks = checks
+
+
+    def get_mapping_key_value_types(self, t : type, inher_aux : InherAux) -> tuple[type, type]:
+        if isinstance(t, RecordType):
+
+            if t.class_key == "typing.Mapping":
+                assert len(t.type_args) == 2
+                key_type = t.type_args[0] 
+                val_type = t.type_args[1] 
+                return (key_type, val_type)
+
+            class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
+            if class_record:
+                substitution_map : PMap[str, type] = pmap({
+                    class_record.type_params[i].name : type_arg
+                    for i, type_arg in enumerate(t.type_args) 
+                })
+
+                for super_type in class_record.super_types:
+                    super_type = substitute_type_args(super_type, substitution_map)
+                    result = self.get_mapping_key_value_types(super_type, inher_aux)
+                    return result
+
+                self.check(IterateTypeCheck(), lambda: True)
+                return (AnyType(), AnyType())
+            else:
+                return (AnyType(), AnyType())
+
+        elif isinstance(t, AnyType):
+            return (AnyType(), AnyType())
+
+        else:
+            self.check(IterateTypeCheck(), lambda: True)
+            return (AnyType(), AnyType())
+
+
+    def unify_iteration(self, inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
+
+        if isinstance(iter_type, AnyType):
+            return self.unify(pattern, AnyType(), inher_aux)
+        else:
+            item_type = get_iterable_item_type(iter_type, inher_aux)
+            if item_type:
+                target_types = self.unify(pattern, item_type, inher_aux)
+                for k, t in target_types.items():
+                    dec = lookup_declaration(inher_aux, k)
+                    if dec and not subsumed(t, dec.type, inher_aux):
+                        self.check(UnifyTypeCheck(), lambda:True)
+                return target_types
+            else:
+                self.check(IterateTypeCheck(), lambda:True)
+                return m() 
+
+
+    def unify(self, pattern : pas.expr, type : type, inher_aux : InherAux) -> PMap[str, type]: 
+
+        def generate_items(exprs : pas.comma_exprs) -> Iterator[pas.expr]:
+            while isinstance(exprs, pas.ConsExpr):
+                assert exprs.head
+                yield exprs.head
+                assert exprs.tail
+                exprs = exprs.tail 
+            assert isinstance(exprs, pas.SingleExpr)
+            assert exprs.content
+            yield exprs.content
+
+        if isinstance(pattern, pas.Name):
+            return pmap({pattern.content : type})
+        elif isinstance(pattern, pas.List):
+            type_env : PMap[str, type] = m()
+            assert pattern.content
+            for p in generate_items(pattern.content):
+                item_type = get_iterable_item_type(type, inher_aux)
+                if item_type:
+                    new_env = self.unify(p, item_type, inher_aux)
+                    type_env += new_env
+                else:
+                    self.check(UnifyTypeCheck(), lambda:True)
+
+            return type_env 
+        elif isinstance(pattern, pas.Tuple):
+            if isinstance(type, TupleLitType):
+
+                type_env : PMap[str, type] = m()
+                assert pattern.content
+                for i, p in enumerate(generate_items(pattern.content)):
+                    new_env = self.unify(p, type.item_types[i], inher_aux)
+                    type_env += new_env 
+
+                return type_env 
+            else:
+                type_env : PMap[str, type] = m()
+                assert pattern.content
+                for p in generate_items(pattern.content):
+                    item_type = get_iterable_item_type(type, inher_aux)
+                    if item_type:
+                        new_env = self.unify(p, item_type, inher_aux)
+                        type_env += new_env
+                    else:
+                        self.check(UnifyTypeCheck(), lambda:True)
+
+                return type_env 
+        elif isinstance(pattern, pas.Attribute):
+            return m()
+        elif isinstance(pattern, pas.Subscript):
+            return m()
+        else:
+            self.check(UnifyTypeCheck(), lambda:True)
+            return m()
 
     def match_function_type(self, inher_aux : InherAux, 
         pos_arg_types : Sequence[type],
@@ -2160,7 +2168,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
 
-        unified_env = unify(target_tree, content_type, inher_aux)
+        unified_env = self.unify(target_tree, content_type, inher_aux)
 
         return paa.Result[SynthAux](
             tree = pas.make_AssignExpr(target_tree, content_tree),
@@ -2428,7 +2436,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(search_space_aux.observed_types) == 1
         search_space_type = search_space_aux.observed_types[0]
 
-        item_env = unify_iteration(inher_aux, target_tree, search_space_type)
+        item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
             tree = pas.make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
@@ -2451,7 +2459,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert len(search_space_aux.observed_types) == 1
         search_space_type = search_space_aux.observed_types[0]
-        item_env = unify_iteration(inher_aux, target_tree, search_space_type)
+        item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
             tree = pas.make_Constraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
@@ -2787,7 +2795,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                         subsumed(kt, make_RecordType("builtins.str"), inher_aux)
                     )
         else:
-            (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
+            (key_type, _) = self.get_mapping_key_value_types(content_type, inher_aux)
 
             self.check(SplatKeywordArgTypeCheck(), lambda: 
                 subsumed(key_type, make_RecordType("builtins.str"), inher_aux)
@@ -4221,7 +4229,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         env_types : PMap[str, type] = m()
         for pattern in patterns():
             if pattern:
-                next_env_types = unify(pattern, content_type, inher_aux)
+                next_env_types = self.unify(pattern, content_type, inher_aux)
                 env_types += next_env_types 
 
         # check observed type with declared type
@@ -4527,7 +4535,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             iter_aux.decl_additions +
             pmap({
                 k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
-                for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
 
@@ -4570,7 +4578,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             iter_aux.decl_additions +
             pmap({
                 k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
-                for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
     
@@ -4651,7 +4659,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     new_synth_aux.decl_additions +
                     pmap({
                         k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
-                        for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                        for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 ),
                 usage_additions=usage_additions
@@ -4705,7 +4713,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     iter_aux.decl_additions + change_decl.additions +
                     pmap({
                         k : make_Declaration(annotated = False, constant=False, initialized=True, type=t)
-                        for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                        for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 ),
                 usage_additions=usage_additions
@@ -5014,7 +5022,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     content_aux.decl_additions +
                     pmap({
                         k : make_Declaration(annotated = False, constant=False, initialized=True, type = t)
-                        for k, t in unify(alias_tree, content_type, inher_aux).items() 
+                        for k, t in self.unify(alias_tree, content_type, inher_aux).items() 
                     })
                 )
             )
