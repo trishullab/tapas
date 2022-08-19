@@ -223,9 +223,16 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         write(abstract_data_dirpath, f'vocab.json', '')
     
         stats_vocab_collection = []
+
+        # #multi processor:
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
         with multiprocessing.Pool(cpu_count) as pool:
             stats_vocab_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
+
+        # #single processor:
+        # for n in chunk: 
+        #     stats, vocab = generate_file(package, dirname, n, vocab, abstract_dir_name)
+        #     stats_vocab_collection.append((stats, vocab))
 
         stats = {} 
         for next_stats, next_vocab in stats_vocab_collection:
