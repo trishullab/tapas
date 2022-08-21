@@ -117,8 +117,6 @@ def generate_file(
                     # checks=pals.all_checks.remove(pals.DeclareCheck())
                 )
 
-                client : pals.Client = pals.spawn_analysis(package, "main", checks=pset())
-
                 atok = client.init_prim
                 abstract_program_data = [atok]
 
@@ -132,7 +130,8 @@ def generate_file(
                     if (new_atok != atok):
                         abstract_program_data.append(new_atok)
                         atok = new_atok
-
+                
+                client.kill(Exception())
 
                 content = br + json.dumps(abstract_program_data)
                 if content.strip():
@@ -177,6 +176,8 @@ def generate_file(
             line = f.readline()
             count_map = inc_key(count_map, 'total')
             print(f"")
+            import threading
+            print(f"thread_count: {len(threading.enumerate())}")
             print(f"total_count : {count_map['total']}")
             print(f"")
             
@@ -224,12 +225,12 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
     
         stats_vocab_collection = []
 
-        # #multi processor:
+        # multi processor:
         cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
         with multiprocessing.Pool(cpu_count) as pool:
             stats_vocab_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
-        # #single processor:
+        # single processor:
         # for n in chunk: 
         #     stats, vocab = generate_file(package, dirname, n, vocab, abstract_dir_name)
         #     stats_vocab_collection.append((stats, vocab))
