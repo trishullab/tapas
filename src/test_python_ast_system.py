@@ -72,6 +72,8 @@ def foo(x):
     return x
 
 @foo #hello
+# between decorators 
+@foo #bye
 class A: # this is a class header comment 
     pass
 

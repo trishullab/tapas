@@ -636,6 +636,28 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert stack_result
         return stack_result
 
+    
+    # inspect decorator"
+    def inspect_decorator(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
+        if token.options != "decorator": raise SyntaxError()
+
+        if False:
+            pass
+        
+        elif token.selection == "ExprDec":
+            return self.inspect_decorator_ExprDec(inher_aux)
+            
+
+        elif token.selection == "CmntDec":
+            return self.inspect_decorator_CmntDec(inher_aux)
+            
+        else:
+            raise SyntaxError()
+
+    def crawl_decorator(self, token : abstract_token, inher_aux : InherAux) -> Result[SynthAux]:
+        if not isinstance(token, Grammar): raise SyntaxError()
+        return self.inspect_decorator(token, inher_aux)
+
      # inspect: decorators
     def inspect_decorators(self, 
         token : Grammar, 
@@ -3260,6 +3282,40 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         else:
             raise SyntaxError()
     
+    # inspect: decorator <-- ExprDec"
+    def inspect_decorator_ExprDec(self, inher_aux : InherAux) -> Result[SynthAux]:
+
+
+        
+        child_inher_aux = self.traverse_decorator_ExprDec_content(
+            inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_expr(child_token, child_inher_aux)
+        content_tree = synth.tree
+        assert isinstance(content_tree, expr)
+        content_aux = synth.aux
+        
+
+        return self.synthesize_for_decorator_ExprDec(inher_aux, content_tree, content_aux)
+    
+    # inspect: decorator <-- CmntDec"
+    def inspect_decorator_CmntDec(self, inher_aux : InherAux) -> Result[SynthAux]:
+
+
+        
+        child_inher_aux = self.traverse_decorator_CmntDec_content(
+            inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        content_tree = synth.tree
+        assert isinstance(content_tree, str)
+        content_aux = synth.aux
+        
+
+        return self.synthesize_for_decorator_CmntDec(inher_aux, content_tree, content_aux)
+    
     # inspect: decorators <-- ConsDec
     def inspect_decorators_ConsDec(self,
         inher_aux : InherAux, children : tuple[Result[SynthAux], ...], stack_result : Optional[Result[SynthAux]], 
@@ -3272,7 +3328,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 3
+        total_num_children = 2
 
         index = len(children)
         if index == total_num_children:
@@ -3280,18 +3336,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             # return the analysis result to the previous item in the stack
             
             head_tree = children[0].tree
-            assert isinstance(head_tree, expr)
+            assert isinstance(head_tree, decorator)
             head_aux = children[0].aux
                 
-            comment_tree = children[1].tree
-            assert isinstance(comment_tree, str)
-            comment_aux = children[1].aux
-                
-            tail_tree = children[2].tree
+            tail_tree = children[1].tree
             assert isinstance(tail_tree, decorators)
-            tail_aux = children[2].aux
+            tail_aux = children[1].aux
                 
-            return self.synthesize_for_decorators_ConsDec(inher_aux, head_tree, head_aux, comment_tree, comment_aux, tail_tree, tail_aux)
+            return self.synthesize_for_decorators_ConsDec(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
@@ -3302,51 +3354,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
                 inher_aux
             )
             child_token = self.next(child_inher_aux)
-            child_synth = self.crawl_expr(child_token, child_inher_aux)
-
-            stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
-            return None
-            
-
-        elif index == 1: # index does *not* refer to an inductive child
-
-            
-            head_tree = children[0].tree
-            assert isinstance(head_tree, expr)
-            head_aux = children[0].aux
-
-
-            child_inher_aux = self.traverse_decorators_ConsDec_comment(
-                inher_aux,
-                head_tree, 
-                head_aux
-            )
-            child_token = self.next(child_inher_aux)
-            child_synth = self.crawl_str(child_token, child_inher_aux)
+            child_synth = self.crawl_decorator(child_token, child_inher_aux)
 
             stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
             return None
             
         
-        elif index == 2 : # index refers to an inductive child
+        elif index == 1 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children))
 
             
             head_tree = children[0].tree
-            assert isinstance(head_tree, expr)
+            assert isinstance(head_tree, decorator)
             head_aux = children[0].aux
-            comment_tree = children[1].tree
-            assert isinstance(comment_tree, str)
-            comment_aux = children[1].aux
 
             # add on child node 
             child_inher_aux = self.traverse_decorators_ConsDec_tail(
                 inher_aux,
                 head_tree, 
-                head_aux,
-                comment_tree, 
-                comment_aux
+                head_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -8559,29 +8586,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
-    # traverse decorators <-- ConsDec"
-    def traverse_decorators_ConsDec_head(self, 
+    # traverse decorator <-- ExprDec"
+    def traverse_decorator_ExprDec_content(self, 
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
-    # traverse decorators <-- ConsDec"
-    def traverse_decorators_ConsDec_comment(self, 
-        inher_aux : InherAux,
-        head_tree : expr, 
-        head_aux : SynthAux
+    # traverse decorator <-- CmntDec"
+    def traverse_decorator_CmntDec_content(self, 
+        inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'str') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse decorators <-- ConsDec"
+    def traverse_decorators_ConsDec_head(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'decorator') 
     
     # traverse decorators <-- ConsDec"
     def traverse_decorators_ConsDec_tail(self, 
         inher_aux : InherAux,
-        head_tree : expr, 
-        head_aux : SynthAux,
-        comment_tree : str, 
-        comment_aux : SynthAux
+        head_tree : decorator, 
+        head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux, comment_aux,), 'decorators') 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'decorators') 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_head(self, 
@@ -10515,19 +10544,39 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
+    # synthesize: decorator <-- ExprDec
+    def synthesize_for_decorator_ExprDec(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = make_ExprDec(content_tree),
+            aux = self.synthesize_auxes((content_aux,)) 
+        )
+    
+    # synthesize: decorator <-- CmntDec
+    def synthesize_for_decorator_CmntDec(self, 
+        inher_aux : InherAux,
+        content_tree : str, 
+        content_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = make_CmntDec(content_tree),
+            aux = self.synthesize_auxes((content_aux,)) 
+        )
+    
     # synthesize: decorators <-- ConsDec
     def synthesize_for_decorators_ConsDec(self, 
         inher_aux : InherAux,
-        head_tree : expr, 
+        head_tree : decorator, 
         head_aux : SynthAux,
-        comment_tree : str, 
-        comment_aux : SynthAux,
         tail_tree : decorators, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ConsDec(head_tree, comment_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, comment_aux, tail_aux,)) 
+            tree = make_ConsDec(head_tree, tail_tree),
+            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
         )
     
     # synthesize: decorators <-- NoDec

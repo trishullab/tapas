@@ -422,13 +422,30 @@ choices_schema : dict[str, list[Rule]] = {
 
     ],
 
+    "decorator" : [
+        Rule(
+            "ExprDec",
+            [
+                Terminal("@"),
+                Nonterm("content", "expr", InLine()),
+            ]
+        ),
+
+        Rule(
+            "CmntDec",
+            [
+                Vocab("content", "comment"),
+            ]
+        ),
+
+    ],
+
     "decorators" : [
         Rule(
             "ConsDec",
             [
                 Terminal("@"),
-                Nonterm("head", "expr", InLine()),
-                Vocab("comment", "comment"),
+                Nonterm("head", "decorator", InLine()),
                 Nonterm("tail", "decorators", InLine())
             ]
         ),

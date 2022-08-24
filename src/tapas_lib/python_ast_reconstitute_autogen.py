@@ -1769,6 +1769,84 @@ def to_target_exprs(xs : tuple[abstract_token, ...]) -> tuple[target_exprs, tupl
     return stack_result
     
 
+def to_decorator(xs : tuple[abstract_token, ...]) -> tuple[decorator, tuple[abstract_token, ...]]:
+
+    initial = (xs[-1], [], xs[:-1])
+    stack : list[tuple[abstract_token, list[Any], tuple[abstract_token, ...]]] = [initial]
+
+    stack_result = None 
+    while stack:
+        (x, children, remainder) = stack.pop()
+        assert isinstance(x, Grammar)
+        assert x.options == "decorator"
+        rule_name = x.selection
+
+        if False:
+            pass
+        
+        elif rule_name == "ExprDec": 
+            children = children
+            remainder = remainder
+            if stack_result:
+                # get the result from the child in the stack
+                (child, remainder) = stack_result
+                children = children + [child]
+                stack_result = None
+
+            total_num_children = 1
+
+            index = len(children)
+            if index == total_num_children:
+                # the processing of the current rule has completed
+                # return the result to the parent in the stack 
+                stack_result = (
+                    ExprDec(children[0]),
+                    remainder
+                )
+            
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_expr(remainder)
+                stack.append((x, children + [child], remainder))
+                
+            else: # index refers to an inductive child
+                stack.append((x, children, remainder))
+                stack.append((remainder[-1], [], remainder[:-1]))
+        
+
+        elif rule_name == "CmntDec": 
+            children = children
+            remainder = remainder
+            if stack_result:
+                # get the result from the child in the stack
+                (child, remainder) = stack_result
+                children = children + [child]
+                stack_result = None
+
+            total_num_children = 1
+
+            index = len(children)
+            if index == total_num_children:
+                # the processing of the current rule has completed
+                # return the result to the parent in the stack 
+                stack_result = (
+                    CmntDec(children[0]),
+                    remainder
+                )
+            
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+            else: # index refers to an inductive child
+                stack.append((x, children, remainder))
+                stack.append((remainder[-1], [], remainder[:-1]))
+        
+
+    assert stack_result
+    assert isinstance(stack_result[0], decorator)
+    return stack_result
+    
+
 def to_decorators(xs : tuple[abstract_token, ...]) -> tuple[decorators, tuple[abstract_token, ...]]:
 
     initial = (xs[-1], [], xs[:-1])
@@ -1793,24 +1871,19 @@ def to_decorators(xs : tuple[abstract_token, ...]) -> tuple[decorators, tuple[ab
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 3
+            total_num_children = 2
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    ConsDec(children[0], children[1], children[2]),
+                    ConsDec(children[0], children[1]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_expr(remainder)
-                stack.append((x, children + [child], remainder))
-                
-
-            elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_str(remainder)
+                (child, remainder) = to_decorator(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child

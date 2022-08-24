@@ -127,7 +127,7 @@ def dump(
     indent_str = ' ' * depth * indent
     alias_str = (f"{alias} | " if alias else "")
     return indent_str + alias_str + node.syntax_part + (
-        (' -> ' + node.text if node.text != '' and text_cond(node) else '') + 
+        (' ~> ' + node.text if node.text != '' and text_cond(node) else '') + 
         (
             (
                 str_children := [

@@ -2265,6 +2265,105 @@ def unguard_target_exprs(o : target_exprs) -> target_exprs_union :
     ))
     
 
+# type decorator
+@dataclass(frozen=True, eq=True)
+class decorator(ABC):
+    # @abstractmethod
+    def match(self, handlers : DecoratorHandlers[T]) -> T:
+        raise Exception()
+
+
+# constructors for type decorator
+
+@dataclass(frozen=True, eq=True)
+class ExprDec(decorator):
+    content : expr | None
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : DecoratorHandlers[T]) -> T:
+        return handlers.case_ExprDec(self)
+
+def make_ExprDec(
+    content : expr | None, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> decorator:
+    return ExprDec(
+        content,
+        source_start,
+        source_end
+    )
+
+def update_ExprDec(source_ExprDec : ExprDec,
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> ExprDec:
+    return ExprDec(
+        source_ExprDec.content if isinstance(content, SourceFlag) else content,
+        source_ExprDec.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_ExprDec.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class CmntDec(decorator):
+    content : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : DecoratorHandlers[T]) -> T:
+        return handlers.case_CmntDec(self)
+
+def make_CmntDec(
+    content : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> decorator:
+    return CmntDec(
+        content,
+        source_start,
+        source_end
+    )
+
+def update_CmntDec(source_CmntDec : CmntDec,
+    content : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> CmntDec:
+    return CmntDec(
+        source_CmntDec.content if isinstance(content, SourceFlag) else content,
+        source_CmntDec.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_CmntDec.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
+
+# case handlers for type decorator
+@dataclass(frozen=True, eq=True)
+class DecoratorHandlers(Generic[T]):
+    case_ExprDec : Callable[[ExprDec], T]
+    case_CmntDec : Callable[[CmntDec], T]
+
+
+# matching for type decorator
+def match_decorator(o : decorator, handlers : DecoratorHandlers[T]) -> T :
+    return o.match(handlers)
+
+
+decorator_union = Union[ExprDec, CmntDec]
+
+# unguarding for type decorator
+def unguard_decorator(o : decorator) -> decorator_union :
+    return match_decorator(o, DecoratorHandlers(
+        case_ExprDec = lambda x : x, 
+        case_CmntDec = lambda x : x
+
+    ))
+    
+
 # type decorators
 @dataclass(frozen=True, eq=True)
 class decorators(ABC):
@@ -2277,8 +2376,7 @@ class decorators(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsDec(decorators):
-    head : expr | None
-    comment : str
+    head : decorator | None
     tail : decorators | None
     source_start : int
     source_end : int
@@ -2287,30 +2385,26 @@ class ConsDec(decorators):
         return handlers.case_ConsDec(self)
 
 def make_ConsDec(
-    head : expr | None, 
-    comment : str, 
+    head : decorator | None, 
     tail : decorators | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> decorators:
     return ConsDec(
         head,
-        comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsDec(source_ConsDec : ConsDec,
-    head : Union[expr | None, SourceFlag] = SourceFlag(),
-    comment : Union[str, SourceFlag] = SourceFlag(),
+    head : Union[decorator | None, SourceFlag] = SourceFlag(),
     tail : Union[decorators | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsDec:
     return ConsDec(
         source_ConsDec.head if isinstance(head, SourceFlag) else head,
-        source_ConsDec.comment if isinstance(comment, SourceFlag) else comment,
         source_ConsDec.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsDec.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsDec.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -8235,6 +8329,8 @@ ast = Union[
     SingleExpr,
     ConsTargetExpr,
     SingleTargetExpr,
+    ExprDec,
+    CmntDec,
     ConsDec,
     NoDec,
     ConsFilter,
@@ -8392,6 +8488,7 @@ ast = Union[
     option_expr,
     comma_exprs,
     target_exprs,
+    decorator,
     decorators,
     constraint_filters,
     sequence_string,

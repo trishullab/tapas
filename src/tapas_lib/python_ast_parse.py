@@ -35,6 +35,15 @@ def node_error(node : GenericNode) -> None:
         raise Unsupported(node.syntax_part)
 
 
+
+def is_comment(cm_node):
+    assert cm_node.syntax_part == "comment"
+    return cm_node.syntax_part == "comment"
+
+def merge_comments(comment_nodes : list[GenericNode]) -> str:
+    return "\n".join([cm.text for cm in comment_nodes if is_comment(cm)])
+
+
 def to_bases(bases : list[expr | None], keywords : list[keyword | None], default_start : int, default_end : int) -> bases:
     if not bases and not keywords:
         return NoBases(default_start, default_end)
@@ -383,12 +392,12 @@ def to_sequence_with_item(ws : list[with_item]) -> sequence_with_item:
     return result
 
 
-def to_decorators(ds : list[expr | None], base_start : int, base_end : int) -> decorators:
+def to_decorators(ds : list[decorator | None], base_start : int, base_end : int) -> decorators:
 
     result = NoDec(base_start, base_end)
     for d in reversed(ds):
         result = ConsDec(d, result,
-            unguard_expr(d).source_start if d else 0,
+            unguard_decorator(d).source_start if d else 0,
             result.source_end
         )
 
@@ -2320,14 +2329,21 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         params_node = children[2]
         param_group = from_generic_tree_to_parameters(params_node)
 
-        (return_anno_node, block_node) = (
-            (children[4], children[6])
-            if children[3].syntax_part == "->" and children[5].syntax_part == ":"
+        (return_anno_node, comment_text, block_node) = (
+            (children[4], merge_comments(children[6:-1]), children[-1])
+            if children[3].syntax_part == "->" and children[5].syntax_part == ":" else
             
-            else (None, children[4])
-            if children[3].syntax_part == ":"
 
-            else (None, None)
+            (None, merge_comments(children[4:-1]), children[-1])
+            if children[3].syntax_part == ":" else
+
+            (None, '', None)
+        )
+
+        comment_text = (
+            children[-1].text
+            if children[-1].syntax_part == "comment" else
+            ''
         )
 
         assert block_node
@@ -2350,7 +2366,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             return [
                 DecFunctionDef(
                     decorators,
-                    AsyncFunctionDef(name, param_group, return_anno, body,
+                    AsyncFunctionDef(name, param_group, return_anno, comment_text, body,
                         node.source_start, node.source_end
                     ),
                     decorators_start, decorators_end
@@ -2361,7 +2377,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             return [
                 DecFunctionDef(
                     decorators, 
-                    FunctionDef(name, param_group, return_anno, body,
+                    FunctionDef(name, param_group, return_anno, comment_text, body,
                         node.source_start, node.source_end
                     ),
                     decorators_start, decorators_end
@@ -2377,12 +2393,10 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         name_node = children[1]
         name = from_generic_tree_to_identifier(name_node)
 
-        (arguments_node, block_node) = (
-            (None, children[3])
-            if children[2].syntax_part == ":"
-
-            else (children[2], children[4])
-
+        (arguments_node, comment_text, block_node) = (
+            (None, merge_comments(children[3:-1]), children[-1])
+            if children[2].syntax_part == ":" else 
+            (children[2], merge_comments(children[3:-1]), children[-1])
         )
 
         (argument_nodes) = (
@@ -2419,7 +2433,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         return [
             DecClassDef(
                 decorators,
-                ClassDef(name, bases, body_stmts,
+                ClassDef(name, bases, comment_text, body_stmts,
                     node.source_start, node.source_end
                 ),
                 decorators_start, decorators_end
@@ -2429,23 +2443,24 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
     elif (node.syntax_part == "decorated_definition"):
         children = node.children
         dec_nodes = children[0:-1]
-        def assert_decorator(dec_node):
-            assert dec_node.syntax_part == "decorator"
-            assert dec_node.children[0].syntax_part == "@"
+
+        def from_generic_tree_to_decorator(dec_node : GenericNode) -> decorator:
+            if dec_node.syntax_part == "decorator":
+                assert dec_node.children[0].syntax_part == "@"
+                expr_node = dec_node.children[1] 
+                return ExprDec(from_generic_tree_to_expr(expr_node), expr_node.source_start, expr_node.source_end)
+            else:
+                assert dec_node.syntax_part == "comment"
+                return CmntDec(dec_node.text, dec_node.source_start, dec_node.source_end)
 
         def_node = children[-1]
 
-        dec_exprs = to_decorators([
-            from_generic_tree_to_expr(dec_expr_node)
+        decs = to_decorators([
+            from_generic_tree_to_decorator(dec_node)
             for dec_node in dec_nodes
-            for _ in [assert_decorator(dec_node)]
-            for dec_expr_node in [dec_node.children[1]]
         ], def_node.source_start, def_node.source_start)
 
-        return from_generic_tree_to_stmts(def_node, decorators = dec_exprs)
-
-    elif (node.syntax_part == "comment"):
-        return []
+        return from_generic_tree_to_stmts(def_node, decorators = decs)
 
     else:
         # exec_statement for Python 2

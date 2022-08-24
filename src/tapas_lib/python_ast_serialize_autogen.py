@@ -1271,6 +1271,68 @@ def from_target_exprs(
     
 
 
+def from_decorator(
+    o : decorator | None
+) -> tuple[abstract_token, ...]:
+    if o == None:
+        return (Hole(),)
+
+    result = () 
+
+    stack : list[decorator | None | tuple[abstract_token, ...]] = [o]
+    while stack:
+        stack_item = stack.pop()
+        if isinstance(stack_item, decorator):
+
+            
+            def handle_ExprDec(o : ExprDec): 
+                
+                stack.append(from_expr(o.content))
+
+                stack.append(
+                    tuple([make_Grammar(
+                        options = 'decorator',
+                        selection = 'ExprDec',
+                        source_start = o.source_start,
+                        source_end = o.source_end
+                    )])
+                )
+    
+
+            def handle_CmntDec(o : CmntDec): 
+                
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.content
+                    )])
+                )
+        
+                stack.append(
+                    tuple([make_Grammar(
+                        options = 'decorator',
+                        selection = 'CmntDec',
+                        source_start = o.source_start,
+                        source_end = o.source_end
+                    )])
+                )
+    
+
+
+            match_decorator(stack_item, DecoratorHandlers(
+                case_ExprDec = handle_ExprDec,
+                case_CmntDec = handle_CmntDec
+            ))
+
+        elif stack_item == None:
+            result += (Hole(),) 
+        else:
+            result += stack_item 
+
+    return result
+    
+
+
 def from_decorators(
     o : decorators | None
 ) -> tuple[abstract_token, ...]:
@@ -1289,15 +1351,7 @@ def from_decorators(
                 
                 stack.append(o.tail)
 
-                stack.append(
-                    tuple([make_Vocab(
-                        options = 'comment',
-                        selection = o.comment
-                    )])
-                )
-        
-
-                stack.append(from_expr(o.head))
+                stack.append(from_decorator(o.head))
 
                 stack.append(
                     tuple([make_Grammar(
