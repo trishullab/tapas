@@ -428,6 +428,7 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("@"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("comment", "comment"),
                 Nonterm("tail", "decorators", InLine())
             ]
         ),
@@ -626,7 +627,6 @@ choices_schema : dict[str, list[Rule]] = {
 
     ],
 
-
     "statements" : [
         Rule(
             "ConsStmt",
@@ -716,6 +716,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(")"),
                 Nonterm("ret_anno", "return_annotation", InLine()),
                 Terminal(":"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -730,6 +731,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(")"),
                 Nonterm("ret_anno", "return_annotation", InLine()),
                 Terminal(":"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -737,6 +739,14 @@ choices_schema : dict[str, list[Rule]] = {
 
 
     "stmt" : [
+
+        Rule(
+            "Comment",
+            [ 
+                Vocab("content", "comment"),
+            ]
+        ),
+
         Rule(
             "DecFunctionDef",
             [ 
@@ -1635,6 +1645,7 @@ singles_schema : list[Rule] = [
             Vocab("name", "identifier"),
             Nonterm("bs", "bases", InLine()),
             Terminal(":"), 
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())
         ]
     ),
