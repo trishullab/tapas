@@ -1190,6 +1190,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         if False:
             pass
         
+        elif token.selection == "Comment":
+            return self.inspect_stmt_Comment(inher_aux)
+            
+
         elif token.selection == "DecFunctionDef":
             return self.inspect_stmt_DecFunctionDef(inher_aux)
             
@@ -3268,7 +3272,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 3
 
         index = len(children)
         if index == total_num_children:
@@ -3279,11 +3283,15 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(head_tree, expr)
             head_aux = children[0].aux
                 
-            tail_tree = children[1].tree
-            assert isinstance(tail_tree, decorators)
-            tail_aux = children[1].aux
+            comment_tree = children[1].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[1].aux
                 
-            return self.synthesize_for_decorators_ConsDec(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+            tail_tree = children[2].tree
+            assert isinstance(tail_tree, decorators)
+            tail_aux = children[2].aux
+                
+            return self.synthesize_for_decorators_ConsDec(inher_aux, head_tree, head_aux, comment_tree, comment_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
@@ -3299,8 +3307,28 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
             return None
             
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            head_tree = children[0].tree
+            assert isinstance(head_tree, expr)
+            head_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_decorators_ConsDec_comment(
+                inher_aux,
+                head_tree, 
+                head_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 1 : # index refers to an inductive child
+        elif index == 2 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("decorators", "ConsDec"), inher_aux, children))
 
@@ -3308,12 +3336,17 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             head_tree = children[0].tree
             assert isinstance(head_tree, expr)
             head_aux = children[0].aux
+            comment_tree = children[1].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[1].aux
 
             # add on child node 
             child_inher_aux = self.traverse_decorators_ConsDec_tail(
                 inher_aux,
                 head_tree, 
-                head_aux
+                head_aux,
+                comment_tree, 
+                comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -4683,7 +4716,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(ret_anno_tree, return_annotation)
         ret_anno_aux = synth.aux
         
-        child_inher_aux = self.traverse_function_def_FunctionDef_body(
+        child_inher_aux = self.traverse_function_def_FunctionDef_comment(
             inher_aux,
             name_tree, 
             name_aux,
@@ -4693,13 +4726,30 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             ret_anno_aux
         )
         child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_function_def_FunctionDef_body(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            params_tree, 
+            params_aux,
+            ret_anno_tree, 
+            ret_anno_aux,
+            comment_tree, 
+            comment_aux
+        )
+        child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
 
-        return self.synthesize_for_function_def_FunctionDef(inher_aux, name_tree, name_aux, params_tree, params_aux, ret_anno_tree, ret_anno_aux, body_tree, body_aux)
+        return self.synthesize_for_function_def_FunctionDef(inher_aux, name_tree, name_aux, params_tree, params_aux, ret_anno_tree, ret_anno_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: function_def <-- AsyncFunctionDef"
     def inspect_function_def_AsyncFunctionDef(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -4739,7 +4789,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(ret_anno_tree, return_annotation)
         ret_anno_aux = synth.aux
         
-        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_body(
+        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_comment(
             inher_aux,
             name_tree, 
             name_aux,
@@ -4749,13 +4799,47 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             ret_anno_aux
         )
         child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_function_def_AsyncFunctionDef_body(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            params_tree, 
+            params_aux,
+            ret_anno_tree, 
+            ret_anno_aux,
+            comment_tree, 
+            comment_aux
+        )
+        child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
         body_tree = synth.tree
         assert isinstance(body_tree, statements)
         body_aux = synth.aux
         
 
-        return self.synthesize_for_function_def_AsyncFunctionDef(inher_aux, name_tree, name_aux, params_tree, params_aux, ret_anno_tree, ret_anno_aux, body_tree, body_aux)
+        return self.synthesize_for_function_def_AsyncFunctionDef(inher_aux, name_tree, name_aux, params_tree, params_aux, ret_anno_tree, ret_anno_aux, comment_tree, comment_aux, body_tree, body_aux)
+    
+    # inspect: stmt <-- Comment"
+    def inspect_stmt_Comment(self, inher_aux : InherAux) -> Result[SynthAux]:
+
+
+        
+        child_inher_aux = self.traverse_stmt_Comment_content(
+            inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        content_tree = synth.tree
+        assert isinstance(content_tree, str)
+        content_aux = synth.aux
+        
+
+        return self.synthesize_for_stmt_Comment(inher_aux, content_tree, content_aux)
     
     # inspect: stmt <-- DecFunctionDef"
     def inspect_stmt_DecFunctionDef(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -8006,12 +8090,28 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         bs_aux = synth.aux
             
 
-        child_inher_aux = self.traverse_ClassDef_body(
+        child_inher_aux = self.traverse_ClassDef_comment(
             inher_aux,
             name_tree, 
             name_aux,
             bs_tree, 
             bs_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_ClassDef_body(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            bs_tree, 
+            bs_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -8021,7 +8121,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_ClassDef(inher_aux, name_tree, name_aux, bs_tree, bs_aux, body_tree, body_aux)
+        return self.synthesize_for_ClassDef(inher_aux, name_tree, name_aux, bs_tree, bs_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: ElifBlock"
     def inspect_ElifBlock(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
@@ -8466,12 +8566,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse decorators <-- ConsDec"
-    def traverse_decorators_ConsDec_tail(self, 
+    def traverse_decorators_ConsDec_comment(self, 
         inher_aux : InherAux,
         head_tree : expr, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'decorators') 
+        return self.traverse_auxes(inher_aux, (head_aux,), 'str') 
+    
+    # traverse decorators <-- ConsDec"
+    def traverse_decorators_ConsDec_tail(self, 
+        inher_aux : InherAux,
+        head_tree : expr, 
+        head_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (head_aux, comment_aux,), 'decorators') 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_head(self, 
@@ -8764,7 +8874,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (name_aux, params_aux,), 'return_annotation') 
     
     # traverse function_def <-- FunctionDef"
-    def traverse_function_def_FunctionDef_body(self, 
+    def traverse_function_def_FunctionDef_comment(self, 
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
@@ -8773,7 +8883,21 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,), 'str') 
+    
+    # traverse function_def <-- FunctionDef"
+    def traverse_function_def_FunctionDef_body(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        params_tree : parameters, 
+        params_aux : SynthAux,
+        ret_anno_tree : return_annotation, 
+        ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux, comment_aux,), 'statements') 
     
     # traverse function_def <-- AsyncFunctionDef"
     def traverse_function_def_AsyncFunctionDef_name(self, 
@@ -8800,7 +8924,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (name_aux, params_aux,), 'return_annotation') 
     
     # traverse function_def <-- AsyncFunctionDef"
-    def traverse_function_def_AsyncFunctionDef_body(self, 
+    def traverse_function_def_AsyncFunctionDef_comment(self, 
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
@@ -8809,7 +8933,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux,), 'str') 
+    
+    # traverse function_def <-- AsyncFunctionDef"
+    def traverse_function_def_AsyncFunctionDef_body(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        params_tree : parameters, 
+        params_aux : SynthAux,
+        ret_anno_tree : return_annotation, 
+        ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, params_aux, ret_anno_aux, comment_aux,), 'statements') 
+    
+    # traverse stmt <-- Comment"
+    def traverse_stmt_Comment_content(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- DecFunctionDef"
     def traverse_stmt_DecFunctionDef_decs(self, 
@@ -9787,14 +9931,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (name_aux,), 'bases') 
     
     # traverse ClassDef
-    def traverse_ClassDef_body(self,
+    def traverse_ClassDef_comment(self,
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
         bs_tree : bases, 
         bs_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux, bs_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (name_aux, bs_aux,), 'str') 
+    
+    # traverse ClassDef
+    def traverse_ClassDef_body(self,
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        bs_tree : bases, 
+        bs_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, bs_aux, comment_aux,), 'statements') 
     
     # traverse ElifBlock
     def traverse_ElifBlock_test(self,
@@ -10364,12 +10520,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         head_tree : expr, 
         head_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         tail_tree : decorators, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ConsDec(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_ConsDec(head_tree, comment_tree, tail_tree),
+            aux = self.synthesize_auxes((head_aux, comment_aux, tail_aux,)) 
         )
     
     # synthesize: decorators <-- NoDec
@@ -10731,12 +10889,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_aux : SynthAux,
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
-            aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, body_aux,)) 
+            tree = make_FunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: function_def <-- AsyncFunctionDef
@@ -10748,12 +10908,25 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         params_aux : SynthAux,
         ret_anno_tree : return_annotation, 
         ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
-            aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, body_aux,)) 
+            tree = make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((name_aux, params_aux, ret_anno_aux, comment_aux, body_aux,)) 
+        )
+    
+    # synthesize: stmt <-- Comment
+    def synthesize_for_stmt_Comment(self, 
+        inher_aux : InherAux,
+        content_tree : str, 
+        content_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = make_Comment(content_tree),
+            aux = self.synthesize_auxes((content_aux,)) 
         )
     
     # synthesize: stmt <-- DecFunctionDef
@@ -11987,12 +12160,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         name_aux : SynthAux,
         bs_tree : bases, 
         bs_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ClassDef(name_tree, bs_tree, body_tree),
-            aux = self.synthesize_auxes((name_aux, bs_aux, body_aux,)) 
+            tree = make_ClassDef(name_tree, bs_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((name_aux, bs_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: ElifBlock

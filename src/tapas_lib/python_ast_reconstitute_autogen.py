@@ -1793,19 +1793,24 @@ def to_decorators(xs : tuple[abstract_token, ...]) -> tuple[decorators, tuple[ab
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 3
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    ConsDec(children[0], children[1]),
+                    ConsDec(children[0], children[1], children[2]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
                 (child, remainder) = to_expr(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child
@@ -2970,14 +2975,14 @@ def to_function_def(xs : tuple[abstract_token, ...]) -> tuple[function_def, tupl
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 4
+            total_num_children = 5
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    FunctionDef(children[0], children[1], children[2], children[3]),
+                    FunctionDef(children[0], children[1], children[2], children[3], children[4]),
                     remainder
                 )
             
@@ -2997,6 +3002,11 @@ def to_function_def(xs : tuple[abstract_token, ...]) -> tuple[function_def, tupl
                 
 
             elif index == 3: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 4: # index does *not* refer to an inductive child
                 (child, remainder) = to_statements(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -3014,14 +3024,14 @@ def to_function_def(xs : tuple[abstract_token, ...]) -> tuple[function_def, tupl
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 4
+            total_num_children = 5
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    AsyncFunctionDef(children[0], children[1], children[2], children[3]),
+                    AsyncFunctionDef(children[0], children[1], children[2], children[3], children[4]),
                     remainder
                 )
             
@@ -3041,6 +3051,11 @@ def to_function_def(xs : tuple[abstract_token, ...]) -> tuple[function_def, tupl
                 
 
             elif index == 3: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 4: # index does *not* refer to an inductive child
                 (child, remainder) = to_statements(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -3069,6 +3084,35 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
         if False:
             pass
         
+        elif rule_name == "Comment": 
+            children = children
+            remainder = remainder
+            if stack_result:
+                # get the result from the child in the stack
+                (child, remainder) = stack_result
+                children = children + [child]
+                stack_result = None
+
+            total_num_children = 1
+
+            index = len(children)
+            if index == total_num_children:
+                # the processing of the current rule has completed
+                # return the result to the parent in the stack 
+                stack_result = (
+                    Comment(children[0]),
+                    remainder
+                )
+            
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+            else: # index refers to an inductive child
+                stack.append((x, children, remainder))
+                stack.append((remainder[-1], [], remainder[:-1]))
+        
+
         elif rule_name == "DecFunctionDef": 
             children = children
             remainder = remainder
@@ -6272,8 +6316,9 @@ def to_ClassDef(xs : tuple[abstract_token, ...]) -> tuple[ClassDef, tuple[abstra
 
     (name, xs) = to_str(xs)
     (bs, xs) = to_bases(xs)
+    (comment, xs) = to_str(xs)
     (body, xs) = to_statements(xs)
-    return (ClassDef(name, bs, body), xs)
+    return (ClassDef(name, bs, comment, body), xs)
     
 
 def to_ElifBlock(xs : tuple[abstract_token, ...]) -> tuple[ElifBlock, tuple[abstract_token, ...]]:

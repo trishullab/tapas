@@ -3556,6 +3556,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         head_tree : pas.expr, 
         head_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         tail_tree : pas.decorators, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3565,7 +3567,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             observed_types = (head_type,) + tail_aux.observed_types
         )
         return paa.Result[SynthAux](
-            tree = pas.make_ConsDec(head_tree, tail_tree),
+            tree = pas.make_ConsDec(head_tree, comment_tree, tail_tree),
             aux = synth_aux 
         )
     
@@ -3651,6 +3653,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         name_aux : SynthAux,
         bs_tree : pas.bases, 
         bs_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3791,7 +3795,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         instance_type = from_class_key_to_type(inher_aux, class_record.key, type_arg)
 
         return paa.Result[SynthAux](
-            tree = pas.make_ClassDef(name_tree, bs_tree, body_tree),
+            tree = pas.make_ClassDef(name_tree, bs_tree, comment_tree, body_tree),
             aux = update_SynthAux(body_aux,
                 decl_subtractions=s(),
                 decl_additions=pmap({
@@ -3957,6 +3961,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4012,7 +4018,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
 
         return paa.Result[SynthAux](
-            tree = pas.make_FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
+            tree = pas.make_FunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
             aux = make_SynthAux(
                 decl_subtractions = s(),
                 decl_additions = pmap({name_tree : make_Declaration(
@@ -4032,6 +4038,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4040,7 +4048,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         nested_usages = self.update_nested_usages(body_aux.decl_additions, body_aux.usage_additions, body_aux.nested_usages)
 
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
+            tree = pas.make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
             aux = make_SynthAux(
                 decl_subtractions = s(),
                 decl_additions = pmap({name_tree : make_Declaration(

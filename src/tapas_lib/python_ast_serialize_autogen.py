@@ -1289,6 +1289,14 @@ def from_decorators(
                 
                 stack.append(o.tail)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.head))
 
                 stack.append(
@@ -2162,6 +2170,14 @@ def from_function_def(
                 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_return_annotation(o.ret_anno))
 
@@ -2190,6 +2206,14 @@ def from_function_def(
             def handle_AsyncFunctionDef(o : AsyncFunctionDef): 
                 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
 
                 stack.append(from_return_annotation(o.ret_anno))
@@ -2245,6 +2269,25 @@ def from_stmt(
         if isinstance(stack_item, stmt):
 
             
+            def handle_Comment(o : Comment): 
+                
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.content
+                    )])
+                )
+        
+                stack.append(
+                    tuple([make_Grammar(
+                        options = 'stmt',
+                        selection = 'Comment',
+                        source_start = o.source_start,
+                        source_end = o.source_end
+                    )])
+                )
+    
+
             def handle_DecFunctionDef(o : DecFunctionDef): 
                 
                 stack.append(from_function_def(o.fun_def))
@@ -2857,6 +2900,7 @@ def from_stmt(
 
 
             match_stmt(stack_item, StmtHandlers(
+                case_Comment = handle_Comment,
                 case_DecFunctionDef = handle_DecFunctionDef,
                 case_DecClassDef = handle_DecClassDef,
                 case_ReturnSomething = handle_ReturnSomething,
@@ -4171,6 +4215,7 @@ def from_ClassDef(
 
         tuple([make_Vocab(options = 'identifier', selection = o.name)]) +
         from_bases(o.bs) +
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
     )

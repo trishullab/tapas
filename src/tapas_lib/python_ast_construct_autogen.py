@@ -2278,6 +2278,7 @@ class decorators(ABC):
 @dataclass(frozen=True, eq=True)
 class ConsDec(decorators):
     head : expr | None
+    comment : str
     tail : decorators | None
     source_start : int
     source_end : int
@@ -2287,12 +2288,14 @@ class ConsDec(decorators):
 
 def make_ConsDec(
     head : expr | None, 
+    comment : str, 
     tail : decorators | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> decorators:
     return ConsDec(
         head,
+        comment,
         tail,
         source_start,
         source_end
@@ -2300,12 +2303,14 @@ def make_ConsDec(
 
 def update_ConsDec(source_ConsDec : ConsDec,
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[decorators | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsDec:
     return ConsDec(
         source_ConsDec.head if isinstance(head, SourceFlag) else head,
+        source_ConsDec.comment if isinstance(comment, SourceFlag) else comment,
         source_ConsDec.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsDec.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsDec.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3826,6 +3831,7 @@ class FunctionDef(function_def):
     name : str
     params : parameters | None
     ret_anno : return_annotation | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -3837,6 +3843,7 @@ def make_FunctionDef(
     name : str, 
     params : parameters | None, 
     ret_anno : return_annotation | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -3845,6 +3852,7 @@ def make_FunctionDef(
         name,
         params,
         ret_anno,
+        comment,
         body,
         source_start,
         source_end
@@ -3854,6 +3862,7 @@ def update_FunctionDef(source_FunctionDef : FunctionDef,
     name : Union[str, SourceFlag] = SourceFlag(),
     params : Union[parameters | None, SourceFlag] = SourceFlag(),
     ret_anno : Union[return_annotation | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -3862,6 +3871,7 @@ def update_FunctionDef(source_FunctionDef : FunctionDef,
         source_FunctionDef.name if isinstance(name, SourceFlag) else name,
         source_FunctionDef.params if isinstance(params, SourceFlag) else params,
         source_FunctionDef.ret_anno if isinstance(ret_anno, SourceFlag) else ret_anno,
+        source_FunctionDef.comment if isinstance(comment, SourceFlag) else comment,
         source_FunctionDef.body if isinstance(body, SourceFlag) else body,
         source_FunctionDef.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_FunctionDef.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3874,6 +3884,7 @@ class AsyncFunctionDef(function_def):
     name : str
     params : parameters | None
     ret_anno : return_annotation | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -3885,6 +3896,7 @@ def make_AsyncFunctionDef(
     name : str, 
     params : parameters | None, 
     ret_anno : return_annotation | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -3893,6 +3905,7 @@ def make_AsyncFunctionDef(
         name,
         params,
         ret_anno,
+        comment,
         body,
         source_start,
         source_end
@@ -3902,6 +3915,7 @@ def update_AsyncFunctionDef(source_AsyncFunctionDef : AsyncFunctionDef,
     name : Union[str, SourceFlag] = SourceFlag(),
     params : Union[parameters | None, SourceFlag] = SourceFlag(),
     ret_anno : Union[return_annotation | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -3910,6 +3924,7 @@ def update_AsyncFunctionDef(source_AsyncFunctionDef : AsyncFunctionDef,
         source_AsyncFunctionDef.name if isinstance(name, SourceFlag) else name,
         source_AsyncFunctionDef.params if isinstance(params, SourceFlag) else params,
         source_AsyncFunctionDef.ret_anno if isinstance(ret_anno, SourceFlag) else ret_anno,
+        source_AsyncFunctionDef.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncFunctionDef.body if isinstance(body, SourceFlag) else body,
         source_AsyncFunctionDef.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncFunctionDef.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3949,6 +3964,39 @@ class stmt(ABC):
 
 
 # constructors for type stmt
+
+@dataclass(frozen=True, eq=True)
+class Comment(stmt):
+    content : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_Comment(self)
+
+def make_Comment(
+    content : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> stmt:
+    return Comment(
+        content,
+        source_start,
+        source_end
+    )
+
+def update_Comment(source_Comment : Comment,
+    content : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> Comment:
+    return Comment(
+        source_Comment.content if isinstance(content, SourceFlag) else content,
+        source_Comment.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_Comment.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
 
 @dataclass(frozen=True, eq=True)
 class DecFunctionDef(stmt):
@@ -5334,6 +5382,7 @@ def update_Continue(source_Continue : Continue,
 # case handlers for type stmt
 @dataclass(frozen=True, eq=True)
 class StmtHandlers(Generic[T]):
+    case_Comment : Callable[[Comment], T]
     case_DecFunctionDef : Callable[[DecFunctionDef], T]
     case_DecClassDef : Callable[[DecClassDef], T]
     case_ReturnSomething : Callable[[ReturnSomething], T]
@@ -5378,11 +5427,12 @@ def match_stmt(o : stmt, handlers : StmtHandlers[T]) -> T :
     return o.match(handlers)
 
 
-stmt_union = Union[DecFunctionDef, DecClassDef, ReturnSomething, Return, Delete, Assign, AugAssign, AnnoAssign, AnnoDeclar, For, ForElse, AsyncFor, AsyncForElse, While, WhileElse, If, With, AsyncWith, Raise, RaiseExc, RaiseFrom, Try, TryElse, TryExceptFin, TryFin, TryElseFin, Assert, AssertMsg, Import, ImportFrom, ImportWildCard, Global, Nonlocal, Expr, Pass, Break, Continue]
+stmt_union = Union[Comment, DecFunctionDef, DecClassDef, ReturnSomething, Return, Delete, Assign, AugAssign, AnnoAssign, AnnoDeclar, For, ForElse, AsyncFor, AsyncForElse, While, WhileElse, If, With, AsyncWith, Raise, RaiseExc, RaiseFrom, Try, TryElse, TryExceptFin, TryFin, TryElseFin, Assert, AssertMsg, Import, ImportFrom, ImportWildCard, Global, Nonlocal, Expr, Pass, Break, Continue]
 
 # unguarding for type stmt
 def unguard_stmt(o : stmt) -> stmt_union :
     return match_stmt(o, StmtHandlers(
+        case_Comment = lambda x : x, 
         case_DecFunctionDef = lambda x : x, 
         case_DecClassDef = lambda x : x, 
         case_ReturnSomething = lambda x : x, 
@@ -7994,6 +8044,7 @@ def update_Param(source_Param : Param,
 class ClassDef:
     name : str
     bs : bases | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -8002,6 +8053,7 @@ class ClassDef:
 def make_ClassDef(
     name : str,
     bs : bases | None,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
@@ -8009,6 +8061,7 @@ def make_ClassDef(
     return ClassDef(
         name,
         bs,
+        comment,
         body,
         source_start,
         source_end)
@@ -8016,6 +8069,7 @@ def make_ClassDef(
 def update_ClassDef(source_ClassDef : ClassDef,
     name : Union[str, SourceFlag] = SourceFlag(),
     bs : Union[bases | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -8023,6 +8077,7 @@ def update_ClassDef(source_ClassDef : ClassDef,
     return ClassDef(
         source_ClassDef.name if isinstance(name, SourceFlag) else name, 
         source_ClassDef.bs if isinstance(bs, SourceFlag) else bs, 
+        source_ClassDef.comment if isinstance(comment, SourceFlag) else comment, 
         source_ClassDef.body if isinstance(body, SourceFlag) else body, 
         source_ClassDef.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ClassDef.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8213,6 +8268,7 @@ ast = Union[
     NoCond,
     FunctionDef,
     AsyncFunctionDef,
+    Comment,
     DecFunctionDef,
     DecClassDef,
     ReturnSomething,
