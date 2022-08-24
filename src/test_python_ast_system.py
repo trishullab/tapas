@@ -64,7 +64,31 @@ def test_source_pointer_increasing():
         last_index = i
 
 
+def test_comment():
 
+    code = ('''
+
+def foo(x):
+    return x
+
+@foo #hello
+class A: # this is a class header comment 
+    pass
+
+def foo(x : int): # this is a function header comment 
+    # whole line comment 0 
+    y = x + 1 # comment after stmt
+    z = y + 1 
+    # whole line comment 1 
+
+    ''')
+
+
+
+    gnode = pgs.parse(code)
+    print("-- generic node --")  
+    print(pgs.dump(gnode))
 
 if __name__ == "__main__":
+    test_comment()
     pass

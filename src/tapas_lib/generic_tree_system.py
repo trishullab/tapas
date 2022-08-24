@@ -54,19 +54,19 @@ def start_end_encoded(source_bytes, encoding : str, start : int, end : int) -> t
 # Stack version
 def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encoding : str) -> GenericNode :
 
-    def sans_comments(ns):
-        return [
-            n
-            for n in ns 
-            if n.type != "comment"
-        ]
+    # def sans_comments(ns):
+    #     return [
+    #         n
+    #         for n in ns 
+    #         if n.type != "comment"
+    #     ]
 
     text_0 = source_bytes[node.start_byte:node.end_byte].decode(encoding)
     (start_0, end_0) = start_end_encoded(source_bytes, encoding, node.start_byte, node.end_byte)
 
     stack : list[tuple[str, str, int, int, list[GenericNode], list[tree_sitter.Node]]] = [(
         node.type, text_0, start_0, end_0, 
-        [], sans_comments(node.children)
+        [], node.children
     )]
 
     result = None 
@@ -94,7 +94,7 @@ def from_tree_sitter_node(node : tree_sitter.Node, source_bytes : bytes, encodin
             child_tsnode = tsnodes[child_index]
             child_text = source_bytes[child_tsnode.start_byte:child_tsnode.end_byte].decode(encoding)
             (child_start, child_end) = start_end_encoded(source_bytes, encoding, child_tsnode.start_byte, child_tsnode.end_byte)
-            stack.append((child_tsnode.type, child_text, child_start, child_end, [], sans_comments(child_tsnode.children)))
+            stack.append((child_tsnode.type, child_text, child_start, child_end, [], child_tsnode.children))
 
     assert result
     return result 
