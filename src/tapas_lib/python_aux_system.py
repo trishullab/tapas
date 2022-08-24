@@ -880,176 +880,6 @@ def substitute_type_args(t : type, subst_map : PMap[str, type]) -> type:
     ))
 
 
-def get_mapping_key_value_types(t : type, inher_aux : InherAux) -> tuple[type, type]:
-    if isinstance(t, RecordType):
-
-        if t.class_key == "typing.Mapping":
-            assert len(t.type_args) == 2
-            key_type = t.type_args[0] 
-            val_type = t.type_args[1] 
-            return (key_type, val_type)
-
-        class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
-        if class_record:
-            substitution_map : PMap[str, type] = pmap({
-                class_record.type_params[i].name : type_arg
-                for i, type_arg in enumerate(t.type_args) 
-            })
-
-            for super_type in class_record.super_types:
-                super_type = substitute_type_args(super_type, substitution_map)
-                result = get_mapping_key_value_types(super_type, inher_aux)
-                return result
-
-            raise IterateTypeCheck() 
-        else:
-            return (AnyType(), AnyType())
-
-    elif isinstance(t, AnyType):
-        return (AnyType(), AnyType())
-
-    else:
-        raise IterateTypeCheck() 
-
-
-def get_iterable_item_type_from_RecordType(t : RecordType, inher_aux : InherAux) -> type | None:
-
-    if t.class_key == "typing.Iterable": 
-        assert len(t.type_args) == 1
-        item_type = t.type_args[0]
-        return item_type
-    
-    class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
-    if class_record:
-        substitution_map : PMap[str, type] = pmap({
-            class_record.type_params[i].name : type_arg
-            for i, type_arg in enumerate(t.type_args) 
-        })
-
-        for super_type in class_record.super_types:
-            super_type_content = substitute_type_args(super_type.content, substitution_map)
-
-            result = get_iterable_item_type(super_type_content, inher_aux)
-            if result:
-                return result
-
-        return None
-    else:
-        return AnyType()
-
-def get_iterable_item_type_from_UnionType(t : UnionType, inher_aux : InherAux) -> type | None:
-    assert len(t.type_choices) > 0
-
-    item = t.type_choices[0]
-    for tc in t.type_choices[1:]:
-        tc_item = get_iterable_item_type(tc, inher_aux)
-        if tc_item:
-            item = unionize_types(item, tc_item)
-        else:
-            return None
-    return item
-
-def get_iterable_item_type(iter_type : type, inher_aux : InherAux) -> Optional[type]:
-
-    return match_type(iter_type, TypeHandlers(
-        case_ProtocolType = lambda t : None,
-        case_GenericType = lambda t : None,
-        case_OverloadType = lambda t : None,
-        case_TypeType = lambda t : None,
-        case_VarType = lambda t : 
-            # treat VarType like AnyType if it hasn't been substituted
-            AnyType(), 
-        case_EllipType = lambda t : None,
-        case_AnyType = lambda t : AnyType(),
-        case_ObjectType = lambda t : None,
-        case_NoneType = lambda t : None, 
-        case_ModuleType = lambda t : None,
-        case_FunctionType = lambda t : None,
-        case_UnionType = lambda t : get_iterable_item_type_from_UnionType(t, inher_aux),
-        case_InterType = lambda t : None,
-        case_RecordType = lambda t : get_iterable_item_type_from_RecordType(t, inher_aux),
-        case_TupleLitType = lambda t : unionize_all_types(t.item_types),
-        case_VariedTupleType = lambda t : t.item_type,
-        case_ListLitType = lambda t : unionize_all_types(t.item_types),
-        case_DictLitType = lambda t : get_iterable_item_type(generalize_type(inher_aux, t), inher_aux),
-        case_TrueType = lambda t : None,
-        case_FalseType = lambda t : None,
-        case_IntLitType = lambda t : None,
-        case_FloatLitType = lambda t : None,
-        case_StrLitType = lambda t : make_RecordType(class_key="builtins.str"),
-    ))
-
-
-
-def unify(
-    pattern : pas.expr, type : type, 
-    inher_aux : InherAux
-) -> tuple[PMap[str, type], PMap[str, type]]: 
-    anchor_symbol : str = inher_aux.anchor_symbol
-
-    def generate_items(exprs : pas.comma_exprs) -> Iterator[pas.expr]:
-        while isinstance(exprs, pas.ConsExpr):
-            assert exprs.head
-            yield exprs.head
-            assert exprs.tail
-            exprs = exprs.tail 
-        assert isinstance(exprs, pas.SingleExpr)
-        assert exprs.content
-        yield exprs.content
-
-    if isinstance(pattern, pas.Name):
-        return (pmap({pattern.content : type}), m())
-    elif isinstance(pattern, pas.List):
-        type_env : PMap[str, type] = m()
-        anchor_env : PMap[str, type] = m()
-        assert pattern.content
-        for p in generate_items(pattern.content):
-            item_type = get_iterable_item_type(type, inher_aux)
-            if item_type:
-                new_type_env, new_anchor_env = unify(p, item_type, inher_aux)
-                type_env += new_type_env
-                anchor_env += new_anchor_env
-            else:
-                raise UnifyTypeCheck()
-
-        return (type_env, anchor_env)
-    elif isinstance(pattern, pas.Tuple):
-        if isinstance(type, TupleLitType):
-            type_env : PMap[str, type] = m()
-            anchor_env : PMap[str, type] = m()
-            assert pattern.content
-            for i, p in enumerate(generate_items(pattern.content)):
-                new_type_env, new_anchor_env = unify(p, type.item_types[i], inher_aux)
-                type_env += new_type_env 
-                anchor_env += new_anchor_env
-
-            return (type_env, anchor_env)
-        else:
-            type_env : PMap[str, type] = m()
-            anchor_env : PMap[str, type] = m()
-            assert pattern.content
-            for p in generate_items(pattern.content):
-                item_type = get_iterable_item_type(type, inher_aux)
-                if item_type:
-                    new_type_env, new_anchor_env = unify(p, item_type, inher_aux)
-                    type_env += new_type_env
-                    anchor_env += new_anchor_env
-                else:
-                    raise UnifyTypeCheck()
-
-            return (type_env, anchor_env)
-    elif isinstance(pattern, pas.Attribute):
-        content = pattern.content
-        if isinstance(content, pas.Name) and content.content == anchor_symbol:
-            return (m(), pmap({pattern.name : type}))
-        else:
-            return (m(), m())
-    elif isinstance(pattern, pas.Subscript):
-        return (m(), m())
-    else:
-        raise UnifyTypeCheck()
-
-
 def from_static_path_to_ClassRecord(inher_aux : InherAux, path : str) -> ClassRecord | None:
     if path.startswith(inher_aux.external_path + "."):
         class_record = inher_aux.class_env.get(path[len(inher_aux.external_path + "."):])
@@ -1889,23 +1719,6 @@ def spawn_analysis(
 
 
 
-def unify_iteration(inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
-
-    if isinstance(iter_type, AnyType):
-        return unify(pattern, AnyType(), inher_aux)[0]
-    else:
-        item_type = get_iterable_item_type(iter_type, inher_aux)
-        if item_type:
-            target_types = unify(pattern, item_type, inher_aux)[0]
-            for k, t in target_types.items():
-                dec = lookup_declaration(inher_aux, k)
-                if dec and not subsumed(t, dec.type, inher_aux):
-                    raise UnifyTypeCheck()
-            return target_types
-        else:
-            raise IterateTypeCheck()
-
-
 def analyze_statements(
     statements_ast : pas.statements, 
     inher_aux : InherAux, 
@@ -1980,6 +1793,201 @@ class Server(paa.Server[InherAux, SynthAux]):
     ):  
         super().__init__(in_stream, out_stream)
         self.checks = checks
+
+    def get_mapping_key_value_types(self, t : type, inher_aux : InherAux) -> tuple[type, type]:
+        if isinstance(t, RecordType):
+
+            if t.class_key == "typing.Mapping":
+                assert len(t.type_args) == 2
+                key_type = t.type_args[0] 
+                val_type = t.type_args[1] 
+                return (key_type, val_type)
+
+            class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
+            if class_record:
+                substitution_map : PMap[str, type] = pmap({
+                    class_record.type_params[i].name : type_arg
+                    for i, type_arg in enumerate(t.type_args) 
+                })
+
+                for super_type in class_record.super_types:
+                    super_type = substitute_type_args(super_type, substitution_map)
+                    result = self.get_mapping_key_value_types(super_type, inher_aux)
+                    return result
+
+                self.check(IterateTypeCheck(), lambda:True)
+                return (AnyType(), AnyType())
+            else:
+                return (AnyType(), AnyType())
+
+        elif isinstance(t, AnyType):
+            return (AnyType(), AnyType())
+
+        else:
+            self.check(IterateTypeCheck(), lambda:True)
+            return (AnyType(), AnyType())
+
+
+    def get_iterable_item_type_from_RecordType(self, t : RecordType, inher_aux : InherAux) -> type | None:
+
+        if t.class_key == "typing.Iterable": 
+            assert len(t.type_args) == 1
+            item_type = t.type_args[0]
+            return item_type
+        
+        class_record = from_static_path_to_ClassRecord(inher_aux, t.class_key)
+        if class_record:
+            substitution_map : PMap[str, type] = pmap({
+                class_record.type_params[i].name : type_arg
+                for i, type_arg in enumerate(t.type_args) 
+            })
+
+            for super_type in class_record.super_types:
+                super_type_content = substitute_type_args(super_type.content, substitution_map)
+
+                result = self.get_iterable_item_type(super_type_content, inher_aux)
+                if result:
+                    return result
+
+            return None
+        else:
+            return AnyType()
+
+    def get_iterable_item_type_from_UnionType(self, t : UnionType, inher_aux : InherAux) -> type | None:
+        assert len(t.type_choices) > 0
+
+        item = t.type_choices[0]
+        for tc in t.type_choices[1:]:
+            tc_item = self.get_iterable_item_type(tc, inher_aux)
+            if tc_item:
+                item = unionize_types(item, tc_item)
+            else:
+                return None
+        return item
+
+    def get_iterable_item_type(self, iter_type : type, inher_aux : InherAux) -> Optional[type]:
+
+        return match_type(iter_type, TypeHandlers(
+            case_ProtocolType = lambda t : None,
+            case_GenericType = lambda t : None,
+            case_OverloadType = lambda t : None,
+            case_TypeType = lambda t : None,
+            case_VarType = lambda t : 
+                # treat VarType like AnyType if it hasn't been substituted
+                AnyType(), 
+            case_EllipType = lambda t : None,
+            case_AnyType = lambda t : AnyType(),
+            case_ObjectType = lambda t : None,
+            case_NoneType = lambda t : None, 
+            case_ModuleType = lambda t : None,
+            case_FunctionType = lambda t : None,
+            case_UnionType = lambda t : self.get_iterable_item_type_from_UnionType(t, inher_aux),
+            case_InterType = lambda t : None,
+            case_RecordType = lambda t : self.get_iterable_item_type_from_RecordType(t, inher_aux),
+            case_TupleLitType = lambda t : unionize_all_types(t.item_types),
+            case_VariedTupleType = lambda t : t.item_type,
+            case_ListLitType = lambda t : unionize_all_types(t.item_types),
+            case_DictLitType = lambda t : self.get_iterable_item_type(generalize_type(inher_aux, t), inher_aux),
+            case_TrueType = lambda t : None,
+            case_FalseType = lambda t : None,
+            case_IntLitType = lambda t : None,
+            case_FloatLitType = lambda t : None,
+            case_StrLitType = lambda t : make_RecordType(class_key="builtins.str"),
+        ))
+
+
+
+    def unify(
+        self,
+        pattern : pas.expr, type : type, 
+        inher_aux : InherAux
+    ) -> tuple[PMap[str, type], PMap[str, type]]: 
+        anchor_symbol : str = inher_aux.anchor_symbol
+
+        def generate_items(exprs : pas.comma_exprs) -> Iterator[pas.expr]:
+            while isinstance(exprs, pas.ConsExpr):
+                assert exprs.head
+                yield exprs.head
+                assert exprs.tail
+                exprs = exprs.tail 
+            assert isinstance(exprs, pas.SingleExpr)
+            assert exprs.content
+            yield exprs.content
+
+        if isinstance(pattern, pas.Name):
+            return (pmap({pattern.content : type}), m())
+        elif isinstance(pattern, pas.List):
+            type_env : PMap[str, type] = m()
+            anchor_env : PMap[str, type] = m()
+            assert pattern.content
+            for p in generate_items(pattern.content):
+                item_type = self.get_iterable_item_type(type, inher_aux)
+                if item_type:
+                    new_type_env, new_anchor_env = self.unify(p, item_type, inher_aux)
+                    type_env += new_type_env
+                    anchor_env += new_anchor_env
+                else:
+                    self.check(UnifyTypeCheck(), lambda:True)
+
+            return (type_env, anchor_env)
+        elif isinstance(pattern, pas.Tuple):
+            if isinstance(type, TupleLitType):
+                type_env : PMap[str, type] = m()
+                anchor_env : PMap[str, type] = m()
+                assert pattern.content
+                for i, p in enumerate(generate_items(pattern.content)):
+                    new_type_env, new_anchor_env = self.unify(p, type.item_types[i], inher_aux)
+                    type_env += new_type_env 
+                    anchor_env += new_anchor_env
+
+                return (type_env, anchor_env)
+            else:
+                type_env : PMap[str, type] = m()
+                anchor_env : PMap[str, type] = m()
+                assert pattern.content
+                for p in generate_items(pattern.content):
+                    item_type = self.get_iterable_item_type(type, inher_aux)
+                    if item_type:
+                        new_type_env, new_anchor_env = self.unify(p, item_type, inher_aux)
+                        type_env += new_type_env
+                        anchor_env += new_anchor_env
+                    else:
+                        self.check(UnifyTypeCheck(), lambda:True)
+                        return (m(), m())
+
+                return (type_env, anchor_env)
+        elif isinstance(pattern, pas.Attribute):
+            content = pattern.content
+            if isinstance(content, pas.Name) and content.content == anchor_symbol:
+                return (m(), pmap({pattern.name : type}))
+            else:
+                return (m(), m())
+        elif isinstance(pattern, pas.Subscript):
+            return (m(), m())
+        else:
+            self.check(UnifyTypeCheck(), lambda:True)
+            return (m(), m())
+
+
+    def unify_iteration(self, inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> PMap[str, type]:
+
+        if isinstance(iter_type, AnyType):
+            return self.unify(pattern, AnyType(), inher_aux)[0]
+        else:
+            item_type = self.get_iterable_item_type(iter_type, inher_aux)
+            if item_type:
+                target_types = self.unify(pattern, item_type, inher_aux)[0]
+                for k, t in target_types.items():
+                    dec = lookup_declaration(inher_aux, k)
+                    if dec and not subsumed(t, dec.type, inher_aux):
+                        self.check(UnifyTypeCheck(), lambda:True)
+                return target_types
+            else:
+                self.check(IterateTypeCheck(), lambda:True)
+                return m()
+
+
+
 
 
     def cross_join_aux_decls(self, inher_aux : InherAux, true_body_aux : Change[Declaration], false_body_aux : Change[Declaration]) -> Change[Declaration]:
@@ -2301,7 +2309,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
 
-        unified_env, unified_anchor_env = unify(target_tree, content_type, inher_aux)
+        unified_env, unified_anchor_env = self.unify(target_tree, content_type, inher_aux)
 
         return paa.Result[SynthAux](
             tree = pas.make_AssignExpr(target_tree, content_tree),
@@ -2579,7 +2587,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(search_space_aux.observed_types) == 1
         search_space_type = search_space_aux.observed_types[0]
 
-        item_env = unify_iteration(inher_aux, target_tree, search_space_type)
+        item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
             tree = pas.make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
@@ -2602,7 +2610,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert len(search_space_aux.observed_types) == 1
         search_space_type = search_space_aux.observed_types[0]
-        item_env = unify_iteration(inher_aux, target_tree, search_space_type)
+        item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
             tree = pas.make_Constraint(target_tree, search_space_tree, filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
@@ -2768,7 +2776,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         assert len(content_aux.observed_types) == 1
         expr_type = content_aux.observed_types[0]
-        item_type = get_iterable_item_type(expr_type, inher_aux)
+        item_type = self.get_iterable_item_type(expr_type, inher_aux)
 
         self.check(IterateTypeCheck(), lambda: item_type != None)
 
@@ -2938,7 +2946,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                         subsumed(kt, make_RecordType("builtins.str"), inher_aux)
                     )
         else:
-            (key_type, _) = get_mapping_key_value_types(content_type, inher_aux)
+            (key_type, _) = self.get_mapping_key_value_types(content_type, inher_aux)
 
             self.check(SplatKeywordArgTypeCheck(), lambda: 
                 subsumed(key_type, make_RecordType("builtins.str"), inher_aux)
@@ -4420,7 +4428,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         anchor_env : PMap[str, type] = m() 
         for pattern in patterns():
             if pattern:
-                next_env_types, next_anchor_env = unify(pattern, content_type, inher_aux)
+                next_env_types, next_anchor_env = self.unify(pattern, content_type, inher_aux)
                 env_types += next_env_types 
                 anchor_env += next_anchor_env
 
@@ -4773,7 +4781,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             iter_aux.decl_additions +
             pmap({
                 k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
-                for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
 
@@ -4816,7 +4824,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             iter_aux.decl_additions +
             pmap({
                 k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
-                for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
             })
         )) 
     
@@ -4897,7 +4905,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     new_synth_aux.decl_additions +
                     pmap({
                         k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
-                        for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                        for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 ),
                 usage_additions=usage_additions
@@ -4951,7 +4959,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     iter_aux.decl_additions + change_decl.additions +
                     pmap({
                         k : make_Declaration(updatable=AnyType(), initialized=True, type=t)
-                        for k, t in unify_iteration(inher_aux, target_tree, iter_type).items()
+                        for k, t in self.unify_iteration(inher_aux, target_tree, iter_type).items()
                     })
                 ),
                 usage_additions=usage_additions
@@ -5253,7 +5261,7 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
-        env_additions, anchor_env_additions = unify(alias_tree, content_type, inher_aux)
+        env_additions, anchor_env_additions = self.unify(alias_tree, content_type, inher_aux)
         return paa.Result[SynthAux](
             tree = pas.make_WithItemAlias(content_tree, alias_tree),
             aux = make_SynthAux(
