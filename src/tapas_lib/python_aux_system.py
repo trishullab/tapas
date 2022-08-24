@@ -3554,10 +3554,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: decorators <-- ConsDec
     def synthesize_for_decorators_ConsDec(self, 
         inher_aux : InherAux,
-        head_tree : pas.expr, 
+        head_tree : pas.decorator, 
         head_aux : SynthAux,
-        comment_tree : str, 
-        comment_aux : SynthAux,
         tail_tree : pas.decorators, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3567,7 +3565,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             observed_types = (head_type,) + tail_aux.observed_types
         )
         return paa.Result[SynthAux](
-            tree = pas.make_ConsDec(head_tree, comment_tree, tail_tree),
+            tree = pas.make_ConsDec(head_tree, tail_tree),
             aux = synth_aux 
         )
     
