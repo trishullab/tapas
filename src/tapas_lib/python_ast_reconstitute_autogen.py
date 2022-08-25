@@ -6460,8 +6460,9 @@ def to_ElseBlock(xs : tuple[abstract_token, ...]) -> tuple[ElseBlock, tuple[abst
     assert x.options == "ElseBlock"
     assert x.selection == "ElseBlock"
 
+    (comment, xs) = to_str(xs)
     (body, xs) = to_statements(xs)
-    return (ElseBlock(body), xs)
+    return (ElseBlock(comment, body), xs)
     
 
 def to_FinallyBlock(xs : tuple[abstract_token, ...]) -> tuple[FinallyBlock, tuple[abstract_token, ...]]:
@@ -6471,8 +6472,9 @@ def to_FinallyBlock(xs : tuple[abstract_token, ...]) -> tuple[FinallyBlock, tupl
     assert x.options == "FinallyBlock"
     assert x.selection == "FinallyBlock"
 
+    (comment, xs) = to_str(xs)
     (body, xs) = to_statements(xs)
-    return (FinallyBlock(body), xs)
+    return (FinallyBlock(comment, body), xs)
      
 
 

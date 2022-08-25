@@ -1692,6 +1692,7 @@ singles_schema : list[Rule] = [
         "ElseBlock",
         [
             Terminal("else:"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine()),
         ]
     ),
@@ -1700,6 +1701,7 @@ singles_schema : list[Rule] = [
         "FinallyBlock",
         [
             Terminal("finally:"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())
         ]
     )

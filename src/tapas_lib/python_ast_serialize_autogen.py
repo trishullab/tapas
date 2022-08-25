@@ -4385,6 +4385,7 @@ def from_ElseBlock(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
     )
@@ -4405,6 +4406,7 @@ def from_FinallyBlock(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
     )

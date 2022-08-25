@@ -8271,27 +8271,32 @@ def update_ElifBlock(source_ElifBlock : ElifBlock,
 # type and constructor ElseBlock
 @dataclass(frozen=True, eq=True)
 class ElseBlock:
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
 
 
 def make_ElseBlock(
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ElseBlock:
     return ElseBlock(
+        comment,
         body,
         source_start,
         source_end)
 
 def update_ElseBlock(source_ElseBlock : ElseBlock,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ElseBlock:
     return ElseBlock(
+        source_ElseBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_ElseBlock.body if isinstance(body, SourceFlag) else body, 
         source_ElseBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ElseBlock.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8301,27 +8306,32 @@ def update_ElseBlock(source_ElseBlock : ElseBlock,
 # type and constructor FinallyBlock
 @dataclass(frozen=True, eq=True)
 class FinallyBlock:
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
 
 
 def make_FinallyBlock(
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> FinallyBlock:
     return FinallyBlock(
+        comment,
         body,
         source_start,
         source_end)
 
 def update_FinallyBlock(source_FinallyBlock : FinallyBlock,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> FinallyBlock:
     return FinallyBlock(
+        source_FinallyBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_FinallyBlock.body if isinstance(body, SourceFlag) else body, 
         source_FinallyBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_FinallyBlock.source_end if isinstance(source_end, SourceFlag) else source_end)

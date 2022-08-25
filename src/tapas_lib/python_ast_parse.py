@@ -1925,19 +1925,26 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[0].syntax_part == "if"
         cond_node = children[1]
         assert children[2].syntax_part  == ":"
-        comment_text = merge_comments(children[3:-2])
-        block_node = children[-2]
+
+        comment_nodes = [
+            child
+            for child in children[3:]
+            if child.syntax_part == "comment"
+        ]
+        comment_text = merge_comments(comment_nodes)
+        block_node = children[3 + len(comment_nodes)]
 
 
-        def to_else_content(else_node : GenericNode) -> statements | None:
+        def to_else_content(else_node : GenericNode) -> tuple[str, statements | None]:
             assert else_node.syntax_part == "else_clause"
 
             else_children = else_node.children
             assert else_children[0].syntax_part == "else"
             assert else_children[1].syntax_part == ":"
-            block_node_ = else_children[2]
+            comment_text = merge_comments(else_children[2:-1])
+            block_node_ = else_children[-1]
             block_children = block_node_.children
-            return to_statements([
+            return comment_text, to_statements([
                 stmt 
                 for stmt_node in block_children
                 for stmt in from_generic_tree_to_stmts(stmt_node)
@@ -1963,18 +1970,21 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                 ])
             )
 
+
+        else_index = 3 + len(comment_nodes) + 1
+
         (else_block, else_nodes) = (
 
             (ElseCond(
-                ElseBlock(to_else_content(children[-1]),
+                ElseBlock(*(to_else_content(children[-1])),
                     children[-1].source_start,
                     children[-1].source_end,
                 ),
                 node.source_start, node.source_end
-            ), children[4:-1])
+            ), children[else_index:-1])
             if children[-1].syntax_part == "else_clause" else
 
-            (NoCond(block_node.source_end, block_node.source_end), children[4:])
+            (NoCond(block_node.source_end, block_node.source_end), children[else_index:])
         )
 
         for n in reversed(else_nodes):
@@ -2011,16 +2021,23 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[2].syntax_part == "in"
         iter_expr = from_generic_tree_to_expr(children[3])
         assert children[4].syntax_part == ":"
-        comment_text, block_node = (merge_comments(children[5:-1]), children[-1])
+        comment_nodes = [
+            child
+            for child in children[5:]
+            if child.syntax_part == "comment"
+        ]
+        comment_text = merge_comments(comment_nodes)
+        block_node = children[5 + len(comment_nodes)]
         body_stmts = to_statements([
             stmt
             for stmt_node in block_node.children
             for stmt in from_generic_tree_to_stmts(stmt_node) 
         ])
 
+        else_index = 5 + len(comment_nodes) + 1
         else_node = (
-            children[6]
-            if (len(children) == 7) 
+            children[else_index]
+            if (len(children) == else_index + 1) 
             
             else None 
         )
@@ -2031,7 +2048,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         assert not else_node or else_node.children[1].syntax_part == ":" 
 
-        else_block_node = else_node.children[2] if else_node else None 
+        else_comment_text = merge_comments(else_node.children[2:-1]) if else_node else '' 
+        else_block_node = else_node.children[-1] if else_node else None 
 
         assert not else_block_node or else_block_node.syntax_part == "block"
 
@@ -2041,6 +2059,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         if block_children:
 
             else_block = ElseBlock(
+                else_comment_text,
                 to_statements([
                     stmt
                     for stmt_node in block_children
@@ -2077,8 +2096,13 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         test_expr = from_generic_tree_to_expr(children[1])
 
         assert children[2].syntax_part == ":"
-        comment_text = merge_comments(children[3:-2])
-        block_node = children[-2]
+        comment_nodes = [
+            child
+            for child in children[5:]
+            if child.syntax_part == "comment"
+        ]
+        comment_text = merge_comments(comment_nodes)
+        block_node = children[3 + len(comment_nodes)]
         assert block_node.syntax_part == "block"
         body_stmts = to_statements([
             stmt
@@ -2086,9 +2110,10 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for stmt in from_generic_tree_to_stmts(stmt_node) 
         ])
 
+        else_index = 3 + len(comment_nodes) + 1
         else_node = (
-            children[4]
-            if (len(children) == 5) 
+            children[else_index]
+            if (len(children) == else_index + 1) 
             
             else None 
         )
@@ -2100,7 +2125,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         assert not else_node or else_node.children[1].syntax_part == ":" 
 
-        else_block_node = else_node.children[2] if else_node else None 
+        else_comment_text = merge_comments(else_node.children[2:-1]) if else_node else '' 
+
+        else_block_node = else_node.children[-1] if else_node else None 
 
         assert not else_block_node or else_block_node.syntax_part == "block"
 
@@ -2109,6 +2136,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         if else_block_node:
             else_stmts = ElseBlock(
+                else_comment_text,
                 to_statements([
                     stmt
                     for stmt_node in block_children 
@@ -2163,7 +2191,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         def assert_else_clause(else_clause_node):
             assert else_clause_node.children[0].syntax_part == "else"
             assert else_clause_node.children[1].syntax_part == ":"
-            assert else_clause_node.children[2].syntax_part == "block"
+            assert else_clause_node.children[-1].syntax_part == "block"
+
+        else_comment_text = merge_comments(else_clause_nodes[0].children[2:-1])
 
         else_stmts = (
             [] 
@@ -2173,7 +2203,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                 stmt
                 for else_clause_node in [else_clause_nodes[0]]
                 for _ in [assert_else_clause(else_clause_node)]
-                for else_block_node in [else_clause_node.children[2]]
+                for else_block_node in [else_clause_node.children[-1]]
                 for stmt_node in else_block_node.children
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ]
@@ -2188,7 +2218,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         def assert_finally_clause(n):
             assert n.children[0].syntax_part == "finally"
             assert n.children[1].syntax_part == ":"
-            assert n.children[2].syntax_part == "block"
+            assert n.children[-1].syntax_part == "block"
+
+        finally_comment_text = merge_comments(else_clause_nodes[0].children[2:-1])
         
         finally_stmts = (
             [] 
@@ -2198,7 +2230,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                 stmt
                 for finally_clause_node in [finally_clause_nodes[0]] 
                 for _ in [assert_finally_clause(finally_clause_node)]
-                for block_node in [finally_clause_node.children[2]] 
+                for block_node in [finally_clause_node.children[-1]] 
                 for stmt_node in block_node.children
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ]
@@ -2212,11 +2244,11 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                 TryElseFin(
                     try_stmts, 
                     except_handlers, 
-                    ElseBlock(to_statements(else_stmts),
+                    ElseBlock(else_comment_text, to_statements(else_stmts),
                         else_clause_node.source_start,
                         else_clause_node.source_end,
                     ), 
-                    FinallyBlock(to_statements(finally_stmts),
+                    FinallyBlock(finally_comment_text, to_statements(finally_stmts),
                         finally_clause_node.source_start,
                         finally_clause_node.source_end,
                     ),
@@ -2229,7 +2261,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             return [
                 TryElse(
                     try_stmts, except_handlers, 
-                    ElseBlock(to_statements(else_stmts),
+                    ElseBlock(else_comment_text, to_statements(else_stmts),
                         else_clause_node.source_start,
                         else_clause_node.source_end,
                     ),
@@ -2242,6 +2274,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             return [
                 TryExceptFin(
                     try_stmts, except_handlers, FinallyBlock(
+                        finally_comment_text, 
                         to_statements(finally_stmts),
                         finally_clause_node.source_start,
                         finally_clause_node.source_end,
@@ -2255,6 +2288,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             return [
                 TryFin(
                     try_stmts, FinallyBlock(
+                        finally_comment_text, 
                         to_statements(finally_stmts),
                         finally_clause_node.source_start,
                         finally_clause_node.source_end,

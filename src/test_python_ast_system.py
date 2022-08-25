@@ -66,11 +66,53 @@ def test_source_pointer_increasing():
 
 def test_comment():
 
-    code = ('''
+#     code = ('''
 
+# try:
+#     foo()
+# except Exception(): 
+#     boo()
+# else:
+#     goo()
+
+# x = 0
+# if True: # comment after if
+#     # another comment
+#     x = 0 # comment 
+#     # comment
+#     x = x + 1
+# elif False: # comment after elif
+#     x = 0 # comment 
+#     # comment
+#     x = x + 1
+# else: # comment after else
+#     x = 0 # comment 
+#     # comment
+#     x = x + 1
+
+
+# def foo(x):
+#     return x
+
+# @foo #hello
+# # between decorators 
+# @foo #bye
+# class A: # this is a class header comment 
+#     pass
+
+# def foo(x : int): # this is a function header comment 
+#     # whole line comment 0 
+#     y = x + 1 # comment after stmt
+#     z = y + 1 
+#     # whole line comment 1 
+
+#     ''')
+
+    code = ('''
 
 x = 0
 if True: # comment after if
+    # another comment
     x = 0 # comment 
     # comment
     x = x + 1
@@ -83,26 +125,18 @@ else: # comment after else
     # comment
     x = x + 1
 
-def foo(x):
-    return x
-
-@foo #hello
-# between decorators 
-@foo #bye
-class A: # this is a class header comment 
-    pass
-
-def foo(x : int): # this is a function header comment 
-    # whole line comment 0 
-    y = x + 1 # comment after stmt
-    z = y + 1 
-    # whole line comment 1 
-
     ''')
 
     gnode = pgs.parse(code)
     print("-- generic node --")  
     print(pgs.dump(gnode))
+
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
+    print(seq)
+
+    print("-- AST --")  
+    print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()

@@ -103,9 +103,8 @@ def dump(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...
     stack : list[Format] = [Format("", 0)]
 
     while stack:
-
         format : Format = stack.pop()
-        inst = next(inst_iter)
+        inst = next(inst_iter, None)
         assert inst
 
 

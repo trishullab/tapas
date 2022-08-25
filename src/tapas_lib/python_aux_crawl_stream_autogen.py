@@ -1054,8 +1054,6 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         while stack:
 
             (token, inher_aux, children) = stack.pop()
-            
-            print(f'token ~? {token}')
 
             if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_statements(token, inher_aux, children, stack_result, stack)
@@ -8348,8 +8346,20 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         if token.selection != "ElseBlock": raise SyntaxError()
         
 
-        child_inher_aux = self.traverse_ElseBlock_body(
+        child_inher_aux = self.traverse_ElseBlock_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_ElseBlock_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -8359,15 +8369,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_ElseBlock(inher_aux, body_tree, body_aux)
+        return self.synthesize_for_ElseBlock(inher_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: FinallyBlock"
     def inspect_FinallyBlock(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
         if token.selection != "FinallyBlock": raise SyntaxError()
         
 
-        child_inher_aux = self.traverse_FinallyBlock_body(
+        child_inher_aux = self.traverse_FinallyBlock_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_FinallyBlock_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -8377,7 +8399,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_FinallyBlock(inher_aux, body_tree, body_aux)
+        return self.synthesize_for_FinallyBlock(inher_aux, comment_tree, comment_aux, body_tree, body_aux)
      
 
     
@@ -10285,16 +10307,32 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (test_aux, comment_aux,), 'statements') 
     
     # traverse ElseBlock
-    def traverse_ElseBlock_body(self,
+    def traverse_ElseBlock_comment(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse ElseBlock
+    def traverse_ElseBlock_body(self,
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
+    
+    # traverse FinallyBlock
+    def traverse_FinallyBlock_comment(self,
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse FinallyBlock
     def traverse_FinallyBlock_body(self,
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
      
 
     
@@ -12546,23 +12584,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: ElseBlock
     def synthesize_for_ElseBlock(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ElseBlock(body_tree),
-            aux = self.synthesize_auxes((body_aux,)) 
+            tree = make_ElseBlock(comment_tree, body_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux,)) 
         )
     
     # synthesize: FinallyBlock
     def synthesize_for_FinallyBlock(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_FinallyBlock(body_tree),
-            aux = self.synthesize_auxes((body_aux,)) 
+            tree = make_FinallyBlock(comment_tree, body_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux,)) 
         )
      
 
