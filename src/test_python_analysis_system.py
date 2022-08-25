@@ -14,7 +14,7 @@ from tapas_base import util_system as us
 import json
 import pytest
 
-package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
+package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed() # pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
 # package = pals.analyze_numpy_stubs(package)
 
 def load_source(name : str) -> str:
@@ -761,22 +761,23 @@ def test_str_type_annotation():
 
 
 if __name__ == "__main__":
-    check_code("main", '''
+#     check_code("main", '''
 
-def foo(x):
-    return x
+# def foo(x):
+#     return x
 
-@foo #hello
-# between decorators 
-@foo #bye
-class A: # this is a class header comment 
-    pass
+# @foo
+# @fo
+# class A: 
+#     pass
 
-def foo(x : int): # this is a function header comment 
-    # whole line comment 0 
-    y = x + 1 # comment after stmt
-    z = y + 1 
-    # whole line comment 1 
+# def foo(x : int): 
+#     y = x + 1
+#     z = y + 1 
+#     return z
 
-    ''', checks = pals.all_checks, package=m())
+# foo(4)
+# pass
+
+#     ''', checks = pals.all_checks, package=m())
     pass

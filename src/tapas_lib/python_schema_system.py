@@ -852,6 +852,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -864,6 +865,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
             ]
@@ -877,6 +879,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -889,6 +892,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
             ]
@@ -900,6 +904,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("while "),
                 Nonterm("test", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
             ]
         ),
@@ -910,6 +915,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("while "),
                 Nonterm("test", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
             ]
@@ -921,6 +927,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("if "),
                 Nonterm("test", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "conditions", InLine())
             ]
@@ -931,7 +938,8 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("with "),
                 Nonterm("items", "sequence_with_item", InLine()),
-                Terminal(":"),
+                Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -941,7 +949,8 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("async with "),
                 Nonterm("items", "sequence_with_item", InLine()),
-                Terminal(":"),
+                Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -1642,6 +1651,7 @@ singles_schema : list[Rule] = [
             Terminal("except "),
             Nonterm("arg", "except_arg", InLine()),
             Terminal(":"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())
         ]
     ),
@@ -1673,6 +1683,7 @@ singles_schema : list[Rule] = [
             Terminal("elif "),
             Nonterm("test", "expr", InLine()),
             Terminal(":"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine()),
         ]
     ),

@@ -2486,6 +2486,14 @@ def from_stmt(
                 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_expr(o.iter))
 
@@ -2508,6 +2516,14 @@ def from_stmt(
 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_expr(o.iter))
 
@@ -2527,6 +2543,14 @@ def from_stmt(
             def handle_AsyncFor(o : AsyncFor): 
                 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
 
                 stack.append(from_expr(o.iter))
@@ -2550,6 +2574,14 @@ def from_stmt(
 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_expr(o.iter))
 
@@ -2570,6 +2602,14 @@ def from_stmt(
                 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_expr(o.test))
 
@@ -2588,6 +2628,14 @@ def from_stmt(
                 stack.append(from_ElseBlock(o.orelse))
 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
 
                 stack.append(from_expr(o.test))
@@ -2608,6 +2656,14 @@ def from_stmt(
 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_expr(o.test))
 
@@ -2625,6 +2681,14 @@ def from_stmt(
                 
                 stack.append(from_statements(o.body))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
 
                 stack.append(from_sequence_with_item(o.items))
 
@@ -2641,6 +2705,14 @@ def from_stmt(
             def handle_AsyncWith(o : AsyncWith): 
                 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
 
                 stack.append(from_sequence_with_item(o.items))
@@ -4225,6 +4297,7 @@ def from_ExceptHandler(
         )]) +
 
         from_except_arg(o.arg) +
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
     )
@@ -4291,6 +4364,7 @@ def from_ElifBlock(
         )]) +
 
         from_expr(o.test) +
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
     )

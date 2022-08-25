@@ -4428,6 +4428,7 @@ def update_AnnoDeclar(source_AnnoDeclar : AnnoDeclar,
 class For(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4438,6 +4439,7 @@ class For(stmt):
 def make_For(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -4445,6 +4447,7 @@ def make_For(
     return For(
         target,
         iter,
+        comment,
         body,
         source_start,
         source_end
@@ -4453,6 +4456,7 @@ def make_For(
 def update_For(source_For : For,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -4460,6 +4464,7 @@ def update_For(source_For : For,
     return For(
         source_For.target if isinstance(target, SourceFlag) else target,
         source_For.iter if isinstance(iter, SourceFlag) else iter,
+        source_For.comment if isinstance(comment, SourceFlag) else comment,
         source_For.body if isinstance(body, SourceFlag) else body,
         source_For.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_For.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4471,6 +4476,7 @@ def update_For(source_For : For,
 class ForElse(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     orelse : ElseBlock | None
     source_start : int
@@ -4482,6 +4488,7 @@ class ForElse(stmt):
 def make_ForElse(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : ElseBlock | None, 
     source_start : int = 0, 
@@ -4490,6 +4497,7 @@ def make_ForElse(
     return ForElse(
         target,
         iter,
+        comment,
         body,
         orelse,
         source_start,
@@ -4499,6 +4507,7 @@ def make_ForElse(
 def update_ForElse(source_ForElse : ForElse,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4507,6 +4516,7 @@ def update_ForElse(source_ForElse : ForElse,
     return ForElse(
         source_ForElse.target if isinstance(target, SourceFlag) else target,
         source_ForElse.iter if isinstance(iter, SourceFlag) else iter,
+        source_ForElse.comment if isinstance(comment, SourceFlag) else comment,
         source_ForElse.body if isinstance(body, SourceFlag) else body,
         source_ForElse.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_ForElse.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4519,6 +4529,7 @@ def update_ForElse(source_ForElse : ForElse,
 class AsyncFor(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4529,6 +4540,7 @@ class AsyncFor(stmt):
 def make_AsyncFor(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -4536,6 +4548,7 @@ def make_AsyncFor(
     return AsyncFor(
         target,
         iter,
+        comment,
         body,
         source_start,
         source_end
@@ -4544,6 +4557,7 @@ def make_AsyncFor(
 def update_AsyncFor(source_AsyncFor : AsyncFor,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -4551,6 +4565,7 @@ def update_AsyncFor(source_AsyncFor : AsyncFor,
     return AsyncFor(
         source_AsyncFor.target if isinstance(target, SourceFlag) else target,
         source_AsyncFor.iter if isinstance(iter, SourceFlag) else iter,
+        source_AsyncFor.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncFor.body if isinstance(body, SourceFlag) else body,
         source_AsyncFor.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncFor.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4562,6 +4577,7 @@ def update_AsyncFor(source_AsyncFor : AsyncFor,
 class AsyncForElse(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     orelse : ElseBlock | None
     source_start : int
@@ -4573,6 +4589,7 @@ class AsyncForElse(stmt):
 def make_AsyncForElse(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : ElseBlock | None, 
     source_start : int = 0, 
@@ -4581,6 +4598,7 @@ def make_AsyncForElse(
     return AsyncForElse(
         target,
         iter,
+        comment,
         body,
         orelse,
         source_start,
@@ -4590,6 +4608,7 @@ def make_AsyncForElse(
 def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4598,6 +4617,7 @@ def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
     return AsyncForElse(
         source_AsyncForElse.target if isinstance(target, SourceFlag) else target,
         source_AsyncForElse.iter if isinstance(iter, SourceFlag) else iter,
+        source_AsyncForElse.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncForElse.body if isinstance(body, SourceFlag) else body,
         source_AsyncForElse.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_AsyncForElse.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4609,6 +4629,7 @@ def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
 @dataclass(frozen=True, eq=True)
 class While(stmt):
     test : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4618,12 +4639,14 @@ class While(stmt):
 
 def make_While(
     test : expr | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return While(
         test,
+        comment,
         body,
         source_start,
         source_end
@@ -4631,12 +4654,14 @@ def make_While(
 
 def update_While(source_While : While,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> While:
     return While(
         source_While.test if isinstance(test, SourceFlag) else test,
+        source_While.comment if isinstance(comment, SourceFlag) else comment,
         source_While.body if isinstance(body, SourceFlag) else body,
         source_While.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_While.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4647,6 +4672,7 @@ def update_While(source_While : While,
 @dataclass(frozen=True, eq=True)
 class WhileElse(stmt):
     test : expr | None
+    comment : str
     body : statements | None
     orelse : ElseBlock | None
     source_start : int
@@ -4657,6 +4683,7 @@ class WhileElse(stmt):
 
 def make_WhileElse(
     test : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : ElseBlock | None, 
     source_start : int = 0, 
@@ -4664,6 +4691,7 @@ def make_WhileElse(
 ) -> stmt:
     return WhileElse(
         test,
+        comment,
         body,
         orelse,
         source_start,
@@ -4672,6 +4700,7 @@ def make_WhileElse(
 
 def update_WhileElse(source_WhileElse : WhileElse,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4679,6 +4708,7 @@ def update_WhileElse(source_WhileElse : WhileElse,
 ) -> WhileElse:
     return WhileElse(
         source_WhileElse.test if isinstance(test, SourceFlag) else test,
+        source_WhileElse.comment if isinstance(comment, SourceFlag) else comment,
         source_WhileElse.body if isinstance(body, SourceFlag) else body,
         source_WhileElse.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_WhileElse.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4690,6 +4720,7 @@ def update_WhileElse(source_WhileElse : WhileElse,
 @dataclass(frozen=True, eq=True)
 class If(stmt):
     test : expr | None
+    comment : str
     body : statements | None
     orelse : conditions | None
     source_start : int
@@ -4700,6 +4731,7 @@ class If(stmt):
 
 def make_If(
     test : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : conditions | None, 
     source_start : int = 0, 
@@ -4707,6 +4739,7 @@ def make_If(
 ) -> stmt:
     return If(
         test,
+        comment,
         body,
         orelse,
         source_start,
@@ -4715,6 +4748,7 @@ def make_If(
 
 def update_If(source_If : If,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[conditions | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4722,6 +4756,7 @@ def update_If(source_If : If,
 ) -> If:
     return If(
         source_If.test if isinstance(test, SourceFlag) else test,
+        source_If.comment if isinstance(comment, SourceFlag) else comment,
         source_If.body if isinstance(body, SourceFlag) else body,
         source_If.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_If.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4733,6 +4768,7 @@ def update_If(source_If : If,
 @dataclass(frozen=True, eq=True)
 class With(stmt):
     items : sequence_with_item | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4742,12 +4778,14 @@ class With(stmt):
 
 def make_With(
     items : sequence_with_item | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return With(
         items,
+        comment,
         body,
         source_start,
         source_end
@@ -4755,12 +4793,14 @@ def make_With(
 
 def update_With(source_With : With,
     items : Union[sequence_with_item | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> With:
     return With(
         source_With.items if isinstance(items, SourceFlag) else items,
+        source_With.comment if isinstance(comment, SourceFlag) else comment,
         source_With.body if isinstance(body, SourceFlag) else body,
         source_With.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_With.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4771,6 +4811,7 @@ def update_With(source_With : With,
 @dataclass(frozen=True, eq=True)
 class AsyncWith(stmt):
     items : sequence_with_item | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4780,12 +4821,14 @@ class AsyncWith(stmt):
 
 def make_AsyncWith(
     items : sequence_with_item | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return AsyncWith(
         items,
+        comment,
         body,
         source_start,
         source_end
@@ -4793,12 +4836,14 @@ def make_AsyncWith(
 
 def update_AsyncWith(source_AsyncWith : AsyncWith,
     items : Union[sequence_with_item | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> AsyncWith:
     return AsyncWith(
         source_AsyncWith.items if isinstance(items, SourceFlag) else items,
+        source_AsyncWith.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncWith.body if isinstance(body, SourceFlag) else body,
         source_AsyncWith.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncWith.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -8062,6 +8107,7 @@ def update_CompareRight(source_CompareRight : CompareRight,
 @dataclass(frozen=True, eq=True)
 class ExceptHandler:
     arg : except_arg | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -8069,24 +8115,28 @@ class ExceptHandler:
 
 def make_ExceptHandler(
     arg : except_arg | None,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ExceptHandler:
     return ExceptHandler(
         arg,
+        comment,
         body,
         source_start,
         source_end)
 
 def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
     arg : Union[except_arg | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ExceptHandler:
     return ExceptHandler(
         source_ExceptHandler.arg if isinstance(arg, SourceFlag) else arg, 
+        source_ExceptHandler.comment if isinstance(comment, SourceFlag) else comment, 
         source_ExceptHandler.body if isinstance(body, SourceFlag) else body, 
         source_ExceptHandler.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ExceptHandler.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8182,6 +8232,7 @@ def update_ClassDef(source_ClassDef : ClassDef,
 @dataclass(frozen=True, eq=True)
 class ElifBlock:
     test : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -8189,24 +8240,28 @@ class ElifBlock:
 
 def make_ElifBlock(
     test : expr | None,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ElifBlock:
     return ElifBlock(
         test,
+        comment,
         body,
         source_start,
         source_end)
 
 def update_ElifBlock(source_ElifBlock : ElifBlock,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ElifBlock:
     return ElifBlock(
         source_ElifBlock.test if isinstance(test, SourceFlag) else test, 
+        source_ElifBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_ElifBlock.body if isinstance(body, SourceFlag) else body, 
         source_ElifBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ElifBlock.source_end if isinstance(source_end, SourceFlag) else source_end)

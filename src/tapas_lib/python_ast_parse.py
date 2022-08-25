@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 
 
 from tapas_base import util_system
+from tapas_base.abstract_token_construct_autogen import Vocab
 from tapas_lib.generic_tree_system import GenericNode
 from tapas_lib.python_ast_construct_autogen import *
 from tapas_lib import python_ast_construct_autogen as past 
@@ -2332,7 +2333,6 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         (return_anno_node, comment_text, block_node) = (
             (children[4], merge_comments(children[6:-1]), children[-1])
             if children[3].syntax_part == "->" and children[5].syntax_part == ":" else
-            
 
             (None, merge_comments(children[4:-1]), children[-1])
             if children[3].syntax_part == ":" else
@@ -2396,7 +2396,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         (arguments_node, comment_text, block_node) = (
             (None, merge_comments(children[3:-1]), children[-1])
             if children[2].syntax_part == ":" else 
-            (children[2], merge_comments(children[3:-1]), children[-1])
+            (children[2], merge_comments(children[4:-1]), children[-1])
         )
 
         (argument_nodes) = (
@@ -2461,6 +2461,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         ], def_node.source_start, def_node.source_start)
 
         return from_generic_tree_to_stmts(def_node, decorators = decs)
+
+    elif (node.syntax_part == "comment"):
+        return [Comment(node.text, node.source_start, node.source_end)]
 
     else:
         # exec_statement for Python 2

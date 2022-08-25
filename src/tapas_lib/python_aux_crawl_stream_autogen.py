@@ -5129,12 +5129,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_For_body(
+        child_inher_aux = self.traverse_stmt_For_comment(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_For_body(
+            inher_aux,
+            target_tree, 
+            target_aux,
+            iter_tree, 
+            iter_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5143,7 +5158,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_For(inher_aux, target_tree, target_aux, iter_tree, iter_aux, body_tree, body_aux)
+        return self.synthesize_for_stmt_For(inher_aux, target_tree, target_aux, iter_tree, iter_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: stmt <-- ForElse"
     def inspect_stmt_ForElse(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5170,12 +5185,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_ForElse_body(
+        child_inher_aux = self.traverse_stmt_ForElse_comment(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_ForElse_body(
+            inher_aux,
+            target_tree, 
+            target_aux,
+            iter_tree, 
+            iter_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5189,6 +5219,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             target_aux,
             iter_tree, 
             iter_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -5199,7 +5231,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_ForElse(inher_aux, target_tree, target_aux, iter_tree, iter_aux, body_tree, body_aux, orelse_tree, orelse_aux)
+        return self.synthesize_for_stmt_ForElse(inher_aux, target_tree, target_aux, iter_tree, iter_aux, comment_tree, comment_aux, body_tree, body_aux, orelse_tree, orelse_aux)
     
     # inspect: stmt <-- AsyncFor"
     def inspect_stmt_AsyncFor(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5226,12 +5258,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_AsyncFor_body(
+        child_inher_aux = self.traverse_stmt_AsyncFor_comment(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_AsyncFor_body(
+            inher_aux,
+            target_tree, 
+            target_aux,
+            iter_tree, 
+            iter_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5240,7 +5287,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_AsyncFor(inher_aux, target_tree, target_aux, iter_tree, iter_aux, body_tree, body_aux)
+        return self.synthesize_for_stmt_AsyncFor(inher_aux, target_tree, target_aux, iter_tree, iter_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: stmt <-- AsyncForElse"
     def inspect_stmt_AsyncForElse(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5267,12 +5314,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(iter_tree, expr)
         iter_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_AsyncForElse_body(
+        child_inher_aux = self.traverse_stmt_AsyncForElse_comment(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
             iter_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_AsyncForElse_body(
+            inher_aux,
+            target_tree, 
+            target_aux,
+            iter_tree, 
+            iter_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5286,6 +5348,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             target_aux,
             iter_tree, 
             iter_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -5296,7 +5360,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_AsyncForElse(inher_aux, target_tree, target_aux, iter_tree, iter_aux, body_tree, body_aux, orelse_tree, orelse_aux)
+        return self.synthesize_for_stmt_AsyncForElse(inher_aux, target_tree, target_aux, iter_tree, iter_aux, comment_tree, comment_aux, body_tree, body_aux, orelse_tree, orelse_aux)
     
     # inspect: stmt <-- While"
     def inspect_stmt_While(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5312,10 +5376,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_While_body(
+        child_inher_aux = self.traverse_stmt_While_comment(
             inher_aux,
             test_tree, 
             test_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_While_body(
+            inher_aux,
+            test_tree, 
+            test_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5324,7 +5401,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_While(inher_aux, test_tree, test_aux, body_tree, body_aux)
+        return self.synthesize_for_stmt_While(inher_aux, test_tree, test_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: stmt <-- WhileElse"
     def inspect_stmt_WhileElse(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5340,10 +5417,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_WhileElse_body(
+        child_inher_aux = self.traverse_stmt_WhileElse_comment(
             inher_aux,
             test_tree, 
             test_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_WhileElse_body(
+            inher_aux,
+            test_tree, 
+            test_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5355,6 +5445,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             inher_aux,
             test_tree, 
             test_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -5365,7 +5457,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_WhileElse(inher_aux, test_tree, test_aux, body_tree, body_aux, orelse_tree, orelse_aux)
+        return self.synthesize_for_stmt_WhileElse(inher_aux, test_tree, test_aux, comment_tree, comment_aux, body_tree, body_aux, orelse_tree, orelse_aux)
     
     # inspect: stmt <-- If"
     def inspect_stmt_If(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5381,10 +5473,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(test_tree, expr)
         test_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_If_body(
+        child_inher_aux = self.traverse_stmt_If_comment(
             inher_aux,
             test_tree, 
             test_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_If_body(
+            inher_aux,
+            test_tree, 
+            test_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5396,6 +5501,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             inher_aux,
             test_tree, 
             test_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -5406,7 +5513,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_If(inher_aux, test_tree, test_aux, body_tree, body_aux, orelse_tree, orelse_aux)
+        return self.synthesize_for_stmt_If(inher_aux, test_tree, test_aux, comment_tree, comment_aux, body_tree, body_aux, orelse_tree, orelse_aux)
     
     # inspect: stmt <-- With"
     def inspect_stmt_With(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5422,10 +5529,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(items_tree, sequence_with_item)
         items_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_With_body(
+        child_inher_aux = self.traverse_stmt_With_comment(
             inher_aux,
             items_tree, 
             items_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_With_body(
+            inher_aux,
+            items_tree, 
+            items_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5434,7 +5554,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_With(inher_aux, items_tree, items_aux, body_tree, body_aux)
+        return self.synthesize_for_stmt_With(inher_aux, items_tree, items_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: stmt <-- AsyncWith"
     def inspect_stmt_AsyncWith(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5450,10 +5570,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(items_tree, sequence_with_item)
         items_aux = synth.aux
         
-        child_inher_aux = self.traverse_stmt_AsyncWith_body(
+        child_inher_aux = self.traverse_stmt_AsyncWith_comment(
             inher_aux,
             items_tree, 
             items_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_AsyncWith_body(
+            inher_aux,
+            items_tree, 
+            items_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -5462,7 +5595,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_AsyncWith(inher_aux, items_tree, items_aux, body_tree, body_aux)
+        return self.synthesize_for_stmt_AsyncWith(inher_aux, items_tree, items_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: stmt <-- Raise"
     def inspect_stmt_Raise(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -8031,10 +8164,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         arg_aux = synth.aux
             
 
-        child_inher_aux = self.traverse_ExceptHandler_body(
+        child_inher_aux = self.traverse_ExceptHandler_comment(
             inher_aux,
             arg_tree, 
             arg_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_ExceptHandler_body(
+            inher_aux,
+            arg_tree, 
+            arg_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -8044,7 +8191,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_ExceptHandler(inher_aux, arg_tree, arg_aux, body_tree, body_aux)
+        return self.synthesize_for_ExceptHandler(inher_aux, arg_tree, arg_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: Param"
     def inspect_Param(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
@@ -8165,10 +8312,24 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         test_aux = synth.aux
             
 
-        child_inher_aux = self.traverse_ElifBlock_body(
+        child_inher_aux = self.traverse_ElifBlock_comment(
             inher_aux,
             test_tree, 
             test_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_ElifBlock_body(
+            inher_aux,
+            test_tree, 
+            test_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -8178,7 +8339,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_ElifBlock(inher_aux, test_tree, test_aux, body_tree, body_aux)
+        return self.synthesize_for_ElifBlock(inher_aux, test_tree, test_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: ElseBlock"
     def inspect_ElseBlock(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
@@ -9115,14 +9276,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- For"
-    def traverse_stmt_For_body(self, 
+    def traverse_stmt_For_comment(self, 
         inher_aux : InherAux,
         target_tree : expr, 
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'str') 
+    
+    # traverse stmt <-- For"
+    def traverse_stmt_For_body(self, 
+        inher_aux : InherAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        iter_tree : expr, 
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_target(self, 
@@ -9139,14 +9312,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- ForElse"
-    def traverse_stmt_ForElse_body(self, 
+    def traverse_stmt_ForElse_comment(self, 
         inher_aux : InherAux,
         target_tree : expr, 
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'str') 
+    
+    # traverse stmt <-- ForElse"
+    def traverse_stmt_ForElse_body(self, 
+        inher_aux : InherAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        iter_tree : expr, 
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- ForElse"
     def traverse_stmt_ForElse_orelse(self, 
@@ -9155,10 +9340,12 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,), 'ElseBlock') 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, comment_aux, body_aux,), 'ElseBlock') 
     
     # traverse stmt <-- AsyncFor"
     def traverse_stmt_AsyncFor_target(self, 
@@ -9175,14 +9362,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- AsyncFor"
-    def traverse_stmt_AsyncFor_body(self, 
+    def traverse_stmt_AsyncFor_comment(self, 
         inher_aux : InherAux,
         target_tree : expr, 
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'str') 
+    
+    # traverse stmt <-- AsyncFor"
+    def traverse_stmt_AsyncFor_body(self, 
+        inher_aux : InherAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        iter_tree : expr, 
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_target(self, 
@@ -9199,14 +9398,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
     
     # traverse stmt <-- AsyncForElse"
-    def traverse_stmt_AsyncForElse_body(self, 
+    def traverse_stmt_AsyncForElse_comment(self, 
         inher_aux : InherAux,
         target_tree : expr, 
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux,), 'str') 
+    
+    # traverse stmt <-- AsyncForElse"
+    def traverse_stmt_AsyncForElse_body(self, 
+        inher_aux : InherAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        iter_tree : expr, 
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- AsyncForElse"
     def traverse_stmt_AsyncForElse_orelse(self, 
@@ -9215,10 +9426,12 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, body_aux,), 'ElseBlock') 
+        return self.traverse_auxes(inher_aux, (target_aux, iter_aux, comment_aux, body_aux,), 'ElseBlock') 
     
     # traverse stmt <-- While"
     def traverse_stmt_While_test(self, 
@@ -9227,12 +9440,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- While"
-    def traverse_stmt_While_body(self, 
+    def traverse_stmt_While_comment(self, 
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'str') 
+    
+    # traverse stmt <-- While"
+    def traverse_stmt_While_body(self, 
+        inher_aux : InherAux,
+        test_tree : expr, 
+        test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (test_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_test(self, 
@@ -9241,22 +9464,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- WhileElse"
-    def traverse_stmt_WhileElse_body(self, 
+    def traverse_stmt_WhileElse_comment(self, 
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'str') 
+    
+    # traverse stmt <-- WhileElse"
+    def traverse_stmt_WhileElse_body(self, 
+        inher_aux : InherAux,
+        test_tree : expr, 
+        test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (test_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- WhileElse"
     def traverse_stmt_WhileElse_orelse(self, 
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux, body_aux,), 'ElseBlock') 
+        return self.traverse_auxes(inher_aux, (test_aux, comment_aux, body_aux,), 'ElseBlock') 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_test(self, 
@@ -9265,22 +9500,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse stmt <-- If"
-    def traverse_stmt_If_body(self, 
+    def traverse_stmt_If_comment(self, 
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'str') 
+    
+    # traverse stmt <-- If"
+    def traverse_stmt_If_body(self, 
+        inher_aux : InherAux,
+        test_tree : expr, 
+        test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (test_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- If"
     def traverse_stmt_If_orelse(self, 
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux, body_aux,), 'conditions') 
+        return self.traverse_auxes(inher_aux, (test_aux, comment_aux, body_aux,), 'conditions') 
     
     # traverse stmt <-- With"
     def traverse_stmt_With_items(self, 
@@ -9289,12 +9536,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'sequence_with_item') 
     
     # traverse stmt <-- With"
-    def traverse_stmt_With_body(self, 
+    def traverse_stmt_With_comment(self, 
         inher_aux : InherAux,
         items_tree : sequence_with_item, 
         items_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (items_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (items_aux,), 'str') 
+    
+    # traverse stmt <-- With"
+    def traverse_stmt_With_body(self, 
+        inher_aux : InherAux,
+        items_tree : sequence_with_item, 
+        items_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (items_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- AsyncWith"
     def traverse_stmt_AsyncWith_items(self, 
@@ -9303,12 +9560,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'sequence_with_item') 
     
     # traverse stmt <-- AsyncWith"
-    def traverse_stmt_AsyncWith_body(self, 
+    def traverse_stmt_AsyncWith_comment(self, 
         inher_aux : InherAux,
         items_tree : sequence_with_item, 
         items_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (items_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (items_aux,), 'str') 
+    
+    # traverse stmt <-- AsyncWith"
+    def traverse_stmt_AsyncWith_body(self, 
+        inher_aux : InherAux,
+        items_tree : sequence_with_item, 
+        items_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (items_aux, comment_aux,), 'statements') 
     
     # traverse stmt <-- RaiseExc"
     def traverse_stmt_RaiseExc_exc(self, 
@@ -9914,12 +10181,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'except_arg') 
     
     # traverse ExceptHandler
-    def traverse_ExceptHandler_body(self,
+    def traverse_ExceptHandler_comment(self,
         inher_aux : InherAux,
         arg_tree : except_arg, 
         arg_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (arg_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (arg_aux,), 'str') 
+    
+    # traverse ExceptHandler
+    def traverse_ExceptHandler_body(self,
+        inher_aux : InherAux,
+        arg_tree : except_arg, 
+        arg_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (arg_aux, comment_aux,), 'statements') 
     
     # traverse Param
     def traverse_Param_name(self,
@@ -9988,12 +10265,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse ElifBlock
-    def traverse_ElifBlock_body(self,
+    def traverse_ElifBlock_comment(self,
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (test_aux,), 'str') 
+    
+    # traverse ElifBlock
+    def traverse_ElifBlock_body(self,
+        inher_aux : InherAux,
+        test_tree : expr, 
+        test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (test_aux, comment_aux,), 'statements') 
     
     # traverse ElseBlock
     def traverse_ElseBlock_body(self,
@@ -11098,12 +11385,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_For(target_tree, iter_tree, body_tree),
-            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux,)) 
+            tree = make_For(target_tree, iter_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((target_aux, iter_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- ForElse
@@ -11113,14 +11402,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         orelse_tree : ElseBlock, 
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux, orelse_aux,)) 
+            tree = make_ForElse(target_tree, iter_tree, comment_tree, body_tree, orelse_tree),
+            aux = self.synthesize_auxes((target_aux, iter_aux, comment_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- AsyncFor
@@ -11130,12 +11421,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_AsyncFor(target_tree, iter_tree, body_tree),
-            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux,)) 
+            tree = make_AsyncFor(target_tree, iter_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((target_aux, iter_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- AsyncForElse
@@ -11145,14 +11438,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         orelse_tree : ElseBlock, 
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes((target_aux, iter_aux, body_aux, orelse_aux,)) 
+            tree = make_AsyncForElse(target_tree, iter_tree, comment_tree, body_tree, orelse_tree),
+            aux = self.synthesize_auxes((target_aux, iter_aux, comment_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- While
@@ -11160,12 +11455,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_While(test_tree, body_tree),
-            aux = self.synthesize_auxes((test_aux, body_aux,)) 
+            tree = make_While(test_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((test_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- WhileElse
@@ -11173,14 +11470,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         orelse_tree : ElseBlock, 
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_WhileElse(test_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes((test_aux, body_aux, orelse_aux,)) 
+            tree = make_WhileElse(test_tree, comment_tree, body_tree, orelse_tree),
+            aux = self.synthesize_auxes((test_aux, comment_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- If
@@ -11188,14 +11487,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         orelse_tree : conditions, 
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_If(test_tree, body_tree, orelse_tree),
-            aux = self.synthesize_auxes((test_aux, body_aux, orelse_aux,)) 
+            tree = make_If(test_tree, comment_tree, body_tree, orelse_tree),
+            aux = self.synthesize_auxes((test_aux, comment_aux, body_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- With
@@ -11203,12 +11504,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         items_tree : sequence_with_item, 
         items_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_With(items_tree, body_tree),
-            aux = self.synthesize_auxes((items_aux, body_aux,)) 
+            tree = make_With(items_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((items_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- AsyncWith
@@ -11216,12 +11519,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         items_tree : sequence_with_item, 
         items_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_AsyncWith(items_tree, body_tree),
-            aux = self.synthesize_auxes((items_aux, body_aux,)) 
+            tree = make_AsyncWith(items_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((items_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: stmt <-- Raise
@@ -12179,12 +12484,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         arg_tree : except_arg, 
         arg_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ExceptHandler(arg_tree, body_tree),
-            aux = self.synthesize_auxes((arg_aux, body_aux,)) 
+            tree = make_ExceptHandler(arg_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((arg_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: Param
@@ -12224,12 +12531,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ElifBlock(test_tree, body_tree),
-            aux = self.synthesize_auxes((test_aux, body_aux,)) 
+            tree = make_ElifBlock(test_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((test_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: ElseBlock

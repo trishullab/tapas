@@ -1310,8 +1310,8 @@ def analyze_modules_once(
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            # raise ex
-            continue
+            raise ex
+            # continue
             # return package 
         finally:
             print("")
@@ -3559,10 +3559,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         tail_tree : pas.decorators, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        assert len(head_aux.observed_types) == 1
-        head_type = head_aux.observed_types[0]
         synth_aux = make_SynthAux(
-            observed_types = (head_type,) + tail_aux.observed_types
+            observed_types = head_aux.observed_types + tail_aux.observed_types
         )
         return paa.Result[SynthAux](
             tree = pas.make_ConsDec(head_tree, tail_tree),

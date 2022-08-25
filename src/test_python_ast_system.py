@@ -68,6 +68,21 @@ def test_comment():
 
     code = ('''
 
+
+x = 0
+if True: # comment after if
+    x = 0 # comment 
+    # comment
+    x = x + 1
+elif False: # comment after elif
+    x = 0 # comment 
+    # comment
+    x = x + 1
+else: # comment after else
+    x = 0 # comment 
+    # comment
+    x = x + 1
+
 def foo(x):
     return x
 
