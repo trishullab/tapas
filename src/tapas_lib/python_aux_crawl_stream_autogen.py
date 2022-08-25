@@ -1054,6 +1054,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         while stack:
 
             (token, inher_aux, children) = stack.pop()
+            
+            print(f'token ~? {token}')
 
             if not isinstance(token, Grammar): raise SyntaxError()
             stack_result = self.inspect_statements(token, inher_aux, children, stack_result, stack)

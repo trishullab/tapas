@@ -718,25 +718,25 @@ def from_generic_tree_to_ExceptHandler(node : GenericNode) -> ExceptHandler:
     assert node.syntax_part == "except_clause"
     children = node.children
     assert children[0].syntax_part == "except"
-    (expr_node, name_node, block_node) = (
+    (expr_node, name_node, comment_text, block_node) = (
 
-        (None, None, children[2])
+        (None, None, merge_comments(children[2:-1]), children[-1])
         if children[1].syntax_part == ":" else 
         
-        (children[1], None, children[3])
+        (children[1], None, merge_comments(children[3:-1]), children[-1])
         if children[2].syntax_part == ":" else 
         
-        (children[1], children[3], children[5]) if (
+        (children[1], children[3], merge_comments(children[5:-1]), children[-1]) if (
             children[2].syntax_part == "as" and 
             children[4].syntax_part == ":" 
         ) else 
 
-        (children[1], children[3], children[5]) if (
+        (children[1], children[3], merge_comments(children[5:-1]), children[-1]) if (
             children[2].syntax_part == "," and 
             children[4].syntax_part == ":" 
         ) else 
         
-        (None, None, None)
+        (None, None, '', None)
     )
 
     assert block_node
@@ -759,7 +759,7 @@ def from_generic_tree_to_ExceptHandler(node : GenericNode) -> ExceptHandler:
         NoExceptArg(node.source_start, node.source_end)
     )
 
-    return  ExceptHandler(arg, to_statements(stmts), node.source_start, node.source_end)
+    return  ExceptHandler(arg, comment_text, to_statements(stmts), node.source_start, node.source_end)
 
 
 def from_generic_tree_to_with_item(node : GenericNode) -> with_item:
@@ -1925,7 +1925,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[0].syntax_part == "if"
         cond_node = children[1]
         assert children[2].syntax_part  == ":"
-        block_node = children[3]
+        comment_text = merge_comments(children[3:-2])
+        block_node = children[-2]
 
 
         def to_else_content(else_node : GenericNode) -> statements | None:
@@ -1942,17 +1943,19 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ])
 
-        def to_elif_content(elif_node : GenericNode) -> tuple[expr | None, statements | None]:
+        def to_elif_content(elif_node : GenericNode) -> tuple[expr | None, str, statements | None]:
             assert (elif_node.syntax_part == "elif_clause")
             else_children = elif_node.children
             assert else_children[0].syntax_part == "elif"
             cond_node = else_children[1]
             assert else_children[2].syntax_part == ":"
 
-            block_node_ = else_children[3]
+            (comment_text, block_node_) = (merge_comments(else_children[3:-1]), else_children[-1])
+
             block_children = block_node_.children
             return (
                 from_generic_tree_to_expr(cond_node),
+                comment_text,
                 to_statements([
                     stmt 
                     for stmt_node in block_children
@@ -1975,9 +1978,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         )
 
         for n in reversed(else_nodes):
-            (e, sts) = to_elif_content(n)
+            (e, comment_text, sts) = to_elif_content(n)
             else_block = ElifCond(
-                ElifBlock(e, sts, n.source_start, n.source_end), 
+                ElifBlock(e, comment_text, sts, n.source_start, n.source_end), 
                 else_block,
                 node.source_start, node.source_end
             )
@@ -1989,7 +1992,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for stmt_node in block_node.children
             for stmt in from_generic_tree_to_stmts(stmt_node)
         ])
-        return [If(cond, block, else_block, node.source_start, node.source_end)]
+        return [If(cond, comment_text, block, else_block, node.source_start, node.source_end)]
                 
 
 
@@ -2008,7 +2011,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[2].syntax_part == "in"
         iter_expr = from_generic_tree_to_expr(children[3])
         assert children[4].syntax_part == ":"
-        block_node = children[5]
+        comment_text, block_node = (merge_comments(children[5:-1]), children[-1])
         body_stmts = to_statements([
             stmt
             for stmt_node in block_node.children
@@ -2049,23 +2052,23 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
             if is_async:
                 return [
-                    AsyncForElse(target_expr, iter_expr, body_stmts, else_block, node.source_start, node.source_end)
+                    AsyncForElse(target_expr, iter_expr, comment_text, body_stmts, else_block, node.source_start, node.source_end)
                 ]
 
             else:
                 return [
-                    ForElse(target_expr, iter_expr, body_stmts, else_block, node.source_start, node.source_end)
+                    ForElse(target_expr, iter_expr, comment_text, body_stmts, else_block, node.source_start, node.source_end)
                 ]
         else:
 
             if is_async:
                 return [
-                    AsyncFor(target_expr, iter_expr, body_stmts, node.source_start, node.source_end)
+                    AsyncFor(target_expr, iter_expr, comment_text, body_stmts, node.source_start, node.source_end)
                 ]
 
             else:
                 return [
-                    For(target_expr, iter_expr, body_stmts, node.source_start, node.source_end)
+                    For(target_expr, iter_expr, comment_text, body_stmts, node.source_start, node.source_end)
                 ]
 
     elif(node.syntax_part == "while_statement"):
@@ -2074,7 +2077,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         test_expr = from_generic_tree_to_expr(children[1])
 
         assert children[2].syntax_part == ":"
-        block_node = children[3]
+        comment_text = merge_comments(children[3:-2])
+        block_node = children[-2]
         assert block_node.syntax_part == "block"
         body_stmts = to_statements([
             stmt
@@ -2115,11 +2119,11 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             )
 
             return [
-                WhileElse(test_expr, body_stmts, else_stmts, node.source_start, node.source_end)
+                WhileElse(test_expr, comment_text, body_stmts, else_stmts, node.source_start, node.source_end)
             ]
         else:
             return [
-                While(test_expr, body_stmts, node.source_start, node.source_end)
+                While(test_expr, comment_text, body_stmts, node.source_start, node.source_end)
             ]
 
     elif (node.syntax_part == "try_statement"):
@@ -2291,7 +2295,8 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
 
         assert children[2].syntax_part == ":"
-        block_node = children[3]
+        comment_text = merge_comments(children[3:-1])
+        block_node = children[-1]
         assert block_node.syntax_part == "block"
         stmts = to_statements([
             stmt
@@ -2302,7 +2307,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         if is_async:
             return [
                 AsyncWith(
-                    with_items, stmts,
+                    with_items, comment_text, stmts,
                     node.source_start, node.source_end
                 )
             ]
@@ -2310,7 +2315,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         else:
             return [
                 With(
-                    with_items, stmts,
+                    with_items, comment_text, stmts,
                     node.source_start, node.source_end
                 )
             ]

@@ -4803,6 +4803,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4810,8 +4812,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         usage_additions = filter_usage_additions(body_aux.usage_additions, target_aux.usage_additions, body_aux.decl_additions)
 
         return paa.Result[SynthAux](
-            tree = pas.make_For(target_tree, iter_tree, body_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux])),
+            tree = pas.make_For(target_tree, iter_tree, comment_tree, body_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, comment_aux, body_aux])),
                 decl_subtractions = iter_aux.decl_subtractions, 
                 decl_additions = iter_aux.decl_additions,
                 usage_additions = usage_additions
@@ -4845,6 +4847,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.ElseBlock, 
@@ -4862,8 +4866,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             to_change_decl(orelse_aux)
         )
         return paa.Result[SynthAux](
-            tree = pas.make_ForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
+            tree = pas.make_ForElse(target_tree, iter_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, comment_aux, body_aux, orelse_aux])),
                 decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions = iter_aux.decl_additions + change_decl.additions,
                 usage_additions = usage_additions
@@ -4895,6 +4899,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4906,9 +4912,9 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
-        new_synth_aux = self.synthesize_auxes(tuple([iter_aux, body_aux]))
+        new_synth_aux = self.synthesize_auxes((iter_aux, comment_aux, body_aux))
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncFor(target_tree, iter_tree, body_tree),
+            tree = pas.make_AsyncFor(target_tree, iter_tree, comment_tree, body_tree),
             aux = make_SynthAux(
                 decl_subtractions = new_synth_aux.decl_subtractions, 
                 decl_additions= (
@@ -4943,6 +4949,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.ElseBlock, 
@@ -4962,8 +4970,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             to_change_decl(orelse_aux)
         )
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
+            tree = pas.make_AsyncForElse(target_tree, iter_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, comment_aux, body_aux, orelse_aux])),
                 decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions= (
                     iter_aux.decl_additions + change_decl.additions +
@@ -5102,13 +5110,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
         return paa.Result[SynthAux](
-            tree = pas.make_While(test_tree, body_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux])),
+            tree = pas.make_While(test_tree, comment_tree, body_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, comment_aux, body_aux])),
                 decl_subtractions = test_aux.decl_subtractions,
                 decl_additions = test_aux.decl_additions,
             ) 
@@ -5119,6 +5129,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.ElseBlock, 
@@ -5130,8 +5142,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
         return paa.Result[SynthAux](
-            tree = pas.make_WhileElse(test_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])),
+            tree = pas.make_WhileElse(test_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes((test_aux, comment_aux, body_aux, orelse_aux)),
                 decl_subtractions = test_aux.decl_subtractions.update(change_decl.subtractions),
                 decl_additions = test_aux.decl_additions + change_decl.additions,
             ) 
@@ -5143,6 +5155,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> InherAux:
@@ -5153,6 +5167,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.conditions, 
@@ -5165,8 +5181,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
         return paa.Result[SynthAux](
-            tree = pas.make_If(test_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])),
+            tree = pas.make_If(test_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, comment_aux, body_aux, orelse_aux])),
                 decl_subtractions = test_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions = test_aux.decl_additions + change_decl.additions,
                 return_types = body_aux.return_types + orelse_aux.return_types,
@@ -5211,11 +5227,13 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         return paa.Result[SynthAux](
-            tree = pas.make_ElifBlock(test_tree, body_tree), 
+            tree = pas.make_ElifBlock(test_tree, comment_tree, body_tree), 
             aux = update_SynthAux(body_aux,
                 return_types = body_aux.return_types, 
                 yield_types = body_aux.yield_types, 
