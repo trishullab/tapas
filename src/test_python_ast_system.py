@@ -85,8 +85,6 @@ def foo(x : int): # this is a function header comment
 
     ''')
 
-
-
     gnode = pgs.parse(code)
     print("-- generic node --")  
     print(pgs.dump(gnode))

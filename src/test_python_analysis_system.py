@@ -74,6 +74,11 @@ def check(module_name : str, checks = pals.all_checks) -> None:
     inspect(-1)
     kill()
 
+def check_code(module_name : str, code : str, checks = pals.all_checks, package = package) -> None:
+    (inspect, kill) = spawn_inspect_code(module_name, code, checks, package)
+    inspect(-1)
+    kill()
+
 def spawn_inspect(module_name : str, checks = pals.all_checks, package = package) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
     code = load_source(module_name) 
     return spawn_inspect_code(module_name, code, checks, package)
@@ -756,4 +761,22 @@ def test_str_type_annotation():
 
 
 if __name__ == "__main__":
+    check_code("main", '''
+
+def foo(x):
+    return x
+
+@foo #hello
+# between decorators 
+@foo #bye
+class A: # this is a class header comment 
+    pass
+
+def foo(x : int): # this is a function header comment 
+    # whole line comment 0 
+    y = x + 1 # comment after stmt
+    z = y + 1 
+    # whole line comment 1 
+
+    ''', checks = pals.all_checks, package=m())
     pass

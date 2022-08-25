@@ -3627,7 +3627,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux,
         bs_tree : pas.bases, 
-        bs_aux : SynthAux
+        bs_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         if not inher_aux.internal_path:
             return update_InherAux(inher_aux,
@@ -3917,7 +3919,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_tree : pas.parameters, 
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
-        ret_anno_aux : SynthAux
+        ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         assert len(params_aux.decl_subtractions) == 0
         inher_aux = traverse_function_body(inher_aux, name_tree, get_first_param(params_tree))
@@ -3941,7 +3945,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_tree : pas.parameters, 
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
-        ret_anno_aux : SynthAux
+        ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         assert len(params_aux.decl_subtractions) == 0
         inher_aux = traverse_function_body(inher_aux, name_tree, get_first_param(params_tree))
