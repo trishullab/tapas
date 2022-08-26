@@ -68,6 +68,41 @@ def test_comment():
 
 #     code = ('''
 
+# (not # hello A
+#     True # hello B
+#     # hello C
+# )
+
+# (#hello A
+#     1 #hello B
+#     , #hello C
+#     2 #hello D
+#     #hello E 
+# ) #hello F
+
+
+# def foo(x : int):
+#     return x
+
+# foo( # hello A
+#     1 #hello B
+#     #hello C
+# )
+
+# (1 # hello A
+#     + # hello B
+#     2 # hello
+# )
+
+# (# hello A
+#     0 #hello B
+# if # hello C
+# True # hello D
+# else  # hello E
+#     1 #hello F
+#     #hello G 
+# )
+
 # try:
 #     foo()
 # except Exception(): 
@@ -108,35 +143,27 @@ def test_comment():
 
 #     ''')
 
+
+
     code = ('''
-
-x = 0
-if True: # comment after if
-    # another comment
-    x = 0 # comment 
-    # comment
-    x = x + 1
-elif False: # comment after elif
-    x = 0 # comment 
-    # comment
-    x = x + 1
-else: # comment after else
-    x = 0 # comment 
-    # comment
-    x = x + 1
-
+(#hello A
+    1 #hello B
+    , #hello C
+    2 #hello D
+    #hello E 
+) #hello F
     ''')
 
     gnode = pgs.parse(code)
     print("-- generic node --")  
     print(pgs.dump(gnode))
 
-    mod = pas.parse_from_generic_tree(gnode)
-    seq = pas.serialize(mod)
-    print(seq)
+    # mod = pas.parse_from_generic_tree(gnode)
+    # seq = pas.serialize(mod)
+    # print(seq)
 
-    print("-- AST --")  
-    print(pats.dump(seq))
+    # print("-- AST --")  
+    # print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()
