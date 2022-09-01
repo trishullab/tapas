@@ -4489,6 +4489,40 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
         if False:
             pass
         
+        elif rule_name == "ParenExpr": 
+            children = children
+            remainder = remainder
+            if stack_result:
+                # get the result from the child in the stack
+                (child, remainder) = stack_result
+                children = children + [child]
+                stack_result = None
+
+            total_num_children = 3
+
+            index = len(children)
+            if index == total_num_children:
+                # the processing of the current rule has completed
+                # return the result to the parent in the stack 
+                stack_result = (
+                    ParenExpr(children[0], children[1], children[2]),
+                    remainder
+                )
+            
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+            else: # index refers to an inductive child
+                stack.append((x, children, remainder))
+                stack.append((remainder[-1], [], remainder[:-1]))
+        
+
         elif rule_name == "BoolOp": 
             children = children
             remainder = remainder
@@ -4552,19 +4586,29 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 3
+            total_num_children = 5
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    BinOp(children[0], children[1], children[2]),
+                    BinOp(children[0], children[1], children[2], children[3], children[4]),
                     remainder
                 )
             
             elif index == 1: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
                 (child, remainder) = to_bin_rator(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 3: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child

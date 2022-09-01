@@ -3089,6 +3089,37 @@ def from_expr(
         if isinstance(stack_item, expr):
 
             
+            def handle_ParenExpr(o : ParenExpr): 
+                
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+                stack.append(o.content)
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
+
+                stack.append(
+                    tuple([make_Grammar(
+                        options = 'expr',
+                        selection = 'ParenExpr',
+                        source_start = o.source_start,
+                        source_end = o.source_end
+                    )])
+                )
+    
+
             def handle_BoolOp(o : BoolOp): 
                 
 
@@ -3131,8 +3162,24 @@ def from_expr(
 
                 stack.append(o.right)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
 
                 stack.append(from_bin_rator(o.rator))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
 
                 stack.append(o.left)
@@ -3661,6 +3708,7 @@ def from_expr(
 
 
             match_expr(stack_item, ExprHandlers(
+                case_ParenExpr = handle_ParenExpr,
                 case_BoolOp = handle_BoolOp,
                 case_AssignExpr = handle_AssignExpr,
                 case_BinOp = handle_BinOp,

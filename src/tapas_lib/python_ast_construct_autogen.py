@@ -5624,6 +5624,49 @@ class expr(ABC):
 # constructors for type expr
 
 @dataclass(frozen=True, eq=True)
+class ParenExpr(expr):
+    pre_comment : str
+    content : expr | None
+    post_comment : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : ExprHandlers[T]) -> T:
+        return handlers.case_ParenExpr(self)
+
+def make_ParenExpr(
+    pre_comment : str, 
+    content : expr | None, 
+    post_comment : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> expr:
+    return ParenExpr(
+        pre_comment,
+        content,
+        post_comment,
+        source_start,
+        source_end
+    )
+
+def update_ParenExpr(source_ParenExpr : ParenExpr,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> ParenExpr:
+    return ParenExpr(
+        source_ParenExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_ParenExpr.content if isinstance(content, SourceFlag) else content,
+        source_ParenExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
+        source_ParenExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_ParenExpr.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
 class BoolOp(expr):
     left : expr | None
     op : bool_rator | None
@@ -5707,7 +5750,9 @@ def update_AssignExpr(source_AssignExpr : AssignExpr,
 @dataclass(frozen=True, eq=True)
 class BinOp(expr):
     left : expr | None
+    pre_comment : str
     rator : bin_rator | None
+    post_comment : str
     right : expr | None
     source_start : int
     source_end : int
@@ -5717,14 +5762,18 @@ class BinOp(expr):
 
 def make_BinOp(
     left : expr | None, 
+    pre_comment : str, 
     rator : bin_rator | None, 
+    post_comment : str, 
     right : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return BinOp(
         left,
+        pre_comment,
         rator,
+        post_comment,
         right,
         source_start,
         source_end
@@ -5732,14 +5781,18 @@ def make_BinOp(
 
 def update_BinOp(source_BinOp : BinOp,
     left : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     rator : Union[bin_rator | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     right : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> BinOp:
     return BinOp(
         source_BinOp.left if isinstance(left, SourceFlag) else left,
+        source_BinOp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_BinOp.rator if isinstance(rator, SourceFlag) else rator,
+        source_BinOp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_BinOp.right if isinstance(right, SourceFlag) else right,
         source_BinOp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_BinOp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6874,6 +6927,7 @@ def update_Slice(source_Slice : Slice,
 # case handlers for type expr
 @dataclass(frozen=True, eq=True)
 class ExprHandlers(Generic[T]):
+    case_ParenExpr : Callable[[ParenExpr], T]
     case_BoolOp : Callable[[BoolOp], T]
     case_AssignExpr : Callable[[AssignExpr], T]
     case_BinOp : Callable[[BinOp], T]
@@ -6917,11 +6971,12 @@ def match_expr(o : expr, handlers : ExprHandlers[T]) -> T :
     return o.match(handlers)
 
 
-expr_union = Union[BoolOp, AssignExpr, BinOp, UnaryOp, Lambda, IfExp, Dictionary, EmptyDictionary, Set, ListComp, SetComp, DictionaryComp, GeneratorExp, Await, YieldNothing, Yield, YieldFrom, Compare, Call, CallArgs, Integer, Float, ConcatString, True_, False_, None_, Ellip, Attribute, Subscript, Starred, Name, List, EmptyList, Tuple, EmptyTuple, Slice]
+expr_union = Union[ParenExpr, BoolOp, AssignExpr, BinOp, UnaryOp, Lambda, IfExp, Dictionary, EmptyDictionary, Set, ListComp, SetComp, DictionaryComp, GeneratorExp, Await, YieldNothing, Yield, YieldFrom, Compare, Call, CallArgs, Integer, Float, ConcatString, True_, False_, None_, Ellip, Attribute, Subscript, Starred, Name, List, EmptyList, Tuple, EmptyTuple, Slice]
 
 # unguarding for type expr
 def unguard_expr(o : expr) -> expr_union :
     return match_expr(o, ExprHandlers(
+        case_ParenExpr = lambda x : x, 
         case_BoolOp = lambda x : x, 
         case_AssignExpr = lambda x : x, 
         case_BinOp = lambda x : x, 
@@ -8467,6 +8522,7 @@ ast = Union[
     Pass,
     Break,
     Continue,
+    ParenExpr,
     BoolOp,
     AssignExpr,
     BinOp,

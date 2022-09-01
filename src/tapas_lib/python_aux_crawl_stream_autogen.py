@@ -1382,6 +1382,10 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         if False: 
             pass
         
+        elif rule_name == "ParenExpr": 
+            return self.inspect_expr_ParenExpr(inher_aux, children, stack_result, stack)
+            
+
         elif rule_name == "BoolOp": 
             return self.inspect_expr_BoolOp(inher_aux, children, stack_result, stack)
             
@@ -6026,6 +6030,99 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         return self.synthesize_for_stmt_Continue(inher_aux)
     
+    # inspect: expr <-- ParenExpr
+    def inspect_expr_ParenExpr(self,
+        inher_aux : InherAux, children : tuple[Result[SynthAux], ...], stack_result : Optional[Result[SynthAux]], 
+        stack : list[tuple[abstract_token, InherAux, tuple[Result[SynthAux], ...]]]
+    ) -> Optional[Result[SynthAux]]:
+
+        
+        if stack_result:
+            # get the result from the child in the stack
+            children = children + (stack_result,)
+        
+
+        total_num_children = 3
+
+        index = len(children)
+        if index == total_num_children:
+            # the processing of the current rule has completed
+            # return the analysis result to the previous item in the stack
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+                
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            return self.synthesize_for_expr_ParenExpr(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux)
+        
+        elif index == 0: # index does *not* refer to an inductive child
+
+            
+
+
+            child_inher_aux = self.traverse_expr_ParenExpr_pre_comment(
+                inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "ParenExpr"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_ParenExpr_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "ParenExpr"), inher_aux, children + (child_synth,)))
+            return None
+            
+        
+        elif index == 1 : # index refers to an inductive child
+            # put back current node
+            stack.append((make_Grammar("expr", "ParenExpr"), inher_aux, children))
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+            # add on child node 
+            child_inher_aux = self.traverse_expr_ParenExpr_content(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            stack.append((self.next(child_inher_aux), child_inher_aux, ()))
+            
+        else:
+            raise SyntaxError()
+    
     # inspect: expr <-- BoolOp
     def inspect_expr_BoolOp(self,
         inher_aux : InherAux, children : tuple[Result[SynthAux], ...], stack_result : Optional[Result[SynthAux]], 
@@ -6192,7 +6289,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 3
+        total_num_children = 5
 
         index = len(children)
         if index == total_num_children:
@@ -6203,15 +6300,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(left_tree, expr)
             left_aux = children[0].aux
                 
-            rator_tree = children[1].tree
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+                
+            rator_tree = children[2].tree
             assert isinstance(rator_tree, bin_rator)
-            rator_aux = children[1].aux
+            rator_aux = children[2].aux
                 
-            right_tree = children[2].tree
+            post_comment_tree = children[3].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[3].aux
+                
+            right_tree = children[4].tree
             assert isinstance(right_tree, expr)
-            right_aux = children[2].aux
+            right_aux = children[4].aux
                 
-            return self.synthesize_for_expr_BinOp(inher_aux, left_tree, left_aux, rator_tree, rator_aux, right_tree, right_aux)
+            return self.synthesize_for_expr_BinOp(inher_aux, left_tree, left_aux, pre_comment_tree, pre_comment_aux, rator_tree, rator_aux, post_comment_tree, post_comment_aux, right_tree, right_aux)
         
         elif index == 1: # index does *not* refer to an inductive child
 
@@ -6221,13 +6326,68 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_aux = children[0].aux
 
 
-            child_inher_aux = self.traverse_expr_BinOp_rator(
+            child_inher_aux = self.traverse_expr_BinOp_pre_comment(
                 inher_aux,
                 left_tree, 
                 left_aux
             )
             child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "BinOp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            left_tree = children[0].tree
+            assert isinstance(left_tree, expr)
+            left_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_BinOp_rator(
+                inher_aux,
+                left_tree, 
+                left_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
             child_synth = self.crawl_bin_rator(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "BinOp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            left_tree = children[0].tree
+            assert isinstance(left_tree, expr)
+            left_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+            rator_tree = children[2].tree
+            assert isinstance(rator_tree, bin_rator)
+            rator_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_expr_BinOp_post_comment(
+                inher_aux,
+                left_tree, 
+                left_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                rator_tree, 
+                rator_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("expr", "BinOp"), inher_aux, children + (child_synth,)))
             return None
@@ -6246,7 +6406,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
 
-        elif index == 2 : # index refers to an inductive child
+        elif index == 4 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "BinOp"), inher_aux, children))
 
@@ -6254,17 +6414,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_tree = children[0].tree
             assert isinstance(left_tree, expr)
             left_aux = children[0].aux
-            rator_tree = children[1].tree
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+            rator_tree = children[2].tree
             assert isinstance(rator_tree, bin_rator)
-            rator_aux = children[1].aux
+            rator_aux = children[2].aux
+            post_comment_tree = children[3].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[3].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_BinOp_right(
                 inher_aux,
                 left_tree, 
                 left_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 rator_tree, 
-                rator_aux
+                rator_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -9797,6 +9967,30 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
+    # traverse expr <-- ParenExpr"
+    def traverse_expr_ParenExpr_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse expr <-- ParenExpr"
+    def traverse_expr_ParenExpr_content(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'expr') 
+    
+    # traverse expr <-- ParenExpr"
+    def traverse_expr_ParenExpr_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : expr, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
+    
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_left(self, 
         inher_aux : InherAux
@@ -9842,22 +10036,48 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- BinOp"
-    def traverse_expr_BinOp_rator(self, 
+    def traverse_expr_BinOp_pre_comment(self, 
         inher_aux : InherAux,
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux,), 'bin_rator') 
+        return self.traverse_auxes(inher_aux, (left_aux,), 'str') 
+    
+    # traverse expr <-- BinOp"
+    def traverse_expr_BinOp_rator(self, 
+        inher_aux : InherAux,
+        left_tree : expr, 
+        left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (left_aux, pre_comment_aux,), 'bin_rator') 
+    
+    # traverse expr <-- BinOp"
+    def traverse_expr_BinOp_post_comment(self, 
+        inher_aux : InherAux,
+        left_tree : expr, 
+        left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        rator_tree : bin_rator, 
+        rator_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (left_aux, pre_comment_aux, rator_aux,), 'str') 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_right(self, 
         inher_aux : InherAux,
         left_tree : expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         rator_tree : bin_rator, 
-        rator_aux : SynthAux
+        rator_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux, rator_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (left_aux, pre_comment_aux, rator_aux, post_comment_aux,), 'expr') 
     
     # traverse expr <-- UnaryOp"
     def traverse_expr_UnaryOp_rator(self, 
@@ -11794,6 +12014,21 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             aux = self.synthesize_auxes(()) 
         )
     
+    # synthesize: expr <-- ParenExpr
+    def synthesize_for_expr_ParenExpr(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : expr, 
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> Result[SynthAux]:
+        return Result[SynthAux](
+            tree = make_ParenExpr(pre_comment_tree, content_tree, post_comment_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux,)) 
+        )
+    
     # synthesize: expr <-- BoolOp
     def synthesize_for_expr_BoolOp(self, 
         inher_aux : InherAux,
@@ -11827,14 +12062,18 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         left_tree : expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         rator_tree : bin_rator, 
         rator_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         right_tree : expr, 
         right_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_BinOp(left_tree, rator_tree, right_tree),
-            aux = self.synthesize_auxes((left_aux, rator_aux, right_aux,)) 
+            tree = make_BinOp(left_tree, pre_comment_tree, rator_tree, post_comment_tree, right_tree),
+            aux = self.synthesize_auxes((left_aux, pre_comment_aux, rator_aux, post_comment_aux, right_aux,)) 
         )
     
     # synthesize: expr <-- UnaryOp

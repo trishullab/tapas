@@ -38,6 +38,7 @@ def node_error(node : GenericNode) -> None:
 
 
 def is_comment(cm_node):
+    print(f"cm_node ~> {cm_node}")
     assert cm_node.syntax_part == "comment"
     return cm_node.syntax_part == "comment"
 
@@ -883,14 +884,21 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     if node.syntax_part == "binary_operator" :
         children = node.children
         left_node = children[0]
-        op_node = children[1]
-        right_node = children[2]
+        split_index = next(
+            i + 1 for i, n in enumerate(children[1:-1])
+            if n.syntax_part != "comment"
+        )
+        op_node = children[split_index]
+        print(f"op_node :: {op_node}")
+        pre_comment = merge_comments(children[1:split_index])
+        post_comment = merge_comments(children[split_index + 1: -1])
+        right_node = children[-1]
 
         left_expr = from_generic_tree_to_expr(left_node)
         op = from_generic_tree_to_bin_rator(op_node)
         right_expr = from_generic_tree_to_expr(right_node)
 
-        return BinOp(left_expr, op, right_expr, left_node.source_start, right_node.source_end)
+        return BinOp(left_expr, pre_comment, op, post_comment, right_expr, left_node.source_start, right_node.source_end)
 
     elif node.syntax_part == "identifier":
         return Name(from_generic_tree_to_identifier(node), node.source_start, node.source_end)
@@ -1143,8 +1151,16 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
     
     elif (node.syntax_part == "parenthesized_expression"):
-        expr_node = node.children[1:-1][0]
-        return from_generic_tree_to_expr(expr_node)
+        children = node.children[1:-1]
+        split_index = next(
+            i for i, n in enumerate(children)
+            if n.syntax_part != "comment"
+        ) 
+        pre_comment = merge_comments(children[0:split_index])
+        post_comment = merge_comments(children[split_index + 1:])
+        expr_node = children[split_index] 
+
+        return ParenExpr(pre_comment, from_generic_tree_to_expr(expr_node), post_comment, node.source_start, node.source_end)
 
     elif (node.syntax_part == "ellipsis"):
         return Ellip(node.source_start, node.source_end) 

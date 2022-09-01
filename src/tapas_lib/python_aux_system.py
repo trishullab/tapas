@@ -1310,8 +1310,8 @@ def analyze_modules_once(
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            raise ex
-            # continue
+            # raise ex
+            continue
             # return package 
         finally:
             print("")
