@@ -2069,7 +2069,9 @@ class comma_exprs(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsExpr(comma_exprs):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : comma_exprs | None
     source_start : int
     source_end : int
@@ -2078,26 +2080,34 @@ class ConsExpr(comma_exprs):
         return handlers.case_ConsExpr(self)
 
 def make_ConsExpr(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : comma_exprs | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> comma_exprs:
     return ConsExpr(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsExpr(source_ConsExpr : ConsExpr,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[comma_exprs | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsExpr:
     return ConsExpr(
+        source_ConsExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsExpr.head if isinstance(head, SourceFlag) else head,
+        source_ConsExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsExpr.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsExpr.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2107,7 +2117,9 @@ def update_ConsExpr(source_ConsExpr : ConsExpr,
 
 @dataclass(frozen=True, eq=True)
 class SingleExpr(comma_exprs):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2115,23 +2127,31 @@ class SingleExpr(comma_exprs):
         return handlers.case_SingleExpr(self)
 
 def make_SingleExpr(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> comma_exprs:
     return SingleExpr(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleExpr(source_SingleExpr : SingleExpr,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleExpr:
     return SingleExpr(
+        source_SingleExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleExpr.content if isinstance(content, SourceFlag) else content,
+        source_SingleExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleExpr.source_end if isinstance(source_end, SourceFlag) else source_end
     )

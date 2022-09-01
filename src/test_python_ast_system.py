@@ -205,6 +205,7 @@ def test_comment():
     print("-- generic node --")  
     print(pgs.dump(gnode))
 
+    ######
     mod = pas.parse_from_generic_tree(gnode)
     seq = pas.serialize(mod)
 

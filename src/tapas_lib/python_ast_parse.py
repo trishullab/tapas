@@ -406,15 +406,49 @@ def to_decorators(ds : list[decorator | None], base_start : int, base_end : int)
     return result 
 
 
-def to_comma_exprs(es : list[expr | None]) -> comma_exprs | None:
-    if es:
 
-        result = SingleExpr(es[-1],
-            unguard_expr(es[-1]).source_start if es[-1] else 0,
-            unguard_expr(es[-1]).source_end if es[-1] else 0,
+def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
+
+    end_indices = [ 
+        i
+        for i, n in enumerate(comma_sep_nodes)
+        if n.syntax_part == ","
+    ] + [len(comma_sep_nodes)]
+
+    start_indices = [0] + [ 
+        i + 1 
+        for i, n in enumerate(comma_sep_nodes)
+        if n.syntax_part == ","
+    ]
+
+    assert len(end_indices) == len(start_indices)
+
+
+    exprs = from_list_to_comma_exprs([ 
+        (pre, from_generic_tree_to_expr(n), post)
+        for start, end in zip(start_indices, end_indices) 
+        for section in [comma_sep_nodes[start:end]]
+        for split_index in [next(
+            i for i, n in enumerate(section)
+            if n.syntax_part != "comment"
+        )]
+        for n in [section[split_index]]
+        for pre in [merge_comments(section[0:split_index])]
+        for post in [merge_comments(section[split_index + 1:])]
+    ])
+
+    return exprs
+
+
+def from_list_to_comma_exprs(es : list[tuple[str, expr | None, str]]) -> comma_exprs | None:
+    if es :
+        (pre_comment, e, post_comment) = es[-1]
+        result = SingleExpr(pre_comment, e, post_comment,
+            unguard_expr(e).source_start if e else 0,
+            unguard_expr(e).source_end if e else 0,
         )
-        for e in reversed(es[:-1]):
-            result = ConsExpr(e, result,
+        for (pre_comment, e, post_comment) in reversed(es[:-1]):
+            result = ConsExpr(pre_comment, e, post_comment, result,
                 unguard_expr(e).source_start if e else 0,
                 result.source_end
             )
@@ -954,11 +988,9 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         assert children[1].syntax_part == "["
         assert children[-1].syntax_part == "]"
         if len(children[2:-1]) > 1:
-            exprs = to_comma_exprs([
-                from_generic_tree_to_expr(n)
-                for n in children[2:-1]
-                if n.syntax_part != ","
-            ])
+
+            comma_sep_nodes = children[2:-1]
+            exprs = to_comma_exprs(comma_sep_nodes)
 
             slice = Tuple(exprs, children[1].source_start, children[-1].source_end)
             return Subscript(target, slice, node.source_start, node.source_end)
@@ -1007,13 +1039,10 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             return node_error(args_node)
 
     elif (node.syntax_part == "list"):
-        items = [
-            from_generic_tree_to_expr(child)
-            for child in node.children[1:-1]
-            if child.syntax_part != ","
-        ]
-        if items:
-            return List(to_comma_exprs(items), node.source_start, node.source_end)
+
+        exprs = to_comma_exprs(node.children[1:-1])
+        if exprs:
+            return List(exprs, node.source_start, node.source_end)
         else:
             return EmptyList(node.source_start, node.source_end)
 
@@ -1096,13 +1125,8 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         )
 
     elif (node.syntax_part == "set"):
-        
-        items = [
-            from_generic_tree_to_expr(n)
-            for n in node.children[1:-1]
-            if n.syntax_part != ","
-        ]
-        return Set(to_comma_exprs(items), node.source_start, node.source_end)
+        exprs = to_comma_exprs(node.children[1:-1])
+        return Set(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "set_comprehension"):
         children = node.children[1:-1]
@@ -1132,22 +1156,14 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     elif (node.syntax_part == "tuple"):
 
         if (node.children[1:-1]):
-            items = [
-                from_generic_tree_to_expr(n)
-                for n in node.children[1:-1]
-                if n.syntax_part != ","
-            ]
-            return Tuple(to_comma_exprs(items), node.source_start, node.source_end)
+            exprs = to_comma_exprs(node.children[1:-1])
+            return Tuple(exprs, node.source_start, node.source_end)
         else:
             return EmptyTuple(node.source_start, node.source_end)
 
     elif (node.syntax_part == "expression_list"):
-        items = [
-            from_generic_tree_to_expr(n)
-            for n in node.children
-            if n.syntax_part != ","
-        ]
-        return Tuple(to_comma_exprs(items), node.source_start, node.source_end)
+        exprs = to_comma_exprs(node.children[1:-1])
+        return Tuple(exprs, node.source_start, node.source_end)
 
     
     elif (node.syntax_part == "parenthesized_expression"):
@@ -1180,28 +1196,16 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         return Starred(expr, node.source_start, node.source_end)
 
     elif (node.syntax_part == "tuple_pattern"):
-        items = [
-            from_generic_tree_to_expr(n)
-            for n in node.children[1:-1]
-            if n.syntax_part != ","
-        ]
-        return Tuple(to_comma_exprs(items), node.source_start, node.source_end)
+        exprs = to_comma_exprs(node.children[1:-1])
+        return Tuple(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "list_pattern"):
-        items = [
-            from_generic_tree_to_expr(n)
-            for n in node.children[1:-1]
-            if n.syntax_part != ","
-        ]
-        return List(to_comma_exprs(items), node.source_start, node.source_end)
+        exprs = to_comma_exprs(node.children[1:-1])
+        return List(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "pattern_list"):
-        items = [
-            from_generic_tree_to_expr(n)
-            for n in node.children
-            if n.syntax_part != ","
-        ]
-        return Tuple(to_comma_exprs(items), node.source_start, node.source_end)
+        exprs = to_comma_exprs(node.children[1:-1])
+        return Tuple(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "yield"):
 
@@ -1860,14 +1864,11 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert node.children[0].syntax_part == "del"
         child = node.children[1]
         if (child.syntax_part == "expression_list"):
-            exprs = to_comma_exprs([
-                from_generic_tree_to_expr(expr_node)
-                for expr_node in child.children
-                if expr_node.syntax_part != ","
-            ])
+
+            exprs = to_comma_exprs(child.children)
             return [ Delete(exprs, node.source_start, node.source_end) ]
         else:
-            exprs = SingleExpr(from_generic_tree_to_expr(child), child.source_start, child.source_end)
+            exprs = SingleExpr('', from_generic_tree_to_expr(child), '', child.source_start, child.source_end)
             return [ Delete(exprs, node.source_start, node.source_end) ]
 
     elif (node.syntax_part == "raise_statement"):

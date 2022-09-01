@@ -388,7 +388,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsExpr",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "comma_exprs", InLine())
             ]
@@ -397,7 +400,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleExpr",
             [
-                Nonterm("content", "expr", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment")
             ]
         ),
 
