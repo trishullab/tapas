@@ -115,19 +115,17 @@ def test_comment():
 # )
     # '''
 
+#     code = '''
+# def foo(x : int):
+#     return x
+
+# foo( # hello A
+#     1 #hello B
+#     #hello C
+# )
+#     '''
+
 #################
-
-
-    code = '''
-def foo(x : int):
-    return x
-
-foo( # hello A
-    1 #hello B
-    #hello C
-)
-    '''
-
 
 #     code = '''
 # (# hello A
@@ -195,11 +193,11 @@ foo( # hello A
     print(pgs.dump(gnode))
 
     ######
-    # mod = pas.parse_from_generic_tree(gnode)
-    # seq = pas.serialize(mod)
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
 
-    # print("-- AST --")  
-    # print(pats.dump(seq))
+    print("-- AST --")  
+    print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()
