@@ -6007,8 +6007,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_stmt_Try_body(
+        child_inher_aux = self.traverse_stmt_Try_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_Try_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -6018,6 +6029,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_Try_handlers(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -6028,15 +6041,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         handlers_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_Try(inher_aux, body_tree, body_aux, handlers_tree, handlers_aux)
+        return self.synthesize_for_stmt_Try(inher_aux, comment_tree, comment_aux, body_tree, body_aux, handlers_tree, handlers_aux)
     
     # inspect: stmt <-- TryElse"
     def inspect_stmt_TryElse(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_stmt_TryElse_body(
+        child_inher_aux = self.traverse_stmt_TryElse_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_TryElse_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -6046,6 +6070,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryElse_handlers(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -6057,6 +6083,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryElse_orelse(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
@@ -6069,15 +6097,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_TryElse(inher_aux, body_tree, body_aux, handlers_tree, handlers_aux, orelse_tree, orelse_aux)
+        return self.synthesize_for_stmt_TryElse(inher_aux, comment_tree, comment_aux, body_tree, body_aux, handlers_tree, handlers_aux, orelse_tree, orelse_aux)
     
     # inspect: stmt <-- TryExceptFin"
     def inspect_stmt_TryExceptFin(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_stmt_TryExceptFin_body(
+        child_inher_aux = self.traverse_stmt_TryExceptFin_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_TryExceptFin_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -6087,6 +6126,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryExceptFin_handlers(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -6098,6 +6139,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryExceptFin_fin(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
@@ -6110,15 +6153,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_TryExceptFin(inher_aux, body_tree, body_aux, handlers_tree, handlers_aux, fin_tree, fin_aux)
+        return self.synthesize_for_stmt_TryExceptFin(inher_aux, comment_tree, comment_aux, body_tree, body_aux, handlers_tree, handlers_aux, fin_tree, fin_aux)
     
     # inspect: stmt <-- TryFin"
     def inspect_stmt_TryFin(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_stmt_TryFin_body(
+        child_inher_aux = self.traverse_stmt_TryFin_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_TryFin_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -6128,6 +6182,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryFin_fin(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -6138,15 +6194,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_TryFin(inher_aux, body_tree, body_aux, fin_tree, fin_aux)
+        return self.synthesize_for_stmt_TryFin(inher_aux, comment_tree, comment_aux, body_tree, body_aux, fin_tree, fin_aux)
     
     # inspect: stmt <-- TryElseFin"
     def inspect_stmt_TryElseFin(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_stmt_TryElseFin_body(
+        child_inher_aux = self.traverse_stmt_TryElseFin_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_stmt_TryElseFin_body(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_statements(child_token, child_inher_aux)
@@ -6156,6 +6223,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryElseFin_handlers(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux
         )
@@ -6167,6 +6236,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryElseFin_orelse(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
@@ -6180,6 +6251,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         
         child_inher_aux = self.traverse_stmt_TryElseFin_fin(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             body_tree, 
             body_aux,
             handlers_tree, 
@@ -6194,7 +6267,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux = synth.aux
         
 
-        return self.synthesize_for_stmt_TryElseFin(inher_aux, body_tree, body_aux, handlers_tree, handlers_aux, orelse_tree, orelse_aux, fin_tree, fin_aux)
+        return self.synthesize_for_stmt_TryElseFin(inher_aux, comment_tree, comment_aux, body_tree, body_aux, handlers_tree, handlers_aux, orelse_tree, orelse_aux, fin_tree, fin_aux)
     
     # inspect: stmt <-- Assert"
     def inspect_stmt_Assert(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -10454,108 +10527,166 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (exc_aux,), 'expr') 
     
     # traverse stmt <-- Try"
-    def traverse_stmt_Try_body(self, 
+    def traverse_stmt_Try_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse stmt <-- Try"
+    def traverse_stmt_Try_body(self, 
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
     
     # traverse stmt <-- Try"
     def traverse_stmt_Try_handlers(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux,), 'sequence_ExceptHandler') 
+    
+    # traverse stmt <-- TryElse"
+    def traverse_stmt_TryElse_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_body(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_handlers(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryElse"
     def traverse_stmt_TryElse_orelse(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,), 'ElseBlock') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux, handlers_aux,), 'ElseBlock') 
+    
+    # traverse stmt <-- TryExceptFin"
+    def traverse_stmt_TryExceptFin_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_body(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_handlers(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryExceptFin"
     def traverse_stmt_TryExceptFin_fin(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,), 'FinallyBlock') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux, handlers_aux,), 'FinallyBlock') 
+    
+    # traverse stmt <-- TryFin"
+    def traverse_stmt_TryFin_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- TryFin"
     def traverse_stmt_TryFin_body(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
     
     # traverse stmt <-- TryFin"
     def traverse_stmt_TryFin_fin(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,), 'FinallyBlock') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux,), 'FinallyBlock') 
+    
+    # traverse stmt <-- TryElseFin"
+    def traverse_stmt_TryElseFin_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_body(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'statements') 
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_handlers(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,), 'sequence_ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux,), 'sequence_ExceptHandler') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_orelse(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux,), 'ElseBlock') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux, handlers_aux,), 'ElseBlock') 
     
     # traverse stmt <-- TryElseFin"
     def traverse_stmt_TryElseFin_fin(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
@@ -10563,7 +10694,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_tree : ElseBlock, 
         orelse_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, handlers_aux, orelse_aux,), 'FinallyBlock') 
+        return self.traverse_auxes(inher_aux, (comment_aux, body_aux, handlers_aux, orelse_aux,), 'FinallyBlock') 
     
     # traverse stmt <-- Assert"
     def traverse_stmt_Assert_test(self, 
@@ -12581,19 +12712,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: stmt <-- Try
     def synthesize_for_stmt_Try(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
         handlers_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Try(body_tree, handlers_tree),
-            aux = self.synthesize_auxes((body_aux, handlers_aux,)) 
+            tree = make_Try(comment_tree, body_tree, handlers_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux, handlers_aux,)) 
         )
     
     # synthesize: stmt <-- TryElse
     def synthesize_for_stmt_TryElse(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
@@ -12602,13 +12737,15 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_TryElse(body_tree, handlers_tree, orelse_tree),
-            aux = self.synthesize_auxes((body_aux, handlers_aux, orelse_aux,)) 
+            tree = make_TryElse(comment_tree, body_tree, handlers_tree, orelse_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux, handlers_aux, orelse_aux,)) 
         )
     
     # synthesize: stmt <-- TryExceptFin
     def synthesize_for_stmt_TryExceptFin(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
@@ -12617,26 +12754,30 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_TryExceptFin(body_tree, handlers_tree, fin_tree),
-            aux = self.synthesize_auxes((body_aux, handlers_aux, fin_aux,)) 
+            tree = make_TryExceptFin(comment_tree, body_tree, handlers_tree, fin_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux, handlers_aux, fin_aux,)) 
         )
     
     # synthesize: stmt <-- TryFin
     def synthesize_for_stmt_TryFin(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         fin_tree : FinallyBlock, 
         fin_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_TryFin(body_tree, fin_tree),
-            aux = self.synthesize_auxes((body_aux, fin_aux,)) 
+            tree = make_TryFin(comment_tree, body_tree, fin_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux, fin_aux,)) 
         )
     
     # synthesize: stmt <-- TryElseFin
     def synthesize_for_stmt_TryElseFin(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux,
         handlers_tree : sequence_ExceptHandler, 
@@ -12647,8 +12788,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         fin_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_TryElseFin(body_tree, handlers_tree, orelse_tree, fin_tree),
-            aux = self.synthesize_auxes((body_aux, handlers_aux, orelse_aux, fin_aux,)) 
+            tree = make_TryElseFin(comment_tree, body_tree, handlers_tree, orelse_tree, fin_tree),
+            aux = self.synthesize_auxes((comment_aux, body_aux, handlers_aux, orelse_aux, fin_aux,)) 
         )
     
     # synthesize: stmt <-- Assert

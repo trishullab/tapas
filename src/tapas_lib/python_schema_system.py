@@ -1001,6 +1001,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Try",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
             ]
@@ -1010,6 +1011,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryElse",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
@@ -1020,6 +1022,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryExceptFin",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
                 Nonterm("fin", "FinallyBlock", NewLine())
@@ -1030,6 +1033,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryFin",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("fin", "FinallyBlock", NewLine())
             ]
@@ -1039,6 +1043,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryElseFin",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
                 Nonterm("orelse", "ElseBlock", NewLine()),

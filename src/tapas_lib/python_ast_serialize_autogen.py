@@ -2873,6 +2873,14 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
+                stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'Try',
@@ -2889,6 +2897,14 @@ def from_stmt(
                 stack.append(from_sequence_ExceptHandler(o.handlers))
 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -2909,6 +2925,14 @@ def from_stmt(
                 stack.append(from_statements(o.body))
 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
+                stack.append(
                     tuple([make_Grammar(
                         options = 'stmt',
                         selection = 'TryExceptFin',
@@ -2923,6 +2947,14 @@ def from_stmt(
                 stack.append(from_FinallyBlock(o.fin))
 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -2943,6 +2975,14 @@ def from_stmt(
                 stack.append(from_sequence_ExceptHandler(o.handlers))
 
                 stack.append(from_statements(o.body))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(

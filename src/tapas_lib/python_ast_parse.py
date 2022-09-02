@@ -2202,7 +2202,13 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         children = node.children
         assert children[0].syntax_part == "try"
         assert children[1].syntax_part == ":"
-        try_block = children[2]
+        block_index = next( 
+            i
+            for i, n in enumerate(children)
+            if n.syntax_part == "block"
+        )
+        comment = merge_comments(children[2:block_index])
+        try_block = children[block_index]
         assert try_block.syntax_part == "block"
         try_stmts = to_statements([
             stmt
@@ -2286,6 +2292,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             finally_clause_node = finally_clause_nodes[0]
             return [
                 TryElseFin(
+                    comment,
                     try_stmts, 
                     except_handlers, 
                     ElseBlock(else_comment_text, to_statements(else_stmts),
@@ -2304,6 +2311,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             else_clause_node = else_clause_nodes[0]
             return [
                 TryElse(
+                    comment,
                     try_stmts, except_handlers, 
                     ElseBlock(else_comment_text, to_statements(else_stmts),
                         else_clause_node.source_start,
@@ -2317,6 +2325,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             finally_clause_node = finally_clause_nodes[0]
             return [
                 TryExceptFin(
+                    comment,
                     try_stmts, except_handlers, FinallyBlock(
                         finally_comment_text, 
                         to_statements(finally_stmts),
@@ -2331,6 +2340,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             finally_clause_node = finally_clause_nodes[0]
             return [
                 TryFin(
+                    comment,
                     try_stmts, FinallyBlock(
                         finally_comment_text, 
                         to_statements(finally_stmts),
@@ -2344,6 +2354,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         elif except_handlers:
             return [
                 Try(
+                    comment,
                     try_stmts, except_handlers,
                     node.source_start, node.source_end
                 )

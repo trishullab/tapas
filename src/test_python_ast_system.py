@@ -125,29 +125,39 @@ def test_comment():
 # )
 #     '''
 
+
+#     code = '''
+# (# hello A
+#     0 #hello B
+# if # hello C
+# True # hello D
+# else  # hello E
+#     1 #hello F
+#     #hello G 
+# )
+#     '''
+
+
 #################
 
     code = '''
-(# hello A
-    0 #hello B
-if # hello C
-True # hello D
-else  # hello E
-    1 #hello F
-    #hello G 
-)
+try: #hello
+    pass #llo
+except Exception:
+    pass #hello
+else:
+    pass #hello
     '''
 
 #     code = '''
-# def foo(x : int):
-#     return x
-
-# try:
-#     foo()
-# except Exception(): 
-#     foo()
-# else:
-#     foo()
+# try: #hello
+#     pass #llo
+# except Exception: #hello
+#     pass #hello
+# else: #hello
+#     pass #hello
+# finally: #hello
+#     pass #hello
 #     '''
 
 #     code = '''

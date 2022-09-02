@@ -5012,6 +5012,7 @@ def update_RaiseFrom(source_RaiseFrom : RaiseFrom,
 
 @dataclass(frozen=True, eq=True)
 class Try(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     source_start : int
@@ -5021,12 +5022,14 @@ class Try(stmt):
         return handlers.case_Try(self)
 
 def make_Try(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return Try(
+        comment,
         body,
         handlers,
         source_start,
@@ -5034,12 +5037,14 @@ def make_Try(
     )
 
 def update_Try(source_Try : Try,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Try:
     return Try(
+        source_Try.comment if isinstance(comment, SourceFlag) else comment,
         source_Try.body if isinstance(body, SourceFlag) else body,
         source_Try.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_Try.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -5050,6 +5055,7 @@ def update_Try(source_Try : Try,
 
 @dataclass(frozen=True, eq=True)
 class TryElse(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     orelse : ElseBlock | None
@@ -5060,6 +5066,7 @@ class TryElse(stmt):
         return handlers.case_TryElse(self)
 
 def make_TryElse(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     orelse : ElseBlock | None, 
@@ -5067,6 +5074,7 @@ def make_TryElse(
     source_end : int = 0
 ) -> stmt:
     return TryElse(
+        comment,
         body,
         handlers,
         orelse,
@@ -5075,6 +5083,7 @@ def make_TryElse(
     )
 
 def update_TryElse(source_TryElse : TryElse,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
@@ -5082,6 +5091,7 @@ def update_TryElse(source_TryElse : TryElse,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryElse:
     return TryElse(
+        source_TryElse.comment if isinstance(comment, SourceFlag) else comment,
         source_TryElse.body if isinstance(body, SourceFlag) else body,
         source_TryElse.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_TryElse.orelse if isinstance(orelse, SourceFlag) else orelse,
@@ -5093,6 +5103,7 @@ def update_TryElse(source_TryElse : TryElse,
 
 @dataclass(frozen=True, eq=True)
 class TryExceptFin(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     fin : FinallyBlock | None
@@ -5103,6 +5114,7 @@ class TryExceptFin(stmt):
         return handlers.case_TryExceptFin(self)
 
 def make_TryExceptFin(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     fin : FinallyBlock | None, 
@@ -5110,6 +5122,7 @@ def make_TryExceptFin(
     source_end : int = 0
 ) -> stmt:
     return TryExceptFin(
+        comment,
         body,
         handlers,
         fin,
@@ -5118,6 +5131,7 @@ def make_TryExceptFin(
     )
 
 def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag(),
@@ -5125,6 +5139,7 @@ def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryExceptFin:
     return TryExceptFin(
+        source_TryExceptFin.comment if isinstance(comment, SourceFlag) else comment,
         source_TryExceptFin.body if isinstance(body, SourceFlag) else body,
         source_TryExceptFin.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_TryExceptFin.fin if isinstance(fin, SourceFlag) else fin,
@@ -5136,6 +5151,7 @@ def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
 
 @dataclass(frozen=True, eq=True)
 class TryFin(stmt):
+    comment : str
     body : statements | None
     fin : FinallyBlock | None
     source_start : int
@@ -5145,12 +5161,14 @@ class TryFin(stmt):
         return handlers.case_TryFin(self)
 
 def make_TryFin(
+    comment : str, 
     body : statements | None, 
     fin : FinallyBlock | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return TryFin(
+        comment,
         body,
         fin,
         source_start,
@@ -5158,12 +5176,14 @@ def make_TryFin(
     )
 
 def update_TryFin(source_TryFin : TryFin,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryFin:
     return TryFin(
+        source_TryFin.comment if isinstance(comment, SourceFlag) else comment,
         source_TryFin.body if isinstance(body, SourceFlag) else body,
         source_TryFin.fin if isinstance(fin, SourceFlag) else fin,
         source_TryFin.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -5174,6 +5194,7 @@ def update_TryFin(source_TryFin : TryFin,
 
 @dataclass(frozen=True, eq=True)
 class TryElseFin(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     orelse : ElseBlock | None
@@ -5185,6 +5206,7 @@ class TryElseFin(stmt):
         return handlers.case_TryElseFin(self)
 
 def make_TryElseFin(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     orelse : ElseBlock | None, 
@@ -5193,6 +5215,7 @@ def make_TryElseFin(
     source_end : int = 0
 ) -> stmt:
     return TryElseFin(
+        comment,
         body,
         handlers,
         orelse,
@@ -5202,6 +5225,7 @@ def make_TryElseFin(
     )
 
 def update_TryElseFin(source_TryElseFin : TryElseFin,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
@@ -5210,6 +5234,7 @@ def update_TryElseFin(source_TryElseFin : TryElseFin,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryElseFin:
     return TryElseFin(
+        source_TryElseFin.comment if isinstance(comment, SourceFlag) else comment,
         source_TryElseFin.body if isinstance(body, SourceFlag) else body,
         source_TryElseFin.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_TryElseFin.orelse if isinstance(orelse, SourceFlag) else orelse,

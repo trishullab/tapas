@@ -4031,23 +4031,28 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 3
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    Try(children[0], children[1]),
+                    Try(children[0], children[1], children[2]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_statements(remainder)
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 1: # index does *not* refer to an inductive child
+                (child, remainder) = to_statements(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
                 (child, remainder) = to_sequence_ExceptHandler(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -4065,28 +4070,33 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 3
+            total_num_children = 4
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    TryElse(children[0], children[1], children[2]),
+                    TryElse(children[0], children[1], children[2], children[3]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_statements(remainder)
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_sequence_ExceptHandler(remainder)
+                (child, remainder) = to_statements(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_sequence_ExceptHandler(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 3: # index does *not* refer to an inductive child
                 (child, remainder) = to_ElseBlock(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -4104,28 +4114,33 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 3
+            total_num_children = 4
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    TryExceptFin(children[0], children[1], children[2]),
+                    TryExceptFin(children[0], children[1], children[2], children[3]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_statements(remainder)
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_sequence_ExceptHandler(remainder)
+                (child, remainder) = to_statements(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_sequence_ExceptHandler(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 3: # index does *not* refer to an inductive child
                 (child, remainder) = to_FinallyBlock(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -4143,23 +4158,28 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 3
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    TryFin(children[0], children[1]),
+                    TryFin(children[0], children[1], children[2]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_statements(remainder)
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 1: # index does *not* refer to an inductive child
+                (child, remainder) = to_statements(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
                 (child, remainder) = to_FinallyBlock(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -4177,33 +4197,38 @@ def to_stmt(xs : tuple[abstract_token, ...]) -> tuple[stmt, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 4
+            total_num_children = 5
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    TryElseFin(children[0], children[1], children[2], children[3]),
+                    TryElseFin(children[0], children[1], children[2], children[3], children[4]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
-                (child, remainder) = to_statements(remainder)
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 1: # index does *not* refer to an inductive child
-                (child, remainder) = to_sequence_ExceptHandler(remainder)
+                (child, remainder) = to_statements(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 2: # index does *not* refer to an inductive child
-                (child, remainder) = to_ElseBlock(remainder)
+                (child, remainder) = to_sequence_ExceptHandler(remainder)
                 stack.append((x, children + [child], remainder))
                 
 
             elif index == 3: # index does *not* refer to an inductive child
+                (child, remainder) = to_ElseBlock(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 4: # index does *not* refer to an inductive child
                 (child, remainder) = to_FinallyBlock(remainder)
                 stack.append((x, children + [child], remainder))
                 
