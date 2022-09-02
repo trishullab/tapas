@@ -5944,7 +5944,11 @@ def update_Lambda(source_Lambda : Lambda,
 @dataclass(frozen=True, eq=True)
 class IfExp(expr):
     body : expr | None
+    comment_a : str
+    comment_b : str
     test : expr | None
+    comment_c : str
+    comment_d : str
     orelse : expr | None
     source_start : int
     source_end : int
@@ -5954,14 +5958,22 @@ class IfExp(expr):
 
 def make_IfExp(
     body : expr | None, 
+    comment_a : str, 
+    comment_b : str, 
     test : expr | None, 
+    comment_c : str, 
+    comment_d : str, 
     orelse : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return IfExp(
         body,
+        comment_a,
+        comment_b,
         test,
+        comment_c,
+        comment_d,
         orelse,
         source_start,
         source_end
@@ -5969,14 +5981,22 @@ def make_IfExp(
 
 def update_IfExp(source_IfExp : IfExp,
     body : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     orelse : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> IfExp:
     return IfExp(
         source_IfExp.body if isinstance(body, SourceFlag) else body,
+        source_IfExp.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_IfExp.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_IfExp.test if isinstance(test, SourceFlag) else test,
+        source_IfExp.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
+        source_IfExp.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_IfExp.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_IfExp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_IfExp.source_end if isinstance(source_end, SourceFlag) else source_end

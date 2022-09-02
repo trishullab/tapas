@@ -1216,9 +1216,13 @@ choices_schema : dict[str, list[Rule]] = {
             "IfExp",
             [
                 Nonterm("body", "expr", InLine()),
+                Vocab("comment_a", "comment"),
                 Terminal("if "),
+                Vocab("comment_b", "comment"),
                 Nonterm("test", "expr", InLine()),
+                Vocab("comment_c", "comment"),
                 Terminal(" else"),
+                Vocab("comment_d", "comment"),
                 Nonterm("orelse", "expr", NewLine())
             ]
         ),

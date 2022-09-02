@@ -127,16 +127,16 @@ def test_comment():
 
 #################
 
-#     code = '''
-# (# hello A
-#     0 #hello B
-# if # hello C
-# True # hello D
-# else  # hello E
-#     1 #hello F
-#     #hello G 
-# )
-#     '''
+    code = '''
+(# hello A
+    0 #hello B
+if # hello C
+True # hello D
+else  # hello E
+    1 #hello F
+    #hello G 
+)
+    '''
 
 #     code = '''
 # def foo(x : int):

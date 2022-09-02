@@ -1276,12 +1276,29 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
     elif node.syntax_part == "conditional_expression":
         children = node.children
+        if_index = next(
+            i for i, n in enumerate(children)
+            if n.syntax_part == "if"
+        )
+        cond_index = next(
+            i + if_index + 1
+            for i, n in enumerate(children[if_index + 1:])
+            if n.syntax_part != "comment"
+        )
+        else_index = next(
+            i for i, n in enumerate(children)
+            if n.syntax_part == "else"
+        )
+
         true_expr = from_generic_tree_to_expr(children[0])
-        assert children[1].syntax_part == "if"
-        cond_expr = from_generic_tree_to_expr(children[2])
-        assert children[3].syntax_part == "else"
-        false_expr = from_generic_tree_to_expr(children[4])
-        return IfExp(true_expr, cond_expr, false_expr, node.source_start, node.source_end)
+        comment_a = merge_comments(children[1:if_index])
+        comment_b = merge_comments(children[if_index + 1:cond_index])
+        cond_expr = from_generic_tree_to_expr(children[cond_index])
+        comment_c = merge_comments(children[cond_index + 1:else_index])
+        comment_d = merge_comments(children[else_index + 1:-1])
+        false_expr = from_generic_tree_to_expr(children[-1])
+
+        return IfExp(true_expr, comment_a, comment_b, cond_expr, comment_c, comment_d, false_expr, node.source_start, node.source_end)
 
     elif node.syntax_part == "named_expression":
         children = node.children

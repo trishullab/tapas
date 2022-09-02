@@ -6958,7 +6958,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 3
+        total_num_children = 7
 
         index = len(children)
         if index == total_num_children:
@@ -6969,16 +6969,151 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(body_tree, expr)
             body_aux = children[0].aux
                 
-            test_tree = children[1].tree
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+                
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+                
+            test_tree = children[3].tree
             assert isinstance(test_tree, expr)
-            test_aux = children[1].aux
+            test_aux = children[3].aux
                 
-            orelse_tree = children[2].tree
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+                
+            comment_d_tree = children[5].tree
+            assert isinstance(comment_d_tree, str)
+            comment_d_aux = children[5].aux
+                
+            orelse_tree = children[6].tree
             assert isinstance(orelse_tree, expr)
-            orelse_aux = children[2].aux
+            orelse_aux = children[6].aux
                 
-            return self.synthesize_for_expr_IfExp(inher_aux, body_tree, body_aux, test_tree, test_aux, orelse_tree, orelse_aux)
+            return self.synthesize_for_expr_IfExp(inher_aux, body_tree, body_aux, comment_a_tree, comment_a_aux, comment_b_tree, comment_b_aux, test_tree, test_aux, comment_c_tree, comment_c_aux, comment_d_tree, comment_d_aux, orelse_tree, orelse_aux)
         
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            body_tree = children[0].tree
+            assert isinstance(body_tree, expr)
+            body_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_expr_IfExp_comment_a(
+                inher_aux,
+                body_tree, 
+                body_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            body_tree = children[0].tree
+            assert isinstance(body_tree, expr)
+            body_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_IfExp_comment_b(
+                inher_aux,
+                body_tree, 
+                body_aux,
+                comment_a_tree, 
+                comment_a_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 4: # index does *not* refer to an inductive child
+
+            
+            body_tree = children[0].tree
+            assert isinstance(body_tree, expr)
+            body_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            test_tree = children[3].tree
+            assert isinstance(test_tree, expr)
+            test_aux = children[3].aux
+
+
+            child_inher_aux = self.traverse_expr_IfExp_comment_c(
+                inher_aux,
+                body_tree, 
+                body_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
+                test_tree, 
+                test_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 5: # index does *not* refer to an inductive child
+
+            
+            body_tree = children[0].tree
+            assert isinstance(body_tree, expr)
+            body_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            test_tree = children[3].tree
+            assert isinstance(test_tree, expr)
+            test_aux = children[3].aux
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+
+
+            child_inher_aux = self.traverse_expr_IfExp_comment_d(
+                inher_aux,
+                body_tree, 
+                body_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
+                test_tree, 
+                test_aux,
+                comment_c_tree, 
+                comment_c_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "IfExp"), inher_aux, children + (child_synth,)))
+            return None
+            
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
@@ -6993,7 +7128,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
 
-        elif index == 1 : # index refers to an inductive child
+        elif index == 3 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "IfExp"), inher_aux, children))
 
@@ -7001,17 +7136,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             body_tree = children[0].tree
             assert isinstance(body_tree, expr)
             body_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_IfExp_test(
                 inher_aux,
                 body_tree, 
-                body_aux
+                body_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
 
-        elif index == 2 : # index refers to an inductive child
+        elif index == 6 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "IfExp"), inher_aux, children))
 
@@ -7019,17 +7164,37 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             body_tree = children[0].tree
             assert isinstance(body_tree, expr)
             body_aux = children[0].aux
-            test_tree = children[1].tree
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            test_tree = children[3].tree
             assert isinstance(test_tree, expr)
-            test_aux = children[1].aux
+            test_aux = children[3].aux
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+            comment_d_tree = children[5].tree
+            assert isinstance(comment_d_tree, str)
+            comment_d_aux = children[5].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_IfExp_orelse(
                 inher_aux,
                 body_tree, 
                 body_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
                 test_tree, 
-                test_aux
+                test_aux,
+                comment_c_tree, 
+                comment_c_aux,
+                comment_d_tree, 
+                comment_d_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -10621,22 +10786,82 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- IfExp"
-    def traverse_expr_IfExp_test(self, 
+    def traverse_expr_IfExp_comment_a(self, 
         inher_aux : InherAux,
         body_tree : expr, 
         body_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (body_aux,), 'str') 
+    
+    # traverse expr <-- IfExp"
+    def traverse_expr_IfExp_comment_b(self, 
+        inher_aux : InherAux,
+        body_tree : expr, 
+        body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (body_aux, comment_a_aux,), 'str') 
+    
+    # traverse expr <-- IfExp"
+    def traverse_expr_IfExp_test(self, 
+        inher_aux : InherAux,
+        body_tree : expr, 
+        body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (body_aux, comment_a_aux, comment_b_aux,), 'expr') 
+    
+    # traverse expr <-- IfExp"
+    def traverse_expr_IfExp_comment_c(self, 
+        inher_aux : InherAux,
+        body_tree : expr, 
+        body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        test_tree : expr, 
+        test_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (body_aux, comment_a_aux, comment_b_aux, test_aux,), 'str') 
+    
+    # traverse expr <-- IfExp"
+    def traverse_expr_IfExp_comment_d(self, 
+        inher_aux : InherAux,
+        body_tree : expr, 
+        body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        test_tree : expr, 
+        test_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (body_aux, comment_a_aux, comment_b_aux, test_aux, comment_c_aux,), 'str') 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_orelse(self, 
         inher_aux : InherAux,
         body_tree : expr, 
         body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         test_tree : expr, 
-        test_aux : SynthAux
+        test_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (body_aux, test_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (body_aux, comment_a_aux, comment_b_aux, test_aux, comment_c_aux, comment_d_aux,), 'expr') 
     
     # traverse expr <-- Dictionary"
     def traverse_expr_Dictionary_content(self, 
@@ -12640,14 +12865,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         body_tree : expr, 
         body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         test_tree : expr, 
         test_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         orelse_tree : expr, 
         orelse_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_IfExp(body_tree, test_tree, orelse_tree),
-            aux = self.synthesize_auxes((body_aux, test_aux, orelse_aux,)) 
+            tree = make_IfExp(body_tree, comment_a_tree, comment_b_tree, test_tree, comment_c_tree, comment_d_tree, orelse_tree),
+            aux = self.synthesize_auxes((body_aux, comment_a_aux, comment_b_aux, test_aux, comment_c_aux, comment_d_aux, orelse_aux,)) 
         )
     
     # synthesize: expr <-- Dictionary

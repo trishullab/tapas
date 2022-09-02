@@ -3337,9 +3337,41 @@ def from_expr(
                 
                 stack.append(o.orelse)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_d
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
 
                 stack.append(o.test)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(o.body)
                 stack.append(
