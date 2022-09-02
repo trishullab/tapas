@@ -1767,7 +1767,9 @@ class keywords(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsKeyword(keywords):
+    pre_comment : str
     head : keyword | None
+    post_comment : str
     tail : keywords | None
     source_start : int
     source_end : int
@@ -1776,26 +1778,34 @@ class ConsKeyword(keywords):
         return handlers.case_ConsKeyword(self)
 
 def make_ConsKeyword(
+    pre_comment : str, 
     head : keyword | None, 
+    post_comment : str, 
     tail : keywords | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keywords:
     return ConsKeyword(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[keyword | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[keywords | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsKeyword:
     return ConsKeyword(
+        source_ConsKeyword.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsKeyword.head if isinstance(head, SourceFlag) else head,
+        source_ConsKeyword.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsKeyword.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsKeyword.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1805,7 +1815,9 @@ def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
 
 @dataclass(frozen=True, eq=True)
 class SingleKeyword(keywords):
+    pre_comment : str
     content : keyword | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -1813,23 +1825,31 @@ class SingleKeyword(keywords):
         return handlers.case_SingleKeyword(self)
 
 def make_SingleKeyword(
+    pre_comment : str, 
     content : keyword | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keywords:
     return SingleKeyword(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleKeyword(source_SingleKeyword : SingleKeyword,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[keyword | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleKeyword:
     return SingleKeyword(
+        source_SingleKeyword.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleKeyword.content if isinstance(content, SourceFlag) else content,
+        source_SingleKeyword.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleKeyword.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -2733,7 +2753,9 @@ class arguments(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsArg(arguments):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : arguments | None
     source_start : int
     source_end : int
@@ -2742,26 +2764,34 @@ class ConsArg(arguments):
         return handlers.case_ConsArg(self)
 
 def make_ConsArg(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : arguments | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> arguments:
     return ConsArg(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsArg(source_ConsArg : ConsArg,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[arguments | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsArg:
     return ConsArg(
+        source_ConsArg.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsArg.head if isinstance(head, SourceFlag) else head,
+        source_ConsArg.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsArg.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsArg.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsArg.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2771,7 +2801,9 @@ def update_ConsArg(source_ConsArg : ConsArg,
 
 @dataclass(frozen=True, eq=True)
 class SingleArg(arguments):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2779,23 +2811,31 @@ class SingleArg(arguments):
         return handlers.case_SingleArg(self)
 
 def make_SingleArg(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> arguments:
     return SingleArg(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleArg(source_SingleArg : SingleArg,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleArg:
     return SingleArg(
+        source_SingleArg.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleArg.content if isinstance(content, SourceFlag) else content,
+        source_SingleArg.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleArg.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleArg.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -5823,6 +5863,7 @@ def update_BinOp(source_BinOp : BinOp,
 @dataclass(frozen=True, eq=True)
 class UnaryOp(expr):
     rator : unary_rator | None
+    comment : str
     rand : expr | None
     source_start : int
     source_end : int
@@ -5832,12 +5873,14 @@ class UnaryOp(expr):
 
 def make_UnaryOp(
     rator : unary_rator | None, 
+    comment : str, 
     rand : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return UnaryOp(
         rator,
+        comment,
         rand,
         source_start,
         source_end
@@ -5845,12 +5888,14 @@ def make_UnaryOp(
 
 def update_UnaryOp(source_UnaryOp : UnaryOp,
     rator : Union[unary_rator | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     rand : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> UnaryOp:
     return UnaryOp(
         source_UnaryOp.rator if isinstance(rator, SourceFlag) else rator,
+        source_UnaryOp.comment if isinstance(comment, SourceFlag) else comment,
         source_UnaryOp.rand if isinstance(rand, SourceFlag) else rand,
         source_UnaryOp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_UnaryOp.source_end if isinstance(source_end, SourceFlag) else source_end

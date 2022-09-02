@@ -66,46 +66,70 @@ def test_source_pointer_increasing():
 
 def test_comment():
 
-#     code = ('''
-
-# (not # hello A
-#     True # hello B
-#     # hello C
-# )
-
+#     code = '''
+# def foo():
+#     return (
+#         #hello
+#         1 
+#         #hello
+#         )
 #     '''
-#     code = ('''
 
+#     code = '''
+# x = (#first
+#     1 #hello
+#     #hello
+#     + #hello
+#     3 #last
+# )
+#     '''
+
+#     code = '''
 # (#hello A
 #     1 #hello B
 #     , #hello C
 #     2 #hello D
 #     #hello E 
 # ) #hello F
+#     ''')
 
+
+#     code = '''
+# (not # hello A
+#     True # hello B
+#     # hello C
+# )
 #     '''
-#     code = ('''
 
-
-# def foo(x : int):
+    # code = '''
+# def foo( #foo
+# x #foo
+# : int):
 #     return x
 
 # foo( # hello A
+#     x #foo
+#     = #foo
 #     1 #hello B
 #     #hello C
 # )
+    # '''
 
-#     '''
-#     code = ('''
+#################
 
-# (1 # hello A
-#     + # hello B
-#     2 # hello
-# )
 
-#     '''
-#     code = ('''
+    code = '''
+def foo(x : int):
+    return x
 
+foo( # hello A
+    1 #hello B
+    #hello C
+)
+    '''
+
+
+#     code = '''
 # (# hello A
 #     0 #hello B
 # if # hello C
@@ -114,10 +138,9 @@ def test_comment():
 #     1 #hello F
 #     #hello G 
 # )
-
 #     '''
-#     code = ('''
 
+#     code = '''
 # def foo(x : int):
 #     return x
 
@@ -127,10 +150,9 @@ def test_comment():
 #     foo()
 # else:
 #     foo()
-
 #     '''
-#     code = ('''
 
+#     code = '''
 # x = 0
 # if True: # comment after if
 #     # another comment
@@ -145,10 +167,10 @@ def test_comment():
 #     x = 0 # comment 
 #     # comment
 #     x = x + 1
-
 #     '''
-#     code = ('''
 
+
+#     code = '''
 
 # def foo(x):
 #     return x
@@ -158,59 +180,26 @@ def test_comment():
 # @foo #bye
 # class A: # this is a class header comment 
 #     pass
-
 #     '''
-#     code = ('''
 
+#     code = '''
 # def foo(x : int): # this is a function header comment 
 #     # whole line comment 0 
 #     y = x + 1 # comment after stmt
 #     z = y + 1 
 #     # whole line comment 1 
-
-#     ''')
-
-
-
-
-#     code = '''
-# def foo():
-#     return (
-#         #hello
-#         1 
-#         #hello
-#         )
 #     '''
-
-    # code = '''
-    # x = (#first
-    #     1 #hello
-    #     #hello
-    #     + #hello
-    #     3 #last
-    # )
-    # '''
-
-    code = ('''
-(#hello A
-    1 #hello B
-    , #hello C
-    2 #hello D
-    #hello E 
-) #hello F
-    ''')
-
 
     gnode = pgs.parse(code)
     print("-- generic node --")  
     print(pgs.dump(gnode))
 
     ######
-    mod = pas.parse_from_generic_tree(gnode)
-    seq = pas.serialize(mod)
+    # mod = pas.parse_from_generic_tree(gnode)
+    # seq = pas.serialize(mod)
 
-    print("-- AST --")  
-    print(pats.dump(seq))
+    # print("-- AST --")  
+    # print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()

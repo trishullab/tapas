@@ -83,7 +83,7 @@ def to_sequence_base(bases : list[expr | None], keywords : list[keyword | None])
 
         (result, bases) = (
 
-            (KeywordBases(to_keywords(keywords), 
+            (KeywordBases(from_list_to_keywords(keywords), 
                 unguard_keyword(keywords[0]).source_start if keywords[0] else 0,
                 unguard_keyword(keywords[-1]).source_end if keywords[-1] else 0,
             ), bases)
@@ -406,8 +406,7 @@ def to_decorators(ds : list[decorator | None], base_start : int, base_end : int)
     return result 
 
 
-
-def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
+def to_comment_triplets(comma_sep_nodes : list[GenericNode]) -> list[tuple[str, GenericNode, str]]:
 
     end_indices = [ 
         i
@@ -423,9 +422,8 @@ def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
 
     assert len(end_indices) == len(start_indices)
 
-
-    exprs = from_list_to_comma_exprs([ 
-        (pre, from_generic_tree_to_expr(n), post)
+    return [ 
+        (pre, n, post)
         for start, end in zip(start_indices, end_indices) 
         for section in [comma_sep_nodes[start:end]]
         for split_index in [next(
@@ -435,19 +433,20 @@ def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
         for n in [section[split_index]]
         for pre in [merge_comments(section[0:split_index])]
         for post in [merge_comments(section[split_index + 1:])]
-    ])
-
-    return exprs
+    ]
 
 
-def from_list_to_comma_exprs(es : list[tuple[str, expr | None, str]]) -> comma_exprs | None:
+def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
+    es = to_comment_triplets(comma_sep_nodes)
     if es :
-        (pre_comment, e, post_comment) = es[-1]
+        (pre_comment, n, post_comment) = es[-1]
+        e = from_generic_tree_to_expr(n)
         result = SingleExpr(pre_comment, e, post_comment,
             unguard_expr(e).source_start if e else 0,
             unguard_expr(e).source_end if e else 0,
         )
-        for (pre_comment, e, post_comment) in reversed(es[:-1]):
+        for (pre_comment, n, post_comment) in reversed(es[:-1]):
+            e = from_generic_tree_to_expr(n)
             result = ConsExpr(pre_comment, e, post_comment, result,
                 unguard_expr(e).source_start if e else 0,
                 result.source_end
@@ -456,6 +455,8 @@ def from_list_to_comma_exprs(es : list[tuple[str, expr | None, str]]) -> comma_e
         return result
     else:
         return None
+
+
 
 def to_target_exprs(es : list[expr]) -> target_exprs:
     assert es 
@@ -503,46 +504,69 @@ def to_sequence_string(ss : list[tuple[str, int, int]]) -> sequence_string:
 
     return result
 
-def to_keywords(ks : list[keyword | None]) -> keywords:
+def from_list_to_keywords(ks : list[tuple[str, GenericNode, str]]) -> keywords:
     assert ks  
 
-    result = SingleKeyword(ks[-1],
-        unguard_keyword(ks[-1]).source_start if ks[-1] else 0,
-        unguard_keyword(ks[-1]).source_end if ks[-1] else 0,
+    (pre, n, post) = ks[-1]
+    k = from_generic_tree_to_keyword(n)
+
+    result = SingleKeyword(pre, k, post,
+        unguard_keyword(k).source_start if k else 0,
+        unguard_keyword(k).source_end if k else 0,
     )
-    for k in reversed(ks[:-1]):
-        result = ConsKeyword(k, result,
+    for pre, n, post in reversed(ks[:-1]):
+        k = from_generic_tree_to_keyword(n)
+        result = ConsKeyword(pre, k, post, result,
             unguard_keyword(k).source_start if k else 0,
             result.source_end
         )
 
     return result
 
-def to_arguments(ps : list[expr | None], ks : list[keyword | None]) -> arguments:
+
+def to_arguments(argument_nodes : list[GenericNode]) -> arguments:
+    trips = to_comment_triplets(argument_nodes)
+    pos_trips = [
+        (pre, n, post) 
+        for pre, n, post in trips 
+        if n.syntax_part != "keyword_argument" and n.syntax_part != "dictionary_splat"
+    ]
+
+    kw_trips = [
+        (pre, n, post) 
+        for pre, n, post in trips 
+        if n.syntax_part == "keyword_argument" or n.syntax_part == "dictionary_splat"
+    ]
+
+    return from_list_to_arguments(pos_trips, (from_list_to_keywords(kw_trips) if kw_trips else None))
+
+
+def from_list_to_arguments(ps : list[tuple[str, GenericNode, str]], kws : keywords | None) -> arguments:
+    (pre, n, post) = ps[-1]
+    p = from_generic_tree_to_expr(n)
 
     (result, ps) = (
-        (
-            kws := to_keywords(ks),
-            (KeywordsArg(kws,
-                unguard_keywords(kws).source_start,
-                unguard_keywords(kws).source_end,
-            ), ps)
-        )[-1]
-        if ks else
+        (KeywordsArg(kws,
+            unguard_keywords(kws).source_start,
+            unguard_keywords(kws).source_end,
+        ), ps)
+        if kws else
 
-        (SingleArg(ps[-1],
-            unguard_expr(ps[-1]).source_start if ps[-1] else 0,
-            unguard_expr(ps[-1]).source_end if ps[-1] else 0,
+        (SingleArg(pre, p, post,
+            unguard_expr(p).source_start if p else 0,
+            unguard_expr(p).source_end if p else 0,
         ), ps[:-1])
     )
 
-    for p in reversed(ps):
-        result = ConsArg(p, result,
+    for pre, n, post in reversed(ps):
+        p = from_generic_tree_to_expr(n)
+        result = ConsArg(pre, p, post, result,
             unguard_expr(p).source_start if p else 0,
             result.source_end
         )
 
     return result
+
 
 
 def from_generic_tree(node : GenericNode) -> module: 
@@ -967,10 +991,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     elif (node.syntax_part == "unary_operator"):
         children = node.children
         op_node = children[0]
-        rand_node = children[1]
+        comment = merge_comments(children[1:-1])
+        rand_node = children[-1]
         op = from_generic_tree_to_unaryop(op_node)
         rand = from_generic_tree_to_expr(rand_node)
-        return UnaryOp(op, rand, node.source_start, node.source_end)
+        return UnaryOp(op, comment, rand, node.source_start, node.source_end)
     
     elif (node.syntax_part == "attribute"):
         children = node.children
@@ -1007,33 +1032,15 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
         args_node = children[1]
         if args_node.syntax_part == "argument_list":
-            argument_nodes = [
-                child
-                for child in args_node.children[1:-1]
-                if child.syntax_part != ","
-            ]
-
-            pos_nodes = [n for n in argument_nodes if n.syntax_part != "keyword_argument" and n.syntax_part != "dictionary_splat"]
-            kw_nodes = [n for n in argument_nodes if n.syntax_part == "keyword_argument" or n.syntax_part == "dictionary_splat"]
-
-            pos_args = [
-                from_generic_tree_to_expr(n)
-                for n in pos_nodes
-            ]
-
-            keywords : list[keyword | None] = [
-                from_generic_tree_to_keyword(n)
-                for n in kw_nodes
-            ]
-
-            if pos_args or keywords: 
-                seq_arg = to_arguments(pos_args, keywords)
+            argument_nodes = args_node.children[1:-1]
+            if argument_nodes: 
+                seq_arg = to_arguments(argument_nodes)
                 return CallArgs(func, seq_arg, node.source_start, node.source_end)
             else:
                 return Call(func, node.source_start, node.source_end)
 
         elif args_node.syntax_part == "generator_expression":
-            return CallArgs(func, to_arguments([from_generic_tree_to_expr(args_node)], []), node.source_start, node.source_end)
+            return CallArgs(func, from_list_to_arguments([('', args_node, '')], None), node.source_start, node.source_end)
 
         else:
             return node_error(args_node)
@@ -1237,10 +1244,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     elif (node.syntax_part == "not_operator"):
         children = node.children
         assert children[0].syntax_part == "not"
-        rand_node = children[1]
+        comment = merge_comments(children[1:-1])
+        rand_node = children[-1]
         op = Not(node.source_start, node.source_end) 
         rand = from_generic_tree_to_expr(rand_node)
-        return UnaryOp(op, rand, node.source_start, node.source_end)
+        return UnaryOp(op, comment, rand, node.source_start, node.source_end)
 
     elif node.syntax_part == "boolean_operator":
         children = node.children
@@ -1718,23 +1726,25 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[0].syntax_part == "print"
 
         arg_index = 1
-        arg_keywords : list[keyword | None] = []
+        arg_keywords = None 
 
         chev_node = children[1]
         if chev_node.syntax_part == "chevron":
             arg_index = 2
-            arg_keywords = [make_NamedKeyword("file", Name(
+
+            k = make_NamedKeyword("file", Name(
                 "sys.stderr", 
                 chev_node.source_start, chev_node.source_start
-            ), node.source_start, node.source_start)]
+            ), node.source_start, node.source_start)
+            
+            arg_keywords = make_SingleKeyword('', k, '',
+                unguard_keyword(k).source_start if k else 0,
+                unguard_keyword(k).source_end if k else 0,
+            )
         else:
             arg_index = 1
 
-        arg_nodes = [c for c in children[arg_index:] if c.syntax_part != ","]
-        arg_exprs = [
-            from_generic_tree_to_expr(node)
-            for node in arg_nodes
-        ]
+        arg_nodes = to_comment_triplets(children[arg_index:])
 
         return [Expr(
             CallArgs(
@@ -1742,7 +1752,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                     children[0].source_start,
                     children[0].source_end,
                 ), 
-                to_arguments(arg_exprs, arg_keywords),
+                from_list_to_arguments(arg_nodes, arg_keywords),
                 node.source_start, node.source_start
             ), 
             node.source_start, node.source_start

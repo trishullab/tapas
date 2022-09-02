@@ -335,7 +335,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsKeyword",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "keyword", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "keywords", InLine()),
             ]
@@ -344,7 +347,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleKeyword",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "keyword", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -510,7 +515,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsArg",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "arguments", InLine()),
             ]
@@ -519,7 +527,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleArg",
             [
-                Nonterm("content", "expr", InLine())
+
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -1185,6 +1196,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("("),
                 Nonterm("rator", "unary_rator", InLine()),
                 Terminal(" "),
+                Vocab("comment", "comment"),
                 Nonterm("rand", "expr", InLine()),
                 Terminal(")")
             ]
