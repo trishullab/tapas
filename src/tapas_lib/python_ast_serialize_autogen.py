@@ -1351,6 +1351,14 @@ def from_decorator(
             
             def handle_ExprDec(o : ExprDec): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.content))
 
                 stack.append(

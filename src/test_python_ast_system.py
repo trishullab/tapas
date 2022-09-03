@@ -137,17 +137,14 @@ def test_comment():
 # )
 #     '''
 
-
-#################
-
-    code = '''
-try: #hello
-    pass #llo
-except Exception:
-    pass #hello
-else:
-    pass #hello
-    '''
+#     code = '''
+# try: #hello
+#     pass #llo
+# except Exception:
+#     pass #hello
+# else:
+#     pass #hello
+#     '''
 
 #     code = '''
 # try: #hello
@@ -159,6 +156,8 @@ else:
 # finally: #hello
 #     pass #hello
 #     '''
+
+
 
 #     code = '''
 # x = 0
@@ -177,12 +176,9 @@ else:
 #     x = x + 1
 #     '''
 
-
 #     code = '''
-
 # def foo(x):
 #     return x
-
 # @foo #hello
 # # between decorators 
 # @foo #bye
@@ -196,7 +192,12 @@ else:
 #     y = x + 1 # comment after stmt
 #     z = y + 1 
 #     # whole line comment 1 
-#     '''
+    # '''
+
+#################
+
+    code = '''
+    '''
 
     gnode = pgs.parse(code)
     print("-- generic node --")  

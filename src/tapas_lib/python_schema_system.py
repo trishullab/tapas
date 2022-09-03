@@ -438,6 +438,7 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("@"),
                 Nonterm("content", "expr", InLine()),
+                Vocab("comment", "comment"),
             ]
         ),
 

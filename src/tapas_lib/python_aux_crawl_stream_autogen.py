@@ -3532,8 +3532,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(content_tree, expr)
         content_aux = synth.aux
         
+        child_inher_aux = self.traverse_decorator_ExprDec_comment(
+            inher_aux,
+            content_tree, 
+            content_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
 
-        return self.synthesize_for_decorator_ExprDec(inher_aux, content_tree, content_aux)
+        return self.synthesize_for_decorator_ExprDec(inher_aux, content_tree, content_aux, comment_tree, comment_aux)
     
     # inspect: decorator <-- CmntDec"
     def inspect_decorator_CmntDec(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -9642,6 +9653,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
+    # traverse decorator <-- ExprDec"
+    def traverse_decorator_ExprDec_comment(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (content_aux,), 'str') 
+    
     # traverse decorator <-- CmntDec"
     def traverse_decorator_CmntDec_content(self, 
         inher_aux : InherAux
@@ -11974,11 +11993,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     def synthesize_for_decorator_ExprDec(self, 
         inher_aux : InherAux,
         content_tree : expr, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ExprDec(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_ExprDec(content_tree, comment_tree),
+            aux = self.synthesize_auxes((content_aux, comment_aux,)) 
         )
     
     # synthesize: decorator <-- CmntDec

@@ -394,10 +394,10 @@ def to_sequence_with_item(ws : list[with_item]) -> sequence_with_item:
     return result
 
 
-def to_decorators(ds : list[decorator | None], base_start : int, base_end : int) -> decorators:
-
+def to_decorators(nodes : list[GenericNode], base_start : int, base_end : int) -> decorators:
     result = NoDec(base_start, base_end)
-    for d in reversed(ds):
+    for node in reversed(nodes):
+        d = from_generic_tree_to_decorator(node)
         result = ConsDec(d, result,
             unguard_decorator(d).source_start if d else 0,
             result.source_end
@@ -503,6 +503,17 @@ def to_sequence_string(ss : list[tuple[str, int, int]]) -> sequence_string:
         )
 
     return result
+
+def from_generic_tree_to_decorator(dec_node : GenericNode) -> decorator:
+    if dec_node.syntax_part == "decorator":
+        assert dec_node.children[0].syntax_part == "@"
+        expr_node = dec_node.children[1] 
+        comment_text = '' if len(dec_node.children) <= 2 else merge_comments(dec_node.children[2:])
+        return ExprDec(from_generic_tree_to_expr(expr_node), comment_text, expr_node.source_start, expr_node.source_end)
+    else:
+        assert dec_node.syntax_part == "comment"
+        return CmntDec(dec_node.text, dec_node.source_start, dec_node.source_end)
+
 
 def from_list_to_keywords(ks : list[tuple[str, GenericNode, str]]) -> keywords:
     assert ks  
@@ -2510,7 +2521,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for n in base_nodes
         ]
 
-        trips = to_comment_triplets(arguments_node.children[1:-1] if arguments_node else [])
+        trips = to_comment_triplets(arguments_node.children[1:-1]) if (arguments_node != None) else []
 
         kw_trips = [
             (pre, n, post) 
@@ -2518,7 +2529,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             if n.syntax_part == "keyword_argument" or n.syntax_part == "dictionary_splat"
         ]
 
-        kws = from_list_to_keywords(kw_trips)
+        kws = from_list_to_keywords(kw_trips) if kw_trips else None
 
         bases = to_bases(base_exprs, kws, name_node.source_end, block_node.children[0].source_start)
 
@@ -2542,19 +2553,10 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         children = node.children
         dec_nodes = children[0:-1]
 
-        def from_generic_tree_to_decorator(dec_node : GenericNode) -> decorator:
-            if dec_node.syntax_part == "decorator":
-                assert dec_node.children[0].syntax_part == "@"
-                expr_node = dec_node.children[1] 
-                return ExprDec(from_generic_tree_to_expr(expr_node), expr_node.source_start, expr_node.source_end)
-            else:
-                assert dec_node.syntax_part == "comment"
-                return CmntDec(dec_node.text, dec_node.source_start, dec_node.source_end)
-
         def_node = children[-1]
 
         decs = to_decorators([
-            from_generic_tree_to_decorator(dec_node)
+            dec_node
             for dec_node in dec_nodes
         ], def_node.source_start, def_node.source_start)
 

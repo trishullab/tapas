@@ -2318,6 +2318,7 @@ class decorator(ABC):
 @dataclass(frozen=True, eq=True)
 class ExprDec(decorator):
     content : expr | None
+    comment : str
     source_start : int
     source_end : int
 
@@ -2326,22 +2327,26 @@ class ExprDec(decorator):
 
 def make_ExprDec(
     content : expr | None, 
+    comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> decorator:
     return ExprDec(
         content,
+        comment,
         source_start,
         source_end
     )
 
 def update_ExprDec(source_ExprDec : ExprDec,
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ExprDec:
     return ExprDec(
         source_ExprDec.content if isinstance(content, SourceFlag) else content,
+        source_ExprDec.comment if isinstance(comment, SourceFlag) else comment,
         source_ExprDec.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ExprDec.source_end if isinstance(source_end, SourceFlag) else source_end
     )
