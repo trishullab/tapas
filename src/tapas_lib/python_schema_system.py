@@ -473,7 +473,9 @@ choices_schema : dict[str, list[Rule]] = {
             "ConsFilter",
             [
                 Terminal("if "),
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("tail", "constraint_filters", NewLine())
             ]
         ),
@@ -482,7 +484,9 @@ choices_schema : dict[str, list[Rule]] = {
             "SingleFilter",
             [
                 Terminal("if "),
-                Nonterm("content", "expr", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -697,7 +701,7 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleConstraint",
             [
-                Nonterm("content", "constraint", InLine())
+                Nonterm("content", "constraint", InLine()),
             ]
         ),
 
@@ -1275,7 +1279,9 @@ choices_schema : dict[str, list[Rule]] = {
             "ListComp",
             [
                 Terminal("["),
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "expr", IndentLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("]"),
             ]
@@ -1285,7 +1291,9 @@ choices_schema : dict[str, list[Rule]] = {
             "SetComp",
             [
                 Terminal("{"),
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "expr", IndentLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("}")
             ]
@@ -1665,9 +1673,13 @@ choices_schema : dict[str, list[Rule]] = {
             "AsyncConstraint",
             [
                 Terminal("async for "),
+                Vocab("comment_a", "comment"),
                 Nonterm("target", "expr", InLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" in "),
+                Vocab("comment_c", "comment"),
                 Nonterm("search_space", "expr", InLine()),
+                Vocab("comment_d", "comment"),
                 Nonterm("filts", "constraint_filters", NewLine())
             ] 
         ),
@@ -1676,9 +1688,13 @@ choices_schema : dict[str, list[Rule]] = {
             "Constraint",
             [
                 Terminal("for "),
+                Vocab("comment_a", "comment"),
                 Nonterm("target", "expr", InLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" in "),
+                Vocab("comment_c", "comment"),
                 Nonterm("search_space", "expr", InLine()),
+                Vocab("comment_d", "comment"),
                 Nonterm("filts", "constraint_filters", NewLine())
             ] 
         ),

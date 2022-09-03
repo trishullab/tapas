@@ -3660,30 +3660,58 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            head_tree = children[1].tree
             assert isinstance(head_tree, expr)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
                 
-            tail_tree = children[1].tree
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            tail_tree = children[3].tree
             assert isinstance(tail_tree, constraint_filters)
-            tail_aux = children[1].aux
+            tail_aux = children[3].aux
                 
-            return self.synthesize_for_constraint_filters_ConsFilter(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+            return self.synthesize_for_constraint_filters_ConsFilter(inher_aux, pre_comment_tree, pre_comment_aux, head_tree, head_aux, post_comment_tree, post_comment_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_constraint_filters_ConsFilter_head(
+            child_inher_aux = self.traverse_constraint_filters_ConsFilter_pre_comment(
                 inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("constraint_filters", "ConsFilter"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_constraint_filters_ConsFilter_head(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
@@ -3691,21 +3719,56 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((make_Grammar("constraint_filters", "ConsFilter"), inher_aux, children + (child_synth,)))
             return None
             
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
+            assert isinstance(head_tree, expr)
+            head_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_constraint_filters_ConsFilter_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                head_tree, 
+                head_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("constraint_filters", "ConsFilter"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 1 : # index refers to an inductive child
+        elif index == 3 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("constraint_filters", "ConsFilter"), inher_aux, children))
 
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
             assert isinstance(head_tree, expr)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
 
             # add on child node 
             child_inher_aux = self.traverse_constraint_filters_ConsFilter_tail(
                 inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 head_tree, 
-                head_aux
+                head_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -3720,29 +3783,82 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         
 
-        total_num_children = 1
+        total_num_children = 3
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
                 
-            return self.synthesize_for_constraint_filters_SingleFilter(inher_aux, content_tree, content_aux)
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+                
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            return self.synthesize_for_constraint_filters_SingleFilter(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_constraint_filters_SingleFilter_content(
+            child_inher_aux = self.traverse_constraint_filters_SingleFilter_pre_comment(
                 inher_aux
             )
             child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("constraint_filters", "SingleFilter"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_constraint_filters_SingleFilter_content(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
             child_synth = self.crawl_expr(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("constraint_filters", "SingleFilter"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_constraint_filters_SingleFilter_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("constraint_filters", "SingleFilter"), inher_aux, children + (child_synth,)))
             return None
@@ -7777,35 +7893,93 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            content_tree = children[1].tree
             assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            content_aux = children[1].aux
                 
-            constraints_tree = children[1].tree
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            constraints_tree = children[3].tree
             assert isinstance(constraints_tree, comprehension_constraints)
-            constraints_aux = children[1].aux
+            constraints_aux = children[3].aux
                 
-            return self.synthesize_for_expr_ListComp(inher_aux, content_tree, content_aux, constraints_tree, constraints_aux)
+            return self.synthesize_for_expr_ListComp(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux, constraints_tree, constraints_aux)
         
-        elif index == 1: # index does *not* refer to an inductive child
+        elif index == 0: # index does *not* refer to an inductive child
 
             
-            content_tree = children[0].tree
+
+
+            child_inher_aux = self.traverse_expr_ListComp_pre_comment(
+                inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "ListComp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
             assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            content_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_ListComp_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "ListComp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
 
 
             child_inher_aux = self.traverse_expr_ListComp_constraints(
                 inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 content_tree, 
-                content_aux
+                content_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
@@ -7814,15 +7988,20 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return None
             
         
-        elif index == 0 : # index refers to an inductive child
+        elif index == 1 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "ListComp"), inher_aux, children))
 
             
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_ListComp_content(
-                inher_aux
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -7841,35 +8020,93 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            content_tree = children[1].tree
             assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            content_aux = children[1].aux
                 
-            constraints_tree = children[1].tree
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            constraints_tree = children[3].tree
             assert isinstance(constraints_tree, comprehension_constraints)
-            constraints_aux = children[1].aux
+            constraints_aux = children[3].aux
                 
-            return self.synthesize_for_expr_SetComp(inher_aux, content_tree, content_aux, constraints_tree, constraints_aux)
+            return self.synthesize_for_expr_SetComp(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux, constraints_tree, constraints_aux)
         
-        elif index == 1: # index does *not* refer to an inductive child
+        elif index == 0: # index does *not* refer to an inductive child
 
             
-            content_tree = children[0].tree
+
+
+            child_inher_aux = self.traverse_expr_SetComp_pre_comment(
+                inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "SetComp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
             assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            content_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_SetComp_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "SetComp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
 
 
             child_inher_aux = self.traverse_expr_SetComp_constraints(
                 inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 content_tree, 
-                content_aux
+                content_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_comprehension_constraints(child_token, child_inher_aux)
@@ -7878,15 +8115,20 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return None
             
         
-        elif index == 0 : # index refers to an inductive child
+        elif index == 1 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "SetComp"), inher_aux, children))
 
             
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_SetComp_content(
-                inher_aux
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -9218,8 +9460,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_constraint_AsyncConstraint_target(
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_comment_a(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_a_tree = synth.tree
+        assert isinstance(comment_a_tree, str)
+        comment_a_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_target(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -9227,10 +9480,44 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        child_inher_aux = self.traverse_constraint_AsyncConstraint_search_space(
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_comment_b(
             inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
             target_tree, 
             target_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_b_tree = synth.tree
+        assert isinstance(comment_b_tree, str)
+        comment_b_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_comment_c(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            target_tree, 
+            target_aux,
+            comment_b_tree, 
+            comment_b_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_c_tree = synth.tree
+        assert isinstance(comment_c_tree, str)
+        comment_c_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_search_space(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            target_tree, 
+            target_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -9238,12 +9525,39 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(search_space_tree, expr)
         search_space_aux = synth.aux
         
-        child_inher_aux = self.traverse_constraint_AsyncConstraint_filts(
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_comment_d(
             inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
             target_tree, 
             target_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux,
             search_space_tree, 
             search_space_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_d_tree = synth.tree
+        assert isinstance(comment_d_tree, str)
+        comment_d_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_AsyncConstraint_filts(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            target_tree, 
+            target_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux,
+            search_space_tree, 
+            search_space_aux,
+            comment_d_tree, 
+            comment_d_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_constraint_filters(child_token, child_inher_aux)
@@ -9252,15 +9566,26 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         filts_aux = synth.aux
         
 
-        return self.synthesize_for_constraint_AsyncConstraint(inher_aux, target_tree, target_aux, search_space_tree, search_space_aux, filts_tree, filts_aux)
+        return self.synthesize_for_constraint_AsyncConstraint(inher_aux, comment_a_tree, comment_a_aux, target_tree, target_aux, comment_b_tree, comment_b_aux, comment_c_tree, comment_c_aux, search_space_tree, search_space_aux, comment_d_tree, comment_d_aux, filts_tree, filts_aux)
     
     # inspect: constraint <-- Constraint"
     def inspect_constraint_Constraint(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_constraint_Constraint_target(
+        child_inher_aux = self.traverse_constraint_Constraint_comment_a(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_a_tree = synth.tree
+        assert isinstance(comment_a_tree, str)
+        comment_a_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_Constraint_target(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -9268,10 +9593,44 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(target_tree, expr)
         target_aux = synth.aux
         
-        child_inher_aux = self.traverse_constraint_Constraint_search_space(
+        child_inher_aux = self.traverse_constraint_Constraint_comment_b(
             inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
             target_tree, 
             target_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_b_tree = synth.tree
+        assert isinstance(comment_b_tree, str)
+        comment_b_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_Constraint_comment_c(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            target_tree, 
+            target_aux,
+            comment_b_tree, 
+            comment_b_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_c_tree = synth.tree
+        assert isinstance(comment_c_tree, str)
+        comment_c_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_Constraint_search_space(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            target_tree, 
+            target_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -9279,12 +9638,39 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(search_space_tree, expr)
         search_space_aux = synth.aux
         
-        child_inher_aux = self.traverse_constraint_Constraint_filts(
+        child_inher_aux = self.traverse_constraint_Constraint_comment_d(
             inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
             target_tree, 
             target_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux,
             search_space_tree, 
             search_space_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_d_tree = synth.tree
+        assert isinstance(comment_d_tree, str)
+        comment_d_aux = synth.aux
+        
+        child_inher_aux = self.traverse_constraint_Constraint_filts(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            target_tree, 
+            target_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux,
+            search_space_tree, 
+            search_space_aux,
+            comment_d_tree, 
+            comment_d_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_constraint_filters(child_token, child_inher_aux)
@@ -9293,7 +9679,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         filts_aux = synth.aux
         
 
-        return self.synthesize_for_constraint_Constraint(inher_aux, target_tree, target_aux, search_space_tree, search_space_aux, filts_tree, filts_aux)
+        return self.synthesize_for_constraint_Constraint(inher_aux, comment_a_tree, comment_a_aux, target_tree, target_aux, comment_b_tree, comment_b_aux, comment_c_tree, comment_c_aux, search_space_tree, search_space_aux, comment_d_tree, comment_d_aux, filts_tree, filts_aux)
      
     
     # inspect: CompareRight"
@@ -10063,24 +10449,64 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (head_aux,), 'decorators') 
     
     # traverse constraint_filters <-- ConsFilter"
-    def traverse_constraint_filters_ConsFilter_head(self, 
+    def traverse_constraint_filters_ConsFilter_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse constraint_filters <-- ConsFilter"
+    def traverse_constraint_filters_ConsFilter_head(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'expr') 
+    
+    # traverse constraint_filters <-- ConsFilter"
+    def traverse_constraint_filters_ConsFilter_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : expr, 
+        head_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux,), 'str') 
     
     # traverse constraint_filters <-- ConsFilter"
     def traverse_constraint_filters_ConsFilter_tail(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : expr, 
-        head_aux : SynthAux
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'constraint_filters') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux,), 'constraint_filters') 
+    
+    # traverse constraint_filters <-- SingleFilter"
+    def traverse_constraint_filters_SingleFilter_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse constraint_filters <-- SingleFilter"
     def traverse_constraint_filters_SingleFilter_content(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'expr') 
+    
+    # traverse constraint_filters <-- SingleFilter"
+    def traverse_constraint_filters_SingleFilter_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : expr, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
     
     # traverse sequence_string <-- ConsStr"
     def traverse_sequence_string_ConsStr_head(self, 
@@ -11553,32 +11979,76 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'comma_exprs') 
     
     # traverse expr <-- ListComp"
-    def traverse_expr_ListComp_content(self, 
+    def traverse_expr_ListComp_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse expr <-- ListComp"
+    def traverse_expr_ListComp_content(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'expr') 
+    
+    # traverse expr <-- ListComp"
+    def traverse_expr_ListComp_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : expr, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
     
     # traverse expr <-- ListComp"
     def traverse_expr_ListComp_constraints(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : expr, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,), 'comprehension_constraints') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux, post_comment_aux,), 'comprehension_constraints') 
+    
+    # traverse expr <-- SetComp"
+    def traverse_expr_SetComp_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse expr <-- SetComp"
     def traverse_expr_SetComp_content(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'expr') 
+    
+    # traverse expr <-- SetComp"
+    def traverse_expr_SetComp_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : expr, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
     
     # traverse expr <-- SetComp"
     def traverse_expr_SetComp_constraints(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : expr, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,), 'comprehension_constraints') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux, post_comment_aux,), 'comprehension_constraints') 
     
     # traverse expr <-- DictionaryComp"
     def traverse_expr_DictionaryComp_key(self, 
@@ -11765,52 +12235,172 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (lower_aux, upper_aux,), 'option_expr') 
     
     # traverse constraint <-- AsyncConstraint"
-    def traverse_constraint_AsyncConstraint_target(self, 
+    def traverse_constraint_AsyncConstraint_comment_a(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse constraint <-- AsyncConstraint"
+    def traverse_constraint_AsyncConstraint_target(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux,), 'expr') 
+    
+    # traverse constraint <-- AsyncConstraint"
+    def traverse_constraint_AsyncConstraint_comment_b(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        target_tree : expr, 
+        target_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux,), 'str') 
+    
+    # traverse constraint <-- AsyncConstraint"
+    def traverse_constraint_AsyncConstraint_comment_c(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux,), 'str') 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_search_space(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : expr, 
-        target_aux : SynthAux
+        target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux, comment_c_aux,), 'expr') 
+    
+    # traverse constraint <-- AsyncConstraint"
+    def traverse_constraint_AsyncConstraint_comment_d(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        search_space_tree : expr, 
+        search_space_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux, comment_c_aux, search_space_aux,), 'str') 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_filts(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : expr, 
-        search_space_aux : SynthAux
+        search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,), 'constraint_filters') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux, comment_c_aux, search_space_aux, comment_d_aux,), 'constraint_filters') 
+    
+    # traverse constraint <-- Constraint"
+    def traverse_constraint_Constraint_comment_a(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_target(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux,), 'expr') 
+    
+    # traverse constraint <-- Constraint"
+    def traverse_constraint_Constraint_comment_b(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        target_tree : expr, 
+        target_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux,), 'str') 
+    
+    # traverse constraint <-- Constraint"
+    def traverse_constraint_Constraint_comment_c(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux,), 'str') 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_search_space(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : expr, 
-        target_aux : SynthAux
+        target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux, comment_c_aux,), 'expr') 
+    
+    # traverse constraint <-- Constraint"
+    def traverse_constraint_Constraint_comment_d(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        search_space_tree : expr, 
+        search_space_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux, comment_c_aux, search_space_aux,), 'str') 
     
     # traverse constraint <-- Constraint"
     def traverse_constraint_Constraint_filts(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : expr, 
-        search_space_aux : SynthAux
+        search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux, search_space_aux,), 'constraint_filters') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, target_aux, comment_b_aux, comment_c_aux, search_space_aux, comment_d_aux,), 'constraint_filters') 
      
     
     # traverse CompareRight
@@ -12565,25 +13155,33 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: constraint_filters <-- ConsFilter
     def synthesize_for_constraint_filters_ConsFilter(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : expr, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : constraint_filters, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ConsFilter(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_ConsFilter(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, head_aux, post_comment_aux, tail_aux,)) 
         )
     
     # synthesize: constraint_filters <-- SingleFilter
     def synthesize_for_constraint_filters_SingleFilter(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : expr, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SingleFilter(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SingleFilter(pre_comment_tree, content_tree, post_comment_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux,)) 
         )
     
     # synthesize: constraint_filters <-- NoFilter
@@ -13632,27 +14230,35 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: expr <-- ListComp
     def synthesize_for_expr_ListComp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ListComp(content_tree, constraints_tree),
-            aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
+            tree = make_ListComp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux, constraints_aux,)) 
         )
     
     # synthesize: expr <-- SetComp
     def synthesize_for_expr_SetComp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SetComp(content_tree, constraints_tree),
-            aux = self.synthesize_auxes((content_aux, constraints_aux,)) 
+            tree = make_SetComp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux, constraints_aux,)) 
         )
     
     # synthesize: expr <-- DictionaryComp
@@ -14198,31 +14804,47 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: constraint <-- AsyncConstraint
     def synthesize_for_constraint_AsyncConstraint(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : expr, 
         search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         filts_tree : constraint_filters, 
         filts_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
-            aux = self.synthesize_auxes((target_aux, search_space_aux, filts_aux,)) 
+            tree = make_AsyncConstraint(comment_a_tree, target_tree, comment_b_tree, comment_c_tree, search_space_tree, comment_d_tree, filts_tree),
+            aux = self.synthesize_auxes((comment_a_aux, target_aux, comment_b_aux, comment_c_aux, search_space_aux, comment_d_aux, filts_aux,)) 
         )
     
     # synthesize: constraint <-- Constraint
     def synthesize_for_constraint_Constraint(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : expr, 
         search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         filts_tree : constraint_filters, 
         filts_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Constraint(target_tree, search_space_tree, filts_tree),
-            aux = self.synthesize_auxes((target_aux, search_space_aux, filts_aux,)) 
+            tree = make_Constraint(comment_a_tree, target_tree, comment_b_tree, comment_c_tree, search_space_tree, comment_d_tree, filts_tree),
+            aux = self.synthesize_auxes((comment_a_aux, target_aux, comment_b_aux, comment_c_aux, search_space_aux, comment_d_aux, filts_aux,)) 
         )
      
     

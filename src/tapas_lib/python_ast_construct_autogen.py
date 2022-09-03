@@ -2520,7 +2520,9 @@ class constraint_filters(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsFilter(constraint_filters):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : constraint_filters | None
     source_start : int
     source_end : int
@@ -2529,26 +2531,34 @@ class ConsFilter(constraint_filters):
         return handlers.case_ConsFilter(self)
 
 def make_ConsFilter(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : constraint_filters | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint_filters:
     return ConsFilter(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsFilter(source_ConsFilter : ConsFilter,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[constraint_filters | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsFilter:
     return ConsFilter(
+        source_ConsFilter.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsFilter.head if isinstance(head, SourceFlag) else head,
+        source_ConsFilter.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsFilter.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsFilter.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsFilter.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2558,7 +2568,9 @@ def update_ConsFilter(source_ConsFilter : ConsFilter,
 
 @dataclass(frozen=True, eq=True)
 class SingleFilter(constraint_filters):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2566,23 +2578,31 @@ class SingleFilter(constraint_filters):
         return handlers.case_SingleFilter(self)
 
 def make_SingleFilter(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint_filters:
     return SingleFilter(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleFilter(source_SingleFilter : SingleFilter,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleFilter:
     return SingleFilter(
+        source_SingleFilter.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleFilter.content if isinstance(content, SourceFlag) else content,
+        source_SingleFilter.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleFilter.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleFilter.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -6195,7 +6215,9 @@ def update_Set(source_Set : Set,
 
 @dataclass(frozen=True, eq=True)
 class ListComp(expr):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -6204,26 +6226,34 @@ class ListComp(expr):
         return handlers.case_ListComp(self)
 
 def make_ListComp(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return ListComp(
+        pre_comment,
         content,
+        post_comment,
         constraints,
         source_start,
         source_end
     )
 
 def update_ListComp(source_ListComp : ListComp,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ListComp:
     return ListComp(
+        source_ListComp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ListComp.content if isinstance(content, SourceFlag) else content,
+        source_ListComp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ListComp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_ListComp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ListComp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6233,7 +6263,9 @@ def update_ListComp(source_ListComp : ListComp,
 
 @dataclass(frozen=True, eq=True)
 class SetComp(expr):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -6242,26 +6274,34 @@ class SetComp(expr):
         return handlers.case_SetComp(self)
 
 def make_SetComp(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return SetComp(
+        pre_comment,
         content,
+        post_comment,
         constraints,
         source_start,
         source_end
     )
 
 def update_SetComp(source_SetComp : SetComp,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SetComp:
     return SetComp(
+        source_SetComp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SetComp.content if isinstance(content, SourceFlag) else content,
+        source_SetComp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SetComp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_SetComp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SetComp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -8195,8 +8235,12 @@ class constraint(ABC):
 
 @dataclass(frozen=True, eq=True)
 class AsyncConstraint(constraint):
+    comment_a : str
     target : expr | None
+    comment_b : str
+    comment_c : str
     search_space : expr | None
+    comment_d : str
     filts : constraint_filters | None
     source_start : int
     source_end : int
@@ -8205,30 +8249,46 @@ class AsyncConstraint(constraint):
         return handlers.case_AsyncConstraint(self)
 
 def make_AsyncConstraint(
+    comment_a : str, 
     target : expr | None, 
+    comment_b : str, 
+    comment_c : str, 
     search_space : expr | None, 
+    comment_d : str, 
     filts : constraint_filters | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint:
     return AsyncConstraint(
+        comment_a,
         target,
+        comment_b,
+        comment_c,
         search_space,
+        comment_d,
         filts,
         source_start,
         source_end
     )
 
 def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     target : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     search_space : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     filts : Union[constraint_filters | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> AsyncConstraint:
     return AsyncConstraint(
+        source_AsyncConstraint.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_AsyncConstraint.target if isinstance(target, SourceFlag) else target,
+        source_AsyncConstraint.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_AsyncConstraint.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_AsyncConstraint.search_space if isinstance(search_space, SourceFlag) else search_space,
+        source_AsyncConstraint.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_AsyncConstraint.filts if isinstance(filts, SourceFlag) else filts,
         source_AsyncConstraint.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncConstraint.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -8238,8 +8298,12 @@ def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
 
 @dataclass(frozen=True, eq=True)
 class Constraint(constraint):
+    comment_a : str
     target : expr | None
+    comment_b : str
+    comment_c : str
     search_space : expr | None
+    comment_d : str
     filts : constraint_filters | None
     source_start : int
     source_end : int
@@ -8248,30 +8312,46 @@ class Constraint(constraint):
         return handlers.case_Constraint(self)
 
 def make_Constraint(
+    comment_a : str, 
     target : expr | None, 
+    comment_b : str, 
+    comment_c : str, 
     search_space : expr | None, 
+    comment_d : str, 
     filts : constraint_filters | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint:
     return Constraint(
+        comment_a,
         target,
+        comment_b,
+        comment_c,
         search_space,
+        comment_d,
         filts,
         source_start,
         source_end
     )
 
 def update_Constraint(source_Constraint : Constraint,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     target : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     search_space : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     filts : Union[constraint_filters | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Constraint:
     return Constraint(
+        source_Constraint.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_Constraint.target if isinstance(target, SourceFlag) else target,
+        source_Constraint.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_Constraint.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_Constraint.search_space if isinstance(search_space, SourceFlag) else search_space,
+        source_Constraint.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_Constraint.filts if isinstance(filts, SourceFlag) else filts,
         source_Constraint.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Constraint.source_end if isinstance(source_end, SourceFlag) else source_end

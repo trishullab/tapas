@@ -230,6 +230,17 @@ def test_comment():
 #################
 
     code = '''
+    [ #hello
+        x # hello
+        for # hello
+        x #hello
+        in #hello
+        [1,2,3] #hello
+        if #hello 
+        1 == 1 #hello
+        if #hello 
+        True #hello
+    ]
     '''
 
     gnode = pgs.parse(code)
@@ -237,11 +248,11 @@ def test_comment():
     print(pgs.dump(gnode))
 
     ######
-    mod = pas.parse_from_generic_tree(gnode)
-    seq = pas.serialize(mod)
+    # mod = pas.parse_from_generic_tree(gnode)
+    # seq = pas.serialize(mod)
 
-    print("-- AST --")  
-    print(pats.dump(seq))
+    # print("-- AST --")  
+    # print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()

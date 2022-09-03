@@ -342,8 +342,10 @@ def to_dictionary_content(nodes : list[GenericNode]) -> dictionary_content:
 
     return result
 
-def to_comprehension_constraints(cs : list[constraint]) -> comprehension_constraints:
+def to_comprehension_constraints(constraint_nodes : list[GenericNode]) -> comprehension_constraints:
+    cs = collapse_constraint_nodes(constraint_nodes)
     assert cs 
+
 
     result = SingleConstraint(cs[-1],
         unguard_constraint(cs[-1]).source_start,
@@ -512,19 +514,45 @@ def to_target_exprs(es : list[expr]) -> target_exprs:
 
     return result
 
-def to_constraint_filters(es : list[expr | None], base_start : int, base_end : int) -> constraint_filters:
+def to_constraint_filters(nodes : list[GenericNode], base_start : int, base_end : int) -> constraint_filters:
 
-    (result, es) = (
-        (SingleFilter(es[-1],
-            unguard_expr(es[-1]).source_start if es[-1] else 0,
-            unguard_expr(es[-1]).source_end if es[-1] else 0,
-        ), es[:-1])
-        if es else
+    def assert_if_node(n):
+        assert n.syntax_part == "if_clause"
+        assert n.children[0].syntax_part == "if"
 
-        (NoFilter(base_start, base_end), es) 
+    start_indices = [
+        i
+        for i, n in enumerate(nodes)
+        if n.syntax_part == "if_clause"
+    ]
+
+    end_indices = start_indices[1:] + [len(nodes)]
+
+    trips = [
+        (pre, cond, post)
+        for start, end in zip(start_indices, end_indices)
+        for if_node in [nodes[start]]
+        for _ in [assert_if_node(if_node)]
+        for pre in [merge_comments(if_node.children[1:-1])]
+        for cond in [if_node.children[-1]]
+        for post in [merge_comments(nodes[start+1:end])]
+    ]
+
+    (pre, n, post) = trips[-1]
+    e = from_generic_tree_to_expr(n)
+
+    (result, trips) = (
+        (SingleFilter(pre, e, post,
+            unguard_expr(e).source_start if e else 0,
+            unguard_expr(e).source_end if e else 0,
+        ), trips[:-1])
+        if trips else
+
+        (NoFilter(base_start, base_end), []) 
     )
-    for e in reversed(es):
-        result = ConsFilter(e, result,
+    for (pre, n, post) in reversed(trips):
+        e = from_generic_tree_to_expr(n)
+        result = ConsFilter(pre, e, post, result,
             unguard_expr(e).source_start if e else 0,
             result.source_end
         )
@@ -913,78 +941,118 @@ def from_nodes_to_constraint(nodes : list[GenericNode]) -> constraint:
     )
 
     assert for_children[0].syntax_part == "for"
-    assert for_children[2].syntax_part == "in"
+
+    in_index = next(
+        i
+        for i, n in enumerate(for_children)
+        if n.syntax_part == "in"
+    )
+
+    target_index = next(
+        i + 1
+        for i, n in enumerate(for_children[1:in_index])
+        if n.syntax_part != "comment"
+    )
+
+    if_clause_index = next(
+        i
+        for i, n in enumerate(for_children)
+        if n.syntax_part == "if_clause"
+    )
+
+    iter_index = next(
+        i + in_index + 1
+        for i, n in enumerate(for_children[in_index + 1:if_clause_index])
+        if n.syntax_part != "comment"
+    )
+
+    comment_a = merge_comments(for_children[1:target_index])
+
+    target_expr = from_generic_tree_to_expr(for_children[target_index])
+
+    comment_b = merge_comments(for_children[target_index + 1:in_index])
+    comment_c = merge_comments(for_children[in_index + 1:iter_index])
+
+    iter_expr = from_generic_tree_to_expr(for_children[iter_index])
+
+    comment_d = merge_comments(for_children[iter_index + 1:if_clause_index])
 
 
-    target_expr = from_generic_tree_to_expr(for_children[1])
-    iter_expr = from_generic_tree_to_expr(for_children[3])
-
-    def assert_if_node(n):
-        assert n.syntax_part == "if_clause"
-        assert n.children[0].syntax_part == "if"
 
 
 
 
-    if_nodes = nodes[1:]
-    if_exprs = [
-        from_generic_tree_to_expr(n.children[1])
-        for n in if_nodes
-        for _ in [assert_if_node(n)]
-    ]
+    if_nodes = nodes[if_clause_index:]
+
+
 
 
     source_start = nodes[0].source_start
     source_end = nodes[-1].source_end
     if is_async:
-        return AsyncConstraint(target_expr, iter_expr, to_constraint_filters(if_exprs, 
+        return AsyncConstraint(comment_a, target_expr, comment_b, comment_c, iter_expr, comment_d, to_constraint_filters(if_nodes, 
             unguard_expr(iter_expr).source_end if iter_expr else 0,
             source_end
         ), source_start, source_end)
     else:
-        return Constraint(target_expr, iter_expr, to_constraint_filters(if_exprs,
+        return Constraint(comment_a, target_expr, comment_b, comment_c, iter_expr, comment_d, to_constraint_filters(if_nodes,
             unguard_expr(iter_expr).source_end if iter_expr else 0,
             source_end
         ), source_start, source_end)
 
 
 def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint] | None:
+    start_indices = [
+        i
+        for i, n in enumerate(nodes)
+        if n.syntax_part == "for_in_clause"
+    ]
+    end_indicies = start_indices[1:] + [len(nodes)] 
 
-    def collapse_constraint_nodes_r(
-        nodes : list[GenericNode], 
-        collected_group : list[GenericNode] = [], 
-        collected_constraints : list[constraint] = []
-    ) -> list[constraint] | None:
+    return [
+        from_nodes_to_constraint(slice)
+        for start, end in zip(start_indices, end_indicies)
+        for slice in [nodes[start:end]]
+    ]
 
-        if len(nodes) == 0:
-            if len(collected_group) == 0:
-                return collected_constraints 
-            else:
-                return collected_constraints + [from_nodes_to_constraint(collected_group)]
-        else:
-            node = nodes[-1]
-            tail = nodes[0:-1]
-            if node.syntax_part == "for_in_clause":
-                if len(collected_group) == 0:
-                    return collapse_constraint_nodes_r(tail, [node], collected_constraints)
-                else:
-                    constraint = from_nodes_to_constraint(collected_group)
-                    return collapse_constraint_nodes_r(
-                        tail, 
-                        [node], 
-                        collected_constraints + [constraint]
-                    )
 
-            if node.syntax_part == "if_clause":
-                return collapse_constraint_nodes_r(
-                    tail, 
-                    collected_group + [node], 
-                    collected_constraints
-                )
-            else:
-                return node_error(node)
+# def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint] | None:
 
-    return collapse_constraint_nodes_r([n for n in reversed(nodes)])
+#     def collapse_constraint_nodes_r(
+#         nodes : list[GenericNode], 
+#         collected_group : list[GenericNode] = [], 
+#         collected_constraints : list[constraint] = []
+#     ) -> list[constraint] | None:
+
+#         if len(nodes) == 0:
+#             if len(collected_group) == 0:
+#                 return collected_constraints 
+#             else:
+#                 return collected_constraints + [from_nodes_to_constraint(collected_group)]
+#         else:
+#             node = nodes[-1]
+#             tail = nodes[0:-1]
+#             if node.syntax_part == "for_in_clause":
+#                 if len(collected_group) == 0:
+#                     return collapse_constraint_nodes_r(tail, [node], collected_constraints)
+#                 else:
+#                     constraint = from_nodes_to_constraint(collected_group)
+#                     return collapse_constraint_nodes_r(
+#                         tail, 
+#                         [node], 
+#                         collected_constraints + [constraint]
+#                     )
+
+#             if node.syntax_part == "if_clause":
+#                 return collapse_constraint_nodes_r(
+#                     tail, 
+#                     collected_group + [node], 
+#                     collected_constraints
+#                 )
+#             else:
+#                 return node_error(node)
+
+#     return collapse_constraint_nodes_r([n for n in reversed(nodes)])
 
 
 def from_generic_tree_to_expr(node : GenericNode) -> expr | None: 
@@ -1105,17 +1173,35 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
     elif (node.syntax_part == "list_comprehension"):
         children = node.children[1:-1]
-        expr = from_generic_tree_to_expr(children[0])
 
-        constraint_nodes = children[1:]
+        expr_index = next(
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part != "comment"
+            if n.syntax_part != "for_in_clause"
+            if n.syntax_part != "if_clause"
+        )
 
-        constraints = collapse_constraint_nodes(constraint_nodes)
+        pre_comment = merge_comments(node.children[1:expr_index])
+        expr = from_generic_tree_to_expr(children[expr_index])
+
+        for_clause_index = next((
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part == "for_in_clause"
+        ), None)
+
+        post_comment = merge_comments(node.children[expr_index + 1:(for_clause_index or -1)])
+
+        constraint_nodes = children[for_clause_index:] if for_clause_index else [] 
 
         return ListComp(
+            pre_comment,
             expr, 
+            post_comment,
             (
-                to_comprehension_constraints(constraints)
-                if constraints else
+                to_comprehension_constraints(constraint_nodes)
+                if constraint_nodes else
                 None
             ),
             node.source_start, node.source_end

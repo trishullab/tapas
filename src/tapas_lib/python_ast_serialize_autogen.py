@@ -1480,7 +1480,23 @@ def from_constraint_filters(
                 
                 stack.append(o.tail)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -1494,7 +1510,23 @@ def from_constraint_filters(
 
             def handle_SingleFilter(o : SingleFilter): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -3583,7 +3615,23 @@ def from_expr(
 
                 stack.append(from_comprehension_constraints(o.constraints))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(o.content)
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -3600,7 +3648,23 @@ def from_expr(
 
                 stack.append(from_comprehension_constraints(o.constraints))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(o.content)
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -4547,10 +4611,42 @@ def from_constraint(
                 
                 stack.append(from_constraint_filters(o.filts))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_d
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.search_space))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
 
                 stack.append(from_expr(o.target))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
@@ -4566,10 +4662,42 @@ def from_constraint(
                 
                 stack.append(from_constraint_filters(o.filts))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_d
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.search_space))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
 
                 stack.append(from_expr(o.target))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
