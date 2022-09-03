@@ -3317,8 +3317,24 @@ def from_expr(
 
                 stack.append(o.right)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
 
                 stack.append(from_bool_rator(o.op))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
 
                 stack.append(o.left)
@@ -3337,6 +3353,22 @@ def from_expr(
                 
                 stack.append(o.content)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(o.target)
                 stack.append(

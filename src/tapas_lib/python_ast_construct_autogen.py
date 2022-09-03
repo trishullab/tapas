@@ -5789,7 +5789,9 @@ def update_ParenExpr(source_ParenExpr : ParenExpr,
 @dataclass(frozen=True, eq=True)
 class BoolOp(expr):
     left : expr | None
+    pre_comment : str
     op : bool_rator | None
+    post_comment : str
     right : expr | None
     source_start : int
     source_end : int
@@ -5799,14 +5801,18 @@ class BoolOp(expr):
 
 def make_BoolOp(
     left : expr | None, 
+    pre_comment : str, 
     op : bool_rator | None, 
+    post_comment : str, 
     right : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return BoolOp(
         left,
+        pre_comment,
         op,
+        post_comment,
         right,
         source_start,
         source_end
@@ -5814,14 +5820,18 @@ def make_BoolOp(
 
 def update_BoolOp(source_BoolOp : BoolOp,
     left : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     op : Union[bool_rator | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     right : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> BoolOp:
     return BoolOp(
         source_BoolOp.left if isinstance(left, SourceFlag) else left,
+        source_BoolOp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_BoolOp.op if isinstance(op, SourceFlag) else op,
+        source_BoolOp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_BoolOp.right if isinstance(right, SourceFlag) else right,
         source_BoolOp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_BoolOp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5832,6 +5842,8 @@ def update_BoolOp(source_BoolOp : BoolOp,
 @dataclass(frozen=True, eq=True)
 class AssignExpr(expr):
     target : expr | None
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -5841,12 +5853,16 @@ class AssignExpr(expr):
 
 def make_AssignExpr(
     target : expr | None, 
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return AssignExpr(
         target,
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
@@ -5854,12 +5870,16 @@ def make_AssignExpr(
 
 def update_AssignExpr(source_AssignExpr : AssignExpr,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> AssignExpr:
     return AssignExpr(
         source_AssignExpr.target if isinstance(target, SourceFlag) else target,
+        source_AssignExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_AssignExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_AssignExpr.content if isinstance(content, SourceFlag) else content,
         source_AssignExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AssignExpr.source_end if isinstance(source_end, SourceFlag) else source_end

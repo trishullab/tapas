@@ -194,21 +194,36 @@ def test_comment():
 #     # whole line comment 1 
     # '''
 
+    # code = '''
+    # { #hello
+    #     'x' #hello
+    #     : #hello 
+    #     1 #hello
+    #     , #hello
+    #     'y' #hello
+    #     : #hello 
+    #     1 #hello
+    # } #hello
+    # '''
+
+    # code = '''
+    # (True  #hello
+    # or #hello
+    # False #hello
+    # )
+    # '''
+
+    # code = '''
+    # (x #hello
+    # := #hello 
+    # 1)
+    # '''
+
 #################
 
     code = '''
-    { #hello
-        'x' #hello
-        : #hello 
-        1 #hello
-        , #hello
-        'y' #hello
-        : #hello 
-        1 #hello
-    } #hello
-
-
     '''
+
 
     gnode = pgs.parse(code)
     print("-- generic node --")  

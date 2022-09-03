@@ -6711,7 +6711,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 3
+        total_num_children = 5
 
         index = len(children)
         if index == total_num_children:
@@ -6722,15 +6722,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(left_tree, expr)
             left_aux = children[0].aux
                 
-            op_tree = children[1].tree
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+                
+            op_tree = children[2].tree
             assert isinstance(op_tree, bool_rator)
-            op_aux = children[1].aux
+            op_aux = children[2].aux
                 
-            right_tree = children[2].tree
+            post_comment_tree = children[3].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[3].aux
+                
+            right_tree = children[4].tree
             assert isinstance(right_tree, expr)
-            right_aux = children[2].aux
+            right_aux = children[4].aux
                 
-            return self.synthesize_for_expr_BoolOp(inher_aux, left_tree, left_aux, op_tree, op_aux, right_tree, right_aux)
+            return self.synthesize_for_expr_BoolOp(inher_aux, left_tree, left_aux, pre_comment_tree, pre_comment_aux, op_tree, op_aux, post_comment_tree, post_comment_aux, right_tree, right_aux)
         
         elif index == 1: # index does *not* refer to an inductive child
 
@@ -6740,13 +6748,68 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_aux = children[0].aux
 
 
-            child_inher_aux = self.traverse_expr_BoolOp_op(
+            child_inher_aux = self.traverse_expr_BoolOp_pre_comment(
                 inher_aux,
                 left_tree, 
                 left_aux
             )
             child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            left_tree = children[0].tree
+            assert isinstance(left_tree, expr)
+            left_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_BoolOp_op(
+                inher_aux,
+                left_tree, 
+                left_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
             child_synth = self.crawl_bool_rator(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            left_tree = children[0].tree
+            assert isinstance(left_tree, expr)
+            left_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+            op_tree = children[2].tree
+            assert isinstance(op_tree, bool_rator)
+            op_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_expr_BoolOp_post_comment(
+                inher_aux,
+                left_tree, 
+                left_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                op_tree, 
+                op_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children + (child_synth,)))
             return None
@@ -6765,7 +6828,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
 
-        elif index == 2 : # index refers to an inductive child
+        elif index == 4 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "BoolOp"), inher_aux, children))
 
@@ -6773,17 +6836,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             left_tree = children[0].tree
             assert isinstance(left_tree, expr)
             left_aux = children[0].aux
-            op_tree = children[1].tree
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+            op_tree = children[2].tree
             assert isinstance(op_tree, bool_rator)
-            op_aux = children[1].aux
+            op_aux = children[2].aux
+            post_comment_tree = children[3].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[3].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_BoolOp_right(
                 inher_aux,
                 left_tree, 
                 left_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 op_tree, 
-                op_aux
+                op_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -6802,7 +6875,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
@@ -6813,12 +6886,64 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(target_tree, expr)
             target_aux = children[0].aux
                 
-            content_tree = children[1].tree
-            assert isinstance(content_tree, expr)
-            content_aux = children[1].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
                 
-            return self.synthesize_for_expr_AssignExpr(inher_aux, target_tree, target_aux, content_tree, content_aux)
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            content_tree = children[3].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[3].aux
+                
+            return self.synthesize_for_expr_AssignExpr(inher_aux, target_tree, target_aux, pre_comment_tree, pre_comment_aux, post_comment_tree, post_comment_aux, content_tree, content_aux)
         
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            target_tree = children[0].tree
+            assert isinstance(target_tree, expr)
+            target_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_expr_AssignExpr_pre_comment(
+                inher_aux,
+                target_tree, 
+                target_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "AssignExpr"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            target_tree = children[0].tree
+            assert isinstance(target_tree, expr)
+            target_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_AssignExpr_post_comment(
+                inher_aux,
+                target_tree, 
+                target_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "AssignExpr"), inher_aux, children + (child_synth,)))
+            return None
+            
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
@@ -6833,7 +6958,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
 
-        elif index == 1 : # index refers to an inductive child
+        elif index == 3 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "AssignExpr"), inher_aux, children))
 
@@ -6841,12 +6966,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             target_tree = children[0].tree
             assert isinstance(target_tree, expr)
             target_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_AssignExpr_content(
                 inher_aux,
                 target_tree, 
-                target_aux
+                target_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -11016,22 +11151,48 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- BoolOp"
-    def traverse_expr_BoolOp_op(self, 
+    def traverse_expr_BoolOp_pre_comment(self, 
         inher_aux : InherAux,
         left_tree : expr, 
         left_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux,), 'bool_rator') 
+        return self.traverse_auxes(inher_aux, (left_aux,), 'str') 
+    
+    # traverse expr <-- BoolOp"
+    def traverse_expr_BoolOp_op(self, 
+        inher_aux : InherAux,
+        left_tree : expr, 
+        left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (left_aux, pre_comment_aux,), 'bool_rator') 
+    
+    # traverse expr <-- BoolOp"
+    def traverse_expr_BoolOp_post_comment(self, 
+        inher_aux : InherAux,
+        left_tree : expr, 
+        left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        op_tree : bool_rator, 
+        op_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (left_aux, pre_comment_aux, op_aux,), 'str') 
     
     # traverse expr <-- BoolOp"
     def traverse_expr_BoolOp_right(self, 
         inher_aux : InherAux,
         left_tree : expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         op_tree : bool_rator, 
-        op_aux : SynthAux
+        op_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (left_aux, op_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (left_aux, pre_comment_aux, op_aux, post_comment_aux,), 'expr') 
     
     # traverse expr <-- AssignExpr"
     def traverse_expr_AssignExpr_target(self, 
@@ -11040,12 +11201,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- AssignExpr"
-    def traverse_expr_AssignExpr_content(self, 
+    def traverse_expr_AssignExpr_pre_comment(self, 
         inher_aux : InherAux,
         target_tree : expr, 
         target_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (target_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (target_aux,), 'str') 
+    
+    # traverse expr <-- AssignExpr"
+    def traverse_expr_AssignExpr_post_comment(self, 
+        inher_aux : InherAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (target_aux, pre_comment_aux,), 'str') 
+    
+    # traverse expr <-- AssignExpr"
+    def traverse_expr_AssignExpr_content(self, 
+        inher_aux : InherAux,
+        target_tree : expr, 
+        target_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (target_aux, pre_comment_aux, post_comment_aux,), 'expr') 
     
     # traverse expr <-- BinOp"
     def traverse_expr_BinOp_left(self, 
@@ -13170,14 +13353,18 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         left_tree : expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         op_tree : bool_rator, 
         op_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         right_tree : expr, 
         right_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_BoolOp(left_tree, op_tree, right_tree),
-            aux = self.synthesize_auxes((left_aux, op_aux, right_aux,)) 
+            tree = make_BoolOp(left_tree, pre_comment_tree, op_tree, post_comment_tree, right_tree),
+            aux = self.synthesize_auxes((left_aux, pre_comment_aux, op_aux, post_comment_aux, right_aux,)) 
         )
     
     # synthesize: expr <-- AssignExpr
@@ -13185,12 +13372,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         target_tree : expr, 
         target_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_AssignExpr(target_tree, content_tree),
-            aux = self.synthesize_auxes((target_aux, content_aux,)) 
+            tree = make_AssignExpr(target_tree, pre_comment_tree, post_comment_tree, content_tree),
+            aux = self.synthesize_auxes((target_aux, pre_comment_aux, post_comment_aux, content_aux,)) 
         )
     
     # synthesize: expr <-- BinOp

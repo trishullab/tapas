@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from re import I
 from typing import Optional
 from collections.abc import Callable
 
@@ -1270,10 +1271,18 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     elif node.syntax_part == "boolean_operator":
         children = node.children
         left_expr = from_generic_tree_to_expr(children[0])
-        op = from_generic_tree_to_boolop(children[1])
-        right_expr = from_generic_tree_to_expr(children[2])
+        op_index = next(
+            i + 1
+            for i, n in enumerate(children[1:-1])
+            if n.syntax_part != "comment"
+        )
+        pre_comment = merge_comments(children[1:op_index])
+        op = from_generic_tree_to_boolop(children[op_index])
+        post_comment = merge_comments(children[op_index + 1:-1])
+        right_expr = from_generic_tree_to_expr(children[-1])
 
-        return BoolOp(left_expr, op, right_expr, node.source_start, node.source_end)
+        return BoolOp(left_expr, pre_comment, op, post_comment, right_expr, node.source_start, node.source_end)
+
     elif node.syntax_part == "await":
         assert node.children[0].syntax_part == "await"
         expr = from_generic_tree_to_expr(node.children[1])
@@ -1320,9 +1329,15 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     elif node.syntax_part == "named_expression":
         children = node.children
         target_expr = from_generic_tree_to_expr(children[0])
-        assert children[1].syntax_part == ":="
-        value_expr = from_generic_tree_to_expr(children[2])
-        return AssignExpr(target_expr, value_expr, node.source_start, node.source_end)
+        assign_index = next(
+            i + 1
+            for i, n in enumerate(children[1:-1])
+            if n.syntax_part == ":="
+        )
+        pre_comment = merge_comments(children[1:assign_index])
+        post_comment = merge_comments(children[assign_index + 1:-1])
+        value_expr = from_generic_tree_to_expr(children[-1])
+        return AssignExpr(target_expr, pre_comment, post_comment, value_expr, node.source_start, node.source_end)
 
     elif node.syntax_part == "type":
         return from_generic_tree_to_expr(node.children[0])

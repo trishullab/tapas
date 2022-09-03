@@ -115,12 +115,12 @@
 from dataclasses import dataclass
 
 
-a = 1
-b = 2
-def foo():
-    global a
-    global b
-    a, c = b = (a + 1 + b, 4)
+# a = 1
+# b = 2
+# def foo():
+#     global a
+#     global b
+#     a, c = b = (a + 1 + b, 4)
 # y = 3
 # (x, y) += 3
 

@@ -1171,8 +1171,10 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("("),
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
+                Vocab("pre_comment", "comment"),
                 Nonterm("op", "bool_rator", InLine()),
                 Terminal(" "),
+                Vocab("post_comment", "comment"),
                 Nonterm("right", "expr", InLine()),
                 Terminal(")")
             ]
@@ -1182,7 +1184,9 @@ choices_schema : dict[str, list[Rule]] = {
             "AssignExpr",
             [
                 Nonterm("target", "expr", InLine()),
+                Vocab("pre_comment", "comment"),
                 Terminal(" := "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),

@@ -2230,8 +2230,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         left_tree : pas.expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         rator_tree : pas.bool_rator, 
         rator_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         right_tree : pas.expr, 
         right_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2272,7 +2276,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
-            tree = pas.make_BoolOp(left_tree, rator_tree, right_tree),
+            tree = pas.make_BoolOp(left_tree, pre_comment_tree, rator_tree, post_comment_tree, right_tree),
             aux = update_SynthAux(self.synthesize_auxes((left_aux, rator_aux, right_aux)),
                 observed_types = (expr_type,)
             )
@@ -2513,6 +2517,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         key_tree : pas.expr, 
         key_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2521,7 +2529,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
         return paa.Result[SynthAux](
-            tree = pas.make_Field(key_tree, content_tree),
+            tree = pas.make_Field(key_tree, pre_comment_tree, post_comment_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes((key_aux, content_aux)),
                 observed_types = (key_type, content_type)
             ) 
