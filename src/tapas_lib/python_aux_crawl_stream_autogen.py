@@ -7257,30 +7257,62 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 5
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            params_tree = children[0].tree
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+                
+            params_tree = children[1].tree
             assert isinstance(params_tree, parameters)
-            params_aux = children[0].aux
+            params_aux = children[1].aux
                 
-            body_tree = children[1].tree
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+                
+            comment_c_tree = children[3].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[3].aux
+                
+            body_tree = children[4].tree
             assert isinstance(body_tree, expr)
-            body_aux = children[1].aux
+            body_aux = children[4].aux
                 
-            return self.synthesize_for_expr_Lambda(inher_aux, params_tree, params_aux, body_tree, body_aux)
+            return self.synthesize_for_expr_Lambda(inher_aux, comment_a_tree, comment_a_aux, params_tree, params_aux, comment_b_tree, comment_b_aux, comment_c_tree, comment_c_aux, body_tree, body_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_expr_Lambda_params(
+            child_inher_aux = self.traverse_expr_Lambda_comment_a(
                 inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_expr_Lambda_params(
+                inher_aux,
+                comment_a_tree, 
+                comment_a_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters(child_token, child_inher_aux)
@@ -7288,21 +7320,91 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((make_Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
             return None
             
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+            params_tree = children[1].tree
+            assert isinstance(params_tree, parameters)
+            params_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_Lambda_comment_b(
+                inher_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                params_tree, 
+                params_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+            params_tree = children[1].tree
+            assert isinstance(params_tree, parameters)
+            params_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_expr_Lambda_comment_c(
+                inher_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                params_tree, 
+                params_aux,
+                comment_b_tree, 
+                comment_b_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Lambda"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 1 : # index refers to an inductive child
+        elif index == 4 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "Lambda"), inher_aux, children))
 
             
-            params_tree = children[0].tree
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+            params_tree = children[1].tree
             assert isinstance(params_tree, parameters)
-            params_aux = children[0].aux
+            params_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            comment_c_tree = children[3].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[3].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_Lambda_body(
                 inher_aux,
+                comment_a_tree, 
+                comment_a_aux,
                 params_tree, 
-                params_aux
+                params_aux,
+                comment_b_tree, 
+                comment_b_aux,
+                comment_c_tree, 
+                comment_c_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -11305,18 +11407,54 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (rator_aux, comment_aux,), 'expr') 
     
     # traverse expr <-- Lambda"
-    def traverse_expr_Lambda_params(self, 
+    def traverse_expr_Lambda_comment_a(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'parameters') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse expr <-- Lambda"
+    def traverse_expr_Lambda_params(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux,), 'parameters') 
+    
+    # traverse expr <-- Lambda"
+    def traverse_expr_Lambda_comment_b(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        params_tree : parameters, 
+        params_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, params_aux,), 'str') 
+    
+    # traverse expr <-- Lambda"
+    def traverse_expr_Lambda_comment_c(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        params_tree : parameters, 
+        params_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, params_aux, comment_b_aux,), 'str') 
     
     # traverse expr <-- Lambda"
     def traverse_expr_Lambda_body(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         params_tree : parameters, 
-        params_aux : SynthAux
+        params_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (params_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, params_aux, comment_b_aux, comment_c_aux,), 'expr') 
     
     # traverse expr <-- IfExp"
     def traverse_expr_IfExp_body(self, 
@@ -13421,14 +13559,20 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: expr <-- Lambda
     def synthesize_for_expr_Lambda(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         params_tree : parameters, 
         params_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         body_tree : expr, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Lambda(params_tree, body_tree),
-            aux = self.synthesize_auxes((params_aux, body_aux,)) 
+            tree = make_Lambda(comment_a_tree, params_tree, comment_b_tree, comment_c_tree, body_tree),
+            aux = self.synthesize_auxes((comment_a_aux, params_aux, comment_b_aux, comment_c_aux, body_aux,)) 
         )
     
     # synthesize: expr <-- IfExp

@@ -2288,6 +2288,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         target_tree : pas.expr, 
         target_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2316,7 +2320,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         unified_env, unified_anchor_env = self.unify(target_tree, content_type, inher_aux)
 
         return paa.Result[SynthAux](
-            tree = pas.make_AssignExpr(target_tree, content_tree),
+            tree = pas.make_AssignExpr(target_tree, pre_comment_tree, post_comment_tree, content_tree),
             aux = update_SynthAux(content_aux,
                 decl_additions = (
                     content_aux.decl_additions +

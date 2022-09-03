@@ -1290,15 +1290,33 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
     elif node.syntax_part == "lambda":
         assert node.children[0].syntax_part == "lambda"
-        if len(node.children) == 3:
+
+        params_index = next((
+            i + 1
+            for i, n in enumerate(node.children[1:-1])
+            if n.syntax_part == "lambda_parameters"
+        ), None)
+
+        colon_index = next(
+            i + 1
+            for i, n in enumerate(node.children[1:-1])
+            if n.syntax_part == ":"
+        )
+        if not params_index:
             params = NoParam(node.source_start, node.source_end)
-            body = from_generic_tree_to_expr(node.children[2])
-            return Lambda(params, body, node.source_start, node.source_end)
+            comment_a = merge_comments(node.children[1:colon_index])
+            comment_b = '' 
+            comment_c = merge_comments(node.children[colon_index + 1:-1])
+            body = from_generic_tree_to_expr(node.children[-1])
+            return Lambda(comment_a, params, comment_b, comment_c, body, node.source_start, node.source_end)
         else:
-            params = from_generic_tree_to_parameters(node.children[1])
-            assert node.children[2].syntax_part == ":"
-            body = from_generic_tree_to_expr(node.children[3])
-            return Lambda(params, body, node.source_start, node.source_end)
+            params = from_generic_tree_to_parameters(node.children[params_index])
+            body = from_generic_tree_to_expr(node.children[-1])
+            comment_a = merge_comments(node.children[1:params_index])
+            comment_b = merge_comments(node.children[params_index + 1:colon_index])
+            comment_c = merge_comments(node.children[colon_index + 1:-1])
+
+            return Lambda(comment_a, params, comment_b, comment_c, body, node.source_start, node.source_end)
 
     elif node.syntax_part == "conditional_expression":
         children = node.children

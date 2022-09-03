@@ -1222,8 +1222,11 @@ choices_schema : dict[str, list[Rule]] = {
             "Lambda",
             [
                 Terminal("lambda "),
+                Vocab("comment_a", "comment"),
                 Nonterm("params", "parameters", InLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" :"),
+                Vocab("comment_c", "comment"),
                 Nonterm("body", "expr", InLine())
             ]
         ),

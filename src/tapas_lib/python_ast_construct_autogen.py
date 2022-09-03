@@ -5985,7 +5985,10 @@ def update_UnaryOp(source_UnaryOp : UnaryOp,
 
 @dataclass(frozen=True, eq=True)
 class Lambda(expr):
+    comment_a : str
     params : parameters | None
+    comment_b : str
+    comment_c : str
     body : expr | None
     source_start : int
     source_end : int
@@ -5994,26 +5997,38 @@ class Lambda(expr):
         return handlers.case_Lambda(self)
 
 def make_Lambda(
+    comment_a : str, 
     params : parameters | None, 
+    comment_b : str, 
+    comment_c : str, 
     body : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Lambda(
+        comment_a,
         params,
+        comment_b,
+        comment_c,
         body,
         source_start,
         source_end
     )
 
 def update_Lambda(source_Lambda : Lambda,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     params : Union[parameters | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     body : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Lambda:
     return Lambda(
+        source_Lambda.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_Lambda.params if isinstance(params, SourceFlag) else params,
+        source_Lambda.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_Lambda.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_Lambda.body if isinstance(body, SourceFlag) else body,
         source_Lambda.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Lambda.source_end if isinstance(source_end, SourceFlag) else source_end

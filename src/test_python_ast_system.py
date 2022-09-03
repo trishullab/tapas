@@ -219,11 +219,18 @@ def test_comment():
     # 1)
     # '''
 
+
+    # code = '''
+    # (lambda #hello
+    # x #foo
+    # : #hello
+    # 1)
+    # '''
+
 #################
 
     code = '''
     '''
-
 
     gnode = pgs.parse(code)
     print("-- generic node --")  

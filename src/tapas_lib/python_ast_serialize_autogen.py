@@ -3448,8 +3448,32 @@ def from_expr(
                 
                 stack.append(o.body)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
 
                 stack.append(from_parameters(o.params))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(
