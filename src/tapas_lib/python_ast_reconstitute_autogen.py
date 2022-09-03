@@ -2298,14 +2298,14 @@ def to_dictionary_item(xs : tuple[abstract_token, ...]) -> tuple[dictionary_item
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 4
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    Field(children[0], children[1]),
+                    Field(children[0], children[1], children[2], children[3]),
                     remainder
                 )
             
@@ -2315,6 +2315,16 @@ def to_dictionary_item(xs : tuple[abstract_token, ...]) -> tuple[dictionary_item
                 
 
             elif index == 1: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 3: # index does *not* refer to an inductive child
                 (child, remainder) = to_expr(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -2381,19 +2391,29 @@ def to_dictionary_content(xs : tuple[abstract_token, ...]) -> tuple[dictionary_c
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 4
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    ConsDictionaryItem(children[0], children[1]),
+                    ConsDictionaryItem(children[0], children[1], children[2], children[3]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
                 (child, remainder) = to_dictionary_item(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child
@@ -2410,19 +2430,29 @@ def to_dictionary_content(xs : tuple[abstract_token, ...]) -> tuple[dictionary_c
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 1
+            total_num_children = 3
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    SingleDictionaryItem(children[0]),
+                    SingleDictionaryItem(children[0], children[1], children[2]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
                 (child, remainder) = to_dictionary_item(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
                 stack.append((x, children + [child], remainder))
                 
             else: # index refers to an inductive child

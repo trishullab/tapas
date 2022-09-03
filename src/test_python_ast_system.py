@@ -197,6 +197,17 @@ def test_comment():
 #################
 
     code = '''
+    { #hello
+        'x' #hello
+        : #hello 
+        1 #hello
+        , #hello
+        'y' #hello
+        : #hello 
+        1 #hello
+    } #hello
+
+
     '''
 
     gnode = pgs.parse(code)

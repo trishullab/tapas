@@ -2342,8 +2342,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         left_tree : pas.expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         rator_tree : pas.bin_rator, 
         rator_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         right_tree : pas.expr, 
         right_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2396,7 +2400,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
-            tree = pas.make_BinOp(left_tree, rator_tree, right_tree),
+            tree = pas.make_BinOp(left_tree, pre_comment_tree, rator_tree, post_comment_tree, right_tree),
             aux = update_SynthAux(self.synthesize_auxes((left_aux, right_aux)),
                 observed_types = (expr_type,)
             )
@@ -2408,6 +2412,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         rator_tree : pas.unary_rator, 
         rator_aux : SynthAux,
+        comment_tree, 
+        comment_aux,
         rand_tree : pas.expr, 
         rand_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2444,7 +2450,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             return_type = AnyType() 
 
         return paa.Result[SynthAux](
-            tree = pas.make_UnaryOp(rator_tree, rand_tree),
+            tree = pas.make_UnaryOp(rator_tree, comment_tree, rand_tree),
             aux = update_SynthAux(rand_aux, 
                 observed_types = (return_type,)
             )
@@ -2475,8 +2481,16 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         body_tree : pas.expr, 
         body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         orelse_tree : pas.expr, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2485,7 +2499,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(orelse_aux.observed_types) == 1
         orelse_type = orelse_aux.observed_types[0]
         return paa.Result[SynthAux](
-            tree = pas.make_IfExp(body_tree, test_tree, orelse_tree),
+            tree = pas.make_IfExp(
+                body_tree, comment_a_tree, comment_b_tree, 
+                test_tree, comment_c_tree, comment_d_tree, orelse_tree),
             aux = update_SynthAux(test_aux,
                 observed_types=(unionize_types(body_type, orelse_type),)
             )

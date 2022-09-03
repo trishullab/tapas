@@ -1726,6 +1726,22 @@ def from_dictionary_item(
                 
                 stack.append(from_expr(o.content))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(from_expr(o.key))
                 stack.append(
@@ -1786,7 +1802,23 @@ def from_dictionary_content(
                 stack.append(o.tail)
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_dictionary_item(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'dictionary_content',
@@ -1799,7 +1831,23 @@ def from_dictionary_content(
 
             def handle_SingleDictionaryItem(o : SingleDictionaryItem): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_dictionary_item(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'dictionary_content',

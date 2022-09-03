@@ -288,15 +288,53 @@ def to_comparisons(crs : list[CompareRight]) -> comparisons:
 
     return result
 
-def to_dictionary_content(items : list[dictionary_item]) -> dictionary_content:
-    assert items 
+def to_dictionary_item(node : GenericNode) -> dictionary_item:
+    def is_pair(pair): 
+        return pair.syntax_part == "pair"
 
-    result = SingleDictionaryItem(items[-1],
-        unguard_dictionary_item(items[-1]).source_start,
-        unguard_dictionary_item(items[-1]).source_end,
+    def assert_splat(dsplat): 
+        assert dsplat.syntax_part == "dictionary_splat" and dsplat.children[0].syntax_part == "**" 
+
+    colon_index = next(
+        i
+        for i, n in enumerate(node.children)
+        if n.syntax_part == ":"
     )
-    for f in reversed(items[:-1]):
-        result = ConsDictionaryItem(f, result,
+
+    pre_comment = merge_comments(node.children[1:colon_index])
+    post_comment = merge_comments(node.children[colon_index + 1:-1])
+
+    return (
+        make_Field(
+            from_generic_tree_to_expr(node.children[0]), 
+            pre_comment, post_comment,
+            from_generic_tree_to_expr(node.children[-1]),
+            node.children[0].source_start,
+            node.children[-1].source_end,
+
+        )
+        if is_pair(node) else
+
+        (assert_splat(node), 
+        make_DictionarySplatFields(from_generic_tree_to_expr(node.children[1]),
+            node.children[1].source_start,
+            node.children[1].source_end,
+        ))[-1]
+    )
+
+def to_dictionary_content(nodes : list[GenericNode]) -> dictionary_content:
+    item_nodes = to_comment_triplets(nodes) 
+    assert item_nodes
+
+    pre, node, post = item_nodes[-1]
+    item = to_dictionary_item(node)
+    result = SingleDictionaryItem(pre, item, post,
+        unguard_dictionary_item(item).source_start,
+        unguard_dictionary_item(item).source_end,
+    )
+    for pre, node, post in reversed(item_nodes[:-1]):
+        f = to_dictionary_item(node)
+        result = ConsDictionaryItem(pre, f, post, result,
             unguard_dictionary_item(f).source_start,
             result.source_end
         )
@@ -1083,41 +1121,9 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         )
 
     elif (node.syntax_part == "dictionary"):
-        children = [
-            child
-            for child in node.children[1:-1]
-            if child.syntax_part != ","
-        ]
-
-        def is_pair(pair): 
-            return pair.syntax_part == "pair" and pair.children[1].syntax_part == ":"
-
-        def assert_splat(dsplat): 
-            assert dsplat.syntax_part == "dictionary_splat" and dsplat.children[0].syntax_part == "**" 
-
-        items = [
-            (
-                make_Field(
-                    from_generic_tree_to_expr(child_node.children[0]), 
-                    from_generic_tree_to_expr(child_node.children[2]),
-                    child_node.children[0].source_start,
-                    child_node.children[2].source_end,
-
-                )
-                if is_pair(child_node) else
-
-                (assert_splat(child_node), 
-                make_DictionarySplatFields(from_generic_tree_to_expr(child_node.children[1]),
-                    child_node.children[1].source_start,
-                    child_node.children[1].source_end,
-                ))[-1]
-
-            )
-            for child_node in children
-        ]
-
-        if items:
-            return Dictionary(to_dictionary_content(items), node.source_start, node.source_end)
+        children = node.children[1:-1]
+        if children:
+            return Dictionary(to_dictionary_content(children), node.source_start, node.source_end)
         else:
             return EmptyDictionary(node.source_start, node.source_end)
 

@@ -550,7 +550,9 @@ choices_schema : dict[str, list[Rule]] = {
             "Field",
             [
                 Nonterm("key", "expr", InLine()),
+                Vocab("pre_comment", "comment"),
                 Terminal(" : "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -569,7 +571,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsDictionaryItem",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "dictionary_item", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "dictionary_content", NewLine())
             ]
@@ -578,7 +582,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleDictionaryItem",
             [
-                Nonterm("content", "dictionary_item", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "dictionary_item", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 

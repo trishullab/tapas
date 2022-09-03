@@ -2918,6 +2918,8 @@ class dictionary_item(ABC):
 @dataclass(frozen=True, eq=True)
 class Field(dictionary_item):
     key : expr | None
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -2927,12 +2929,16 @@ class Field(dictionary_item):
 
 def make_Field(
     key : expr | None, 
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> dictionary_item:
     return Field(
         key,
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
@@ -2940,12 +2946,16 @@ def make_Field(
 
 def update_Field(source_Field : Field,
     key : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Field:
     return Field(
         source_Field.key if isinstance(key, SourceFlag) else key,
+        source_Field.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_Field.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_Field.content if isinstance(content, SourceFlag) else content,
         source_Field.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Field.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3021,7 +3031,9 @@ class dictionary_content(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsDictionaryItem(dictionary_content):
+    pre_comment : str
     head : dictionary_item | None
+    post_comment : str
     tail : dictionary_content | None
     source_start : int
     source_end : int
@@ -3030,26 +3042,34 @@ class ConsDictionaryItem(dictionary_content):
         return handlers.case_ConsDictionaryItem(self)
 
 def make_ConsDictionaryItem(
+    pre_comment : str, 
     head : dictionary_item | None, 
+    post_comment : str, 
     tail : dictionary_content | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> dictionary_content:
     return ConsDictionaryItem(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[dictionary_item | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[dictionary_content | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsDictionaryItem:
     return ConsDictionaryItem(
+        source_ConsDictionaryItem.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsDictionaryItem.head if isinstance(head, SourceFlag) else head,
+        source_ConsDictionaryItem.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsDictionaryItem.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsDictionaryItem.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsDictionaryItem.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3059,7 +3079,9 @@ def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
 
 @dataclass(frozen=True, eq=True)
 class SingleDictionaryItem(dictionary_content):
+    pre_comment : str
     content : dictionary_item | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -3067,23 +3089,31 @@ class SingleDictionaryItem(dictionary_content):
         return handlers.case_SingleDictionaryItem(self)
 
 def make_SingleDictionaryItem(
+    pre_comment : str, 
     content : dictionary_item | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> dictionary_content:
     return SingleDictionaryItem(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleDictionaryItem(source_SingleDictionaryItem : SingleDictionaryItem,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[dictionary_item | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleDictionaryItem:
     return SingleDictionaryItem(
+        source_SingleDictionaryItem.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleDictionaryItem.content if isinstance(content, SourceFlag) else content,
+        source_SingleDictionaryItem.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleDictionaryItem.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleDictionaryItem.source_end if isinstance(source_end, SourceFlag) else source_end
     )
