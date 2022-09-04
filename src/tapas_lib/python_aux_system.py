@@ -2464,11 +2464,18 @@ class Server(paa.Server[InherAux, SynthAux]):
             )
         )
 
+
     # synthesize: expr <-- Lambda
     def synthesize_for_expr_Lambda(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         params_tree : pas.parameters, 
         params_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         body_tree : pas.expr, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2478,7 +2485,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             return_type = body_aux.observed_types[0]
         )
         return paa.Result[SynthAux](
-            tree = pas.make_Lambda(params_tree, body_tree),
+            tree = pas.make_Lambda(comment_a_tree, params_tree, comment_b_tree, comment_c_tree, body_tree),
             aux = update_SynthAux(self.synthesize_auxes((params_aux, body_aux)),
                 observed_types = (inferred_type,)
             )  
@@ -2605,10 +2612,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: constraint <-- AsyncConstraint
     def synthesize_for_constraint_AsyncConstraint(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : pas.expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : pas.expr, 
         search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         filts_tree : pas.constraint_filters, 
         filts_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2617,7 +2632,14 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
+            tree = pas.make_AsyncConstraint(
+                comment_a_tree, 
+                target_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                search_space_tree, 
+                comment_d_tree, 
+                filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
                 decl_additions = pmap({
                     k : make_Declaration(updatable=None, initialized=True, type=t)
@@ -2629,10 +2651,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: constraint <-- Constraint
     def synthesize_for_constraint_Constraint(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : pas.expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : pas.expr, 
         search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         filts_tree : pas.constraint_filters, 
         filts_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2640,7 +2670,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         search_space_type = search_space_aux.observed_types[0]
         item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
-            tree = pas.make_Constraint(target_tree, search_space_tree, filts_tree),
+            tree = pas.make_Constraint(
+                comment_a_tree, 
+                target_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                search_space_tree, 
+                comment_d_tree, 
+                filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
                 decl_additions = pmap({
                     k : make_Declaration(updatable=None, initialized=True, type=t)
@@ -2648,13 +2685,17 @@ class Server(paa.Server[InherAux, SynthAux]):
                 })
             )
         )
-     
-    
+
+
     # synthesize: expr <-- ListComp
     def synthesize_for_expr_ListComp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2664,7 +2705,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_ListComp(content_tree, constraints_tree),
+            tree = pas.make_ListComp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "builtins.list",
@@ -2676,8 +2717,12 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- SetComp
     def synthesize_for_expr_SetComp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2688,7 +2733,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_SetComp(content_tree, constraints_tree),
+            tree = pas.make_SetComp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "builtins.set",
@@ -2700,10 +2745,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- DictionaryComp
     def synthesize_for_expr_DictionaryComp(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         key_tree : pas.expr, 
         key_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2718,7 +2771,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_DictionaryComp(key_tree, content_tree, constraints_tree),
+            tree = pas.make_DictionaryComp(
+                comment_a_tree, 
+                key_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                content_tree, 
+                comment_d_tree, 
+                constraints_tree
+            ),
             aux = update_SynthAux(self.synthesize_auxes((key_aux, content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "builtins.dict",
@@ -2730,8 +2791,12 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- GeneratorExp
     def synthesize_for_expr_GeneratorExp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2741,7 +2806,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_GeneratorExp(content_tree, constraints_tree),
+            tree = pas.make_GeneratorExp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "typing.Generator",
