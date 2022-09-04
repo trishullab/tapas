@@ -6311,8 +6311,12 @@ def update_SetComp(source_SetComp : SetComp,
 
 @dataclass(frozen=True, eq=True)
 class DictionaryComp(expr):
+    comment_a : str
     key : expr | None
+    comment_b : str
+    comment_c : str
     content : expr | None
+    comment_d : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -6321,30 +6325,46 @@ class DictionaryComp(expr):
         return handlers.case_DictionaryComp(self)
 
 def make_DictionaryComp(
+    comment_a : str, 
     key : expr | None, 
+    comment_b : str, 
+    comment_c : str, 
     content : expr | None, 
+    comment_d : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return DictionaryComp(
+        comment_a,
         key,
+        comment_b,
+        comment_c,
         content,
+        comment_d,
         constraints,
         source_start,
         source_end
     )
 
 def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     key : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> DictionaryComp:
     return DictionaryComp(
+        source_DictionaryComp.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_DictionaryComp.key if isinstance(key, SourceFlag) else key,
+        source_DictionaryComp.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_DictionaryComp.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_DictionaryComp.content if isinstance(content, SourceFlag) else content,
+        source_DictionaryComp.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_DictionaryComp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_DictionaryComp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_DictionaryComp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6354,7 +6374,9 @@ def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
 
 @dataclass(frozen=True, eq=True)
 class GeneratorExp(expr):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -6363,26 +6385,34 @@ class GeneratorExp(expr):
         return handlers.case_GeneratorExp(self)
 
 def make_GeneratorExp(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return GeneratorExp(
+        pre_comment,
         content,
+        post_comment,
         constraints,
         source_start,
         source_end
     )
 
 def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> GeneratorExp:
     return GeneratorExp(
+        source_GeneratorExp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_GeneratorExp.content if isinstance(content, SourceFlag) else content,
+        source_GeneratorExp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_GeneratorExp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_GeneratorExp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_GeneratorExp.source_end if isinstance(source_end, SourceFlag) else source_end

@@ -5067,18 +5067,38 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 3
+            total_num_children = 7
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    DictionaryComp(children[0], children[1], children[2]),
+                    DictionaryComp(children[0], children[1], children[2], children[3], children[4], children[5], children[6]),
                     remainder
                 )
             
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
             elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 3: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 5: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 6: # index does *not* refer to an inductive child
                 (child, remainder) = to_comprehension_constraints(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -5096,18 +5116,28 @@ def to_expr(xs : tuple[abstract_token, ...]) -> tuple[expr, tuple[abstract_token
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 4
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    GeneratorExp(children[0], children[1]),
+                    GeneratorExp(children[0], children[1], children[2], children[3]),
                     remainder
                 )
             
-            elif index == 1: # index does *not* refer to an inductive child
+            elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 2: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 3: # index does *not* refer to an inductive child
                 (child, remainder) = to_comprehension_constraints(remainder)
                 stack.append((x, children + [child], remainder))
                 

@@ -1303,9 +1303,13 @@ choices_schema : dict[str, list[Rule]] = {
             "DictionaryComp",
             [
                 Terminal("{"),
+                Vocab("comment_a", "comment"),
                 Nonterm("key", "expr", IndentLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" : "),
+                Vocab("comment_c", "comment"),
                 Nonterm("content", "expr", InLine()),
+                Vocab("comment_d", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("}")
             ]
@@ -1315,7 +1319,9 @@ choices_schema : dict[str, list[Rule]] = {
             "GeneratorExp",
             [
                 Terminal("("),
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "expr", IndentLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal(")")
             ]

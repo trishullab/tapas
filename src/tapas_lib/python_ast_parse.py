@@ -1054,6 +1054,45 @@ def collapse_constraint_nodes(nodes : list[GenericNode]) -> list[constraint] | N
 
 #     return collapse_constraint_nodes_r([n for n in reversed(nodes)])
 
+def comprehension_parts(node : GenericNode):
+    assert (
+        (node.syntax_part == "list_comprehension") or
+        (node.syntax_part == "set_comprehension") or
+        (node.syntax_part == "generator_expression")
+    )
+    children = node.children[1:-1]
+
+    expr_index = next(
+        i
+        for i, n in enumerate(children)
+        if n.syntax_part != "comment"
+        if n.syntax_part != "for_in_clause"
+        if n.syntax_part != "if_clause"
+    )
+
+    for_clause_index = next((
+        i
+        for i, n in enumerate(children)
+        if n.syntax_part == "for_in_clause"
+    ), None)
+
+    pre_comment = merge_comments(node.children[1:expr_index])
+    expr = from_generic_tree_to_expr(children[expr_index])
+    post_comment = merge_comments(node.children[expr_index + 1:(for_clause_index or -1)])
+    constraint_nodes = children[for_clause_index:] if for_clause_index else [] 
+
+    return (
+        pre_comment,
+        expr, 
+        post_comment,
+        (
+            to_comprehension_constraints(constraint_nodes)
+            if constraint_nodes else
+            None
+        ),
+        node.source_start, node.source_end
+    )
+
 
 def from_generic_tree_to_expr(node : GenericNode) -> expr | None: 
 
@@ -1172,38 +1211,19 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             return EmptyList(node.source_start, node.source_end)
 
     elif (node.syntax_part == "list_comprehension"):
-        children = node.children[1:-1]
-
-        expr_index = next(
-            i
-            for i, n in enumerate(node.children)
-            if n.syntax_part != "comment"
-            if n.syntax_part != "for_in_clause"
-            if n.syntax_part != "if_clause"
-        )
-
-        pre_comment = merge_comments(node.children[1:expr_index])
-        expr = from_generic_tree_to_expr(children[expr_index])
-
-        for_clause_index = next((
-            i
-            for i, n in enumerate(node.children)
-            if n.syntax_part == "for_in_clause"
-        ), None)
-
-        post_comment = merge_comments(node.children[expr_index + 1:(for_clause_index or -1)])
-
-        constraint_nodes = children[for_clause_index:] if for_clause_index else [] 
+        (
+            pre_comment,
+            expr, 
+            post_comment,
+            constraints,
+            source_start, source_end
+        ) = comprehension_parts(node)
 
         return ListComp(
             pre_comment,
             expr, 
             post_comment,
-            (
-                to_comprehension_constraints(constraint_nodes)
-                if constraint_nodes else
-                None
-            ),
+            constraints,
             node.source_start, node.source_end
         )
 
@@ -1226,9 +1246,53 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         constraint_nodes = children[1:]
         constraints = collapse_constraint_nodes(constraint_nodes)
 
+
+        ################################
+
+
+        children = node.children[1:-1]
+
+        colon_index = next(
+            i
+            for i, n in enumerate(children)
+            if n.syntax_part == ":"
+        )
+
+        key_index = next(
+            i
+            for i, n in enumerate(children[:colon_index])
+            if n.syntax_part != "comment"
+        )
+
+
+        for_clause_index = next((
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part == "for_in_clause"
+        ), None)
+
+
+        value_index = next(
+            i
+            for i, n in enumerate(children[colon_index + 1 : for_clause_index])
+            if n.syntax_part != "comment"
+        )
+
+        comment_a = merge_comments(node.children[:key_index])
+        key = from_generic_tree_to_expr(children[key_index])
+        comment_b = merge_comments(node.children[key_index + 1:colon_index])
+        comment_c = merge_comments(node.children[colon_index + 1:value_index])
+        value = from_generic_tree_to_expr(children[value_index])
+        comment_d = merge_comments(node.children[value_index + 1:(for_clause_index or -1)])
+        constraint_nodes = children[for_clause_index:] if for_clause_index else [] 
+
         return DictionaryComp(
-            key, value, (
-                to_comprehension_constraints(constraints)
+            comment_a,
+            key, 
+            comment_b, comment_c, 
+            value, 
+            comment_d, (
+                to_comprehension_constraints(constraint_nodes)
                 if constraints else
                 None
             ),
@@ -1240,28 +1304,38 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         return Set(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "set_comprehension"):
-        children = node.children[1:-1]
-        expr = from_generic_tree_to_expr(children[0])
+        (
+            pre_comment,
+            expr, 
+            post_comment,
+            constraints,
+            source_start, source_end
+        ) = comprehension_parts(node)
 
-        constraint_nodes = children[1:]
-        constraints = collapse_constraint_nodes(constraint_nodes)
-        return SetComp(expr, 
-            to_comprehension_constraints(constraints)
-            if constraints else
-            None, node.source_start, node.source_end
+        return SetComp(
+            pre_comment,
+            expr, 
+            post_comment,
+            constraints,
+            source_start, source_end
         )
 
 
     elif (node.syntax_part == "generator_expression"):
-        children = node.children[1:-1]
-        expr = from_generic_tree_to_expr(children[0])
+        (
+            pre_comment,
+            expr, 
+            post_comment,
+            constraints,
+            source_start, source_end
+        ) = comprehension_parts(node)
 
-        constraint_nodes = children[1:]
-        constraints = collapse_constraint_nodes(constraint_nodes)
-        return GeneratorExp(expr, 
-            to_comprehension_constraints(constraints)
-            if constraints else
-            None, node.source_start, node.source_end
+        return GeneratorExp(
+            pre_comment,
+            expr, 
+            post_comment,
+            constraints,
+            source_start, source_end
         )
 
     elif (node.syntax_part == "tuple"):
