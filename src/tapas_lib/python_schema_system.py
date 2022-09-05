@@ -1719,6 +1719,7 @@ singles_schema : list[Rule] = [
     Rule(
         "CompareRight",
         [
+            Vocab("comment", "comment"),
             Nonterm("rator", "cmp_rator", InLine()),
             Terminal(" "),
             Nonterm("rand", "expr", InLine())

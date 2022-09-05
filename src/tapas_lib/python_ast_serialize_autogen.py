@@ -4820,6 +4820,7 @@ def from_CompareRight(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_cmp_rator(o.rator) +
         from_expr(o.rand)
 

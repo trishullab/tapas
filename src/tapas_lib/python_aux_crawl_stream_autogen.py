@@ -10014,8 +10014,20 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         if token.selection != "CompareRight": raise SyntaxError()
         
 
-        child_inher_aux = self.traverse_CompareRight_rator(
+        child_inher_aux = self.traverse_CompareRight_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_CompareRight_rator(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_cmp_rator(child_token, child_inher_aux)
@@ -10026,6 +10038,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         child_inher_aux = self.traverse_CompareRight_rand(
             inher_aux,
+            comment_tree, 
+            comment_aux,
             rator_tree, 
             rator_aux
         )
@@ -10037,7 +10051,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_CompareRight(inher_aux, rator_tree, rator_aux, rand_tree, rand_aux)
+        return self.synthesize_for_CompareRight(inher_aux, comment_tree, comment_aux, rator_tree, rator_aux, rand_tree, rand_aux)
     
     # inspect: ExceptHandler"
     def inspect_ExceptHandler(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
@@ -12847,18 +12861,28 @@ class Server(ABC, Generic[InherAux, SynthAux]):
      
     
     # traverse CompareRight
-    def traverse_CompareRight_rator(self,
+    def traverse_CompareRight_comment(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'cmp_rator') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse CompareRight
+    def traverse_CompareRight_rator(self,
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'cmp_rator') 
     
     # traverse CompareRight
     def traverse_CompareRight_rand(self,
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         rator_tree : cmp_rator, 
         rator_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (rator_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (comment_aux, rator_aux,), 'expr') 
     
     # traverse ExceptHandler
     def traverse_ExceptHandler_arg(self,
@@ -15314,14 +15338,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: CompareRight
     def synthesize_for_CompareRight(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         rator_tree : cmp_rator, 
         rator_aux : SynthAux,
         rand_tree : expr, 
         rand_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_CompareRight(rator_tree, rand_tree),
-            aux = self.synthesize_auxes((rator_aux, rand_aux,)) 
+            tree = make_CompareRight(comment_tree, rator_tree, rand_tree),
+            aux = self.synthesize_auxes((comment_aux, rator_aux, rand_aux,)) 
         )
     
     # synthesize: ExceptHandler

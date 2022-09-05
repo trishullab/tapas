@@ -278,10 +278,27 @@ def test_comment():
     #     )
     # '''
 
+    # code = '''
+    # def foo():
+    #     (yield #hello
+    #     )
+    # '''
+
 #################
 
+
     code = '''
+    (1 #x
+    < #x
+    2 < #x
+    3 # x
+    )
+    (1 not #hello
+    in #hello
+    [2,3]
+    )
     '''
+
 
     gnode = pgs.parse(code)
     print("-- generic node --")  

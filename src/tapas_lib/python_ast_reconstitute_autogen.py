@@ -6744,9 +6744,10 @@ def to_CompareRight(xs : tuple[abstract_token, ...]) -> tuple[CompareRight, tupl
     assert x.options == "CompareRight"
     assert x.selection == "CompareRight"
 
+    (comment, xs) = to_str(xs)
     (rator, xs) = to_cmp_rator(xs)
     (rand, xs) = to_expr(xs)
-    return (CompareRight(rator, rand), xs)
+    return (CompareRight(comment, rator, rand), xs)
     
 
 def to_ExceptHandler(xs : tuple[abstract_token, ...]) -> tuple[ExceptHandler, tuple[abstract_token, ...]]:

@@ -8436,6 +8436,7 @@ def unguard_constraint(o : constraint) -> constraint_union :
 # type and constructor CompareRight
 @dataclass(frozen=True, eq=True)
 class CompareRight:
+    comment : str
     rator : cmp_rator | None
     rand : expr | None
     source_start : int
@@ -8443,24 +8444,28 @@ class CompareRight:
 
 
 def make_CompareRight(
+    comment : str,
     rator : cmp_rator | None,
     rand : expr | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> CompareRight:
     return CompareRight(
+        comment,
         rator,
         rand,
         source_start,
         source_end)
 
 def update_CompareRight(source_CompareRight : CompareRight,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     rator : Union[cmp_rator | None, SourceFlag] = SourceFlag(),
     rand : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> CompareRight:
     return CompareRight(
+        source_CompareRight.comment if isinstance(comment, SourceFlag) else comment, 
         source_CompareRight.rator if isinstance(rator, SourceFlag) else rator, 
         source_CompareRight.rand if isinstance(rand, SourceFlag) else rand, 
         source_CompareRight.source_start if isinstance(source_start, SourceFlag) else source_start, 

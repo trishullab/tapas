@@ -804,51 +804,64 @@ def from_generic_tree_to_bin_rator(node : GenericNode) -> bin_rator | None:
     else:
         return node_error(node)
 
+import itertools
 
 def split_rators_and_rands(
     nodes : list[GenericNode], 
+    comments : list[str] = [], 
     rators : list[cmp_rator] = [], 
     rands : list[expr | None] = []
-) -> tuple[list[cmp_rator], list[expr | None]]:
+) -> tuple[list[str], list[cmp_rator], list[expr | None]]:
+
 
     if len(nodes) == 0:
-        return (rators, rands)
+        assert len(comments) == len(rators) == len(rands)
+        return (comments, rators, rands)
     else:
-        head = nodes[-1]
-        if head.syntax_part == '<':
-            return split_rators_and_rands(nodes[:-1], rators + [Lt(head.source_start, head.source_end)], rands)
-        if head.syntax_part == '<=':
-            return split_rators_and_rands(nodes[:-1], rators + [LtE(head.source_start, head.source_end)], rands)
-        if head.syntax_part == '==':
-            return split_rators_and_rands(nodes[:-1], rators + [Eq(head.source_start, head.source_end)], rands)
-        if head.syntax_part == '!=':
-            return split_rators_and_rands(nodes[:-1], rators + [NotEq(head.source_start, head.source_end)], rands)
-        if head.syntax_part == '>=':
-            return split_rators_and_rands(nodes[:-1], rators + [GtE(head.source_start, head.source_end)], rands)
-        if head.syntax_part == '>':
-            return split_rators_and_rands(nodes[:-1], rators + [Gt(head.source_start, head.source_end)], rands)
-        if head.syntax_part == '<>':
-            return split_rators_and_rands(nodes[:-1], rators + [NotEq(head.source_start, head.source_end)], rands)
-        if head.syntax_part == 'in':
-            return split_rators_and_rands(nodes[:-1], rators + [In(head.source_start, head.source_end)], rands)
-        if head.syntax_part == 'not':
-            next_head = nodes[-2]
+        comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", nodes))
+        comment = merge_comments(comment_nodes)
+        head_index = len(comment_nodes)
+        head_node = nodes[head_index]
+        if head_node.syntax_part == '<':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [Lt(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == '<=':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [LtE(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == '==':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [Eq(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == '!=':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [NotEq(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == '>=':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [GtE(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == '>':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [Gt(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == '<>':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [NotEq(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == 'in':
+            return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [In(head_node.source_start, head_node.source_end)], rands)
+        if head_node.syntax_part == 'not':
+
+            more_comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", nodes[head_index + 1:]))
+            next_node_index = head_index + 1 + len(more_comment_nodes)
+            next_head = nodes[next_node_index]
             if next_head.syntax_part == "in":
-                return split_rators_and_rands(nodes[:-2], rators + [NotIn(head.source_start, next_head.source_end)], rands)
+                comment = merge_comments(comment_nodes + more_comment_nodes)
+                return split_rators_and_rands(nodes[next_node_index + 1:], comments + [comment], rators + [NotIn(head_node.source_start, next_head.source_end)], rands)
             else:
                 raise Unsupported(next_head.syntax_part)
-                # return split_rators_and_rands(nodes[:-1], rators + [In()], rands)
-        if head.syntax_part == 'is':
-            next_head = nodes[-2]
+                # return split_rators_and_rands(nodes[1:], rators + [In()], rands)
+        if head_node.syntax_part == 'is':
+            more_comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", nodes[head_index + 1:]))
+            next_node_index = head_index + 1 + len(more_comment_nodes)
+            next_head = nodes[next_node_index]
             if next_head.syntax_part == "not":
-                return split_rators_and_rands(nodes[:-2], rators + [IsNot(head.source_start, next_head.source_end)], rands)
+                return split_rators_and_rands(nodes[next_node_index + 1:], comments + [comment], rators + [IsNot(head_node.source_start, next_head.source_end)], rands)
             else:
-                return split_rators_and_rands(nodes[:-1], rators + [Is(head.source_start, head.source_end)], rands)
+                return split_rators_and_rands(nodes[head_index + 1:], comments + [comment], rators + [Is(head_node.source_start, head_node.source_end)], rands)
 
         else:
-            rand = from_generic_tree_to_expr(head)
-            tail = nodes[:-1]
-            return split_rators_and_rands(tail, rators, rands + [rand])
+            rand = from_generic_tree_to_expr(head_node)
+            tail = nodes[head_index + 1:]
+            return split_rators_and_rands(tail, comments, rators, rands + [rand])
 
 
 def from_generic_tree_to_ExceptHandler(node : GenericNode) -> ExceptHandler:
@@ -1366,16 +1379,20 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             expr = from_generic_tree_to_expr(children[-1])
             return YieldFrom(comment_a, comment_b, expr, node.source_start, node.source_end)
         else:
-            comment = merge_comments(children[1:-1])
-            expr = from_generic_tree_to_expr(children[-1])
-            return Yield(comment, expr, node.source_start, node.source_end)
+
+            if len(children) == 1:
+                return YieldNothing(node.source_start, node.source_end)
+            else:
+                comment = merge_comments(children[1:-1])
+                expr = from_generic_tree_to_expr(children[-1])
+                return Yield(comment, expr, node.source_start, node.source_end)
 
     elif node.syntax_part == "comparison_operator":
         left = from_generic_tree_to_expr(node.children[0])
-        (rators, rands) = split_rators_and_rands([n for n in reversed(node.children[1:])])
+        (comments, rators, rands) = split_rators_and_rands(node.children[1:])
         assert len(rators) == len(rands)
         comp_rights = [
-            CompareRight(rators[i], rands[i], unguard_cmp_rator(rators[-1]).source_start, node.source_end)
+            CompareRight(comments[i], rators[i], rands[i], unguard_cmp_rator(rators[-1]).source_start, node.source_end)
             for i, _ in enumerate(rators)
         ]
         return Compare(left, to_comparisons(comp_rights), node.source_start, node.source_end)
