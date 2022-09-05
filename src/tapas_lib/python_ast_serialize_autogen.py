@@ -4051,8 +4051,32 @@ def from_expr(
             def handle_Subscript(o : Subscript): 
                 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
+
                 stack.append(o.slice)
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(o.content)
                 stack.append(
@@ -4156,9 +4180,41 @@ def from_expr(
                 
                 stack.append(from_option_expr(o.step))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_d
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
 
                 stack.append(from_option_expr(o.upper))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(from_option_expr(o.lower))
                 stack.append(

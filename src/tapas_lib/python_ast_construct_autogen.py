@@ -6948,7 +6948,10 @@ def update_Attribute(source_Attribute : Attribute,
 @dataclass(frozen=True, eq=True)
 class Subscript(expr):
     content : expr | None
+    comment_a : str
+    comment_b : str
     slice : expr | None
+    comment_c : str
     source_start : int
     source_end : int
 
@@ -6957,26 +6960,38 @@ class Subscript(expr):
 
 def make_Subscript(
     content : expr | None, 
+    comment_a : str, 
+    comment_b : str, 
     slice : expr | None, 
+    comment_c : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Subscript(
         content,
+        comment_a,
+        comment_b,
         slice,
+        comment_c,
         source_start,
         source_end
     )
 
 def update_Subscript(source_Subscript : Subscript,
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     slice : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Subscript:
     return Subscript(
         source_Subscript.content if isinstance(content, SourceFlag) else content,
+        source_Subscript.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_Subscript.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_Subscript.slice if isinstance(slice, SourceFlag) else slice,
+        source_Subscript.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_Subscript.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Subscript.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -7174,7 +7189,11 @@ def update_EmptyTuple(source_EmptyTuple : EmptyTuple,
 @dataclass(frozen=True, eq=True)
 class Slice(expr):
     lower : option_expr | None
+    comment_a : str
+    comment_b : str
     upper : option_expr | None
+    comment_c : str
+    comment_d : str
     step : option_expr | None
     source_start : int
     source_end : int
@@ -7184,14 +7203,22 @@ class Slice(expr):
 
 def make_Slice(
     lower : option_expr | None, 
+    comment_a : str, 
+    comment_b : str, 
     upper : option_expr | None, 
+    comment_c : str, 
+    comment_d : str, 
     step : option_expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Slice(
         lower,
+        comment_a,
+        comment_b,
         upper,
+        comment_c,
+        comment_d,
         step,
         source_start,
         source_end
@@ -7199,14 +7226,22 @@ def make_Slice(
 
 def update_Slice(source_Slice : Slice,
     lower : Union[option_expr | None, SourceFlag] = SourceFlag(),
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     upper : Union[option_expr | None, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     step : Union[option_expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Slice:
     return Slice(
         source_Slice.lower if isinstance(lower, SourceFlag) else lower,
+        source_Slice.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_Slice.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_Slice.upper if isinstance(upper, SourceFlag) else upper,
+        source_Slice.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
+        source_Slice.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_Slice.step if isinstance(step, SourceFlag) else step,
         source_Slice.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Slice.source_end if isinstance(source_end, SourceFlag) else source_end

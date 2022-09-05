@@ -3384,8 +3384,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         slice_tree : pas.expr, 
-        slice_aux : SynthAux
+        slice_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
 
         assert len(content_aux.observed_types) == 1
@@ -3452,7 +3458,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_types = (AnyType(),)
 
         return paa.Result[SynthAux](
-            tree = pas.make_Subscript(content_tree, slice_tree),
+            tree = pas.make_Subscript(content_tree, comment_a_tree, comment_b_tree, slice_tree, comment_c_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, slice_aux)),
                 observed_types = expr_types, 
                 var_types = var_types, 
@@ -3465,14 +3471,22 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         lower_tree : pas.option_expr, 
         lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         upper_tree : pas.option_expr, 
         upper_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         step_tree : pas.option_expr, 
         step_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
         return paa.Result[SynthAux](
-            tree = pas.make_Slice(lower_tree, upper_tree, step_tree),
+            tree = pas.make_Slice(lower_tree, comment_a_tree, comment_b_tree, upper_tree, comment_c_tree, comment_d_tree, step_tree),
             aux = update_SynthAux(self.synthesize_auxes((lower_aux, upper_aux, step_aux)),
                 observed_types = (make_RecordType("builtins.slice"),)
             )

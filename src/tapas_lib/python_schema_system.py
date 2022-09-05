@@ -1459,8 +1459,11 @@ choices_schema : dict[str, list[Rule]] = {
             "Subscript",
             [
                 Nonterm("content", "expr", InLine()),
+                Vocab("comment_a", "comment"),
                 Terminal("["),
+                Vocab("comment_b", "comment"),
                 Nonterm("slice", "expr", InLine()),
+                Vocab("comment_c", "comment"),
                 Terminal("]")
             ]
         ),
@@ -1516,9 +1519,13 @@ choices_schema : dict[str, list[Rule]] = {
             "Slice",
             [
                 Nonterm("lower", "option_expr", InLine()),
+                Vocab("comment_a", "comment"),
                 Terminal(":"),
+                Vocab("comment_b", "comment"),
                 Nonterm("upper", "option_expr", InLine()),
+                Vocab("comment_c", "comment"),
                 Terminal(":"),
+                Vocab("comment_d", "comment"),
                 Nonterm("step", "option_expr", InLine())
             ]
         ),

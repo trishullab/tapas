@@ -9322,7 +9322,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 5
 
         index = len(children)
         if index == total_num_children:
@@ -9333,12 +9333,103 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(content_tree, expr)
             content_aux = children[0].aux
                 
-            slice_tree = children[1].tree
-            assert isinstance(slice_tree, expr)
-            slice_aux = children[1].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
                 
-            return self.synthesize_for_expr_Subscript(inher_aux, content_tree, content_aux, slice_tree, slice_aux)
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+                
+            slice_tree = children[3].tree
+            assert isinstance(slice_tree, expr)
+            slice_aux = children[3].aux
+                
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+                
+            return self.synthesize_for_expr_Subscript(inher_aux, content_tree, content_aux, comment_a_tree, comment_a_aux, comment_b_tree, comment_b_aux, slice_tree, slice_aux, comment_c_tree, comment_c_aux)
         
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            content_tree = children[0].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_expr_Subscript_comment_a(
+                inher_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Subscript"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            content_tree = children[0].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_Subscript_comment_b(
+                inher_aux,
+                content_tree, 
+                content_aux,
+                comment_a_tree, 
+                comment_a_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Subscript"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 4: # index does *not* refer to an inductive child
+
+            
+            content_tree = children[0].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            slice_tree = children[3].tree
+            assert isinstance(slice_tree, expr)
+            slice_aux = children[3].aux
+
+
+            child_inher_aux = self.traverse_expr_Subscript_comment_c(
+                inher_aux,
+                content_tree, 
+                content_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
+                slice_tree, 
+                slice_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Subscript"), inher_aux, children + (child_synth,)))
+            return None
+            
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
@@ -9353,7 +9444,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
 
-        elif index == 1 : # index refers to an inductive child
+        elif index == 3 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "Subscript"), inher_aux, children))
 
@@ -9361,12 +9452,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_tree = children[0].tree
             assert isinstance(content_tree, expr)
             content_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_Subscript_slice(
                 inher_aux,
                 content_tree, 
-                content_aux
+                content_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -9581,7 +9682,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         
 
-        total_num_children = 3
+        total_num_children = 7
 
         index = len(children)
         if index == total_num_children:
@@ -9592,15 +9693,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(lower_tree, option_expr)
             lower_aux = children[0].aux
                 
-            upper_tree = children[1].tree
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+                
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+                
+            upper_tree = children[3].tree
             assert isinstance(upper_tree, option_expr)
-            upper_aux = children[1].aux
+            upper_aux = children[3].aux
                 
-            step_tree = children[2].tree
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+                
+            comment_d_tree = children[5].tree
+            assert isinstance(comment_d_tree, str)
+            comment_d_aux = children[5].aux
+                
+            step_tree = children[6].tree
             assert isinstance(step_tree, option_expr)
-            step_aux = children[2].aux
+            step_aux = children[6].aux
                 
-            return self.synthesize_for_expr_Slice(inher_aux, lower_tree, lower_aux, upper_tree, upper_aux, step_tree, step_aux)
+            return self.synthesize_for_expr_Slice(inher_aux, lower_tree, lower_aux, comment_a_tree, comment_a_aux, comment_b_tree, comment_b_aux, upper_tree, upper_aux, comment_c_tree, comment_c_aux, comment_d_tree, comment_d_aux, step_tree, step_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
@@ -9625,13 +9742,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             lower_aux = children[0].aux
 
 
-            child_inher_aux = self.traverse_expr_Slice_upper(
+            child_inher_aux = self.traverse_expr_Slice_comment_a(
                 inher_aux,
                 lower_tree, 
                 lower_aux
             )
             child_token = self.next(child_inher_aux)
-            child_synth = self.crawl_option_expr(child_token, child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
             return None
@@ -9643,17 +9760,167 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             lower_tree = children[0].tree
             assert isinstance(lower_tree, option_expr)
             lower_aux = children[0].aux
-            upper_tree = children[1].tree
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_Slice_comment_b(
+                inher_aux,
+                lower_tree, 
+                lower_aux,
+                comment_a_tree, 
+                comment_a_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            lower_tree = children[0].tree
+            assert isinstance(lower_tree, option_expr)
+            lower_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_expr_Slice_upper(
+                inher_aux,
+                lower_tree, 
+                lower_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_option_expr(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 4: # index does *not* refer to an inductive child
+
+            
+            lower_tree = children[0].tree
+            assert isinstance(lower_tree, option_expr)
+            lower_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            upper_tree = children[3].tree
             assert isinstance(upper_tree, option_expr)
-            upper_aux = children[1].aux
+            upper_aux = children[3].aux
+
+
+            child_inher_aux = self.traverse_expr_Slice_comment_c(
+                inher_aux,
+                lower_tree, 
+                lower_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
+                upper_tree, 
+                upper_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 5: # index does *not* refer to an inductive child
+
+            
+            lower_tree = children[0].tree
+            assert isinstance(lower_tree, option_expr)
+            lower_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            upper_tree = children[3].tree
+            assert isinstance(upper_tree, option_expr)
+            upper_aux = children[3].aux
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+
+
+            child_inher_aux = self.traverse_expr_Slice_comment_d(
+                inher_aux,
+                lower_tree, 
+                lower_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
+                upper_tree, 
+                upper_aux,
+                comment_c_tree, 
+                comment_c_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Slice"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 6: # index does *not* refer to an inductive child
+
+            
+            lower_tree = children[0].tree
+            assert isinstance(lower_tree, option_expr)
+            lower_aux = children[0].aux
+            comment_a_tree = children[1].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[1].aux
+            comment_b_tree = children[2].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[2].aux
+            upper_tree = children[3].tree
+            assert isinstance(upper_tree, option_expr)
+            upper_aux = children[3].aux
+            comment_c_tree = children[4].tree
+            assert isinstance(comment_c_tree, str)
+            comment_c_aux = children[4].aux
+            comment_d_tree = children[5].tree
+            assert isinstance(comment_d_tree, str)
+            comment_d_aux = children[5].aux
 
 
             child_inher_aux = self.traverse_expr_Slice_step(
                 inher_aux,
                 lower_tree, 
                 lower_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux,
                 upper_tree, 
-                upper_aux
+                upper_aux,
+                comment_c_tree, 
+                comment_c_aux,
+                comment_d_tree, 
+                comment_d_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_option_expr(child_token, child_inher_aux)
@@ -12791,12 +13058,48 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Subscript"
-    def traverse_expr_Subscript_slice(self, 
+    def traverse_expr_Subscript_comment_a(self, 
         inher_aux : InherAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (content_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (content_aux,), 'str') 
+    
+    # traverse expr <-- Subscript"
+    def traverse_expr_Subscript_comment_b(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (content_aux, comment_a_aux,), 'str') 
+    
+    # traverse expr <-- Subscript"
+    def traverse_expr_Subscript_slice(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (content_aux, comment_a_aux, comment_b_aux,), 'expr') 
+    
+    # traverse expr <-- Subscript"
+    def traverse_expr_Subscript_comment_c(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        slice_tree : expr, 
+        slice_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (content_aux, comment_a_aux, comment_b_aux, slice_aux,), 'str') 
     
     # traverse expr <-- Starred"
     def traverse_expr_Starred_content(self, 
@@ -12829,22 +13132,82 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'option_expr') 
     
     # traverse expr <-- Slice"
-    def traverse_expr_Slice_upper(self, 
+    def traverse_expr_Slice_comment_a(self, 
         inher_aux : InherAux,
         lower_tree : option_expr, 
         lower_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (lower_aux,), 'option_expr') 
+        return self.traverse_auxes(inher_aux, (lower_aux,), 'str') 
+    
+    # traverse expr <-- Slice"
+    def traverse_expr_Slice_comment_b(self, 
+        inher_aux : InherAux,
+        lower_tree : option_expr, 
+        lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (lower_aux, comment_a_aux,), 'str') 
+    
+    # traverse expr <-- Slice"
+    def traverse_expr_Slice_upper(self, 
+        inher_aux : InherAux,
+        lower_tree : option_expr, 
+        lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (lower_aux, comment_a_aux, comment_b_aux,), 'option_expr') 
+    
+    # traverse expr <-- Slice"
+    def traverse_expr_Slice_comment_c(self, 
+        inher_aux : InherAux,
+        lower_tree : option_expr, 
+        lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        upper_tree : option_expr, 
+        upper_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (lower_aux, comment_a_aux, comment_b_aux, upper_aux,), 'str') 
+    
+    # traverse expr <-- Slice"
+    def traverse_expr_Slice_comment_d(self, 
+        inher_aux : InherAux,
+        lower_tree : option_expr, 
+        lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        upper_tree : option_expr, 
+        upper_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (lower_aux, comment_a_aux, comment_b_aux, upper_aux, comment_c_aux,), 'str') 
     
     # traverse expr <-- Slice"
     def traverse_expr_Slice_step(self, 
         inher_aux : InherAux,
         lower_tree : option_expr, 
         lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         upper_tree : option_expr, 
-        upper_aux : SynthAux
+        upper_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (lower_aux, upper_aux,), 'option_expr') 
+        return self.traverse_auxes(inher_aux, (lower_aux, comment_a_aux, comment_b_aux, upper_aux, comment_c_aux, comment_d_aux,), 'option_expr') 
     
     # traverse constraint <-- AsyncConstraint"
     def traverse_constraint_AsyncConstraint_comment_a(self, 
@@ -15105,12 +15468,18 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         content_tree : expr, 
         content_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         slice_tree : expr, 
-        slice_aux : SynthAux
+        slice_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Subscript(content_tree, slice_tree),
-            aux = self.synthesize_auxes((content_aux, slice_aux,)) 
+            tree = make_Subscript(content_tree, comment_a_tree, comment_b_tree, slice_tree, comment_c_tree),
+            aux = self.synthesize_auxes((content_aux, comment_a_aux, comment_b_aux, slice_aux, comment_c_aux,)) 
         )
     
     # synthesize: expr <-- Starred
@@ -15180,14 +15549,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         lower_tree : option_expr, 
         lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         upper_tree : option_expr, 
         upper_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         step_tree : option_expr, 
         step_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Slice(lower_tree, upper_tree, step_tree),
-            aux = self.synthesize_auxes((lower_aux, upper_aux, step_aux,)) 
+            tree = make_Slice(lower_tree, comment_a_tree, comment_b_tree, upper_tree, comment_c_tree, comment_d_tree, step_tree),
+            aux = self.synthesize_auxes((lower_aux, comment_a_aux, comment_b_aux, upper_aux, comment_c_aux, comment_d_aux, step_aux,)) 
         )
     
     # synthesize: bool_rator <-- And

@@ -1147,20 +1147,35 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         children = node.children
         target_node = children[0]
         target = from_generic_tree_to_expr(target_node)
-        assert children[1].syntax_part == "["
-        assert children[-1].syntax_part == "]"
-        if len(children[2:-1]) > 1:
+        comment_a_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[1:]))
 
-            comma_sep_nodes = children[2:-1]
+        bracket_index = len(comment_a_nodes) + 1
+        assert children[bracket_index].syntax_part == "["
+        assert children[-1].syntax_part == "]"
+
+        comment_a = merge_comments(comment_a_nodes)
+
+        slice_index = next(( 
+            i + bracket_index + 1 
+            for i, n in enumerate(children[bracket_index + 1:-1])
+            if n.syntax_part == "slice"
+        ), None) 
+
+
+        if slice_index:
+            slice_node = children[slice_index]
+            comment_b = merge_comments(children[bracket_index + 1:slice_index])
+            slice = from_generic_tree_to_expr(slice_node)
+            comment_c = merge_comments(children[slice_index + 1:-1])
+            return Subscript(target, comment_a, comment_b, slice, comment_c, node.source_start, node.source_end)
+
+        else:
+            comma_sep_nodes = children[bracket_index + 1:-1]
             exprs = to_comma_exprs(comma_sep_nodes)
 
             slice = Tuple(exprs, children[1].source_start, children[-1].source_end)
-            return Subscript(target, slice, node.source_start, node.source_end)
+            return Subscript(target, comment_a, '', slice, '', node.source_start, node.source_end)
 
-        else:
-            slice_node = children[2]
-            slice = from_generic_tree_to_expr(slice_node)
-            return Subscript(target, slice, node.source_start, node.source_end)
 
     elif (node.syntax_part == "call"):
         children = node.children
@@ -1511,40 +1526,60 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
     elif node.syntax_part == "slice":
         children = node.children
 
-        (left_node, right_node, step_node) = (
-            (children[0], children[2], children[4])
-            if len(children) == 5 else
 
+        comment_a_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[1:]))
+        colon_a_index = len(comment_a_nodes) + 1
 
-            (children[0], children[2], None)
-            if len(children) == 4 and children[1].syntax_part == ":" and children[3].syntax_part == ":" else
+        colon_b_index = next((
+            i + colon_a_index + 1
+            for i, n in enumerate(children[colon_a_index + 1:])
+            if n.syntax_part == ":"
+        ), None)
 
-            (None, children[1], children[3])
-            if len(children) == 4 and children[0].syntax_part == ":" and children[2].syntax_part == ":" else
-
-            (children[0], None, children[3])
-            if len(children) == 4 and children[1].syntax_part == ":" and children[2].syntax_part == ":" else
-
-            (children[0], None, None)
-            if len(children) == 3 and children[1].syntax_part == ":" and children[2].syntax_part == ":" else
-
-            (None, children[1], None)
-            if len(children) == 3 and children[0].syntax_part == ":" and children[2].syntax_part == ":" else
-
-            (None, None, children[2])
-            if len(children) == 3 and children[0].syntax_part == ":" and children[1].syntax_part == ":" else
-
-            (children[0], children[2], None)
-            if len(children) == 3 and children[1].syntax_part == ":" and children[2].syntax_part != ":" else
-
-            (None, children[1], None)
-            if len(children) == 2 and children[0].syntax_part == ":" and children[1].syntax_part != ":" else
-
-            (children[0], None, None)
-            if len(children) == 2 and children[0].syntax_part != ":" and children[1].syntax_part == ":" else
-
-            (None, None, None)
+        right_index = (
+            next((
+                i + colon_a_index + 1
+                for i, n in enumerate(children[colon_a_index + 1:colon_b_index])
+                if n.syntax_part != "comment"
+            ), None)
+            if colon_b_index else
+            next((
+                i + colon_a_index + 1
+                for i, n in enumerate(children[colon_a_index + 1:])
+                if n.syntax_part != "comment"
+            ), None)
         )
+
+
+        left_node = children[0] if colon_a_index != 0 else None
+        right_node = children[right_index] if right_index else None
+        step_node = children[-1] if colon_b_index and colon_b_index != len(children) - 1 else None
+
+        comment_a = merge_comments(comment_a_nodes)
+        comment_b = (
+            merge_comments(children[colon_a_index + 1:right_index])
+            if right_index else
+            merge_comments(children[colon_a_index + 1:colon_b_index])
+            if colon_b_index else
+            ''
+        )
+
+        comment_c = (
+            merge_comments(children[right_index + 1:colon_b_index])
+            if right_index and colon_b_index else
+            merge_comments(children[right_index + 1:])
+            if right_index else
+            ''
+        )
+
+        comment_d = (
+            merge_comments(children[colon_b_index + 1:-1])
+            if colon_b_index and step_node else
+            merge_comments(children[colon_b_index + 1:])
+            if colon_b_index else
+            ''
+        )
+
         left = (
             SomeExpr(from_generic_tree_to_expr(left_node), left_node.source_start, left_node.source_end)
             if left_node else
@@ -1570,7 +1605,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             NoExpr(node.source_start, node.source_start)
         )
 
-        return Slice(left, right, step, node.source_start, node.source_end)
+        return Slice(left, comment_a, comment_b, right, comment_c, comment_d, step, node.source_start, node.source_end)
 
     else:
         # keyword_identifier / not sure if this is actually ever used
