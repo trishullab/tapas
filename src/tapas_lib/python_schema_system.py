@@ -301,7 +301,9 @@ choices_schema : dict[str, list[Rule]] = {
 
         Rule(
             "NoBases",
-            []
+            [
+                Vocab("comment", "comment"),
+            ]
         )
     ],
 
@@ -309,7 +311,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsBase",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "bases_a", InLine()),
             ]
@@ -318,7 +323,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleBase",
             [
-                Nonterm("content", "expr", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 

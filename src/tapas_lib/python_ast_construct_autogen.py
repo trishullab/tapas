@@ -1567,6 +1567,7 @@ def update_SomeBases(source_SomeBases : SomeBases,
 
 @dataclass(frozen=True, eq=True)
 class NoBases(bases):
+    comment : str
     source_start : int
     source_end : int
 
@@ -1574,19 +1575,23 @@ class NoBases(bases):
         return handlers.case_NoBases(self)
 
 def make_NoBases(
+    comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> bases:
     return NoBases(
+        comment,
         source_start,
         source_end
     )
 
 def update_NoBases(source_NoBases : NoBases,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> NoBases:
     return NoBases(
+        source_NoBases.comment if isinstance(comment, SourceFlag) else comment,
         source_NoBases.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_NoBases.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -1628,7 +1633,9 @@ class bases_a(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsBase(bases_a):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : bases_a | None
     source_start : int
     source_end : int
@@ -1637,26 +1644,34 @@ class ConsBase(bases_a):
         return handlers.case_ConsBase(self)
 
 def make_ConsBase(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : bases_a | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> bases_a:
     return ConsBase(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsBase(source_ConsBase : ConsBase,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[bases_a | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsBase:
     return ConsBase(
+        source_ConsBase.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsBase.head if isinstance(head, SourceFlag) else head,
+        source_ConsBase.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsBase.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsBase.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsBase.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1666,7 +1681,9 @@ def update_ConsBase(source_ConsBase : ConsBase,
 
 @dataclass(frozen=True, eq=True)
 class SingleBase(bases_a):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -1674,23 +1691,31 @@ class SingleBase(bases_a):
         return handlers.case_SingleBase(self)
 
 def make_SingleBase(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> bases_a:
     return SingleBase(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleBase(source_SingleBase : SingleBase,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleBase:
     return SingleBase(
+        source_SingleBase.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleBase.content if isinstance(content, SourceFlag) else content,
+        source_SingleBase.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleBase.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleBase.source_end if isinstance(source_end, SourceFlag) else source_end
     )

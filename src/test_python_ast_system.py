@@ -339,7 +339,18 @@ def test_comment():
     # '''
 
 #################
+
+
     code = '''
+    class A: pass
+    class B(
+        #hello
+    ): pass
+    class C( #hello
+        A #hello
+        , #hello
+        B #hello
+    ) : pass
     '''
 
 

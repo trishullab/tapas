@@ -889,6 +889,13 @@ def from_bases(
             def handle_NoBases(o : NoBases): 
                 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+                stack.append(
                     tuple([make_Grammar(
                         options = 'bases',
                         selection = 'NoBases',
@@ -932,7 +939,23 @@ def from_bases_a(
                 stack.append(o.tail)
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases_a',
@@ -945,7 +968,23 @@ def from_bases_a(
 
             def handle_SingleBase(o : SingleBase): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_expr(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'bases_a',

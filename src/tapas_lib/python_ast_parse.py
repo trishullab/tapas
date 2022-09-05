@@ -47,60 +47,73 @@ def merge_comments(comment_nodes : list[GenericNode]) -> str:
     return "\n".join([cm.text for cm in comment_nodes if is_comment(cm)])
 
 
-def to_bases(bases : list[expr | None], kws : keywords | None, default_start : int, default_end : int) -> bases:
-    if not bases and not kws:
-        return NoBases(default_start, default_end)
+def to_bases(base_nodes : list[GenericNode], kws : keywords | None, default_start : int, default_end : int) -> bases:
+
+    only_comments = all(n.syntax_part == "comment" for n in base_nodes)
+    if only_comments and not kws:
+        comment = merge_comments(base_nodes) 
+        return NoBases(comment, default_start, default_end)
     else:
 
+        to_comment_triplets(base_nodes)
+
         start_node, end_node = (
-            (bases[0], kws)
+            (base_nodes[0], kws)
             if bases and kws else
-            (bases[0], bases[-1])
+            (base_nodes[0], base_nodes[-1])
             if bases else
             (kws, kws)
         )
 
         start = (
-            unguard_expr(start_node).source_start
-            if isinstance(start_node, expr) else
+            start_node.source_start
+            if isinstance(start_node, GenericNode) else
             unguard_keywords(start_node).source_end
             if isinstance(start_node, keywords) else
             0
         )
         end = (
-            unguard_expr(end_node).source_start
-            if isinstance(end_node, expr) else
+            end_node.source_start
+            if isinstance(end_node, GenericNode) else
             unguard_keywords(end_node).source_end
             if isinstance(end_node, keywords) else
             0
         )
 
 
-        return SomeBases(to_sequence_base(bases, kws), start, end)
+        return SomeBases(to_sequence_base(base_nodes, kws), start, end)
 
 
-def to_sequence_base(bases : list[expr | None], keywords : keywords | None) -> bases_a | None:
-    if  bases or keywords:
+def to_sequence_base(base_nodes : list[GenericNode], keywords : keywords | None) -> bases_a | None:
+    if  base_nodes or keywords:
 
-        (result, bases) = (
+        trips = to_comment_triplets(base_nodes)
 
-            (KeywordBases(keywords, 
+
+        if keywords:
+
+            result = KeywordBases(keywords, 
                 unguard_keywords(keywords).source_start,
                 unguard_keywords(keywords).source_end,
-            ), bases)
-            if keywords else
+            )
 
-            (SingleBase(bases[-1],
-                unguard_expr(bases[-1]).source_start if bases[-1] else 0,
-                unguard_expr(bases[-1]).source_end if bases[-1] else 0,
-            ), bases[:-1])
+        else:
 
-        )
+            (pre, n, post) = trips[-1]
+            b = from_generic_tree_to_expr(n) 
 
-        for b in reversed(bases):
-            result = ConsBase(b, result,
+            result = SingleBase(pre, b, post,
                 unguard_expr(b).source_start if b else 0,
                 unguard_expr(b).source_end if b else 0,
+            )
+            trips = trips[:-1]
+
+
+        for pre, n, post in reversed(trips):
+            b = from_generic_tree_to_expr(n) 
+            result = ConsBase(pre, b, post, result,
+                unguard_expr(b).source_start if b else 0,
+                unguard_expr(b).source_end if b else 0
             )
 
         return result
@@ -448,6 +461,8 @@ def to_decorators(nodes : list[GenericNode], base_start : int, base_end : int) -
 
 
 def to_comment_triplets(comma_sep_nodes : list[GenericNode]) -> list[tuple[str, GenericNode, str]]:
+    if not comma_sep_nodes:
+        return []
 
     end_indices = [ 
         i
@@ -2729,34 +2744,21 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             (children[2], merge_comments(children[4:-1]), children[-1])
         )
 
-        (argument_nodes) = (
-            [
-                n
-                for n in arguments_node.children[1:-1]
-                if n.syntax_part != ","
-            ]
-            if (arguments_node != None) else
-            []
-        )
+        base_nodes = list(itertools.takewhile(lambda n: 
+            n.syntax_part != "keyword_argument" and n.syntax_part != "dictionary_splat", 
+            arguments_node.children[1:-1]
+        )) if arguments_node else []
 
-        base_nodes = [n for n in argument_nodes if n.syntax_part != "keyword_argument" and n.syntax_part != "dictionary_splat"]
 
-        base_exprs = [
-            from_generic_tree_to_expr(n)
-            for n in base_nodes
-        ]
+        kw_index = 1 + len(base_nodes) + 1
 
-        trips = to_comment_triplets(arguments_node.children[1:-1]) if (arguments_node != None) else []
-
-        kw_trips = [
-            (pre, n, post) 
-            for pre, n, post in trips 
-            if n.syntax_part == "keyword_argument" or n.syntax_part == "dictionary_splat"
-        ]
+        if arguments_node:
+            print(f"%%%arguments_node.children[kw_index:-1]: {arguments_node.children[kw_index:-1]}")
+        kw_trips = to_comment_triplets(arguments_node.children[kw_index:-1]) if (arguments_node != None) else []
 
         kws = from_list_to_keywords(kw_trips) if kw_trips else None
 
-        bases = to_bases(base_exprs, kws, name_node.source_end, block_node.children[0].source_start)
+        bases = to_bases(base_nodes, kws, name_node.source_end, block_node.children[0].source_start)
 
         body_stmts = to_statements([
             stmt
