@@ -3766,6 +3766,14 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
+                stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Await',
@@ -3792,6 +3800,14 @@ def from_expr(
                 stack.append(o.content)
 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
+                stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
                         selection = 'Yield',
@@ -3804,6 +3820,23 @@ def from_expr(
             def handle_YieldFrom(o : YieldFrom): 
                 
                 stack.append(o.content)
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Grammar(

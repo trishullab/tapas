@@ -1331,6 +1331,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Await",
             [
                 Terminal("await "),
+                Vocab("comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -1346,6 +1347,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Yield",
             [
                 Terminal("yield "),
+                Vocab("comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -1353,7 +1355,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "YieldFrom",
             [
-                Terminal("yield from "),
+                Terminal("yield "),
+                Vocab("comment_a", "comment"),
+                Terminal("from "),
+                Vocab("comment_b", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),

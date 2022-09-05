@@ -8531,29 +8531,52 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 1
+        total_num_children = 2
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
                 
-            return self.synthesize_for_expr_Await(inher_aux, content_tree, content_aux)
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+                
+            return self.synthesize_for_expr_Await(inher_aux, comment_tree, comment_aux, content_tree, content_aux)
         
+        elif index == 0: # index does *not* refer to an inductive child
+
+            
+
+
+            child_inher_aux = self.traverse_expr_Await_comment(
+                inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Await"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 0 : # index refers to an inductive child
+        elif index == 1 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "Await"), inher_aux, children))
 
             
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_Await_content(
-                inher_aux
+                inher_aux,
+                comment_tree, 
+                comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -8593,29 +8616,52 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 1
+        total_num_children = 2
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
                 
-            return self.synthesize_for_expr_Yield(inher_aux, content_tree, content_aux)
+            content_tree = children[1].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[1].aux
+                
+            return self.synthesize_for_expr_Yield(inher_aux, comment_tree, comment_aux, content_tree, content_aux)
         
+        elif index == 0: # index does *not* refer to an inductive child
+
+            
+
+
+            child_inher_aux = self.traverse_expr_Yield_comment(
+                inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Yield"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 0 : # index refers to an inductive child
+        elif index == 1 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "Yield"), inher_aux, children))
 
             
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_Yield_content(
-                inher_aux
+                inher_aux,
+                comment_tree, 
+                comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -8634,29 +8680,81 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 1
+        total_num_children = 3
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, expr)
-            content_aux = children[0].aux
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
                 
-            return self.synthesize_for_expr_YieldFrom(inher_aux, content_tree, content_aux)
+            comment_b_tree = children[1].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[1].aux
+                
+            content_tree = children[2].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[2].aux
+                
+            return self.synthesize_for_expr_YieldFrom(inher_aux, comment_a_tree, comment_a_aux, comment_b_tree, comment_b_aux, content_tree, content_aux)
         
+        elif index == 0: # index does *not* refer to an inductive child
+
+            
+
+
+            child_inher_aux = self.traverse_expr_YieldFrom_comment_a(
+                inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "YieldFrom"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_expr_YieldFrom_comment_b(
+                inher_aux,
+                comment_a_tree, 
+                comment_a_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "YieldFrom"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 0 : # index refers to an inductive child
+        elif index == 2 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("expr", "YieldFrom"), inher_aux, children))
 
             
+            comment_a_tree = children[0].tree
+            assert isinstance(comment_a_tree, str)
+            comment_a_aux = children[0].aux
+            comment_b_tree = children[1].tree
+            assert isinstance(comment_b_tree, str)
+            comment_b_aux = children[1].aux
 
             # add on child node 
             child_inher_aux = self.traverse_expr_YieldFrom_content(
-                inher_aux
+                inher_aux,
+                comment_a_tree, 
+                comment_a_aux,
+                comment_b_tree, 
+                comment_b_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -12400,22 +12498,56 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux, post_comment_aux,), 'comprehension_constraints') 
     
     # traverse expr <-- Await"
-    def traverse_expr_Await_content(self, 
+    def traverse_expr_Await_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse expr <-- Await"
+    def traverse_expr_Await_content(self, 
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'expr') 
+    
+    # traverse expr <-- Yield"
+    def traverse_expr_Yield_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse expr <-- Yield"
     def traverse_expr_Yield_content(self, 
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'expr') 
+    
+    # traverse expr <-- YieldFrom"
+    def traverse_expr_YieldFrom_comment_a(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse expr <-- YieldFrom"
+    def traverse_expr_YieldFrom_comment_b(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux,), 'str') 
     
     # traverse expr <-- YieldFrom"
     def traverse_expr_YieldFrom_content(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, comment_b_aux,), 'expr') 
     
     # traverse expr <-- Compare"
     def traverse_expr_Compare_left(self, 
@@ -14615,12 +14747,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: expr <-- Await
     def synthesize_for_expr_Await(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Await(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_Await(comment_tree, content_tree),
+            aux = self.synthesize_auxes((comment_aux, content_aux,)) 
         )
     
     # synthesize: expr <-- YieldNothing
@@ -14635,23 +14769,29 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: expr <-- Yield
     def synthesize_for_expr_Yield(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Yield(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_Yield(comment_tree, content_tree),
+            aux = self.synthesize_auxes((comment_aux, content_aux,)) 
         )
     
     # synthesize: expr <-- YieldFrom
     def synthesize_for_expr_YieldFrom(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_YieldFrom(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_YieldFrom(comment_a_tree, comment_b_tree, content_tree),
+            aux = self.synthesize_auxes((comment_a_aux, comment_b_aux, content_aux,)) 
         )
     
     # synthesize: expr <-- Compare

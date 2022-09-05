@@ -259,6 +259,25 @@ def test_comment():
     # }
     # '''
 
+    # code = '''
+    # async def foo():
+    #     return 1
+    # async def boo():
+    #     x = (await #comment
+    #     foo())
+    # '''
+
+    # code = '''
+    # def foo():
+    #     (yield #x 
+    #     from #x
+    #     [2,3,4] #x
+    #     )
+    #     (yield #x
+    #     1 #x
+    #     )
+    # '''
+
 #################
 
     code = '''

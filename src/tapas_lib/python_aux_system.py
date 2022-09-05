@@ -2819,6 +2819,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- Await
     def synthesize_for_expr_Await(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2827,7 +2829,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         # async functions return instances of Coroutine <: Awaitable
         # inferred_type = T
         return paa.Result[SynthAux](
-            tree = pas.make_Await(content_tree),
+            tree = pas.make_Await(comment_tree, content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -2848,6 +2850,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- Yield
     def synthesize_for_expr_Yield(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2855,7 +2859,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         expr_type = content_aux.observed_types[0]
         return paa.Result[SynthAux](
-            tree = pas.make_Yield(content_tree),
+            tree = pas.make_Yield(comment_tree, content_tree),
             aux = update_SynthAux(content_aux,
                 yield_types = (expr_type,)
             )
@@ -2864,6 +2868,10 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- YieldFrom
     def synthesize_for_expr_YieldFrom(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2874,7 +2882,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         self.check(IterateTypeCheck(), lambda: item_type != None)
 
         return paa.Result[SynthAux](
-            tree = pas.make_YieldFrom(content_tree),
+            tree = pas.make_YieldFrom(comment_a_tree, comment_b_tree, content_tree),
             aux = update_SynthAux(content_aux,
                 yield_types = (item_type or AnyType(),)
             )

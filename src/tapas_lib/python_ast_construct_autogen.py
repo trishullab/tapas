@@ -6422,6 +6422,7 @@ def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
 
 @dataclass(frozen=True, eq=True)
 class Await(expr):
+    comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -6430,22 +6431,26 @@ class Await(expr):
         return handlers.case_Await(self)
 
 def make_Await(
+    comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Await(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_Await(source_Await : Await,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Await:
     return Await(
+        source_Await.comment if isinstance(comment, SourceFlag) else comment,
         source_Await.content if isinstance(content, SourceFlag) else content,
         source_Await.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Await.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6483,6 +6488,7 @@ def update_YieldNothing(source_YieldNothing : YieldNothing,
 
 @dataclass(frozen=True, eq=True)
 class Yield(expr):
+    comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -6491,22 +6497,26 @@ class Yield(expr):
         return handlers.case_Yield(self)
 
 def make_Yield(
+    comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Yield(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_Yield(source_Yield : Yield,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Yield:
     return Yield(
+        source_Yield.comment if isinstance(comment, SourceFlag) else comment,
         source_Yield.content if isinstance(content, SourceFlag) else content,
         source_Yield.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Yield.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6516,6 +6526,8 @@ def update_Yield(source_Yield : Yield,
 
 @dataclass(frozen=True, eq=True)
 class YieldFrom(expr):
+    comment_a : str
+    comment_b : str
     content : expr | None
     source_start : int
     source_end : int
@@ -6524,22 +6536,30 @@ class YieldFrom(expr):
         return handlers.case_YieldFrom(self)
 
 def make_YieldFrom(
+    comment_a : str, 
+    comment_b : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return YieldFrom(
+        comment_a,
+        comment_b,
         content,
         source_start,
         source_end
     )
 
 def update_YieldFrom(source_YieldFrom : YieldFrom,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> YieldFrom:
     return YieldFrom(
+        source_YieldFrom.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_YieldFrom.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_YieldFrom.content if isinstance(content, SourceFlag) else content,
         source_YieldFrom.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_YieldFrom.source_end if isinstance(source_end, SourceFlag) else source_end

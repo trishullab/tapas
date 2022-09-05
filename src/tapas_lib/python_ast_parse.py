@@ -1353,17 +1353,22 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         children = node.children
 
         assert children[0].syntax_part == "yield"
-        is_yield_from = (
-            len(children) > 1 and
-            children[1].syntax_part == "from"
-        )
 
-        if is_yield_from:
-            expr = from_generic_tree_to_expr(children[2])
-            return YieldFrom(expr, node.source_start, node.source_end)
+        from_index = next((
+            i
+            for i, n in enumerate(children)
+            if n.syntax_part == "from"
+        ), None)
+
+        if from_index:
+            comment_a = merge_comments(children[1:from_index])
+            comment_b = merge_comments(children[from_index + 1: -1])
+            expr = from_generic_tree_to_expr(children[-1])
+            return YieldFrom(comment_a, comment_b, expr, node.source_start, node.source_end)
         else:
-            expr = from_generic_tree_to_expr(children[1])
-            return Yield(expr, node.source_start, node.source_end)
+            comment = merge_comments(children[1:-1])
+            expr = from_generic_tree_to_expr(children[-1])
+            return Yield(comment, expr, node.source_start, node.source_end)
 
     elif node.syntax_part == "comparison_operator":
         left = from_generic_tree_to_expr(node.children[0])
@@ -1401,8 +1406,9 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
     elif node.syntax_part == "await":
         assert node.children[0].syntax_part == "await"
-        expr = from_generic_tree_to_expr(node.children[1])
-        return Await(expr, node.source_start, node.source_end)
+        comment = merge_comments(node.children[1:-1])
+        expr = from_generic_tree_to_expr(node.children[-1])
+        return Await(comment, expr, node.source_start, node.source_end)
 
     elif node.syntax_part == "lambda":
         assert node.children[0].syntax_part == "lambda"
