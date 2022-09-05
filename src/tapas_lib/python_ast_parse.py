@@ -1133,10 +1133,15 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         children = node.children
         expr_node = children[0]
         expr = from_generic_tree_to_expr(expr_node)
-        assert children[1].syntax_part == "."
-        id_node = children[2]
+        pre_comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[1:]))
+        dot_index = len(pre_comment_nodes) + 1
+        post_comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[dot_index + 1:]))
+        id_node = children[-1]
+
+        pre_comment = merge_comments(pre_comment_nodes)
+        post_comment = merge_comments(post_comment_nodes)
         id = from_generic_tree_to_identifier(id_node)
-        return Attribute(expr, id, node.source_start, node.source_end)
+        return Attribute(expr, pre_comment, post_comment, id, node.source_start, node.source_end)
 
     elif (node.syntax_part == "subscript"):
         children = node.children
@@ -1162,17 +1167,21 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         func_node = children[0]
         func = from_generic_tree_to_expr(func_node)
 
-        args_node = children[1]
+        comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[1:]))
+        args_index = len(comment_nodes) + 1
+        comment = merge_comments(comment_nodes)
+
+        args_node = children[args_index]
         if args_node.syntax_part == "argument_list":
             argument_nodes = args_node.children[1:-1]
             if argument_nodes: 
                 seq_arg = to_arguments(argument_nodes)
-                return CallArgs(func, seq_arg, node.source_start, node.source_end)
+                return CallArgs(func, comment, seq_arg, node.source_start, node.source_end)
             else:
-                return Call(func, node.source_start, node.source_end)
+                return Call(func, comment, node.source_start, node.source_end)
 
         elif args_node.syntax_part == "generator_expression":
-            return CallArgs(func, from_list_to_arguments([('', args_node, '')], None), node.source_start, node.source_end)
+            return CallArgs(func, comment, from_list_to_arguments([('', args_node, '')], None), node.source_start, node.source_end)
 
         else:
             return node_error(args_node)
@@ -1952,12 +1961,15 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         arg_nodes = to_comment_triplets(children[arg_index:])
 
+        comment = ''
+
         return [Expr(
             CallArgs(
                 Name("print",
                     children[0].source_start,
                     children[0].source_end,
                 ), 
+                comment,
                 from_list_to_arguments(arg_nodes, arg_keywords),
                 node.source_start, node.source_start
             ), 

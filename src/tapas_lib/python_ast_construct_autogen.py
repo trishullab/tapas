@@ -6608,6 +6608,7 @@ def update_Compare(source_Compare : Compare,
 @dataclass(frozen=True, eq=True)
 class Call(expr):
     func : expr | None
+    comment : str
     source_start : int
     source_end : int
 
@@ -6616,22 +6617,26 @@ class Call(expr):
 
 def make_Call(
     func : expr | None, 
+    comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Call(
         func,
+        comment,
         source_start,
         source_end
     )
 
 def update_Call(source_Call : Call,
     func : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Call:
     return Call(
         source_Call.func if isinstance(func, SourceFlag) else func,
+        source_Call.comment if isinstance(comment, SourceFlag) else comment,
         source_Call.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Call.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -6641,6 +6646,7 @@ def update_Call(source_Call : Call,
 @dataclass(frozen=True, eq=True)
 class CallArgs(expr):
     func : expr | None
+    comment : str
     args : arguments | None
     source_start : int
     source_end : int
@@ -6650,12 +6656,14 @@ class CallArgs(expr):
 
 def make_CallArgs(
     func : expr | None, 
+    comment : str, 
     args : arguments | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return CallArgs(
         func,
+        comment,
         args,
         source_start,
         source_end
@@ -6663,12 +6671,14 @@ def make_CallArgs(
 
 def update_CallArgs(source_CallArgs : CallArgs,
     func : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     args : Union[arguments | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> CallArgs:
     return CallArgs(
         source_CallArgs.func if isinstance(func, SourceFlag) else func,
+        source_CallArgs.comment if isinstance(comment, SourceFlag) else comment,
         source_CallArgs.args if isinstance(args, SourceFlag) else args,
         source_CallArgs.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_CallArgs.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6890,6 +6900,8 @@ def update_Ellip(source_Ellip : Ellip,
 @dataclass(frozen=True, eq=True)
 class Attribute(expr):
     content : expr | None
+    pre_comment : str
+    post_comment : str
     name : str
     source_start : int
     source_end : int
@@ -6899,12 +6911,16 @@ class Attribute(expr):
 
 def make_Attribute(
     content : expr | None, 
+    pre_comment : str, 
+    post_comment : str, 
     name : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Attribute(
         content,
+        pre_comment,
+        post_comment,
         name,
         source_start,
         source_end
@@ -6912,12 +6928,16 @@ def make_Attribute(
 
 def update_Attribute(source_Attribute : Attribute,
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     name : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Attribute:
     return Attribute(
         source_Attribute.content if isinstance(content, SourceFlag) else content,
+        source_Attribute.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_Attribute.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_Attribute.name if isinstance(name, SourceFlag) else name,
         source_Attribute.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Attribute.source_end if isinstance(source_end, SourceFlag) else source_end

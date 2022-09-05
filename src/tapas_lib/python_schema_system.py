@@ -1378,6 +1378,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Call",
             [
                 Nonterm("func", "expr", InLine()),
+                Vocab("comment", "comment"),
                 Terminal("()")
             ]
         ),
@@ -1386,6 +1387,7 @@ choices_schema : dict[str, list[Rule]] = {
             "CallArgs",
             [
                 Nonterm("func", "expr", InLine()),
+                Vocab("comment", "comment"),
                 Terminal("("),
                 Nonterm("args", "arguments", InLine()),
                 Terminal(")")
@@ -1446,7 +1448,9 @@ choices_schema : dict[str, list[Rule]] = {
             "Attribute",
             [
                 Nonterm("content", "expr", InLine()),
+                Vocab("pre_comment", "comment"),
                 Terminal("."),
+                Vocab("post_comment", "comment"),
                 Vocab("name", "identifier")
             ]
         ),

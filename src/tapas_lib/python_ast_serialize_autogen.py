@@ -3867,6 +3867,14 @@ def from_expr(
             def handle_Call(o : Call): 
                 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
                 stack.append(o.func)
                 stack.append(
                     tuple([make_Grammar(
@@ -3883,6 +3891,14 @@ def from_expr(
 
                 stack.append(from_arguments(o.args))
 
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
 
                 stack.append(o.func)
                 stack.append(
@@ -4004,6 +4020,22 @@ def from_expr(
                 )
         
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(o.content)
                 stack.append(

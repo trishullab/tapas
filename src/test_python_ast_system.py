@@ -284,21 +284,40 @@ def test_comment():
     #     )
     # '''
 
+
+    # code = '''
+    # (1 #x
+    # < #x
+    # 2 < #x
+    # 3 # x
+    # )
+    # (1 not #hello
+    # in #hello
+    # [2,3]
+    # )
+    # '''
+
+    # code = '''
+    # def foo(x = 1):
+    #     return
+
+    # (foo #x
+    # ())
+
+    # (foo #x
+    # (1))
+    # '''
+
 #################
 
-
     code = '''
-    (1 #x
-    < #x
-    2 < #x
-    3 # x
-    )
-    (1 not #hello
-    in #hello
-    [2,3]
-    )
+    class A:
+        x = 1
+    (A # hello
+    . #hello
+    x #hello
+    ) 
     '''
-
 
     gnode = pgs.parse(code)
     print("-- generic node --")  

@@ -2891,6 +2891,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: CompareRight
     def synthesize_for_CompareRight(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         rator_tree : pas.cmp_rator, 
         rator_aux : SynthAux,
         rand_tree : pas.expr, 
@@ -2898,7 +2900,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         cmp_name = pas.from_cmp_rator_to_method_name(rator_tree)
         return paa.Result[SynthAux](
-            tree = pas.make_CompareRight(rator_tree, rand_tree),
+            tree = pas.make_CompareRight(comment_tree, rator_tree, rand_tree),
             aux = update_SynthAux(self.synthesize_auxes((rator_aux, rand_aux)), 
                 cmp_names = (cmp_name,)
             )
@@ -2959,7 +2961,9 @@ class Server(paa.Server[InherAux, SynthAux]):
     def synthesize_for_expr_Call(self, 
         inher_aux : InherAux,
         func_tree : pas.expr, 
-        func_aux : SynthAux
+        func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
         assert len(func_aux.observed_types) == 1
@@ -3003,7 +3007,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     })
 
         return paa.Result[SynthAux](
-            tree = pas.make_Call(func_tree),
+            tree = pas.make_Call(func_tree, comment_tree),
             aux = update_SynthAux(func_aux,
                 observed_types = (inferred_type,)
             )
@@ -3065,6 +3069,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         func_tree : pas.expr, 
         func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         args_tree : pas.arguments, 
         args_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3199,7 +3205,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     })
 
         return paa.Result[SynthAux](
-            tree = pas.make_CallArgs(func_tree, args_tree),
+            tree = pas.make_CallArgs(func_tree, comment_tree, args_tree),
             aux = update_SynthAux(synth_aux,
                 observed_types = (expr_type,),
                 decl_additions = decl_additions
@@ -3344,6 +3350,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         name_tree : str, 
         name_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3363,7 +3373,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_type = AnyType()
         
         return paa.Result[SynthAux](
-            tree = pas.make_Attribute(content_tree, name_tree),
+            tree = pas.make_Attribute(content_tree, pre_comment_tree, post_comment_tree, name_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, name_aux)),
                 observed_types = (expr_type,)
             )

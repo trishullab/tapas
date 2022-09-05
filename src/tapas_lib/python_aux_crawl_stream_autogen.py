@@ -8837,7 +8837,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 1
+        total_num_children = 2
 
         index = len(children)
         if index == total_num_children:
@@ -8848,8 +8848,31 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(func_tree, expr)
             func_aux = children[0].aux
                 
-            return self.synthesize_for_expr_Call(inher_aux, func_tree, func_aux)
+            comment_tree = children[1].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[1].aux
+                
+            return self.synthesize_for_expr_Call(inher_aux, func_tree, func_aux, comment_tree, comment_aux)
         
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            func_tree = children[0].tree
+            assert isinstance(func_tree, expr)
+            func_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_expr_Call_comment(
+                inher_aux,
+                func_tree, 
+                func_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Call"), inher_aux, children + (child_synth,)))
+            return None
+            
         
         elif index == 0 : # index refers to an inductive child
             # put back current node
@@ -8878,7 +8901,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 3
 
         index = len(children)
         if index == total_num_children:
@@ -8889,11 +8912,15 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(func_tree, expr)
             func_aux = children[0].aux
                 
-            args_tree = children[1].tree
-            assert isinstance(args_tree, arguments)
-            args_aux = children[1].aux
+            comment_tree = children[1].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[1].aux
                 
-            return self.synthesize_for_expr_CallArgs(inher_aux, func_tree, func_aux, args_tree, args_aux)
+            args_tree = children[2].tree
+            assert isinstance(args_tree, arguments)
+            args_aux = children[2].aux
+                
+            return self.synthesize_for_expr_CallArgs(inher_aux, func_tree, func_aux, comment_tree, comment_aux, args_tree, args_aux)
         
         elif index == 1: # index does *not* refer to an inductive child
 
@@ -8903,10 +8930,35 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             func_aux = children[0].aux
 
 
-            child_inher_aux = self.traverse_expr_CallArgs_args(
+            child_inher_aux = self.traverse_expr_CallArgs_comment(
                 inher_aux,
                 func_tree, 
                 func_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "CallArgs"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            func_tree = children[0].tree
+            assert isinstance(func_tree, expr)
+            func_aux = children[0].aux
+            comment_tree = children[1].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_CallArgs_args(
+                inher_aux,
+                func_tree, 
+                func_aux,
+                comment_tree, 
+                comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_arguments(child_token, child_inher_aux)
@@ -9143,7 +9195,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
@@ -9154,11 +9206,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             assert isinstance(content_tree, expr)
             content_aux = children[0].aux
                 
-            name_tree = children[1].tree
-            assert isinstance(name_tree, str)
-            name_aux = children[1].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
                 
-            return self.synthesize_for_expr_Attribute(inher_aux, content_tree, content_aux, name_tree, name_aux)
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            name_tree = children[3].tree
+            assert isinstance(name_tree, str)
+            name_aux = children[3].aux
+                
+            return self.synthesize_for_expr_Attribute(inher_aux, content_tree, content_aux, pre_comment_tree, pre_comment_aux, post_comment_tree, post_comment_aux, name_tree, name_aux)
         
         elif index == 1: # index does *not* refer to an inductive child
 
@@ -9168,10 +9228,65 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             content_aux = children[0].aux
 
 
-            child_inher_aux = self.traverse_expr_Attribute_name(
+            child_inher_aux = self.traverse_expr_Attribute_pre_comment(
                 inher_aux,
                 content_tree, 
                 content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Attribute"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            content_tree = children[0].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_expr_Attribute_post_comment(
+                inher_aux,
+                content_tree, 
+                content_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("expr", "Attribute"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            content_tree = children[0].tree
+            assert isinstance(content_tree, expr)
+            content_aux = children[0].aux
+            pre_comment_tree = children[1].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_expr_Attribute_name(
+                inher_aux,
+                content_tree, 
+                content_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_str(child_token, child_inher_aux)
@@ -12583,6 +12698,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
+    # traverse expr <-- Call"
+    def traverse_expr_Call_comment(self, 
+        inher_aux : InherAux,
+        func_tree : expr, 
+        func_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (func_aux,), 'str') 
+    
     # traverse expr <-- CallArgs"
     def traverse_expr_CallArgs_func(self, 
         inher_aux : InherAux
@@ -12590,12 +12713,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- CallArgs"
-    def traverse_expr_CallArgs_args(self, 
+    def traverse_expr_CallArgs_comment(self, 
         inher_aux : InherAux,
         func_tree : expr, 
         func_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (func_aux,), 'arguments') 
+        return self.traverse_auxes(inher_aux, (func_aux,), 'str') 
+    
+    # traverse expr <-- CallArgs"
+    def traverse_expr_CallArgs_args(self, 
+        inher_aux : InherAux,
+        func_tree : expr, 
+        func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (func_aux, comment_aux,), 'arguments') 
     
     # traverse expr <-- Integer"
     def traverse_expr_Integer_content(self, 
@@ -12622,12 +12755,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'expr') 
     
     # traverse expr <-- Attribute"
-    def traverse_expr_Attribute_name(self, 
+    def traverse_expr_Attribute_pre_comment(self, 
         inher_aux : InherAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (content_aux,), 'str') 
+    
+    # traverse expr <-- Attribute"
+    def traverse_expr_Attribute_post_comment(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (content_aux, pre_comment_aux,), 'str') 
+    
+    # traverse expr <-- Attribute"
+    def traverse_expr_Attribute_name(self, 
+        inher_aux : InherAux,
+        content_tree : expr, 
+        content_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (content_aux, pre_comment_aux, post_comment_aux,), 'str') 
     
     # traverse expr <-- Subscript"
     def traverse_expr_Subscript_content(self, 
@@ -14835,11 +14990,13 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     def synthesize_for_expr_Call(self, 
         inher_aux : InherAux,
         func_tree : expr, 
-        func_aux : SynthAux
+        func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Call(func_tree),
-            aux = self.synthesize_auxes((func_aux,)) 
+            tree = make_Call(func_tree, comment_tree),
+            aux = self.synthesize_auxes((func_aux, comment_aux,)) 
         )
     
     # synthesize: expr <-- CallArgs
@@ -14847,12 +15004,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         func_tree : expr, 
         func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         args_tree : arguments, 
         args_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_CallArgs(func_tree, args_tree),
-            aux = self.synthesize_auxes((func_aux, args_aux,)) 
+            tree = make_CallArgs(func_tree, comment_tree, args_tree),
+            aux = self.synthesize_auxes((func_aux, comment_aux, args_aux,)) 
         )
     
     # synthesize: expr <-- Integer
@@ -14929,12 +15088,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         content_tree : expr, 
         content_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         name_tree : str, 
         name_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_Attribute(content_tree, name_tree),
-            aux = self.synthesize_auxes((content_aux, name_aux,)) 
+            tree = make_Attribute(content_tree, pre_comment_tree, post_comment_tree, name_tree),
+            aux = self.synthesize_auxes((content_aux, pre_comment_aux, post_comment_aux, name_aux,)) 
         )
     
     # synthesize: expr <-- Subscript
