@@ -278,7 +278,23 @@ def from_parameters_d(
                 stack.append(o.tail)
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
@@ -291,7 +307,23 @@ def from_parameters_d(
 
             def handle_SingleKwParam(o : SingleKwParam): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
@@ -304,10 +336,43 @@ def from_parameters_d(
 
             def handle_TransKwParam(o : TransKwParam): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_d
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.tail))
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_d',
@@ -412,8 +477,24 @@ def from_parameters_c(
 
             def handle_DictionaryBundleParam(o : DictionaryBundleParam): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.content))
 
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
@@ -461,7 +542,23 @@ def from_parameters_b(
                 stack.append(o.tail)
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_b',
@@ -474,7 +571,23 @@ def from_parameters_b(
 
             def handle_SinglePosKeyParam(o : SinglePosKeyParam): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_b',
@@ -5075,6 +5188,7 @@ def from_Param(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         tuple([make_Vocab(options = 'identifier', selection = o.name)]) +
         from_param_annotation(o.anno) +
         from_param_default(o.default)

@@ -452,7 +452,9 @@ class parameters_d(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsKwParam(parameters_d):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_d | None
     source_start : int
     source_end : int
@@ -461,26 +463,34 @@ class ConsKwParam(parameters_d):
         return handlers.case_ConsKwParam(self)
 
 def make_ConsKwParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_d | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_d:
     return ConsKwParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_d | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsKwParam:
     return ConsKwParam(
+        source_ConsKwParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsKwParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsKwParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsKwParam.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsKwParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsKwParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -490,7 +500,9 @@ def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
 
 @dataclass(frozen=True, eq=True)
 class SingleKwParam(parameters_d):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -498,23 +510,31 @@ class SingleKwParam(parameters_d):
         return handlers.case_SingleKwParam(self)
 
 def make_SingleKwParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_d:
     return SingleKwParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleKwParam:
     return SingleKwParam(
+        source_SingleKwParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleKwParam.content if isinstance(content, SourceFlag) else content,
+        source_SingleKwParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleKwParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleKwParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -523,8 +543,12 @@ def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
 
 @dataclass(frozen=True, eq=True)
 class TransKwParam(parameters_d):
+    comment_a : str
     head : Param | None
+    comment_b : str
+    comment_c : str
     tail : Param | None
+    comment_d : str
     source_start : int
     source_end : int
 
@@ -532,27 +556,43 @@ class TransKwParam(parameters_d):
         return handlers.case_TransKwParam(self)
 
 def make_TransKwParam(
+    comment_a : str, 
     head : Param | None, 
+    comment_b : str, 
+    comment_c : str, 
     tail : Param | None, 
+    comment_d : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_d:
     return TransKwParam(
+        comment_a,
         head,
+        comment_b,
+        comment_c,
         tail,
+        comment_d,
         source_start,
         source_end
     )
 
 def update_TransKwParam(source_TransKwParam : TransKwParam,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TransKwParam:
     return TransKwParam(
+        source_TransKwParam.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_TransKwParam.head if isinstance(head, SourceFlag) else head,
+        source_TransKwParam.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_TransKwParam.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_TransKwParam.tail if isinstance(tail, SourceFlag) else tail,
+        source_TransKwParam.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_TransKwParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_TransKwParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -738,7 +778,9 @@ def update_DoubleBundleParam(source_DoubleBundleParam : DoubleBundleParam,
 
 @dataclass(frozen=True, eq=True)
 class DictionaryBundleParam(parameters_c):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -746,23 +788,31 @@ class DictionaryBundleParam(parameters_c):
         return handlers.case_DictionaryBundleParam(self)
 
 def make_DictionaryBundleParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return DictionaryBundleParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_DictionaryBundleParam(source_DictionaryBundleParam : DictionaryBundleParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> DictionaryBundleParam:
     return DictionaryBundleParam(
+        source_DictionaryBundleParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_DictionaryBundleParam.content if isinstance(content, SourceFlag) else content,
+        source_DictionaryBundleParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_DictionaryBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_DictionaryBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -810,7 +860,9 @@ class parameters_b(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsPosKeyParam(parameters_b):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_b | None
     source_start : int
     source_end : int
@@ -819,26 +871,34 @@ class ConsPosKeyParam(parameters_b):
         return handlers.case_ConsPosKeyParam(self)
 
 def make_ConsPosKeyParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_b | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_b:
     return ConsPosKeyParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_b | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsPosKeyParam:
     return ConsPosKeyParam(
+        source_ConsPosKeyParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsPosKeyParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsPosKeyParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsPosKeyParam.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsPosKeyParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsPosKeyParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -848,7 +908,9 @@ def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
 
 @dataclass(frozen=True, eq=True)
 class SinglePosKeyParam(parameters_b):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -856,23 +918,31 @@ class SinglePosKeyParam(parameters_b):
         return handlers.case_SinglePosKeyParam(self)
 
 def make_SinglePosKeyParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_b:
     return SinglePosKeyParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SinglePosKeyParam(source_SinglePosKeyParam : SinglePosKeyParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SinglePosKeyParam:
     return SinglePosKeyParam(
+        source_SinglePosKeyParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SinglePosKeyParam.content if isinstance(content, SourceFlag) else content,
+        source_SinglePosKeyParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SinglePosKeyParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SinglePosKeyParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -8646,6 +8716,7 @@ def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
 # type and constructor Param
 @dataclass(frozen=True, eq=True)
 class Param:
+    comment : str
     name : str
     anno : param_annotation | None
     default : param_default | None
@@ -8654,6 +8725,7 @@ class Param:
 
 
 def make_Param(
+    comment : str,
     name : str,
     anno : param_annotation | None,
     default : param_default | None,
@@ -8661,6 +8733,7 @@ def make_Param(
     source_end : int = 0
 ) -> Param:
     return Param(
+        comment,
         name,
         anno,
         default,
@@ -8668,6 +8741,7 @@ def make_Param(
         source_end)
 
 def update_Param(source_Param : Param,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     name : Union[str, SourceFlag] = SourceFlag(),
     anno : Union[param_annotation | None, SourceFlag] = SourceFlag(),
     default : Union[param_default | None, SourceFlag] = SourceFlag(),
@@ -8675,6 +8749,7 @@ def update_Param(source_Param : Param,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Param:
     return Param(
+        source_Param.comment if isinstance(comment, SourceFlag) else comment, 
         source_Param.name if isinstance(name, SourceFlag) else name, 
         source_Param.anno if isinstance(anno, SourceFlag) else anno, 
         source_Param.default if isinstance(default, SourceFlag) else default, 

@@ -123,49 +123,62 @@ def to_sequence_base(base_nodes : list[GenericNode], keywords : keywords | None)
 
 
 def to_parameters(
-    pos_params : list[tuple[str, GenericNode, str]], 
-    params : list[tuple[str, GenericNode, str]], 
-    list_splat_param : tuple[str, GenericNode, str] | None, 
-    kw_params : list[tuple[str, GenericNode, str]], 
-    dictionary_splat_param : tuple[str, GenericNode, str] | None,
+    pos_sections : list[list[GenericNode]], 
+    pos_kw_sections : list[list[GenericNode]], 
+    list_splat_section : list[GenericNode] | None, 
+    kw_sections : list[list[GenericNode]], 
+    dictionary_splat_section : list[GenericNode] | None,
     default_start : int,
     default_end : int,
 ) -> parameters:
 
     if not (
-        pos_params or params or list_splat_param or kw_params or dictionary_splat_param
+        pos_sections or pos_kw_sections or list_splat_section or kw_sections or dictionary_splat_section
     ):
         return NoParam(default_start, default_end)
-    elif pos_params:
+    elif pos_sections:
         return ParamsA(to_parameters_a(
-            pos_params, params, list_splat_param, kw_params, dictionary_splat_param
+            pos_sections, pos_kw_sections, list_splat_section, kw_sections, dictionary_splat_section
         ), default_start, default_end)
     else:
         return ParamsB(to_parameters_b(
-            params, list_splat_param, kw_params, dictionary_splat_param
+            pos_kw_sections, list_splat_section, kw_sections, dictionary_splat_section
         ), default_start, default_end)
 
 
 def to_parameters_d(
-    kw_params : list[Param | None], 
-    dictionary_splat_param : Param | None
+    kw_sections : list[list[GenericNode]], 
+    dictionary_splat_section : list[GenericNode] | None
 ) -> parameters_d:
-    assert kw_params
-    (result, kw_params) = (
-        (TransKwParam(kw_params[-1], dictionary_splat_param,
-            kw_params[-1].source_start if kw_params[-1] else 0,
-            dictionary_splat_param.source_start if dictionary_splat_param else 0
-        ), kw_params[:-1])
-        if dictionary_splat_param else
+    assert kw_sections
 
-        (SingleKwParam( kw_params[-1],
-            kw_params[-1].source_start if kw_params[-1] else 0,
-            kw_params[-1].source_end if kw_params[-1] else 0,
-        ), kw_params[:-1])
-    )
+    kw_section = kw_sections[-1]
+    (kw_pre, kw_node, kw_post) = to_comment_triple(kw_section)
+    kw_param = from_generic_tree_to_Param(kw_node)
 
-    for p in reversed(kw_params):
-        result = ConsKwParam(p, result,
+    if dictionary_splat_section:
+
+        (dpre, dnode, dpost) = to_comment_triple(dictionary_splat_section)
+        dparam = from_generic_tree_to_Param(dnode)
+
+        result = TransKwParam(kw_pre, kw_param, kw_post, dpre, dparam, dpost,
+            kw_param.source_start if kw_param else 0,
+            dparam.source_start if dparam else 0
+        )
+
+        kw_sections = kw_sections[:-1]
+
+    else:
+        result = SingleKwParam(kw_pre, kw_param, kw_post,
+            kw_param.source_start if kw_param else 0,
+            kw_param.source_end if kw_param else 0,
+        )
+        kw_sections =  kw_sections[:-1]
+
+    for section in reversed(kw_sections):
+        (pre, n, post) = to_comment_triple(section)
+        p = from_generic_tree_to_Param(n)
+        result = ConsKwParam(pre, p, post, result,
             p.source_start if p else 0,
             result.source_end,
         )
@@ -174,77 +187,102 @@ def to_parameters_d(
 
 
 def to_parameters_c(
-    list_splat_param : Param | None, 
-    kw_params : list[Param | None], 
-    dictionary_splat_param : Param | None,
+    list_splat_section : list[GenericNode] | None, 
+    kw_sections : list[list[GenericNode]], 
+    dictionary_splat_section : list[GenericNode] | None,
 ) -> parameters_c:
-    if list_splat_param and kw_params:
-        source_start = list_splat_param.source_start
-        source_end = (
-            dictionary_splat_param.source_end 
-            if dictionary_splat_param else
-            kw_params[-1].source_end 
-            if kw_params[-1] else 0
-        )
-        return TransTupleBundleParam(list_splat_param, 
-            to_parameters_d(kw_params, dictionary_splat_param),
-            source_start, source_end
-        )
-    elif list_splat_param and not kw_params and not dictionary_splat_param:
-        source_start = list_splat_param.source_start
-        source_end = list_splat_param.source_end if list_splat_param else 0
-        return SingleTupleBundleParam(list_splat_param, 
-            source_start, source_end
-        )
-    elif list_splat_param and not kw_params and dictionary_splat_param:
-        source_start = list_splat_param.source_start
-        source_end =  dictionary_splat_param.source_end
-        return DoubleBundleParam(list_splat_param, dictionary_splat_param,
-            source_start, source_end
-        )
-    elif not list_splat_param and not kw_params and dictionary_splat_param:
-        source_start = dictionary_splat_param.source_start
-        source_end = dictionary_splat_param.source_end
-        return DictionaryBundleParam(dictionary_splat_param,
-            source_start, source_end
-        )
+
+    pre_sep, list_splat_node, post_sep = (
+        to_comment_triple(list_splat_section)
+        if list_splat_section else
+        '', None, ''
+    )
+
+    if not list_splat_node or list_splat_node.syntax_part == "keyword_separator" :
+        # just a separator; no bundling of element into list
+
+        if not kw_sections and dictionary_splat_section:
+
+            (pre, dictionary_splat_node, post) = to_comment_triple(dictionary_splat_section)
+            source_start = dictionary_splat_node.source_start
+            source_end = dictionary_splat_node.source_end
+            dictionary_bundle_param = from_generic_tree_to_Param(dictionary_splat_node)
+
+            return DictionaryBundleParam(
+                pre, dictionary_bundle_param, post,
+                source_start, source_end
+            )
+        else:
+            #  not list_splat_param and kw_params:
+            params_d = to_parameters_d(kw_sections, dictionary_splat_section)
+            return ParamsD(params_d,
+                unguard_parameters_d(params_d).source_start if params_d else 0, 
+                unguard_parameters_d(params_d).source_end if params_d else 0
+            )
+
     else:
-        #  not list_splat_param and kw_params:
-        params_d = to_parameters_d(kw_params, dictionary_splat_param)
-        return ParamsD(params_d,
-            unguard_parameters_d(params_d).source_start if params_d else 0, 
-            unguard_parameters_d(params_d).source_end if params_d else 0
-        )
+
+        assert list_splat_node.syntax_part == "list_splat_pattern" 
+        list_bundle_param = from_generic_tree_to_Param(list_splat_node)
+
+        if kw_sections:
+            source_start = list_splat_section.source_start
+            source_end = (
+                dictionary_splat_section.source_end 
+                if dictionary_splat_section else
+                kw_sections[-1].source_end 
+                if kw_sections[-1] else 0
+            )
+            return TransTupleBundleParam(list_splat_section, 
+                to_parameters_d(kw_sections, dictionary_splat_section),
+                source_start, source_end
+            )
+        elif not kw_sections and not dictionary_splat_section:
+            source_start = list_splat_section.source_start
+            source_end = list_splat_section.source_end if list_splat_section else 0
+            return SingleTupleBundleParam(list_splat_section, 
+                source_start, source_end
+            )
+        elif not kw_sections and dictionary_splat_section:
+            source_start = list_splat_section.source_start
+            source_end =  dictionary_splat_section.source_end
+            return DoubleBundleParam(list_splat_section, dictionary_splat_section,
+                source_start, source_end
+            )
+
 
 
 def to_parameters_b(
-    params : list[Param | None], 
-    list_splat_param : Param | None, 
-    kw_params : list[Param | None], 
-    dictionary_splat_param : Param | None,
+    pos_kw_sections : list[list[GenericNode]], 
+    list_splat_section : list[GenericNode] | None, 
+    kw_sections : list[list[GenericNode]], 
+    dictionary_splat_section : list[GenericNode] | None,
 ) -> parameters_b:
 
-    (result, params) = (
-        (
-            params_c := to_parameters_c(list_splat_param, kw_params, dictionary_splat_param),
-            (
-            ParamsC(params_c,
-                unguard_parameters_c(params_c).source_start,
-                unguard_parameters_c(params_c).source_end,
-            ), 
-            params
-            )
-        )[-1]
-        if (list_splat_param or kw_params or dictionary_splat_param) else
+    pos_kw_trips = [to_comment_triple(section) for section in pos_kw_sections]
 
-        (SinglePosKeyParam( params[-1],
-            params[-1].source_start if params[-1] else 0,
-            params[-1].source_end if params[-1] else 0,
-        ), params[:-1])
-    )
+    if (list_splat_section or kw_sections or dictionary_splat_section):
 
-    for p in reversed(params):
-        result = ConsPosKeyParam(p, result,
+        params_c = to_parameters_c(list_splat_section, kw_sections, dictionary_splat_section)
+        result = ParamsC(params_c,
+            unguard_parameters_c(params_c).source_start,
+            unguard_parameters_c(params_c).source_end,
+        ) 
+    else:
+        assert pos_kw_trips
+        (pre, n, post) = pos_kw_trips[-1]
+        p = from_generic_tree_to_Param(n)
+
+        result = SinglePosKeyParam(pre, p, post,
+            p.source_start if p else 0,
+            p.source_end if p else 0,
+        )
+
+        pos_kw_trips = pos_kw_trips[:-1]
+
+    for pre, n, post in reversed(pos_kw_trips):
+        p = from_generic_tree_to_Param(n)
+        result = ConsPosKeyParam(pre, p, post, result,
             p.source_start if p else 0,
             result.source_end if result else 0
         )
@@ -253,28 +291,29 @@ def to_parameters_b(
 
 
 def to_parameters_a(
-    pos_params : list[tuple[str, GenericNode, str]], 
-    params : list[tuple[str, GenericNode, str]], 
-    list_splat_param : tuple[str, GenericNode, str] | None, 
-    kw_params : list[tuple[str, GenericNode, str]], 
-    dictionary_splat_param : tuple[str, GenericNode, str] | None
+    pos_sections : list[list[GenericNode]], 
+    pos_kw_sections : list[list[GenericNode]], 
+    list_splat_section : list[GenericNode] | None, 
+    kw_sections : list[list[GenericNode]], 
+    dictionary_splat_section : list[GenericNode] | None
 ) -> parameters_a:
-    assert len(pos_params) >= 2
+    assert len(pos_sections) >= 2
 
-    (pre_sep, _, post_sep) = pos_params[-1]
-    (pre, pos_node, post) = pos_params[-2]
+    pos_triples = [to_comment_triple(section) for section in pos_sections]
+    (pre_sep, _, post_sep) = pos_triples[-1]
+    (pre, pos_node, post) = pos_triples[-2]
     pos_param = from_generic_tree_to_Param(pos_node)
     
 
     result = (
         (
-            params_b := to_parameters_b(params, list_splat_param, kw_params, dictionary_splat_param),
+            params_b := to_parameters_b(pos_kw_sections, list_splat_section, kw_sections, dictionary_splat_section),
             TransPosParam(pre, pos_param, post, pre_sep, post_sep, params_b,
                 pos_param.source_start if pos_param else 0,
                 unguard_parameters_b(params_b).source_end
             )
         )[-1]
-        if (params or list_splat_param or kw_params or dictionary_splat_param) else
+        if (pos_kw_sections or list_splat_section or kw_sections or dictionary_splat_section) else
 
         SinglePosParam(pre, pos_param, post, pre_sep, post_sep,
             pos_param.source_start if pos_param else 0,
@@ -282,7 +321,7 @@ def to_parameters_a(
         )
     )
 
-    for (pre, n, post) in reversed(pos_params[:-2]):
+    for (pre, n, post) in reversed(pos_triples[:-2]):
         pp = from_generic_tree_to_Param(n)
         result = ConsPosParam(pre, pp, post, result,
             pp.source_start if pp else 0,
@@ -343,16 +382,16 @@ def to_dictionary_item(node : GenericNode) -> dictionary_item:
     )
 
 def to_dictionary_content(nodes : list[GenericNode]) -> dictionary_content:
-    item_nodes = to_comment_triplets(nodes) 
-    assert item_nodes
+    item_trips = [to_comment_triple(section) for section in to_sections(nodes)]
+    assert item_trips
 
-    pre, node, post = item_nodes[-1]
+    pre, node, post = item_trips[-1]
     item = to_dictionary_item(node)
     result = SingleDictionaryItem(pre, item, post,
         unguard_dictionary_item(item).source_start,
         unguard_dictionary_item(item).source_end,
     )
-    for pre, node, post in reversed(item_nodes[:-1]):
+    for pre, node, post in reversed(item_trips[:-1]):
         f = to_dictionary_item(node)
         result = ConsDictionaryItem(pre, f, post, result,
             unguard_dictionary_item(f).source_start,
@@ -466,7 +505,17 @@ def to_decorators(nodes : list[GenericNode], base_start : int, base_end : int) -
     return result 
 
 
-def to_comment_triplets(comma_sep_nodes : list[GenericNode]) -> list[tuple[str, GenericNode, str]]:
+def to_comment_triple(section : list[GenericNode]) -> tuple[str, GenericNode, str]:
+    split_index = next(
+        i for i, n in enumerate(section)
+        if n.syntax_part != "comment"
+    )
+    n = section[split_index]
+    pre = merge_comments(section[0:split_index])
+    post = merge_comments(section[split_index + 1:])
+    return (pre, n, post)
+
+def to_sections(comma_sep_nodes : list[GenericNode]) -> list[list[GenericNode]]:
     if not comma_sep_nodes:
         return []
 
@@ -485,21 +534,14 @@ def to_comment_triplets(comma_sep_nodes : list[GenericNode]) -> list[tuple[str, 
     assert len(end_indices) == len(start_indices)
 
     return [ 
-        (pre, n, post)
+        section
         for start, end in zip(start_indices, end_indices) 
         for section in [comma_sep_nodes[start:end]]
-        for split_index in [next(
-            i for i, n in enumerate(section)
-            if n.syntax_part != "comment"
-        )]
-        for n in [section[split_index]]
-        for pre in [merge_comments(section[0:split_index])]
-        for post in [merge_comments(section[split_index + 1:])]
     ]
 
 
 def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
-    es = to_comment_triplets(comma_sep_nodes)
+    es = [to_comment_triple(section) for section in to_sections(comma_sep_nodes)]
     if es :
         (pre_comment, n, post_comment) = es[-1]
         e = from_generic_tree_to_expr(n)
@@ -624,7 +666,7 @@ def from_list_to_keywords(ks : list[tuple[str, GenericNode, str]]) -> keywords:
 
 
 def to_arguments(argument_nodes : list[GenericNode]) -> arguments:
-    trips = to_comment_triplets(argument_nodes)
+    trips = [to_comment_triple(section) for section in to_sections(argument_nodes)]
     pos_trips = [
         (pre, n, post) 
         for pre, n, post in trips 
@@ -1661,6 +1703,7 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
     if node.syntax_part == "identifier":
         id = from_generic_tree_to_identifier(node)
         return Param(
+            '',
             id, 
             NoParamAnno(node.source_start, node.source_start), 
             NoParamDefault(node.source_start, node.source_start), 
@@ -1672,15 +1715,18 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
         first_child = node.children[0]
         id_node = (
             first_child.children[1]
-            if first_child.syntax_part == "list_splat_pattern" and
-            first_child.children[0].syntax_part == "*"
-
+            if 
+                first_child.syntax_part == "list_splat_pattern" and
+                first_child.children[0].syntax_part == "*"
             else
-            first_child.children[1]
-            if first_child.syntax_part == "dictionary_splat_pattern" and
-            first_child.children[0].syntax_part == "**"
 
-            else first_child
+            first_child.children[1]
+            if 
+                first_child.syntax_part == "dictionary_splat_pattern" and
+                first_child.children[0].syntax_part == "**"
+            else 
+            
+            first_child
 
         ) 
 
@@ -1722,9 +1768,11 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
 
     elif node.syntax_part == "list_splat_pattern":
         assert node.children[0].syntax_part == "*"
-        id_node = node.children[1]
+        comment = merge_comments(node.children[1:-1]) 
+        id_node = node.children[-1]
         id = from_generic_tree_to_identifier(id_node)
         return Param(
+            comment,
             id, 
             NoParamAnno(id_node.source_end, id_node.source_end), 
             NoParamDefault(id_node.source_end, id_node.source_end),
@@ -1733,9 +1781,11 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
 
     elif node.syntax_part == "dictionary_splat_pattern":
         assert node.children[0].syntax_part == "**"
-        id_node = node.children[1]
+        comment = merge_comments(node.children[1:-1]) 
+        id_node = node.children[-1]
         id = from_generic_tree_to_identifier(id_node)
         return Param(
+            comment,
             id, 
             NoParamAnno(id_node.source_end, id_node.source_end), 
             NoParamDefault(id_node.source_end, id_node.source_end),
@@ -1771,93 +1821,95 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
         ]
 
 
-        trips = to_comment_triplets(children)
+        sections = to_sections(children)
 
 
-        positional_separator_trip_index = next(
+        positional_separator_section_index = next(
             (
                 i 
-                for i, (_, n, _) in enumerate(trips)
-                if n.syntax_part == "positional_separator"
+                for i, section in enumerate(sections)
+                if any(n.syntax_part == "positional_separator" for n in section)
             ),
             -1 
         )
 
 
 
-        list_splat_trip_index = next(
+        list_splat_section_index = next(
             (
                 i 
-                for i, (_, n, _) in enumerate(trips)
-                if (
+                for i, section in enumerate(sections)
+                if any(
                     n.syntax_part == "list_splat_pattern" or 
                     (
                         n.syntax_part == "typed_parameter" and
                         n.children[0].syntax_part == "list_splat_pattern"
                     ) or
                     n.syntax_part == "keyword_separator"
+                    for n in section
                 )
 
             ),
             -1 
         )
 
-        dictionary_splat_trip_index = next(
+        dictionary_splat_section_index = next(
             (
                 i 
-                for i, (_, n, _) in enumerate(trips)
-                if (
+                for i, section in enumerate(sections)
+                if any(
                     n.syntax_part == "dictionary_splat_pattern" or 
                     (
                         n.syntax_part == "typed_parameter" and
                         n.children[0].syntax_part == "dictionary_splat_pattern"
                     )
+                    for n in section
                 )
             ),
             -1 
         )
 
-        pos_param_trips = (
-            trips[0:positional_separator_trip_index + 1] # include param sep triple
-            if positional_separator_trip_index > -1 else
+        pos_sections = (
+            sections[0:positional_separator_section_index + 1] # include param sep section 
+            if positional_separator_section_index > -1 else
             []
         )
 
-        (pos_kw_param_trips, list_splat_trip, kw_trips, dictionary_splat_trip) = (
+        (pos_kw_sections, list_splat_section, kw_sections, dictionary_splat_section) = (
 
             (
-                trips[positional_separator_trip_index + 1:list_splat_trip_index], 
-                trips[list_splat_trip_index], 
-                trips[list_splat_trip_index + 1: dictionary_splat_trip_index], 
-                trips[dictionary_splat_trip_index]
+                sections[positional_separator_section_index + 1:list_splat_section_index], 
+                sections[list_splat_section_index], 
+                sections[list_splat_section_index + 1: dictionary_splat_section_index], 
+                sections[dictionary_splat_section_index]
             )
-            if (list_splat_trip_index >= 0 and dictionary_splat_trip_index >= 0) else 
+            if (list_splat_section_index >= 0 and dictionary_splat_section_index >= 0) else 
             
             (
-                trips[positional_separator_trip_index + 1:list_splat_trip_index], 
-                trips[list_splat_trip_index], 
-                trips[list_splat_trip_index + 1:], 
+                sections[positional_separator_section_index + 1:list_splat_section_index], 
+                sections[list_splat_section_index], 
+                sections[list_splat_section_index + 1:], 
                 None
             )
-            if list_splat_trip_index >= 0 and dictionary_splat_trip_index < 0 else 
+            if list_splat_section_index >= 0 and dictionary_splat_section_index < 0 else 
             
             (
-                trips[positional_separator_trip_index + 1:-1], 
+                sections[positional_separator_section_index + 1:-1], 
                 None,
                 [],
-                trips[dictionary_splat_trip_index]
+                sections[dictionary_splat_section_index]
             )
-            if list_splat_trip_index < 0 and dictionary_splat_trip_index >= 0 else 
+            if list_splat_section_index < 0 and dictionary_splat_section_index >= 0 else 
 
             (
-                trips[positional_separator_trip_index + 1:], 
+                sections[positional_separator_section_index + 1:], 
                 None,
                 [],
                 None
             )
         )
 
-        return to_parameters(pos_param_trips, pos_kw_param_trips, list_splat_trip, kw_trips, dictionary_splat_trip, 
+        return to_parameters(pos_sections, pos_kw_sections, list_splat_section, kw_sections, dictionary_splat_section, 
             node.source_start, node.source_end
         )
 
@@ -2021,7 +2073,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         else:
             arg_index = 1
 
-        arg_nodes = to_comment_triplets(children[arg_index:])
+        arg_nodes = [to_comment_triple(section) for section in to_sections(children[arg_index:])]
 
         comment = ''
 
@@ -2766,7 +2818,10 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         if arguments_node:
             print(f"%%%arguments_node.children[kw_index:-1]: {arguments_node.children[kw_index:-1]}")
-        kw_trips = to_comment_triplets(arguments_node.children[kw_index:-1]) if (arguments_node != None) else []
+
+        kw_trips = []
+        if (arguments_node != None):
+            kw_trips = [to_comment_triple(section) for section in to_sections(arguments_node.children[kw_index:-1])] 
 
         kws = from_list_to_keywords(kw_trips) if kw_trips else None
 

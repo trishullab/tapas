@@ -80,7 +80,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsKwParam",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_d", InLine())
             ]
@@ -89,16 +92,24 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleKwParam",
             [
-                Nonterm("content", "Param", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
         Rule(
             "TransKwParam",
             [
+
+                Vocab("comment_a", "comment"),
                 Nonterm("head", "Param", InLine()),
-                Terminal(", **"),
-                Nonterm("tail", "Param", InLine())
+                Vocab("comment_b", "comment"),
+                Terminal(", "), 
+                Vocab("comment_c", "comment"),
+                Terminal("**"),
+                Nonterm("tail", "Param", InLine()),
+                Vocab("comment_d", "comment"),
             ]
         )
 
@@ -144,8 +155,11 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "DictionaryBundleParam",
             [
+
+                Vocab("pre_comment", "comment"),
                 Terminal("**"),
-                Nonterm("content", "Param", InLine())
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         )
     ],
@@ -154,7 +168,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsPosKeyParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_b", InLine())
             ]
@@ -163,7 +179,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SinglePosKeyParam",
             [
-                Nonterm("content", "Param", InLine())
+
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -1772,6 +1791,7 @@ singles_schema : list[Rule] = [
     Rule(
         "Param",
         [
+            Vocab("comment", "comment"),
             Vocab("name", "identifier"),
             Nonterm("anno", "param_annotation", InLine()),
             Nonterm("default", "param_default", InLine())

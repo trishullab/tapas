@@ -378,35 +378,63 @@ def test_comment():
         ):
         return (p,) + (a,) + xs + (y,z)
 
-    code = '''
-    def foo( #hello
-        p #hello 
-        : #hello
-        float#hello
-        , #hello
-        /#hello
-        , #hello
-        a #hello
-        = #hello
-        2#hello
-        , #hello
-        *#hello
-        xs #hello
-        : #hello
-        int#hello
-        , #hello
-        y#hello
-         : #hello
-         int#hello
-         , #hello
-         z #hello
-         : #hello
-         int#hello
-        ):
-        return (p,) + (a,) + xs + (y,z)
+    # code = '''
+    # def foo( #hello
+    #     p #hello 
+    #     : #hello
+    #     float#hello
+    #     , #hello
+    #     /#hello
+    #     , #hello
+    #     a #hello
+    #     = #hello
+    #     2#hello
+    #     , #hello
+    #     *#hello
+    #     xs #hello
+    #     : #hello
+    #     int#hello
+    #     , #hello
+    #     y#hello
+    #      : #hello
+    #      int#hello
+    #      , #hello
+    #      z #hello
+    #      : #hello
+    #      int#hello
+    #     ):
+    #     return (p,) + (a,) + xs + (y,z)
 
-    foo(1, 2, 3, 4, y =1, z = 3)
-    foo(1, a = 2, y =1, z = 3)
+    # foo(1, 2, 3, 4, y =1, z = 3)
+    # foo(1, a = 2, y =1, z = 3)
+    # '''
+
+    code = '''
+    def foo(x, y, *, z):
+        return
+    '''
+
+    code = '''
+    def foo(x, y, # uno
+    * # dos
+    , z):
+        return
+    '''
+
+    # code = '''
+    # def foo(x, y, # uno
+    # * # dos
+    # xs # tre
+    # , z):
+    #     return
+    # '''
+
+    code = '''
+    def foo(x, y, # uno
+    ** # mid
+    xs # dos
+    , z):
+        return
     '''
 
     gnode = pgs.parse(code)
