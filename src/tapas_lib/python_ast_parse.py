@@ -55,8 +55,6 @@ def to_bases(base_nodes : list[GenericNode], kws : keywords | None, default_star
         return NoBases(comment, default_start, default_end)
     else:
 
-        to_comment_triplets(base_nodes)
-
         start_node, end_node = (
             (base_nodes[0], kws)
             if bases and kws else
@@ -87,8 +85,7 @@ def to_bases(base_nodes : list[GenericNode], kws : keywords | None, default_star
 def to_sequence_base(base_nodes : list[GenericNode], keywords : keywords | None) -> bases_a | None:
     if  base_nodes or keywords:
 
-        trips = to_comment_triplets(base_nodes)
-
+        trips = [to_comment_triple(section) for section in to_sections(base_nodes)]
 
         if keywords:
 
@@ -246,7 +243,9 @@ def to_parameters_c(
             return SingleTupleBundleParam(pre_sep, list_bundle_param, post_sep, 
                 source_start, source_end
             )
-        elif not kw_sections and dictionary_splat_section:
+        else:
+            assert not kw_sections and dictionary_splat_section
+
             source_start = list_splat_section[0].source_start
             source_end =  dictionary_splat_section[-1].source_end
 
@@ -1723,56 +1722,102 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
     elif node.syntax_part == "typed_parameter":
 
         first_child = node.children[0]
-        id_node = (
-            first_child.children[1]
+        comment, id_node = (
+            (merge_comments(first_child.children[1:-1]), first_child.children[-1])
             if 
                 first_child.syntax_part == "list_splat_pattern" and
                 first_child.children[0].syntax_part == "*"
             else
 
-            first_child.children[1]
+            (merge_comments(first_child.children[1:-1]), first_child.children[-1])
             if 
                 first_child.syntax_part == "dictionary_splat_pattern" and
                 first_child.children[0].syntax_part == "**"
             else 
             
-            first_child
+            ('', first_child)
 
         ) 
 
-        id = from_generic_tree_to_identifier(id_node)
-        assert node.children[1].syntax_part == ":"
-        type_anno_node = node.children[2]
+        colon_index = next(
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part == ':'
+        )
+
+        pre_comment = merge_comments(node.children[1:colon_index])
+        post_comment = merge_comments(node.children[colon_index + 1:-1])
+        type_anno_node = node.children[-1]
         type_anno = from_generic_tree_to_expr(type_anno_node)
-        return Param(id, 
-            SomeParamAnno(type_anno, type_anno_node.source_start, type_anno_node.source_end), 
+
+        id = from_generic_tree_to_identifier(id_node)
+        return Param(comment, id, 
+            SomeParamAnno(pre_comment, post_comment, type_anno, type_anno_node.source_start, type_anno_node.source_end), 
             NoParamDefault(type_anno_node.source_end, type_anno_node.source_end), 
             node.source_start, node.source_end
         )
 
     elif node.syntax_part == "default_parameter":
+
+        eq_index = next(
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part == '='
+        )
+
+        pre_comment = merge_comments(node.children[1:eq_index])
+        post_comment = merge_comments(node.children[eq_index + 1:-1])
+
         id = from_generic_tree_to_identifier(node.children[0])
-        assert node.children[1].syntax_part == "="
-        default_expr_node = node.children[2]
+        default_expr_node = node.children[-1]
         default_expr = from_generic_tree_to_expr(default_expr_node)
-        return Param(id, 
+        return Param('', id, 
             NoParamAnno(node.source_start, node.source_start), 
-            SomeParamDefault(default_expr, default_expr_node.source_start, default_expr_node.source_start), 
+            SomeParamDefault(pre_comment, post_comment, default_expr, default_expr_node.source_start, default_expr_node.source_start), 
             node.source_start, node.source_end
         )
 
     elif node.syntax_part == "typed_default_parameter":
+
+        colon_index = next(
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part == ':'
+        )
+
+        eq_index = next(
+            i
+            for i, n in enumerate(node.children)
+            if n.syntax_part == '='
+        )
+
+        anno_index = next(
+            i + colon_index + 1
+            for i, n in enumerate(node.children[colon_index + 1:eq_index])
+            if n.syntax_part != 'comment'
+        )
+
+        anno_pre_comment = merge_comments(node.children[1:colon_index])
+        anno_post_comment = merge_comments(node.children[colon_index + 1:anno_index])
+
+        default_pre_comment = merge_comments(node.children[anno_index + 1:eq_index])
+        default_post_comment = merge_comments(node.children[eq_index + 1:-1])
+
         id = from_generic_tree_to_identifier(node.children[0])
-        assert node.children[1].syntax_part == ":"
-        type_anno_node = node.children[2]
-        type_anno = from_generic_tree_to_expr(node.children[2])
-        assert node.children[3].syntax_part == "="
+        type_anno_node = node.children[anno_index]
+        type_anno = from_generic_tree_to_expr(type_anno_node)
         default_expr_node = node.children[4]
         default_expr = from_generic_tree_to_expr(default_expr_node)
         return Param(
-            id, 
-            SomeParamAnno(type_anno, type_anno_node.source_start, type_anno_node.source_end), 
-            SomeParamDefault(default_expr, default_expr_node.source_start, default_expr_node.source_start), 
+            '', id, 
+            SomeParamAnno(
+                anno_pre_comment, anno_post_comment, 
+                type_anno, type_anno_node.source_start, type_anno_node.source_end
+            ), 
+            SomeParamDefault(
+                default_pre_comment, default_post_comment, 
+                default_expr, default_expr_node.source_start, default_expr_node.source_start
+            ), 
             node.source_start, node.source_end
         )
 
@@ -1811,28 +1856,13 @@ def from_generic_tree_to_Param(node : GenericNode) -> Param | None:
 def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
 
     if node.syntax_part == "lambda_parameters":
-        lambda_params = [
-            from_generic_tree_to_Param(param_node)
-            for param_node in node.children
-            if param_node.syntax_part != ","
-        ]
-
-        return to_parameters([], lambda_params, None, [], None, node.source_start, node.source_end)
+        return to_parameters([], to_sections(node.children), None, [], None, node.source_start, node.source_end)
 
     elif node.syntax_part == "parameters":
 
-        children = [
-            child
-            for child in (
-                node.children
-                if node.syntax_part == "lambda_parameters"
-                else node.children[1:-1]
-            )
-        ]
-
+        children = node.children[1:-1]
 
         sections = to_sections(children)
-
 
         positional_separator_section_index = next(
             (
@@ -1919,45 +1949,11 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             )
         )
 
-        return to_parameters(pos_sections, pos_kw_sections, list_splat_section, kw_sections, dictionary_splat_section, 
+        return to_parameters(
+            pos_sections, pos_kw_sections, list_splat_section, 
+            kw_sections, dictionary_splat_section, 
             node.source_start, node.source_end
         )
-
-        # pos_params = [
-        #     from_generic_tree_to_Param(n)
-        #     for n in pos_param_nodes
-        # ]
-
-        # pos_kw_params = [
-        #     from_generic_tree_to_Param(n)
-        #     for n in pos_kw_param_nodes
-        # ]
-
-
-        # list_splat_param = (
-        #     None
-        #     if (
-        #         not list_splat_node or 
-        #         (
-        #             list_splat_node.syntax_part == "list_splat_pattern" and 
-        #             len(list_splat_node.children) == 0
-        #         ) or 
-        #         list_splat_node.syntax_part == "keyword_separator"
-        #     ) else 
-
-        #     from_generic_tree_to_Param(list_splat_node)
-        # )
-
-        # kw_params = [
-        #     from_generic_tree_to_Param(n)
-        #     for n in kw_nodes
-        # ]
-
-        # dictionary_splat_param = from_generic_tree_to_Param(dictionary_splat_node) if dictionary_splat_node else None
-
-        # return to_parameters(pos_params, pos_kw_params, list_splat_param, kw_params, dictionary_splat_param, 
-        #     node.source_start, node.source_end
-        # )
 
 
     else:

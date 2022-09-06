@@ -1879,8 +1879,32 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_param_annotation_SomeParamAnno_content(
+        child_inher_aux = self.traverse_param_annotation_SomeParamAnno_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_param_annotation_SomeParamAnno_post_comment(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        post_comment_tree = synth.tree
+        assert isinstance(post_comment_tree, str)
+        post_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_param_annotation_SomeParamAnno_content(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
+            post_comment_tree, 
+            post_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -1889,7 +1913,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux = synth.aux
         
 
-        return self.synthesize_for_param_annotation_SomeParamAnno(inher_aux, content_tree, content_aux)
+        return self.synthesize_for_param_annotation_SomeParamAnno(inher_aux, pre_comment_tree, pre_comment_aux, post_comment_tree, post_comment_aux, content_tree, content_aux)
     
     # inspect: param_annotation <-- NoParamAnno"
     def inspect_param_annotation_NoParamAnno(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -1904,8 +1928,32 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_param_default_SomeParamDefault_content(
+        child_inher_aux = self.traverse_param_default_SomeParamDefault_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_param_default_SomeParamDefault_post_comment(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        post_comment_tree = synth.tree
+        assert isinstance(post_comment_tree, str)
+        post_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_param_default_SomeParamDefault_content(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
+            post_comment_tree, 
+            post_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -1914,7 +1962,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux = synth.aux
         
 
-        return self.synthesize_for_param_default_SomeParamDefault(inher_aux, content_tree, content_aux)
+        return self.synthesize_for_param_default_SomeParamDefault(inher_aux, pre_comment_tree, pre_comment_aux, post_comment_tree, post_comment_aux, content_tree, content_aux)
     
     # inspect: param_default <-- NoParamDefault"
     def inspect_param_default_NoParamDefault(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -11710,16 +11758,52 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (content_aux,), 'str') 
     
     # traverse param_annotation <-- SomeParamAnno"
-    def traverse_param_annotation_SomeParamAnno_content(self, 
+    def traverse_param_annotation_SomeParamAnno_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse param_annotation <-- SomeParamAnno"
+    def traverse_param_annotation_SomeParamAnno_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'str') 
+    
+    # traverse param_annotation <-- SomeParamAnno"
+    def traverse_param_annotation_SomeParamAnno_content(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, post_comment_aux,), 'expr') 
+    
+    # traverse param_default <-- SomeParamDefault"
+    def traverse_param_default_SomeParamDefault_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse param_default <-- SomeParamDefault"
+    def traverse_param_default_SomeParamDefault_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'str') 
     
     # traverse param_default <-- SomeParamDefault"
     def traverse_param_default_SomeParamDefault_content(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, post_comment_aux,), 'expr') 
     
     # traverse parameters_d <-- ConsKwParam"
     def traverse_parameters_d_ConsKwParam_pre_comment(self, 
@@ -15008,12 +15092,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: param_annotation <-- SomeParamAnno
     def synthesize_for_param_annotation_SomeParamAnno(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SomeParamAnno(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SomeParamAnno(pre_comment_tree, post_comment_tree, content_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, post_comment_aux, content_aux,)) 
         )
     
     # synthesize: param_annotation <-- NoParamAnno
@@ -15028,12 +15116,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: param_default <-- SomeParamDefault
     def synthesize_for_param_default_SomeParamDefault(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SomeParamDefault(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SomeParamDefault(pre_comment_tree, post_comment_tree, content_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, post_comment_aux, content_aux,)) 
         )
     
     # synthesize: param_default <-- NoParamDefault

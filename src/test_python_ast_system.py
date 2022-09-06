@@ -437,6 +437,60 @@ def test_comment():
         return
     '''
 
+    code = '''
+    def foo(
+        #hello
+        x #hello
+        : #hello
+        int #hello
+    ):
+        return
+    '''
+
+    code = '''
+    def foo(
+        #hello
+        x #hello
+        = #hello
+        1 #hello
+    ):
+        return
+    '''
+
+    code = '''
+    def foo(
+        #hello
+        x #hello
+        : #hello
+        int #hello
+        = #hello
+        1 #hello
+    ):
+        return
+    '''
+
+    code = '''
+    def foo(
+        #hello
+        ** #hello
+        xs #hello
+        : #hello
+        int #hello
+    ):
+        return
+    '''
+
+    code = '''
+    def foo(
+        #hello
+        * #hello
+        xs #hello
+        : #hello
+        int #hello
+    ):
+        return
+    '''
+
     gnode = pgs.parse(code)
     print("-- generic node --")  
     print(pgs.dump(gnode))

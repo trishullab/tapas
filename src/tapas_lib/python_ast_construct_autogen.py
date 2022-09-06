@@ -264,6 +264,8 @@ class param_annotation(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeParamAnno(param_annotation):
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -272,22 +274,30 @@ class SomeParamAnno(param_annotation):
         return handlers.case_SomeParamAnno(self)
 
 def make_SomeParamAnno(
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> param_annotation:
     return SomeParamAnno(
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
     )
 
 def update_SomeParamAnno(source_SomeParamAnno : SomeParamAnno,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SomeParamAnno:
     return SomeParamAnno(
+        source_SomeParamAnno.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_SomeParamAnno.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SomeParamAnno.content if isinstance(content, SourceFlag) else content,
         source_SomeParamAnno.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SomeParamAnno.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -358,6 +368,8 @@ class param_default(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeParamDefault(param_default):
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -366,22 +378,30 @@ class SomeParamDefault(param_default):
         return handlers.case_SomeParamDefault(self)
 
 def make_SomeParamDefault(
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> param_default:
     return SomeParamDefault(
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
     )
 
 def update_SomeParamDefault(source_SomeParamDefault : SomeParamDefault,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SomeParamDefault:
     return SomeParamDefault(
+        source_SomeParamDefault.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_SomeParamDefault.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SomeParamDefault.content if isinstance(content, SourceFlag) else content,
         source_SomeParamDefault.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SomeParamDefault.source_end if isinstance(source_end, SourceFlag) else source_end

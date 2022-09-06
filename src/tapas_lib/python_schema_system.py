@@ -50,7 +50,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SomeParamAnno",
             [
+                Vocab("pre_comment", "comment"),
                 Terminal(" : "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine()),
             ]
         ),
@@ -65,7 +67,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SomeParamDefault",
             [
+                Vocab("pre_comment", "comment"),
                 Terminal(" = "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),

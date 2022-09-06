@@ -168,6 +168,22 @@ def from_param_annotation(
                 stack.append(from_expr(o.content))
 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
+                stack.append(
                     tuple([make_Grammar(
                         options = 'param_annotation',
                         selection = 'SomeParamAnno',
@@ -222,6 +238,22 @@ def from_param_default(
                 
                 stack.append(from_expr(o.content))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'param_default',
