@@ -949,7 +949,9 @@ class parameters_a(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsPosParam(parameters_a):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_a | None
     source_start : int
     source_end : int
@@ -958,26 +960,34 @@ class ConsPosParam(parameters_a):
         return handlers.case_ConsPosParam(self)
 
 def make_ConsPosParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_a | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_a:
     return ConsPosParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_a | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsPosParam:
     return ConsPosParam(
+        source_ConsPosParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsPosParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsPosParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsPosParam.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsPosParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsPosParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -987,7 +997,11 @@ def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
 
 @dataclass(frozen=True, eq=True)
 class SinglePosParam(parameters_a):
+    pre_comment : str
     content : Param | None
+    post_comment : str
+    pre_sep_comment : str
+    post_sep_comment : str
     source_start : int
     source_end : int
 
@@ -995,23 +1009,39 @@ class SinglePosParam(parameters_a):
         return handlers.case_SinglePosParam(self)
 
 def make_SinglePosParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
+    pre_sep_comment : str, 
+    post_sep_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_a:
     return SinglePosParam(
+        pre_comment,
         content,
+        post_comment,
+        pre_sep_comment,
+        post_sep_comment,
         source_start,
         source_end
     )
 
 def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
+    pre_sep_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_sep_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SinglePosParam:
     return SinglePosParam(
+        source_SinglePosParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SinglePosParam.content if isinstance(content, SourceFlag) else content,
+        source_SinglePosParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
+        source_SinglePosParam.pre_sep_comment if isinstance(pre_sep_comment, SourceFlag) else pre_sep_comment,
+        source_SinglePosParam.post_sep_comment if isinstance(post_sep_comment, SourceFlag) else post_sep_comment,
         source_SinglePosParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SinglePosParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -1020,7 +1050,11 @@ def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
 
 @dataclass(frozen=True, eq=True)
 class TransPosParam(parameters_a):
+    pre_comment : str
     head : Param | None
+    post_comment : str
+    pre_sep_comment : str
+    post_sep_comment : str
     tail : parameters_b | None
     source_start : int
     source_end : int
@@ -1029,26 +1063,42 @@ class TransPosParam(parameters_a):
         return handlers.case_TransPosParam(self)
 
 def make_TransPosParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
+    pre_sep_comment : str, 
+    post_sep_comment : str, 
     tail : parameters_b | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_a:
     return TransPosParam(
+        pre_comment,
         head,
+        post_comment,
+        pre_sep_comment,
+        post_sep_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_TransPosParam(source_TransPosParam : TransPosParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
+    pre_sep_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_sep_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_b | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TransPosParam:
     return TransPosParam(
+        source_TransPosParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_TransPosParam.head if isinstance(head, SourceFlag) else head,
+        source_TransPosParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
+        source_TransPosParam.pre_sep_comment if isinstance(pre_sep_comment, SourceFlag) else pre_sep_comment,
+        source_TransPosParam.post_sep_comment if isinstance(post_sep_comment, SourceFlag) else post_sep_comment,
         source_TransPosParam.tail if isinstance(tail, SourceFlag) else tail,
         source_TransPosParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_TransPosParam.source_end if isinstance(source_end, SourceFlag) else source_end

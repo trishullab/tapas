@@ -761,23 +761,5 @@ def test_str_type_annotation():
 
 
 if __name__ == "__main__":
-#     check_code("main", '''
-
-# def foo(x):
-#     return x
-
-# @foo
-# @fo
-# class A: 
-#     pass
-
-# def foo(x : int): 
-#     y = x + 1
-#     z = y + 1 
-#     return z
-
-# foo(4)
-# pass
-
-#     ''', checks = pals.all_checks, package=m())
+    check("params_7_ok")
     pass

@@ -338,32 +338,87 @@ def test_comment():
 
     # '''
 
+    # code = '''
+    # class A: pass
+    # class B(
+    #     #hello
+    # ): pass
+    # class C( #hello
+    #     A #hello
+    #     , #hello
+    #     B #hello
+    # ) : pass
+    # '''
+
 #################
 
+    def foo(
+        p #hello 
+        : #hello
+        float#hello
+        , #hello
+        /#hello
+        , #hello
+        a #hello
+        = #hello
+        2#hello
+        , #hello
+        *#hello
+        xs #hello
+        : #hello
+        int#hello
+        , #hello
+        y#hello
+         : #hello
+         int#hello
+         , #hello
+         z #hello
+         : #hello
+         int#hello
+        ):
+        return (p,) + (a,) + xs + (y,z)
 
     code = '''
-    class A: pass
-    class B(
-        #hello
-    ): pass
-    class C( #hello
-        A #hello
+    def foo( #hello
+        p #hello 
+        : #hello
+        float#hello
         , #hello
-        B #hello
-    ) : pass
-    '''
+        /#hello
+        , #hello
+        a #hello
+        = #hello
+        2#hello
+        , #hello
+        *#hello
+        xs #hello
+        : #hello
+        int#hello
+        , #hello
+        y#hello
+         : #hello
+         int#hello
+         , #hello
+         z #hello
+         : #hello
+         int#hello
+        ):
+        return (p,) + (a,) + xs + (y,z)
 
+    foo(1, 2, 3, 4, y =1, z = 3)
+    foo(1, a = 2, y =1, z = 3)
+    '''
 
     gnode = pgs.parse(code)
     print("-- generic node --")  
     print(pgs.dump(gnode))
 
     ######
-    mod = pas.parse_from_generic_tree(gnode)
-    seq = pas.serialize(mod)
+    # mod = pas.parse_from_generic_tree(gnode)
+    # seq = pas.serialize(mod)
 
-    print("-- AST --")  
-    print(pats.dump(seq))
+    # print("-- AST --")  
+    # print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()

@@ -123,11 +123,11 @@ def to_sequence_base(base_nodes : list[GenericNode], keywords : keywords | None)
 
 
 def to_parameters(
-    pos_params : list[Param | None], 
-    params : list[Param | None], 
-    list_splat_param : Param | None, 
-    kw_params : list[Param | None], 
-    dictionary_splat_param : Param | None,
+    pos_params : list[tuple[str, GenericNode, str]], 
+    params : list[tuple[str, GenericNode, str]], 
+    list_splat_param : tuple[str, GenericNode, str] | None, 
+    kw_params : list[tuple[str, GenericNode, str]], 
+    dictionary_splat_param : tuple[str, GenericNode, str] | None,
     default_start : int,
     default_end : int,
 ) -> parameters:
@@ -253,32 +253,38 @@ def to_parameters_b(
 
 
 def to_parameters_a(
-    pos_params : list[Param | None], 
-    params : list[Param | None], 
-    list_splat_param : Param | None, 
-    kw_params : list[Param | None], 
-    dictionary_splat_param : Param | None
+    pos_params : list[tuple[str, GenericNode, str]], 
+    params : list[tuple[str, GenericNode, str]], 
+    list_splat_param : tuple[str, GenericNode, str] | None, 
+    kw_params : list[tuple[str, GenericNode, str]], 
+    dictionary_splat_param : tuple[str, GenericNode, str] | None
 ) -> parameters_a:
-    assert pos_params
+    assert len(pos_params) >= 2
+
+    (pre_sep, _, post_sep) = pos_params[-1]
+    (pre, pos_node, post) = pos_params[-2]
+    pos_param = from_generic_tree_to_Param(pos_node)
+    
 
     result = (
         (
             params_b := to_parameters_b(params, list_splat_param, kw_params, dictionary_splat_param),
-            TransPosParam(pos_params[-1], params_b,
-                pos_params[-1].source_start if pos_params[-1] else 0,
+            TransPosParam(pre, pos_param, post, pre_sep, post_sep, params_b,
+                pos_param.source_start if pos_param else 0,
                 unguard_parameters_b(params_b).source_end
             )
         )[-1]
         if (params or list_splat_param or kw_params or dictionary_splat_param) else
 
-        SinglePosParam(pos_params[-1],
-            pos_params[-1].source_start if pos_params[-1] else 0,
-            pos_params[-1].source_end if pos_params[-1] else 0,
+        SinglePosParam(pre, pos_param, post, pre_sep, post_sep,
+            pos_param.source_start if pos_param else 0,
+            pos_param.source_end if pos_param else 0,
         )
     )
 
-    for pp in reversed(pos_params[:-1]):
-        result = ConsPosParam(pp, result,
+    for (pre, n, post) in reversed(pos_params[:-2]):
+        pp = from_generic_tree_to_Param(n)
+        result = ConsPosParam(pre, pp, post, result,
             pp.source_start if pp else 0,
             result.source_end
         )
@@ -1760,27 +1766,29 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             for child in (
                 node.children
                 if node.syntax_part == "lambda_parameters"
-
                 else node.children[1:-1]
             )
-            if child.syntax_part != ","
         ]
 
 
+        trips = to_comment_triplets(children)
 
-        positional_separator_index = next(
+
+        positional_separator_trip_index = next(
             (
                 i 
-                for i, n in enumerate(children)
+                for i, (_, n, _) in enumerate(trips)
                 if n.syntax_part == "positional_separator"
             ),
             -1 
         )
 
-        list_splat_index = next(
+
+
+        list_splat_trip_index = next(
             (
                 i 
-                for i, n in enumerate(children)
+                for i, (_, n, _) in enumerate(trips)
                 if (
                     n.syntax_part == "list_splat_pattern" or 
                     (
@@ -1794,10 +1802,10 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             -1 
         )
 
-        dictionary_splat_index = next(
+        dictionary_splat_trip_index = next(
             (
                 i 
-                for i, n in enumerate(children)
+                for i, (_, n, _) in enumerate(trips)
                 if (
                     n.syntax_part == "dictionary_splat_pattern" or 
                     (
@@ -1809,81 +1817,85 @@ def from_generic_tree_to_parameters(node : GenericNode) -> parameters | None:
             -1 
         )
 
-        pos_param_nodes = (
-            children[0:positional_separator_index]
-            if positional_separator_index > -1 else
+        pos_param_trips = (
+            trips[0:positional_separator_trip_index + 1] # include param sep triple
+            if positional_separator_trip_index > -1 else
             []
         )
 
-        (pos_kw_param_nodes, list_splat_node, kw_nodes, dictionary_splat_node) = (
+        (pos_kw_param_trips, list_splat_trip, kw_trips, dictionary_splat_trip) = (
 
             (
-                children[positional_separator_index + 1:list_splat_index], 
-                children[list_splat_index], 
-                children[list_splat_index + 1: dictionary_splat_index], 
-                children[dictionary_splat_index]
+                trips[positional_separator_trip_index + 1:list_splat_trip_index], 
+                trips[list_splat_trip_index], 
+                trips[list_splat_trip_index + 1: dictionary_splat_trip_index], 
+                trips[dictionary_splat_trip_index]
             )
-            if (list_splat_index >= 0 and dictionary_splat_index >= 0) else 
+            if (list_splat_trip_index >= 0 and dictionary_splat_trip_index >= 0) else 
             
             (
-                children[positional_separator_index + 1:list_splat_index], 
-                children[list_splat_index], 
-                children[list_splat_index + 1:], 
+                trips[positional_separator_trip_index + 1:list_splat_trip_index], 
+                trips[list_splat_trip_index], 
+                trips[list_splat_trip_index + 1:], 
                 None
             )
-            if list_splat_index >= 0 and dictionary_splat_index < 0 else 
+            if list_splat_trip_index >= 0 and dictionary_splat_trip_index < 0 else 
             
             (
-                children[positional_separator_index + 1:-1], 
+                trips[positional_separator_trip_index + 1:-1], 
                 None,
                 [],
-                children[dictionary_splat_index]
+                trips[dictionary_splat_trip_index]
             )
-            if list_splat_index < 0 and dictionary_splat_index >= 0 else 
+            if list_splat_trip_index < 0 and dictionary_splat_trip_index >= 0 else 
 
             (
-                children[positional_separator_index + 1:], 
+                trips[positional_separator_trip_index + 1:], 
                 None,
                 [],
                 None
             )
         )
 
-        pos_params = [
-            from_generic_tree_to_Param(n)
-            for n in pos_param_nodes
-        ]
-
-        pos_kw_params = [
-            from_generic_tree_to_Param(n)
-            for n in pos_kw_param_nodes
-        ]
-
-
-        list_splat_param = (
-            None
-            if (
-                not list_splat_node or 
-                (
-                    list_splat_node.syntax_part == "list_splat_pattern" and 
-                    len(list_splat_node.children) == 0
-                ) or 
-                list_splat_node.syntax_part == "keyword_separator"
-            ) else 
-
-            from_generic_tree_to_Param(list_splat_node)
-        )
-
-        kw_params = [
-            from_generic_tree_to_Param(n)
-            for n in kw_nodes
-        ]
-
-        dictionary_splat_param = from_generic_tree_to_Param(dictionary_splat_node) if dictionary_splat_node else None
-
-        return to_parameters(pos_params, pos_kw_params, list_splat_param, kw_params, dictionary_splat_param, 
+        return to_parameters(pos_param_trips, pos_kw_param_trips, list_splat_trip, kw_trips, dictionary_splat_trip, 
             node.source_start, node.source_end
         )
+
+        # pos_params = [
+        #     from_generic_tree_to_Param(n)
+        #     for n in pos_param_nodes
+        # ]
+
+        # pos_kw_params = [
+        #     from_generic_tree_to_Param(n)
+        #     for n in pos_kw_param_nodes
+        # ]
+
+
+        # list_splat_param = (
+        #     None
+        #     if (
+        #         not list_splat_node or 
+        #         (
+        #             list_splat_node.syntax_part == "list_splat_pattern" and 
+        #             len(list_splat_node.children) == 0
+        #         ) or 
+        #         list_splat_node.syntax_part == "keyword_separator"
+        #     ) else 
+
+        #     from_generic_tree_to_Param(list_splat_node)
+        # )
+
+        # kw_params = [
+        #     from_generic_tree_to_Param(n)
+        #     for n in kw_nodes
+        # ]
+
+        # dictionary_splat_param = from_generic_tree_to_Param(dictionary_splat_node) if dictionary_splat_node else None
+
+        # return to_parameters(pos_params, pos_kw_params, list_splat_param, kw_params, dictionary_splat_param, 
+        #     node.source_start, node.source_end
+        # )
 
 
     else:

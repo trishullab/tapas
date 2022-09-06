@@ -2351,30 +2351,58 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            head_tree = children[1].tree
             assert isinstance(head_tree, Param)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
                 
-            tail_tree = children[1].tree
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            tail_tree = children[3].tree
             assert isinstance(tail_tree, parameters_a)
-            tail_aux = children[1].aux
+            tail_aux = children[3].aux
                 
-            return self.synthesize_for_parameters_a_ConsPosParam(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+            return self.synthesize_for_parameters_a_ConsPosParam(inher_aux, pre_comment_tree, pre_comment_aux, head_tree, head_aux, post_comment_tree, post_comment_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_parameters_a_ConsPosParam_head(
+            child_inher_aux = self.traverse_parameters_a_ConsPosParam_pre_comment(
                 inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "ConsPosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_ConsPosParam_head(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
@@ -2382,21 +2410,56 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((make_Grammar("parameters_a", "ConsPosParam"), inher_aux, children + (child_synth,)))
             return None
             
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
+            assert isinstance(head_tree, Param)
+            head_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_ConsPosParam_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                head_tree, 
+                head_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "ConsPosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 1 : # index refers to an inductive child
+        elif index == 3 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("parameters_a", "ConsPosParam"), inher_aux, children))
 
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
             assert isinstance(head_tree, Param)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
 
             # add on child node 
             child_inher_aux = self.traverse_parameters_a_ConsPosParam_tail(
                 inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 head_tree, 
-                head_aux
+                head_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -2411,29 +2474,155 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         
 
-        total_num_children = 1
+        total_num_children = 5
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, Param)
-            content_aux = children[0].aux
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
                 
-            return self.synthesize_for_parameters_a_SinglePosParam(inher_aux, content_tree, content_aux)
+            content_tree = children[1].tree
+            assert isinstance(content_tree, Param)
+            content_aux = children[1].aux
+                
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            pre_sep_comment_tree = children[3].tree
+            assert isinstance(pre_sep_comment_tree, str)
+            pre_sep_comment_aux = children[3].aux
+                
+            post_sep_comment_tree = children[4].tree
+            assert isinstance(post_sep_comment_tree, str)
+            post_sep_comment_aux = children[4].aux
+                
+            return self.synthesize_for_parameters_a_SinglePosParam(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux, pre_sep_comment_tree, pre_sep_comment_aux, post_sep_comment_tree, post_sep_comment_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_parameters_a_SinglePosParam_content(
+            child_inher_aux = self.traverse_parameters_a_SinglePosParam_pre_comment(
                 inher_aux
             )
             child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_SinglePosParam_content(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
             child_synth = self.crawl_Param(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, Param)
+            content_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_SinglePosParam_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, Param)
+            content_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_SinglePosParam_pre_sep_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux,
+                post_comment_tree, 
+                post_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 4: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, Param)
+            content_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+            pre_sep_comment_tree = children[3].tree
+            assert isinstance(pre_sep_comment_tree, str)
+            pre_sep_comment_aux = children[3].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_SinglePosParam_post_sep_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux,
+                post_comment_tree, 
+                post_comment_aux,
+                pre_sep_comment_tree, 
+                pre_sep_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("parameters_a", "SinglePosParam"), inher_aux, children + (child_synth,)))
             return None
@@ -2450,33 +2639,49 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         
 
-        total_num_children = 2
+        total_num_children = 6
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            head_tree = children[1].tree
             assert isinstance(head_tree, Param)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
                 
-            tail_tree = children[1].tree
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            pre_sep_comment_tree = children[3].tree
+            assert isinstance(pre_sep_comment_tree, str)
+            pre_sep_comment_aux = children[3].aux
+                
+            post_sep_comment_tree = children[4].tree
+            assert isinstance(post_sep_comment_tree, str)
+            post_sep_comment_aux = children[4].aux
+                
+            tail_tree = children[5].tree
             assert isinstance(tail_tree, parameters_b)
-            tail_aux = children[1].aux
+            tail_aux = children[5].aux
                 
-            return self.synthesize_for_parameters_a_TransPosParam(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+            return self.synthesize_for_parameters_a_TransPosParam(inher_aux, pre_comment_tree, pre_comment_aux, head_tree, head_aux, post_comment_tree, post_comment_aux, pre_sep_comment_tree, pre_sep_comment_aux, post_sep_comment_tree, post_sep_comment_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_parameters_a_TransPosParam_head(
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_pre_comment(
                 inher_aux
             )
             child_token = self.next(child_inher_aux)
-            child_synth = self.crawl_Param(child_token, child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
             return None
@@ -2485,15 +2690,145 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         elif index == 1: # index does *not* refer to an inductive child
 
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_head(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_Param(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
             assert isinstance(head_tree, Param)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                head_tree, 
+                head_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 3: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
+            assert isinstance(head_tree, Param)
+            head_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_pre_sep_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                head_tree, 
+                head_aux,
+                post_comment_tree, 
+                post_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 4: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
+            assert isinstance(head_tree, Param)
+            head_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+            pre_sep_comment_tree = children[3].tree
+            assert isinstance(pre_sep_comment_tree, str)
+            pre_sep_comment_aux = children[3].aux
+
+
+            child_inher_aux = self.traverse_parameters_a_TransPosParam_post_sep_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                head_tree, 
+                head_aux,
+                post_comment_tree, 
+                post_comment_aux,
+                pre_sep_comment_tree, 
+                pre_sep_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("parameters_a", "TransPosParam"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 5: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
+            assert isinstance(head_tree, Param)
+            head_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+            pre_sep_comment_tree = children[3].tree
+            assert isinstance(pre_sep_comment_tree, str)
+            pre_sep_comment_aux = children[3].aux
+            post_sep_comment_tree = children[4].tree
+            assert isinstance(post_sep_comment_tree, str)
+            post_sep_comment_aux = children[4].aux
 
 
             child_inher_aux = self.traverse_parameters_a_TransPosParam_tail(
                 inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 head_tree, 
-                head_aux
+                head_aux,
+                post_comment_tree, 
+                post_comment_aux,
+                pre_sep_comment_tree, 
+                pre_sep_comment_aux,
+                post_sep_comment_tree, 
+                post_sep_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_parameters_b(child_token, child_inher_aux)
@@ -10959,38 +11294,156 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'parameters_c') 
     
     # traverse parameters_a <-- ConsPosParam"
-    def traverse_parameters_a_ConsPosParam_head(self, 
+    def traverse_parameters_a_ConsPosParam_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'Param') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse parameters_a <-- ConsPosParam"
+    def traverse_parameters_a_ConsPosParam_head(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'Param') 
+    
+    # traverse parameters_a <-- ConsPosParam"
+    def traverse_parameters_a_ConsPosParam_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : Param, 
+        head_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux,), 'str') 
     
     # traverse parameters_a <-- ConsPosParam"
     def traverse_parameters_a_ConsPosParam_tail(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : Param, 
-        head_aux : SynthAux
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_a') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux,), 'parameters_a') 
+    
+    # traverse parameters_a <-- SinglePosParam"
+    def traverse_parameters_a_SinglePosParam_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse parameters_a <-- SinglePosParam"
     def traverse_parameters_a_SinglePosParam_content(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'Param') 
+    
+    # traverse parameters_a <-- SinglePosParam"
+    def traverse_parameters_a_SinglePosParam_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : Param, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
+    
+    # traverse parameters_a <-- SinglePosParam"
+    def traverse_parameters_a_SinglePosParam_pre_sep_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : Param, 
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux, post_comment_aux,), 'str') 
+    
+    # traverse parameters_a <-- SinglePosParam"
+    def traverse_parameters_a_SinglePosParam_post_sep_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : Param, 
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux, post_comment_aux, pre_sep_comment_aux,), 'str') 
+    
+    # traverse parameters_a <-- TransPosParam"
+    def traverse_parameters_a_TransPosParam_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'Param') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse parameters_a <-- TransPosParam"
     def traverse_parameters_a_TransPosParam_head(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'Param') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'Param') 
+    
+    # traverse parameters_a <-- TransPosParam"
+    def traverse_parameters_a_TransPosParam_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : Param, 
+        head_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux,), 'str') 
+    
+    # traverse parameters_a <-- TransPosParam"
+    def traverse_parameters_a_TransPosParam_pre_sep_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : Param, 
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux,), 'str') 
+    
+    # traverse parameters_a <-- TransPosParam"
+    def traverse_parameters_a_TransPosParam_post_sep_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : Param, 
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux, pre_sep_comment_aux,), 'str') 
     
     # traverse parameters_a <-- TransPosParam"
     def traverse_parameters_a_TransPosParam_tail(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : Param, 
-        head_aux : SynthAux
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_b') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux, pre_sep_comment_aux, post_sep_comment_aux,), 'parameters_b') 
     
     # traverse parameters <-- ParamsA"
     def traverse_parameters_ParamsA_content(self, 
@@ -13938,38 +14391,58 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: parameters_a <-- ConsPosParam
     def synthesize_for_parameters_a_ConsPosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : parameters_a, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ConsPosParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_ConsPosParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, head_aux, post_comment_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_a <-- SinglePosParam
     def synthesize_for_parameters_a_SinglePosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SinglePosParam(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SinglePosParam(pre_comment_tree, content_tree, post_comment_tree, pre_sep_comment_tree, post_sep_comment_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux, pre_sep_comment_aux, post_sep_comment_aux,)) 
         )
     
     # synthesize: parameters_a <-- TransPosParam
     def synthesize_for_parameters_a_TransPosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux,
         tail_tree : parameters_b, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_TransPosParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_TransPosParam(pre_comment_tree, head_tree, post_comment_tree, pre_sep_comment_tree, post_sep_comment_tree, tail_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, head_aux, post_comment_aux, pre_sep_comment_aux, post_sep_comment_aux, tail_aux,)) 
         )
     
     # synthesize: parameters <-- ParamsA

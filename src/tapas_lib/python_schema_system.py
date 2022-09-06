@@ -180,7 +180,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsPosParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_a", InLine())
             ]
@@ -189,16 +191,28 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SinglePosParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "Param", InLine()),
-                Terminal(", /")
+                Vocab("post_comment", "comment"),
+                Terminal(", "),
+                Vocab("pre_sep_comment", "comment"),
+                Terminal("/"),
+                Vocab("post_sep_comment", "comment"),
+                Terminal(", "),
             ]
         ),
 
         Rule(
             "TransPosParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
-                Terminal(", /, "),
+                Vocab("post_comment", "comment"),
+                Terminal(", "),
+                Vocab("pre_sep_comment", "comment"),
+                Terminal("/"),
+                Vocab("post_sep_comment", "comment"),
+                Terminal(", "),
                 Nonterm("tail", "parameters_b", InLine()),
             ]
         )
