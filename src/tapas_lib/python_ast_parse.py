@@ -195,7 +195,7 @@ def to_parameters_c(
     pre_sep, list_splat_node, post_sep = (
         to_comment_triple(list_splat_section)
         if list_splat_section else
-        '', None, ''
+        ('', None, '')
     )
 
     if not list_splat_node or list_splat_node.syntax_part == "keyword_separator" :
@@ -222,31 +222,41 @@ def to_parameters_c(
 
     else:
 
+        assert list_splat_section
+
         assert list_splat_node.syntax_part == "list_splat_pattern" 
         list_bundle_param = from_generic_tree_to_Param(list_splat_node)
 
+
         if kw_sections:
-            source_start = list_splat_section.source_start
+            source_start = list_splat_node.source_start
             source_end = (
-                dictionary_splat_section.source_end 
+                dictionary_splat_section[-1].source_end 
                 if dictionary_splat_section else
-                kw_sections[-1].source_end 
+                kw_sections[-1][-1].source_end 
                 if kw_sections[-1] else 0
             )
-            return TransTupleBundleParam(list_splat_section, 
+            return TransTupleBundleParam(pre_sep, list_bundle_param, post_sep, 
                 to_parameters_d(kw_sections, dictionary_splat_section),
                 source_start, source_end
             )
         elif not kw_sections and not dictionary_splat_section:
-            source_start = list_splat_section.source_start
-            source_end = list_splat_section.source_end if list_splat_section else 0
-            return SingleTupleBundleParam(list_splat_section, 
+            source_start = list_splat_section[0].source_start
+            source_end = list_splat_section[-1].source_end if list_splat_section else 0
+            return SingleTupleBundleParam(pre_sep, list_bundle_param, post_sep, 
                 source_start, source_end
             )
         elif not kw_sections and dictionary_splat_section:
-            source_start = list_splat_section.source_start
-            source_end =  dictionary_splat_section.source_end
-            return DoubleBundleParam(list_splat_section, dictionary_splat_section,
+            source_start = list_splat_section[0].source_start
+            source_end =  dictionary_splat_section[-1].source_end
+
+            (dpre, dictionary_splat_node, dpost) = to_comment_triple(dictionary_splat_section)
+            dictionary_bundle_param = from_generic_tree_to_Param(dictionary_splat_node)
+
+
+            return DoubleBundleParam(
+                pre_sep, list_bundle_param, post_sep,
+                dpre, dictionary_bundle_param, dpost,
                 source_start, source_end
             )
 

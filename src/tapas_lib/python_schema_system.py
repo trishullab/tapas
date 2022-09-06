@@ -119,16 +119,21 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleTupleBundleParam",
             [
+                Vocab("pre_comment", "comment"),
                 Terminal("*"),
-                Nonterm("content", "Param", InLine())
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
         Rule(
             "TransTupleBundleParam",
             [
+
+                Vocab("pre_comment", "comment"),
                 Terminal("*"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_d", InLine())
             ]
@@ -145,10 +150,16 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "DoubleBundleParam",
             [
+
+                Vocab("comment_a", "comment"),
                 Terminal("*"),
                 Nonterm("tuple_param", "Param", InLine()),
+                Vocab("comment_b", "comment"),
+                Terminal(", "),
+                Vocab("comment_c", "comment"),
                 Terminal("**"),
-                Nonterm("dict_param", "Param", InLine())
+                Nonterm("dict_param", "Param", InLine()),
+                Vocab("comment_d", "comment"),
             ]
         ),
 

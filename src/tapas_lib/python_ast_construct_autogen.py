@@ -636,7 +636,9 @@ class parameters_c(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SingleTupleBundleParam(parameters_c):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -644,23 +646,31 @@ class SingleTupleBundleParam(parameters_c):
         return handlers.case_SingleTupleBundleParam(self)
 
 def make_SingleTupleBundleParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return SingleTupleBundleParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleTupleBundleParam(source_SingleTupleBundleParam : SingleTupleBundleParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleTupleBundleParam:
     return SingleTupleBundleParam(
+        source_SingleTupleBundleParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleTupleBundleParam.content if isinstance(content, SourceFlag) else content,
+        source_SingleTupleBundleParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleTupleBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleTupleBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -669,7 +679,9 @@ def update_SingleTupleBundleParam(source_SingleTupleBundleParam : SingleTupleBun
 
 @dataclass(frozen=True, eq=True)
 class TransTupleBundleParam(parameters_c):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_d | None
     source_start : int
     source_end : int
@@ -678,26 +690,34 @@ class TransTupleBundleParam(parameters_c):
         return handlers.case_TransTupleBundleParam(self)
 
 def make_TransTupleBundleParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_d | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return TransTupleBundleParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_TransTupleBundleParam(source_TransTupleBundleParam : TransTupleBundleParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_d | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TransTupleBundleParam:
     return TransTupleBundleParam(
+        source_TransTupleBundleParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_TransTupleBundleParam.head if isinstance(head, SourceFlag) else head,
+        source_TransTupleBundleParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_TransTupleBundleParam.tail if isinstance(tail, SourceFlag) else tail,
         source_TransTupleBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_TransTupleBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -740,8 +760,12 @@ def update_ParamsD(source_ParamsD : ParamsD,
 
 @dataclass(frozen=True, eq=True)
 class DoubleBundleParam(parameters_c):
+    comment_a : str
     tuple_param : Param | None
+    comment_b : str
+    comment_c : str
     dict_param : Param | None
+    comment_d : str
     source_start : int
     source_end : int
 
@@ -749,27 +773,43 @@ class DoubleBundleParam(parameters_c):
         return handlers.case_DoubleBundleParam(self)
 
 def make_DoubleBundleParam(
+    comment_a : str, 
     tuple_param : Param | None, 
+    comment_b : str, 
+    comment_c : str, 
     dict_param : Param | None, 
+    comment_d : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return DoubleBundleParam(
+        comment_a,
         tuple_param,
+        comment_b,
+        comment_c,
         dict_param,
+        comment_d,
         source_start,
         source_end
     )
 
 def update_DoubleBundleParam(source_DoubleBundleParam : DoubleBundleParam,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     tuple_param : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     dict_param : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> DoubleBundleParam:
     return DoubleBundleParam(
+        source_DoubleBundleParam.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_DoubleBundleParam.tuple_param if isinstance(tuple_param, SourceFlag) else tuple_param,
+        source_DoubleBundleParam.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_DoubleBundleParam.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_DoubleBundleParam.dict_param if isinstance(dict_param, SourceFlag) else dict_param,
+        source_DoubleBundleParam.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_DoubleBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_DoubleBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )

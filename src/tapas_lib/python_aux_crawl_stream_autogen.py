@@ -2357,8 +2357,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_parameters_c_SingleTupleBundleParam_content(
+        child_inher_aux = self.traverse_parameters_c_SingleTupleBundleParam_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_SingleTupleBundleParam_content(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_Param(child_token, child_inher_aux)
@@ -2366,16 +2377,40 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(content_tree, Param)
         content_aux = synth.aux
         
+        child_inher_aux = self.traverse_parameters_c_SingleTupleBundleParam_post_comment(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
+            content_tree, 
+            content_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        post_comment_tree = synth.tree
+        assert isinstance(post_comment_tree, str)
+        post_comment_aux = synth.aux
+        
 
-        return self.synthesize_for_parameters_c_SingleTupleBundleParam(inher_aux, content_tree, content_aux)
+        return self.synthesize_for_parameters_c_SingleTupleBundleParam(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux)
     
     # inspect: parameters_c <-- TransTupleBundleParam"
     def inspect_parameters_c_TransTupleBundleParam(self, inher_aux : InherAux) -> Result[SynthAux]:
 
 
         
-        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_head(
+        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_head(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_Param(child_token, child_inher_aux)
@@ -2383,10 +2418,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(head_tree, Param)
         head_aux = synth.aux
         
-        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_tail(
+        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_post_comment(
             inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
             head_tree, 
             head_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        post_comment_tree = synth.tree
+        assert isinstance(post_comment_tree, str)
+        post_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_TransTupleBundleParam_tail(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
+            head_tree, 
+            head_aux,
+            post_comment_tree, 
+            post_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_parameters_d(child_token, child_inher_aux)
@@ -2395,7 +2447,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         tail_aux = synth.aux
         
 
-        return self.synthesize_for_parameters_c_TransTupleBundleParam(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+        return self.synthesize_for_parameters_c_TransTupleBundleParam(inher_aux, pre_comment_tree, pre_comment_aux, head_tree, head_aux, post_comment_tree, post_comment_aux, tail_tree, tail_aux)
     
     # inspect: parameters_c <-- ParamsD"
     def inspect_parameters_c_ParamsD(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -2419,8 +2471,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_tuple_param(
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_comment_a(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_a_tree = synth.tree
+        assert isinstance(comment_a_tree, str)
+        comment_a_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_tuple_param(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_Param(child_token, child_inher_aux)
@@ -2428,10 +2491,44 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(tuple_param_tree, Param)
         tuple_param_aux = synth.aux
         
-        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_dict_param(
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_comment_b(
             inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
             tuple_param_tree, 
             tuple_param_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_b_tree = synth.tree
+        assert isinstance(comment_b_tree, str)
+        comment_b_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_comment_c(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            tuple_param_tree, 
+            tuple_param_aux,
+            comment_b_tree, 
+            comment_b_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_c_tree = synth.tree
+        assert isinstance(comment_c_tree, str)
+        comment_c_aux = synth.aux
+        
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_dict_param(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            tuple_param_tree, 
+            tuple_param_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_Param(child_token, child_inher_aux)
@@ -2439,8 +2536,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(dict_param_tree, Param)
         dict_param_aux = synth.aux
         
+        child_inher_aux = self.traverse_parameters_c_DoubleBundleParam_comment_d(
+            inher_aux,
+            comment_a_tree, 
+            comment_a_aux,
+            tuple_param_tree, 
+            tuple_param_aux,
+            comment_b_tree, 
+            comment_b_aux,
+            comment_c_tree, 
+            comment_c_aux,
+            dict_param_tree, 
+            dict_param_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_d_tree = synth.tree
+        assert isinstance(comment_d_tree, str)
+        comment_d_aux = synth.aux
+        
 
-        return self.synthesize_for_parameters_c_DoubleBundleParam(inher_aux, tuple_param_tree, tuple_param_aux, dict_param_tree, dict_param_aux)
+        return self.synthesize_for_parameters_c_DoubleBundleParam(inher_aux, comment_a_tree, comment_a_aux, tuple_param_tree, tuple_param_aux, comment_b_tree, comment_b_aux, comment_c_tree, comment_c_aux, dict_param_tree, dict_param_aux, comment_d_tree, comment_d_aux)
     
     # inspect: parameters_c <-- DictionaryBundleParam"
     def inspect_parameters_c_DictionaryBundleParam(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -11732,24 +11848,64 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (comment_a_aux, head_aux, comment_b_aux, comment_c_aux, tail_aux,), 'str') 
     
     # traverse parameters_c <-- SingleTupleBundleParam"
-    def traverse_parameters_c_SingleTupleBundleParam_content(self, 
+    def traverse_parameters_c_SingleTupleBundleParam_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'Param') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse parameters_c <-- SingleTupleBundleParam"
+    def traverse_parameters_c_SingleTupleBundleParam_content(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'Param') 
+    
+    # traverse parameters_c <-- SingleTupleBundleParam"
+    def traverse_parameters_c_SingleTupleBundleParam_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : Param, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
+    
+    # traverse parameters_c <-- TransTupleBundleParam"
+    def traverse_parameters_c_TransTupleBundleParam_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse parameters_c <-- TransTupleBundleParam"
     def traverse_parameters_c_TransTupleBundleParam_head(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'Param') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'Param') 
+    
+    # traverse parameters_c <-- TransTupleBundleParam"
+    def traverse_parameters_c_TransTupleBundleParam_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : Param, 
+        head_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux,), 'str') 
     
     # traverse parameters_c <-- TransTupleBundleParam"
     def traverse_parameters_c_TransTupleBundleParam_tail(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : Param, 
-        head_aux : SynthAux
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'parameters_d') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux,), 'parameters_d') 
     
     # traverse parameters_c <-- ParamsD"
     def traverse_parameters_c_ParamsD_content(self, 
@@ -11758,18 +11914,70 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'parameters_d') 
     
     # traverse parameters_c <-- DoubleBundleParam"
-    def traverse_parameters_c_DoubleBundleParam_tuple_param(self, 
+    def traverse_parameters_c_DoubleBundleParam_comment_a(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'Param') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse parameters_c <-- DoubleBundleParam"
+    def traverse_parameters_c_DoubleBundleParam_tuple_param(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux,), 'Param') 
+    
+    # traverse parameters_c <-- DoubleBundleParam"
+    def traverse_parameters_c_DoubleBundleParam_comment_b(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        tuple_param_tree : Param, 
+        tuple_param_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, tuple_param_aux,), 'str') 
+    
+    # traverse parameters_c <-- DoubleBundleParam"
+    def traverse_parameters_c_DoubleBundleParam_comment_c(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        tuple_param_tree : Param, 
+        tuple_param_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, tuple_param_aux, comment_b_aux,), 'str') 
     
     # traverse parameters_c <-- DoubleBundleParam"
     def traverse_parameters_c_DoubleBundleParam_dict_param(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         tuple_param_tree : Param, 
-        tuple_param_aux : SynthAux
+        tuple_param_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (tuple_param_aux,), 'Param') 
+        return self.traverse_auxes(inher_aux, (comment_a_aux, tuple_param_aux, comment_b_aux, comment_c_aux,), 'Param') 
+    
+    # traverse parameters_c <-- DoubleBundleParam"
+    def traverse_parameters_c_DoubleBundleParam_comment_d(self, 
+        inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        tuple_param_tree : Param, 
+        tuple_param_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        dict_param_tree : Param, 
+        dict_param_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_a_aux, tuple_param_aux, comment_b_aux, comment_c_aux, dict_param_aux,), 'str') 
     
     # traverse parameters_c <-- DictionaryBundleParam"
     def traverse_parameters_c_DictionaryBundleParam_pre_comment(self, 
@@ -14893,25 +15101,33 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: parameters_c <-- SingleTupleBundleParam
     def synthesize_for_parameters_c_SingleTupleBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SingleTupleBundleParam(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SingleTupleBundleParam(pre_comment_tree, content_tree, post_comment_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux,)) 
         )
     
     # synthesize: parameters_c <-- TransTupleBundleParam
     def synthesize_for_parameters_c_TransTupleBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : parameters_d, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_TransTupleBundleParam(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_TransTupleBundleParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, head_aux, post_comment_aux, tail_aux,)) 
         )
     
     # synthesize: parameters_c <-- ParamsD
@@ -14928,14 +15144,22 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: parameters_c <-- DoubleBundleParam
     def synthesize_for_parameters_c_DoubleBundleParam(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         tuple_param_tree : Param, 
         tuple_param_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         dict_param_tree : Param, 
-        dict_param_aux : SynthAux
+        dict_param_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_DoubleBundleParam(tuple_param_tree, dict_param_tree),
-            aux = self.synthesize_auxes((tuple_param_aux, dict_param_aux,)) 
+            tree = make_DoubleBundleParam(comment_a_tree, tuple_param_tree, comment_b_tree, comment_c_tree, dict_param_tree, comment_d_tree),
+            aux = self.synthesize_auxes((comment_a_aux, tuple_param_aux, comment_b_aux, comment_c_aux, dict_param_aux, comment_d_aux,)) 
         )
     
     # synthesize: parameters_c <-- DictionaryBundleParam

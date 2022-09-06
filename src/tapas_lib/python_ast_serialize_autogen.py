@@ -415,8 +415,24 @@ def from_parameters_c(
             
             def handle_SingleTupleBundleParam(o : SingleTupleBundleParam): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.content))
 
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
@@ -432,8 +448,24 @@ def from_parameters_c(
                 stack.append(from_parameters_d(o.tail))
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.head))
 
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
@@ -460,11 +492,44 @@ def from_parameters_c(
 
             def handle_DoubleBundleParam(o : DoubleBundleParam): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_d
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.dict_param))
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_c
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_b
+                    )])
+                )
+        
+
                 stack.append(from_Param(o.tuple_param))
 
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment_a
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'parameters_c',
