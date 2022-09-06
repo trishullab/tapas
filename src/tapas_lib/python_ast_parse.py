@@ -221,9 +221,7 @@ def to_parameters_c(
 
         assert list_splat_section
 
-        assert list_splat_node.syntax_part == "list_splat_pattern" 
         list_bundle_param = from_generic_tree_to_Param(list_splat_node)
-
 
         if kw_sections:
             source_start = list_splat_node.source_start
@@ -550,7 +548,11 @@ def to_sections(comma_sep_nodes : list[GenericNode]) -> list[list[GenericNode]]:
 
 
 def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
-    es = [to_comment_triple(section) for section in to_sections(comma_sep_nodes)]
+    es = [
+        to_comment_triple(section) 
+        for section in to_sections(comma_sep_nodes)
+        if section
+    ]
     if es :
         (pre_comment, n, post_comment) = es[-1]
         e = from_generic_tree_to_expr(n)

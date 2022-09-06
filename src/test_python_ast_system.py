@@ -350,33 +350,90 @@ def test_comment():
     # ) : pass
     # '''
 
-#################
+    # code = '''
+    # def foo(
+    #     #hello
+    #     * #hello
+    #     xs #hello
+    #     : #hello
+    #     int #hello
+    # ):
+    #     return
+    # '''
 
-    def foo(
-        p #hello 
-        : #hello
-        float#hello
-        , #hello
-        /#hello
-        , #hello
-        a #hello
-        = #hello
-        2#hello
-        , #hello
-        *#hello
-        xs #hello
-        : #hello
-        int#hello
-        , #hello
-        y#hello
-         : #hello
-         int#hello
-         , #hello
-         z #hello
-         : #hello
-         int#hello
-        ):
-        return (p,) + (a,) + xs + (y,z)
+
+    # code = '''
+    # def foo(
+    #     #hello
+    #     ** #hello
+    #     xs #hello
+    #     : #hello
+    #     int #hello
+    # ):
+    #     return
+    # '''
+
+    # code = '''
+    # def foo(
+    #     #hello
+    #     x #hello
+    #     : #hello
+    #     int #hello
+    #     = #hello
+    #     1 #hello
+    # ):
+    #     return
+    # '''
+
+    # code = '''
+    # def foo(
+    #     #hello
+    #     x #hello
+    #     = #hello
+    #     1 #hello
+    # ):
+    #     return
+    # '''
+
+    # code = '''
+    # def foo(
+    #     #hello
+    #     x #hello
+    #     : #hello
+    #     int #hello
+    # ):
+    #     return
+    # '''
+
+    # code = '''
+    # def foo(x, y, # uno
+    # ** # mid
+    # xs # dos
+    # , z):
+    #     return
+    # '''
+
+    # code = '''
+    # def foo(x, y, # uno
+    # * # dos
+    # xs # tre
+    # , z):
+    #     return
+    # '''
+
+
+    # code = '''
+    # def foo(x, y, # uno
+    # * # dos
+    # , z):
+    #     return
+    # '''
+
+
+    # code = '''
+    # def foo(x, y, *, z):
+    #     return
+    # '''
 
     # code = '''
     # def foo( #hello
@@ -403,92 +460,16 @@ def test_comment():
     #      : #hello
     #      int#hello
     #     ):
-    #     return (p,) + (a,) + xs + (y,z)
-
-    # foo(1, 2, 3, 4, y =1, z = 3)
-    # foo(1, a = 2, y =1, z = 3)
-    # '''
-
-    code = '''
-    def foo(x, y, *, z):
-        return
-    '''
-
-    code = '''
-    def foo(x, y, # uno
-    * # dos
-    , z):
-        return
-    '''
-
-    # code = '''
-    # def foo(x, y, # uno
-    # * # dos
-    # xs # tre
-    # , z):
     #     return
     # '''
 
-    code = '''
-    def foo(x, y, # uno
-    ** # mid
-    xs # dos
-    , z):
-        return
-    '''
+    # code = '''
+    #     (1,)
+    # '''
+
+#################
 
     code = '''
-    def foo(
-        #hello
-        x #hello
-        : #hello
-        int #hello
-    ):
-        return
-    '''
-
-    code = '''
-    def foo(
-        #hello
-        x #hello
-        = #hello
-        1 #hello
-    ):
-        return
-    '''
-
-    code = '''
-    def foo(
-        #hello
-        x #hello
-        : #hello
-        int #hello
-        = #hello
-        1 #hello
-    ):
-        return
-    '''
-
-    code = '''
-    def foo(
-        #hello
-        ** #hello
-        xs #hello
-        : #hello
-        int #hello
-    ):
-        return
-    '''
-
-    code = '''
-    def foo(
-        #hello
-        * #hello
-        xs #hello
-        : #hello
-        int #hello
-    ):
-        return
     '''
 
     gnode = pgs.parse(code)
@@ -496,11 +477,11 @@ def test_comment():
     print(pgs.dump(gnode))
 
     ######
-    # mod = pas.parse_from_generic_tree(gnode)
-    # seq = pas.serialize(mod)
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
 
-    # print("-- AST --")  
-    # print(pats.dump(seq))
+    print("-- AST --")  
+    print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()
