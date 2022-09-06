@@ -4191,6 +4191,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     def synthesize_for_Param(self, 
         inher_aux : InherAux,
         name_tree : str, 
+        comment_tree : str, 
+        comment_aux : SynthAux,
         name_aux : SynthAux,
         anno_tree : pas.param_annotation, 
         anno_aux : SynthAux,
@@ -4212,7 +4214,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             )
 
         return paa.Result[SynthAux](
-            tree = pas.make_Param(name_tree, anno_tree, default_tree),
+            tree = pas.make_Param(comment_tree, name_tree, anno_tree, default_tree),
 
             aux = make_SynthAux(
                 decl_additions = pmap({name_tree : make_Declaration(
@@ -4233,14 +4235,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_d <-- ConsKwParam
     def synthesize_for_parameters_d_ConsKwParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_d, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_ConsKwParam(head_tree, tail_tree),
+            tree = pas.make_ConsKwParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 kw_param_sigs = (head_aux.param_sig,) + tail_aux.kw_param_sigs
             )
@@ -4249,13 +4255,17 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_d <-- SingleKwParam
     def synthesize_for_parameters_d_SingleKwParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
 
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SingleKwParam(content_tree),
+            tree = pas.make_SingleKwParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 kw_param_sigs = (content_aux.param_sig,)
             )
@@ -4264,15 +4274,30 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_d <-- TransKwParam
     def synthesize_for_parameters_d_TransKwParam(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         tail_tree : pas.Param, 
-        tail_aux : SynthAux
+        tail_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         assert tail_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_TransKwParam(head_tree, tail_tree),
+            tree = pas.make_TransKwParam(
+                comment_a_tree,
+                head_tree, 
+                comment_b_tree,
+                comment_c_tree,
+                tail_tree,
+                comment_d_tree,
+            ),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 kw_param_sigs = (head_aux.param_sig,) + tail_aux.kw_param_sigs,
                 bundle_kw_param_type = tail_aux.param_sig.type,
@@ -4301,15 +4326,30 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- DoubleBundleParam
     def synthesize_for_parameters_c_DoubleBundleParam(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         tuple_param_tree : pas.Param, 
         tuple_param_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         dict_param_tree : pas.Param, 
-        dict_param_aux : SynthAux
+        dict_param_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert tuple_param_aux.param_sig
         assert dict_param_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_DoubleBundleParam(tuple_param_tree, dict_param_tree),
+            tree = pas.make_DoubleBundleParam(
+                comment_a_tree, 
+                tuple_param_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                dict_param_tree,
+                comment_d_tree, 
+            ),
             aux = update_SynthAux(self.synthesize_auxes(tuple([tuple_param_aux, dict_param_aux])),
                 bundle_pos_param_type = tuple_param_aux.param_sig.type,
                 bundle_kw_param_type = dict_param_aux.param_sig.type,
@@ -4349,12 +4389,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- DictionaryBundleParam
     def synthesize_for_parameters_c_DictionaryBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_DictionaryBundleParam(content_tree),
+            tree = pas.make_DictionaryBundleParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 bundle_kw_param_type = content_aux.param_sig.type,
                 decl_additions=pmap({
@@ -4382,12 +4426,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- SingleTupleBundleParam
     def synthesize_for_parameters_c_SingleTupleBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SingleTupleBundleParam(content_tree),
+            tree = pas.make_SingleTupleBundleParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 bundle_pos_param_type = content_aux.param_sig.type,
                 decl_additions=pmap({
@@ -4407,14 +4455,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- TransTupleBundleParam
     def synthesize_for_parameters_c_TransTupleBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_d, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_TransTupleBundleParam(head_tree, tail_tree),
+            tree = pas.make_TransTupleBundleParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 bundle_pos_param_type = head_aux.param_sig.type,
                 decl_additions=pmap({
@@ -4434,14 +4486,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_b <-- ConsPosKeyParam
     def synthesize_for_parameters_b_ConsPosKeyParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_b, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_ConsPosKeyParam(head_tree, tail_tree),
+            tree = pas.make_ConsPosKeyParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 pos_kw_param_sigs = (head_aux.param_sig,) + tail_aux.pos_kw_param_sigs
             )
@@ -4450,12 +4506,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_b <-- SinglePosKeyParam
     def synthesize_for_parameters_b_SinglePosKeyParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SinglePosKeyParam(content_tree),
+            tree = pas.make_SinglePosKeyParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 pos_kw_param_sigs = (content_aux.param_sig,)
             )
@@ -4464,14 +4524,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_a <-- ConsPosParam
     def synthesize_for_parameters_a_ConsPosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_a, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_ConsPosParam(head_tree, tail_tree),
+            tree = pas.make_ConsPosParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 pos_param_types = tuple([head_aux.param_sig.type]) + tail_aux.pos_param_types
             )
@@ -4480,12 +4544,26 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_a <-- SinglePosParam
     def synthesize_for_parameters_a_SinglePosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SinglePosParam(content_tree),
+            tree = pas.make_SinglePosParam(
+                pre_comment_tree, 
+                content_tree,
+                post_comment_tree, 
+                pre_sep_comment_tree, 
+                post_sep_comment_tree, 
+            ),
             aux = update_SynthAux(content_aux,
                 pos_param_types = tuple([content_aux.param_sig.type])
             )
@@ -4494,14 +4572,29 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_a <-- TransPosParam
     def synthesize_for_parameters_a_TransPosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux,
         tail_tree : pas.parameters_b, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_TransPosParam(head_tree, tail_tree),
+            tree = pas.make_TransPosParam(
+                pre_comment_tree, 
+                head_tree, 
+                post_comment_tree, 
+                pre_sep_comment_tree,
+                post_sep_comment_tree,
+                tail_tree
+            ),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 pos_param_types = tuple([head_aux.param_sig.type]) + tail_aux.pos_param_types
             )
