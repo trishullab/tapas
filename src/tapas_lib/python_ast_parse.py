@@ -39,7 +39,6 @@ def node_error(node : GenericNode) -> None:
 
 
 def is_comment(cm_node):
-    print(f"cm_node ~> {cm_node}")
     assert cm_node.syntax_part == "comment"
     return cm_node.syntax_part == "comment"
 
@@ -612,18 +611,24 @@ def to_constraint_filters(nodes : list[GenericNode], base_start : int, base_end 
         for post in [merge_comments(nodes[start+1:end])]
     ]
 
-    (pre, n, post) = trips[-1]
-    e = from_generic_tree_to_expr(n)
 
-    (result, trips) = (
-        (SingleFilter(pre, e, post,
+
+    if trips:
+
+        (pre, n, post) = trips[-1]
+        e = from_generic_tree_to_expr(n)
+
+        result = SingleFilter(pre, e, post,
             unguard_expr(e).source_start if e else 0,
             unguard_expr(e).source_end if e else 0,
-        ), trips[:-1])
-        if trips else
+        )
+        
+        trips = trips[:-1]
 
-        (NoFilter(base_start, base_end), []) 
-    )
+    else:
+        result = NoFilter(base_start, base_end)
+        trips = []
+
     for (pre, n, post) in reversed(trips):
         e = from_generic_tree_to_expr(n)
         result = ConsFilter(pre, e, post, result,
@@ -1152,7 +1157,6 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             if n.syntax_part != "comment"
         )
         op_node = children[split_index]
-        print(f"op_node :: {op_node}")
         pre_comment = merge_comments(children[1:split_index])
         post_comment = merge_comments(children[split_index + 1: -1])
         right_node = children[-1]
@@ -2828,9 +2832,6 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
 
         kw_index = 1 + len(base_nodes) + 1
-
-        if arguments_node:
-            print(f"%%%arguments_node.children[kw_index:-1]: {arguments_node.children[kw_index:-1]}")
 
         kw_trips = []
         if (arguments_node != None):

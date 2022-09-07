@@ -1221,7 +1221,7 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("("),
                 Vocab("pre_comment", "comment"),
-                Nonterm("content", "expr", IndentLine()),
+                Nonterm("content", "expr", InLine()),
                 Vocab("post_comment", "comment"),
                 Terminal(")")
             ]

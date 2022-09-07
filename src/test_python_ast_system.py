@@ -128,349 +128,371 @@ def test_comment():
     )
         ''',
 
-    #     '''
-    # def foo(x : int):
-    #     return x
+        '''
+    def foo(x : int):
+        return x
 
-    # foo( # hello A
-    #     1 #hello B
-    #     #hello C
-    # )
-    #     ''',
-
-
-    #     '''
-    # (# hello A
-    #     0 #hello B
-    # if # hello C
-    # True # hello D
-    # else  # hello E
-    #     1 #hello F
-    #     #hello G 
-    # )
-    #     ''',
-
-    #     '''
-    # try: #hello
-    #     pass #llo
-    # except Exception:
-    #     pass #hello
-    # else:
-    #     pass #hello
-    #     ''',
-
-    #     '''
-    # try: #hello
-    #     pass #llo
-    # except Exception: #hello
-    #     pass #hello
-    # else: #hello
-    #     pass #hello
-    # finally: #hello
-    #     pass #hello
-    #     ''',
-
-    #     '''
-    # x = 0
-    # if True: # comment after if
-    #     # another comment
-    #     x = 0 # comment 
-    #     # comment
-    #     x = x + 1
-    # elif False: # comment after elif
-    #     x = 0 # comment 
-    #     # comment
-    #     x = x + 1
-    # else: # comment after else
-    #     x = 0 # comment 
-    #     # comment
-    #     x = x + 1
-    #     ''',
-
-    #     '''
-    # def foo(x):
-    #     return x
-    # @foo #hello
-    # # between decorators 
-    # @foo #bye
-    # class A: # this is a class header comment 
-    #     pass
-    #     ''',
-
-    #     '''
-    # def foo(x : int): # this is a function header comment 
-    #     # whole line comment 0 
-    #     y = x + 1 # comment after stmt
-    #     z = y + 1 
-    #     # whole line comment 1 
-    #     ''',
-
-    #     '''
-    # { #hello
-    #     'x' #hello
-    #     : #hello 
-    #     1 #hello
-    #     , #hello
-    #     'y' #hello
-    #     : #hello 
-    #     1 #hello
-    # } #hello
-    #     ''',
-
-    #     '''
-    # (True  #hello
-    # or #hello
-    # False #hello
-    # )
-    #     ''',
-
-    #     '''
-    # (x #hello
-    # := #hello 
-    # 1)
-    #     ''',
+    foo( # hello A
+        1 #hello B
+        #hello C
+    )
+        ''',
 
 
-    #     '''
-    # (lambda #hello
-    # x #foo
-    # : #hello
-    # 1)
-    #     ''',
+        '''
+    (# hello A
+        0 #hello B
+    if # hello C
+    True # hello D
+    else  # hello E
+        1 #hello F
+        #hello G 
+    )
+        ''',
 
-    #     '''
-    # [ #hello
-    #     x # hello
-    #     for # hello
-    #     x #hello
-    #     in #hello
-    #     [1,2,3] #hello
-    #     if #hello 
-    #     1 == 1 #hello
-    #     if #hello 
-    #     True #hello
-    # ]
-    #     ''',
+        '''
+    try: #hello
+        pass #llo
+    except Exception:
+        pass #hello
+    else:
+        pass #hello
+        ''',
 
-    #     '''
-    # { #hello
-    #     1 #hello
-    #     : #hello
-    #     x #hello
-    #     for # hello
-    #     x #hello
-    #     in #hello
-    #     [1,2,3] #hello
-    #     if #hello 
-    #     1 == 1 #hello
-    #     if #hello 
-    #     True #hello
-    # }
-    #     ''',
+        '''
+    try: #hello
+        pass #llo
+    except Exception: #hello
+        pass #hello
+    else: #hello
+        pass #hello
+    finally: #hello
+        pass #hello
+        ''',
 
-    #     '''
-    # async def foo():
-    #     return 1
-    # async def boo():
-    #     x = (await #comment
-    #     foo())
-    #     ''',
+        '''
+    x = 0
+    if True: # comment after if
+        # another comment
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    elif False: # comment after elif
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    else: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+        ''',
 
-    #     '''
-    # def foo():
-    #     (yield #x 
-    #     from #x
-    #     [2,3,4] #x
-    #     )
-    #     (yield #x
-    #     1 #x
-    #     )
-    #     ''',
+        '''
+    def foo(x):
+        return x
+    @foo #hello
+    # between decorators 
+    @foo #bye
+    class A: # this is a class header comment 
+        pass
+        ''',
 
-    #     '''
-    # def foo():
-    #     (yield #hello
-    #     )
-    #     ''',
+        '''
+    def foo(x : int): # this is a function header comment 
+        # whole line comment 0 
+        y = x + 1 # comment after stmt
+        z = y + 1 
+        # whole line comment 1 
+        ''',
+
+        '''
+    { #hello
+        'x' #hello
+        : #hello 
+        1 #hello
+        , #hello
+        'y' #hello
+        : #hello 
+        1 #hello
+    } #hello
+        ''',
+
+        '''
+    (True  #hello
+    or #hello
+    False #hello
+    )
+        ''',
+
+        '''
+    (x #hello
+    := #hello 
+    1)
+        ''',
 
 
-    #     '''
-    # (1 #x
-    # < #x
-    # 2 < #x
-    # 3 # x
-    # )
-    # (1 not #hello
-    # in #hello
-    # [2,3]
-    # )
-    #     ''',
+        '''
+    (lambda #hello
+    x #foo
+    : #hello
+    1)
+        ''',
 
-    #     '''
-    # def foo(x = 1):
-    #     return
+        '''
+    [ #hello
+        x # hello
+        for # hello
+        x #hello
+        in #hello
+        [1,2,3] #hello
+        if #hello 
+        1 == 1 #hello
+        if #hello 
+        True #hello
+    ]
+        ''',
 
-    # (foo #x
-    # ())
+        '''
+    { #hello
+        1 #hello
+        : #hello
+        x #hello
+        for # hello
+        x #hello
+        in #hello
+        [1,2,3] #hello
+        if #hello 
+        1 == 1 #hello
+        if #hello 
+        True #hello
+    }
+        ''',
 
-    # (foo #x
-    # (1))
-    # '''
+        '''
+    async def foo():
+        return 1
+    async def boo():
+        x = (await #comment
+        foo())
+        ''',
 
-    # '''
-    # class A:
-    #     x = 1
-    # (A # hello
-    # . #hello
-    # x #hello
-    # ) 
-    #     ''',
+        '''
+    def foo():
+        (yield #x 
+        from #x
+        [2,3,4] #x
+        )
+        (yield #x
+        1 #x
+        )
+        ''',
 
-    #     '''
-    # (
-    #     x[1,2]
-    # )
-    #     ''',
+        '''
+    def foo():
+        (yield #hello
+        )
+        ''',
 
-    #     '''
-    # x = [1,2,3,4]
-    # (
-    #     x #hello
-    #     [ #hello
-    #     0 # hello
-    #     : #hello
-    #     1 #hello
-    #     : #hello
-    #     2 #hello
-    #     ]
-    # )
-    #     ''',
 
-    #     '''
-    # class A: pass
-    # class B(
-    #     #hello
-    # ): pass
-    # class C( #hello
-    #     A #hello
-    #     , #hello
-    #     B #hello
-    # ) : pass
-    #     ''',
+        '''
+    (1 #x
+    < #x
+    2 < #x
+    3 # x
+    )
+    (1 not #hello
+    in #hello
+    [2,3]
+    )
+        ''',
 
-    #     '''
-    # def foo(
-    #     #hello
-    #     * #hello
-    #     xs #hello
-    #     : #hello
-    #     int #hello
-    # ):
-    #     return
-    #     ''',
+        '''
+    def foo(x = 1):
+        return
 
-    #     '''
-    # def foo(
-    #     #hello
-    #     ** #hello
-    #     xs #hello
-    #     : #hello
-    #     int #hello
-    # ):
-    #     return
-    #     ''',
+    (foo #x
+    ())
 
-    #     '''
-    # def foo(
-    #     #hello
-    #     x #hello
-    #     : #hello
-    #     int #hello
-    #     = #hello
-    #     1 #hello
-    # ):
-    #     return
-    #     ''',
+    (foo #x
+    (1))
+    '''
 
-    #     '''
-    # def foo(
-    #     #hello
-    #     x #hello
-    #     = #hello
-    #     1 #hello
-    # ):
-    #     return
-    #     ''',
+    '''
+    class A:
+        x = 1
+    (A # hello
+    . #hello
+    x #hello
+    ) 
+        ''',
 
-    #     '''
-    # def foo(
-    #     #hello
-    #     x #hello
-    #     : #hello
-    #     int #hello
-    # ):
-    #     return
-    #     ''',
+        '''
+    (
+        x[1,2]
+    )
+        ''',
 
-    #     '''
-    # def foo(x, y, # uno
-    # ** # mid
-    # xs # dos
-    # , z):
-    #     return
-    #     ''',
+        '''
+    x = [1,2,3,4]
+    (
+        x #hello
+        [ #hello
+        0 # hello
+        : #hello
+        1 #hello
+        : #hello
+        2 #hello
+        ]
+    )
+        ''',
 
-    #     '''
-    # def foo(x, y, # uno
-    # * # dos
-    # xs # tre
-    # , z):
-    #     return
-    #     ''',
+        '''
+    class A: pass
+    class B(
+        #hello
+    ): pass
+    class C( #hello
+        A #hello
+        , #hello
+        B #hello
+    ) : pass
+        ''',
 
-    #     '''
-    # def foo(x, y, # uno
-    # * # dos
-    # , z):
-    #     return
-    #     ''',
+        '''
+    def foo(
+        #hello
+        * #hello
+        xs #hello
+        : #hello
+        int #hello
+    ):
+        return
+        ''',
 
-    #     '''
-    # def foo(x, y, *, z):
-    #     return
-    #     ''',
+        '''
+    def foo(
+        #hello
+        ** #hello
+        xs #hello
+        : #hello
+        int #hello
+    ):
+        return
+        ''',
 
-    #     '''
-    # def foo( #hello
-    #     p #hello 
-    #     : #hello
-    #     float#hello
-    #     , #hello
-    #     /#hello
-    #     , #hello
-    #     a #hello
-    #     = #hello
-    #     2#hello
-    #     , #hello
-    #     *#hello
-    #     xs #hello
-    #     : #hello
-    #     int#hello
-    #     , #hello
-    #     y#hello
-    #      : #hello
-    #      int#hello
-    #      , #hello
-    #      z #hello
-    #      : #hello
-    #      int#hello
-    #     ):
-    #     return
-    #     ''',
+        '''
+    def foo(
+        #hello
+        x #hello
+        : #hello
+        int #hello
+        = #hello
+        1 #hello
+    ):
+        return
+        ''',
 
-    #     '''
-    #     (1,)
-    #     '''
+        '''
+    def foo(
+        #hello
+        x #hello
+        = #hello
+        1 #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(
+        #hello
+        x #hello
+        : #hello
+        int #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(x, y, # uno
+    ** # mid
+    xs # dos
+    , z):
+        return
+        ''',
+
+        '''
+    def foo(x, y, # uno
+    * # dos
+    xs # tre
+    , z):
+        return
+        ''',
+
+        '''
+    def foo(x, y, # uno
+    * # dos
+    , z):
+        return
+        ''',
+
+        '''
+    def foo(x, y, *, z):
+        return
+        ''',
+
+        '''
+    def foo( #hello
+        p #hello 
+        : #hello
+        float#hello
+        , #hello
+        /#hello
+        , #hello
+        a #hello
+        = #hello
+        2#hello
+        , #hello
+        *#hello
+        xs #hello
+        : #hello
+        int#hello
+        , #hello
+        y#hello
+         : #hello
+         int#hello
+         , #hello
+         z #hello
+         : #hello
+         int#hello
+        ):
+        return
+        ''',
+
+        '''
+    (1,)
+        '''
+
+        '''
+    y : int 
+    x = y
+    y = 1
+    z = y
+        ''',
+
+        '''
+    y : int 
+    y = 1
+    x = y
+        ''',
+
+        '''
+    from __future__ import annotations
+    from typing import Sequence, Union
+    def double(input_: int | Sequence[int]) -> int | list[int]:
+        if isinstance(input_, Sequence):
+            return [i * 2 for i in input_]
+        return input_ * 2
+        '''
     ]
 
 
