@@ -1009,6 +1009,14 @@ def from_keyword(
                 stack.append(from_expr(o.content))
 
                 stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
+
+                stack.append(
                     tuple([make_Grammar(
                         options = 'keyword',
                         selection = 'SplatKeyword',

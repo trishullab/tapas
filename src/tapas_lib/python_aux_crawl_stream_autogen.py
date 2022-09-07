@@ -3509,8 +3509,19 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
 
         
-        child_inher_aux = self.traverse_keyword_SplatKeyword_content(
+        child_inher_aux = self.traverse_keyword_SplatKeyword_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        comment_tree = synth.tree
+        assert isinstance(comment_tree, str)
+        comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_keyword_SplatKeyword_content(
+            inher_aux,
+            comment_tree, 
+            comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -3519,7 +3530,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux = synth.aux
         
 
-        return self.synthesize_for_keyword_SplatKeyword(inher_aux, content_tree, content_aux)
+        return self.synthesize_for_keyword_SplatKeyword(inher_aux, comment_tree, comment_aux, content_tree, content_aux)
     
     # inspect: import_name <-- ImportNameAlias"
     def inspect_import_name_ImportNameAlias(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -12382,10 +12393,18 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (name_aux, pre_comment_aux, post_comment_aux,), 'expr') 
     
     # traverse keyword <-- SplatKeyword"
-    def traverse_keyword_SplatKeyword_content(self, 
+    def traverse_keyword_SplatKeyword_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse keyword <-- SplatKeyword"
+    def traverse_keyword_SplatKeyword_content(self, 
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'expr') 
     
     # traverse import_name <-- ImportNameAlias"
     def traverse_import_name_ImportNameAlias_name(self, 
@@ -15470,12 +15489,14 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: keyword <-- SplatKeyword
     def synthesize_for_keyword_SplatKeyword(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SplatKeyword(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SplatKeyword(comment_tree, content_tree),
+            aux = self.synthesize_auxes((comment_aux, content_aux,)) 
         )
     
     # synthesize: import_name <-- ImportNameAlias

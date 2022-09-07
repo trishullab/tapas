@@ -1705,8 +1705,9 @@ def from_generic_tree_to_keyword(node) -> keyword | None:
 
     elif (node.syntax_part == "dictionary_splat"):
         assert children[0].syntax_part == "**" 
-        value_expr = from_generic_tree_to_expr(children[1])
-        return SplatKeyword(value_expr, node.source_start, node.source_end)
+        comment = merge_comments(children[1:-1])
+        value_expr = from_generic_tree_to_expr(children[-1])
+        return SplatKeyword(comment, value_expr, node.source_start, node.source_end)
 
     else:
         return node_error(node)

@@ -1450,6 +1450,7 @@ def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
 
 @dataclass(frozen=True, eq=True)
 class SplatKeyword(keyword):
+    comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -1458,22 +1459,26 @@ class SplatKeyword(keyword):
         return handlers.case_SplatKeyword(self)
 
 def make_SplatKeyword(
+    comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keyword:
     return SplatKeyword(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_SplatKeyword(source_SplatKeyword : SplatKeyword,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SplatKeyword:
     return SplatKeyword(
+        source_SplatKeyword.comment if isinstance(comment, SourceFlag) else comment,
         source_SplatKeyword.content if isinstance(content, SourceFlag) else content,
         source_SplatKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SplatKeyword.source_end if isinstance(source_end, SourceFlag) else source_end

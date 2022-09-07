@@ -293,6 +293,7 @@ choices_schema : dict[str, list[Rule]] = {
             "SplatKeyword",
             [
                 Terminal("**"),
+                Vocab("comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),

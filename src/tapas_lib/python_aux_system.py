@@ -3018,6 +3018,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3026,7 +3030,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_NamedKeyword(name_tree, content_tree),
+            tree = pas.make_NamedKeyword(name_tree, pre_comment_tree, post_comment_tree, content_tree),
             aux = make_SynthAux(
                 kw_types = pmap({name_tree : content_type})
             ) 
@@ -3035,6 +3039,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: keyword <-- SplatKeyword
     def synthesize_for_keyword_SplatKeyword(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3058,7 +3064,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             )
 
         return paa.Result[SynthAux](
-            tree = pas.make_SplatKeyword(content_tree),
+            tree = pas.make_SplatKeyword(comment_tree, content_tree),
             aux = make_SynthAux(
                 kw_types = kw_types
             ) 

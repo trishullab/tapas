@@ -1201,18 +1201,23 @@ def to_keyword(xs : tuple[abstract_token, ...]) -> tuple[keyword, tuple[abstract
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 1
+            total_num_children = 2
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    SplatKeyword(children[0]),
+                    SplatKeyword(children[0], children[1]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
                 (child, remainder) = to_expr(remainder)
                 stack.append((x, children + [child], remainder))
                 
