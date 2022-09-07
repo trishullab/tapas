@@ -2073,6 +2073,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         usage_additions : PMap[str, Usage], 
         nested_usages : PMap[str, tuple[Usage, ...]]
     ):
+        # potential future declarations
+        # past declarations are subsumed filtered out via backref 
+        # e.g. no need to include parameters (which are always past declarations)
 
         for symbol, dec in decls.items(): 
             symbol_usages = nested_usages.get(symbol) or () 
@@ -3668,13 +3671,14 @@ class Server(paa.Server[InherAux, SynthAux]):
             body_aux.nested_usages
         )
 
-        self.check(LookupDecCheck(), lambda: (
-            (),
-            us.every(nested_usages, lambda sym : (
-                (dec := from_static_path_to_declaration(inher_aux, f"builtins.{sym}")),
+        self.check(LookupDecCheck(), lambda:
+            # any unmathced usages should be matched with definitions instandard lib
+            all(
                 not isinstance(dec.type, AnyType)
-            )[-1])
-        )[-1])
+                for sym in nested_usages
+                for dec in [from_static_path_to_declaration(inher_aux, f"builtins.{sym}")]
+            )
+        )
 
         return paa.Result[SynthAux](
             tree = pas.make_SimpleMod(body_tree),
@@ -4149,7 +4153,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             type = OverloadType()
 
-
         return paa.Result[SynthAux](
             tree = pas.make_FunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
             aux = make_SynthAux(
@@ -4196,9 +4199,9 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: Param 
     def synthesize_for_Param(self, 
         inher_aux : InherAux,
-        name_tree : str, 
         comment_tree : str, 
         comment_aux : SynthAux,
+        name_tree : str, 
         name_aux : SynthAux,
         anno_tree : pas.param_annotation, 
         anno_aux : SynthAux,
@@ -4502,6 +4505,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
+
+
         return paa.Result[SynthAux](
             tree = pas.make_ConsPosKeyParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
@@ -4520,6 +4525,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
+
         return paa.Result[SynthAux](
             tree = pas.make_SinglePosKeyParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,

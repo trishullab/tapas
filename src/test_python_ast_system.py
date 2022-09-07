@@ -479,11 +479,6 @@ def test_comment():
     z = y
         ''',
 
-        '''
-    y : int 
-    y = 1
-    x = y
-        ''',
 
         '''
     from __future__ import annotations
@@ -492,22 +487,23 @@ def test_comment():
         if isinstance(input_, Sequence):
             return [i * 2 for i in input_]
         return input_ * 2
-        '''
+        ''',
+
     ]
 
 
 
     for code in codes:
         gnode = pgs.parse(code)
-        print("-- generic node --")  
-        print(pgs.dump(gnode))
+        # print("-- generic node --")  
+        # print(pgs.dump(gnode))
 
         ######
         mod = pas.parse_from_generic_tree(gnode)
         seq = pas.serialize(mod)
 
-        print("-- AST --")  
-        print(pats.dump(seq))
+        # print("-- AST --")  
+        # print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()
