@@ -1403,6 +1403,8 @@ class keyword(ABC):
 @dataclass(frozen=True, eq=True)
 class NamedKeyword(keyword):
     name : str
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -1412,12 +1414,16 @@ class NamedKeyword(keyword):
 
 def make_NamedKeyword(
     name : str, 
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keyword:
     return NamedKeyword(
         name,
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
@@ -1425,12 +1431,16 @@ def make_NamedKeyword(
 
 def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
     name : Union[str, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> NamedKeyword:
     return NamedKeyword(
         source_NamedKeyword.name if isinstance(name, SourceFlag) else name,
+        source_NamedKeyword.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_NamedKeyword.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_NamedKeyword.content if isinstance(content, SourceFlag) else content,
         source_NamedKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_NamedKeyword.source_end if isinstance(source_end, SourceFlag) else source_end

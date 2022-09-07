@@ -282,7 +282,9 @@ choices_schema : dict[str, list[Rule]] = {
             "NamedKeyword",
             [
                 Vocab("name", "identifier"),
+                Vocab("pre_comment", "comment"),
                 Terminal(" = "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),

@@ -970,6 +970,22 @@ def from_keyword(
                 
                 stack.append(from_expr(o.content))
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Vocab(

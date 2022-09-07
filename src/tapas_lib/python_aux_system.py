@@ -5000,7 +5000,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
@@ -5044,7 +5046,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
 
         assert len(iter_aux.observed_types) == 1
@@ -5100,14 +5104,18 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         return self.traverse_stmt_For_body(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
-            iter_aux
+            iter_aux,
+            comment_tree,
+            comment_aux
         ) 
     
     # synthesize: stmt <-- AsyncFor
@@ -5152,12 +5160,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         return self.traverse_stmt_ForElse_body(
             inher_aux, 
             target_tree, target_aux, 
-            iter_tree, iter_aux
+            iter_tree, iter_aux,
+            comment_tree, comment_aux
         )
     
     # synthesize: stmt <-- AsyncForElse
@@ -5317,6 +5328,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> InherAux:

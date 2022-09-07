@@ -694,21 +694,21 @@ def to_arguments(argument_nodes : list[GenericNode]) -> arguments:
 
 
 def from_list_to_arguments(ps : list[tuple[str, GenericNode, str]], kws : keywords | None) -> arguments:
-    (pre, n, post) = ps[-1]
-    p = from_generic_tree_to_expr(n)
 
-    (result, ps) = (
-        (KeywordsArg(kws,
+    if kws:
+        result = KeywordsArg(kws,
             unguard_keywords(kws).source_start,
             unguard_keywords(kws).source_end,
-        ), ps)
-        if kws else
+        )
 
-        (SingleArg(pre, p, post,
+    else:
+        (pre, n, post) = ps[-1]
+        p = from_generic_tree_to_expr(n)
+        result = SingleArg(pre, p, post,
             unguard_expr(p).source_start if p else 0,
             unguard_expr(p).source_end if p else 0,
-        ), ps[:-1])
-    )
+        )
+        ps = ps[:-1]
 
     for pre, n, post in reversed(ps):
         p = from_generic_tree_to_expr(n)
@@ -718,7 +718,6 @@ def from_list_to_arguments(ps : list[tuple[str, GenericNode, str]], kws : keywor
         )
 
     return result
-
 
 
 def from_generic_tree(node : GenericNode) -> module: 
@@ -1692,12 +1691,17 @@ def from_generic_tree_to_keyword(node) -> keyword | None:
 
     if (node.syntax_part == "keyword_argument"):
         key_node = children[0]
-        assert children[1].syntax_part == "="
-        value_node = children[2]
+        colon_index = next(
+            i for i, n in enumerate(children) if n.syntax_part == "="
+        )
+
+        pre_comment = merge_comments(children[1:colon_index])
+        post_comment = merge_comments(children[colon_index + 1:-1])
+        value_node = children[-1]
 
         key_id = from_generic_tree_to_identifier(key_node)
         value_expr = from_generic_tree_to_expr(value_node)
-        return NamedKeyword(key_id, value_expr, node.source_start, node.source_end)
+        return NamedKeyword(key_id, pre_comment, post_comment, value_expr, node.source_start, node.source_end)
 
     elif (node.syntax_part == "dictionary_splat"):
         assert children[0].syntax_part == "**" 
@@ -2069,7 +2073,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         if chev_node.syntax_part == "chevron":
             arg_index = 2
 
-            k = make_NamedKeyword("file", Name(
+            k = make_NamedKeyword("file", '', '', Name(
                 "sys.stderr", 
                 chev_node.source_start, chev_node.source_start
             ), node.source_start, node.source_start)

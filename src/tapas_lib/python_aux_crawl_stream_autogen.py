@@ -3462,10 +3462,38 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(name_tree, str)
         name_aux = synth.aux
         
-        child_inher_aux = self.traverse_keyword_NamedKeyword_content(
+        child_inher_aux = self.traverse_keyword_NamedKeyword_pre_comment(
             inher_aux,
             name_tree, 
             name_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_keyword_NamedKeyword_post_comment(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            pre_comment_tree, 
+            pre_comment_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        post_comment_tree = synth.tree
+        assert isinstance(post_comment_tree, str)
+        post_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_keyword_NamedKeyword_content(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
+            post_comment_tree, 
+            post_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -3474,7 +3502,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         content_aux = synth.aux
         
 
-        return self.synthesize_for_keyword_NamedKeyword(inher_aux, name_tree, name_aux, content_tree, content_aux)
+        return self.synthesize_for_keyword_NamedKeyword(inher_aux, name_tree, name_aux, pre_comment_tree, pre_comment_aux, post_comment_tree, post_comment_aux, content_tree, content_aux)
     
     # inspect: keyword <-- SplatKeyword"
     def inspect_keyword_SplatKeyword(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -12324,12 +12352,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse keyword <-- NamedKeyword"
-    def traverse_keyword_NamedKeyword_content(self, 
+    def traverse_keyword_NamedKeyword_pre_comment(self, 
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (name_aux,), 'expr') 
+        return self.traverse_auxes(inher_aux, (name_aux,), 'str') 
+    
+    # traverse keyword <-- NamedKeyword"
+    def traverse_keyword_NamedKeyword_post_comment(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, pre_comment_aux,), 'str') 
+    
+    # traverse keyword <-- NamedKeyword"
+    def traverse_keyword_NamedKeyword_content(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, pre_comment_aux, post_comment_aux,), 'expr') 
     
     # traverse keyword <-- SplatKeyword"
     def traverse_keyword_SplatKeyword_content(self, 
@@ -15405,12 +15455,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : expr, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_NamedKeyword(name_tree, content_tree),
-            aux = self.synthesize_auxes((name_aux, content_aux,)) 
+            tree = make_NamedKeyword(name_tree, pre_comment_tree, post_comment_tree, content_tree),
+            aux = self.synthesize_auxes((name_aux, pre_comment_aux, post_comment_aux, content_aux,)) 
         )
     
     # synthesize: keyword <-- SplatKeyword

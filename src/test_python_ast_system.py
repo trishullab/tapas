@@ -66,135 +66,146 @@ def test_source_pointer_increasing():
 
 def test_comment():
 
-#     code = '''
-# def foo():
-#     return (
-#         #hello
-#         1 
-#         #hello
-#         )
-#     '''
+    codes = [
+        '''
+    def foo():
+        return (
+            #hello
+            1 
+            #hello
+            )
+        ''',
 
-#     code = '''
-# x = (#first
-#     1 #hello
-#     #hello
-#     + #hello
-#     3 #last
-# )
-#     '''
+        '''
+    x = (#first
+        1 #hello
+        #hello
+        + #hello
+        3 #last
+    )
+        ''',
 
-#     code = '''
-# (#hello A
-#     1 #hello B
-#     , #hello C
-#     2 #hello D
-#     #hello E 
-# ) #hello F
-#     ''')
+        '''
+    (#hello A
+        1 #hello B
+        , #hello C
+        2 #hello D
+        #hello E 
+    ) #hello F
+        ''',
 
+        '''
+    (not # hello A
+        True # hello B
+        # hello C
+    )
+        ''',
 
-#     code = '''
-# (not # hello A
-#     True # hello B
-#     # hello C
-# )
-#     '''
+        '''
+    def foo( #foo
+    x #foo
+    : int):
+        return x
 
-    # code = '''
-# def foo( #foo
-# x #foo
-# : int):
-#     return x
+    foo( # hello A
+        x #foo
+        = #foo
+        1 #hello B
+        #hello C
+    )
+        ''',
 
-# foo( # hello A
-#     x #foo
-#     = #foo
-#     1 #hello B
-#     #hello C
-# )
-    # '''
+        '''
+    def foo( #foo
+    x #foo
+    : int):
+        return x
 
-#     code = '''
-# def foo(x : int):
-#     return x
+    xs = {'x' : 1}
+    foo( #hello
+        ** #hello
+        xs #hello
+    )
+        ''',
 
-# foo( # hello A
-#     1 #hello B
-#     #hello C
-# )
-#     '''
+    #     '''
+    # def foo(x : int):
+    #     return x
 
-
-#     code = '''
-# (# hello A
-#     0 #hello B
-# if # hello C
-# True # hello D
-# else  # hello E
-#     1 #hello F
-#     #hello G 
-# )
-#     '''
-
-#     code = '''
-# try: #hello
-#     pass #llo
-# except Exception:
-#     pass #hello
-# else:
-#     pass #hello
-#     '''
-
-#     code = '''
-# try: #hello
-#     pass #llo
-# except Exception: #hello
-#     pass #hello
-# else: #hello
-#     pass #hello
-# finally: #hello
-#     pass #hello
-#     '''
+    # foo( # hello A
+    #     1 #hello B
+    #     #hello C
+    # )
+    #     ''',
 
 
+    #     '''
+    # (# hello A
+    #     0 #hello B
+    # if # hello C
+    # True # hello D
+    # else  # hello E
+    #     1 #hello F
+    #     #hello G 
+    # )
+    #     ''',
 
-#     code = '''
-# x = 0
-# if True: # comment after if
-#     # another comment
-#     x = 0 # comment 
-#     # comment
-#     x = x + 1
-# elif False: # comment after elif
-#     x = 0 # comment 
-#     # comment
-#     x = x + 1
-# else: # comment after else
-#     x = 0 # comment 
-#     # comment
-#     x = x + 1
-#     '''
+    #     '''
+    # try: #hello
+    #     pass #llo
+    # except Exception:
+    #     pass #hello
+    # else:
+    #     pass #hello
+    #     ''',
 
-#     code = '''
-# def foo(x):
-#     return x
-# @foo #hello
-# # between decorators 
-# @foo #bye
-# class A: # this is a class header comment 
-#     pass
-#     '''
+    #     '''
+    # try: #hello
+    #     pass #llo
+    # except Exception: #hello
+    #     pass #hello
+    # else: #hello
+    #     pass #hello
+    # finally: #hello
+    #     pass #hello
+    #     ''',
 
-#     code = '''
-# def foo(x : int): # this is a function header comment 
-#     # whole line comment 0 
-#     y = x + 1 # comment after stmt
-#     z = y + 1 
-#     # whole line comment 1 
-    # '''
+    #     '''
+    # x = 0
+    # if True: # comment after if
+    #     # another comment
+    #     x = 0 # comment 
+    #     # comment
+    #     x = x + 1
+    # elif False: # comment after elif
+    #     x = 0 # comment 
+    #     # comment
+    #     x = x + 1
+    # else: # comment after else
+    #     x = 0 # comment 
+    #     # comment
+    #     x = x + 1
+    #     ''',
 
-    # code = '''
+    #     '''
+    # def foo(x):
+    #     return x
+    # @foo #hello
+    # # between decorators 
+    # @foo #bye
+    # class A: # this is a class header comment 
+    #     pass
+    #     ''',
+
+    #     '''
+    # def foo(x : int): # this is a function header comment 
+    #     # whole line comment 0 
+    #     y = x + 1 # comment after stmt
+    #     z = y + 1 
+    #     # whole line comment 1 
+    #     ''',
+
+    #     '''
     # { #hello
     #     'x' #hello
     #     : #hello 
@@ -204,31 +215,30 @@ def test_comment():
     #     : #hello 
     #     1 #hello
     # } #hello
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # (True  #hello
     # or #hello
     # False #hello
     # )
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # (x #hello
     # := #hello 
     # 1)
-    # '''
+    #     ''',
 
 
-    # code = '''
+    #     '''
     # (lambda #hello
     # x #foo
     # : #hello
     # 1)
-    # '''
+    #     ''',
 
-
-    # code = '''
+    #     '''
     # [ #hello
     #     x # hello
     #     for # hello
@@ -240,10 +250,9 @@ def test_comment():
     #     if #hello 
     #     True #hello
     # ]
-    # '''
+    #     ''',
 
-
-    # code = '''
+    #     '''
     # { #hello
     #     1 #hello
     #     : #hello
@@ -257,17 +266,17 @@ def test_comment():
     #     if #hello 
     #     True #hello
     # }
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # async def foo():
     #     return 1
     # async def boo():
     #     x = (await #comment
     #     foo())
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo():
     #     (yield #x 
     #     from #x
@@ -276,16 +285,16 @@ def test_comment():
     #     (yield #x
     #     1 #x
     #     )
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo():
     #     (yield #hello
     #     )
-    # '''
+    #     ''',
 
 
-    # code = '''
+    #     '''
     # (1 #x
     # < #x
     # 2 < #x
@@ -295,9 +304,9 @@ def test_comment():
     # in #hello
     # [2,3]
     # )
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(x = 1):
     #     return
 
@@ -308,22 +317,22 @@ def test_comment():
     # (1))
     # '''
 
-    # code = '''
+    # '''
     # class A:
     #     x = 1
     # (A # hello
     # . #hello
     # x #hello
     # ) 
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # (
     #     x[1,2]
     # )
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # x = [1,2,3,4]
     # (
     #     x #hello
@@ -335,10 +344,9 @@ def test_comment():
     #     2 #hello
     #     ]
     # )
+    #     ''',
 
-    # '''
-
-    # code = '''
+    #     '''
     # class A: pass
     # class B(
     #     #hello
@@ -348,9 +356,9 @@ def test_comment():
     #     , #hello
     #     B #hello
     # ) : pass
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(
     #     #hello
     #     * #hello
@@ -359,10 +367,9 @@ def test_comment():
     #     int #hello
     # ):
     #     return
-    # '''
+    #     ''',
 
-
-    # code = '''
+    #     '''
     # def foo(
     #     #hello
     #     ** #hello
@@ -371,9 +378,9 @@ def test_comment():
     #     int #hello
     # ):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(
     #     #hello
     #     x #hello
@@ -383,9 +390,9 @@ def test_comment():
     #     1 #hello
     # ):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(
     #     #hello
     #     x #hello
@@ -393,9 +400,9 @@ def test_comment():
     #     1 #hello
     # ):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(
     #     #hello
     #     x #hello
@@ -403,39 +410,37 @@ def test_comment():
     #     int #hello
     # ):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(x, y, # uno
     # ** # mid
     # xs # dos
     # , z):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo(x, y, # uno
     # * # dos
     # xs # tre
     # , z):
     #     return
-    # '''
+    #     ''',
 
-
-    # code = '''
+    #     '''
     # def foo(x, y, # uno
     # * # dos
     # , z):
     #     return
-    # '''
+    #     ''',
 
-
-    # code = '''
+    #     '''
     # def foo(x, y, *, z):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     # def foo( #hello
     #     p #hello 
     #     : #hello
@@ -461,27 +466,26 @@ def test_comment():
     #      int#hello
     #     ):
     #     return
-    # '''
+    #     ''',
 
-    # code = '''
+    #     '''
     #     (1,)
-    # '''
+    #     '''
+    ]
 
-#################
 
-    code = '''
-    '''
 
-    gnode = pgs.parse(code)
-    print("-- generic node --")  
-    print(pgs.dump(gnode))
+    for code in codes:
+        gnode = pgs.parse(code)
+        print("-- generic node --")  
+        print(pgs.dump(gnode))
 
-    ######
-    mod = pas.parse_from_generic_tree(gnode)
-    seq = pas.serialize(mod)
+        ######
+        mod = pas.parse_from_generic_tree(gnode)
+        seq = pas.serialize(mod)
 
-    print("-- AST --")  
-    print(pats.dump(seq))
+        print("-- AST --")  
+        print(pats.dump(seq))
 
 if __name__ == "__main__":
     test_comment()
