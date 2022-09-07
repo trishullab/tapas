@@ -489,21 +489,27 @@ def test_comment():
         return input_ * 2
         ''',
 
+        '''
+        x, y = pair = 1, 2
+        ''',
+
     ]
 
 
 
     for code in codes:
         gnode = pgs.parse(code)
-        # print("-- generic node --")  
-        # print(pgs.dump(gnode))
+        print("-- generic node --")  
+        print(pgs.dump(gnode))
 
         ######
         mod = pas.parse_from_generic_tree(gnode)
         seq = pas.serialize(mod)
 
-        # print("-- AST --")  
-        # print(pats.dump(seq))
+        print("-- AST --")  
+        print(pats.dump(seq))
+
+        assert "HOLE" not in (pats.dump(seq)) 
 
 if __name__ == "__main__":
     test_comment()

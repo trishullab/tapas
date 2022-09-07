@@ -13,7 +13,7 @@ from tapas_base import util_system as us
 
 import json
 import pytest
-package : PMap[str, pals.ModulePackage] = m() # pals.analyze_typeshed() # pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
+package : PMap[str, pals.ModulePackage] = pals.analyze_typeshed() # pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
 # package = pals.analyze_numpy_stubs(package)
 
 def load_source(name : str) -> str:

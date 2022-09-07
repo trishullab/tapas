@@ -1417,7 +1417,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             return EmptyTuple(node.source_start, node.source_end)
 
     elif (node.syntax_part == "expression_list"):
-        exprs = to_comma_exprs(node.children[1:-1])
+        exprs = to_comma_exprs(node.children)
         return Tuple(exprs, node.source_start, node.source_end)
 
     
@@ -1459,7 +1459,7 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         return List(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "pattern_list"):
-        exprs = to_comma_exprs(node.children[1:-1])
+        exprs = to_comma_exprs(node.children)
         return Tuple(exprs, node.source_start, node.source_end)
 
     elif (node.syntax_part == "yield"):
