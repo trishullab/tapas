@@ -4019,6 +4019,7 @@ class sequence_ExceptHandler(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsExceptHandler(sequence_ExceptHandler):
+    comment : str
     head : ExceptHandler | None
     tail : sequence_ExceptHandler | None
     source_start : int
@@ -4028,12 +4029,14 @@ class ConsExceptHandler(sequence_ExceptHandler):
         return handlers.case_ConsExceptHandler(self)
 
 def make_ConsExceptHandler(
+    comment : str, 
     head : ExceptHandler | None, 
     tail : sequence_ExceptHandler | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_ExceptHandler:
     return ConsExceptHandler(
+        comment,
         head,
         tail,
         source_start,
@@ -4041,12 +4044,14 @@ def make_ConsExceptHandler(
     )
 
 def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[ExceptHandler | None, SourceFlag] = SourceFlag(),
     tail : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsExceptHandler:
     return ConsExceptHandler(
+        source_ConsExceptHandler.comment if isinstance(comment, SourceFlag) else comment,
         source_ConsExceptHandler.head if isinstance(head, SourceFlag) else head,
         source_ConsExceptHandler.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsExceptHandler.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4057,6 +4062,7 @@ def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
 
 @dataclass(frozen=True, eq=True)
 class SingleExceptHandler(sequence_ExceptHandler):
+    comment : str
     content : ExceptHandler | None
     source_start : int
     source_end : int
@@ -4065,22 +4071,26 @@ class SingleExceptHandler(sequence_ExceptHandler):
         return handlers.case_SingleExceptHandler(self)
 
 def make_SingleExceptHandler(
+    comment : str, 
     content : ExceptHandler | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_ExceptHandler:
     return SingleExceptHandler(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_SingleExceptHandler(source_SingleExceptHandler : SingleExceptHandler,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[ExceptHandler | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleExceptHandler:
     return SingleExceptHandler(
+        source_SingleExceptHandler.comment if isinstance(comment, SourceFlag) else comment,
         source_SingleExceptHandler.content if isinstance(content, SourceFlag) else content,
         source_SingleExceptHandler.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleExceptHandler.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -8881,6 +8891,7 @@ def update_ClassDef(source_ClassDef : ClassDef,
 # type and constructor ElifBlock
 @dataclass(frozen=True, eq=True)
 class ElifBlock:
+    pre_comment : str
     test : expr | None
     comment : str
     body : statements | None
@@ -8889,6 +8900,7 @@ class ElifBlock:
 
 
 def make_ElifBlock(
+    pre_comment : str,
     test : expr | None,
     comment : str,
     body : statements | None,
@@ -8896,6 +8908,7 @@ def make_ElifBlock(
     source_end : int = 0
 ) -> ElifBlock:
     return ElifBlock(
+        pre_comment,
         test,
         comment,
         body,
@@ -8903,6 +8916,7 @@ def make_ElifBlock(
         source_end)
 
 def update_ElifBlock(source_ElifBlock : ElifBlock,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     test : Union[expr | None, SourceFlag] = SourceFlag(),
     comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
@@ -8910,6 +8924,7 @@ def update_ElifBlock(source_ElifBlock : ElifBlock,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ElifBlock:
     return ElifBlock(
+        source_ElifBlock.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment, 
         source_ElifBlock.test if isinstance(test, SourceFlag) else test, 
         source_ElifBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_ElifBlock.body if isinstance(body, SourceFlag) else body, 
@@ -8921,6 +8936,7 @@ def update_ElifBlock(source_ElifBlock : ElifBlock,
 # type and constructor ElseBlock
 @dataclass(frozen=True, eq=True)
 class ElseBlock:
+    pre_comment : str
     comment : str
     body : statements | None
     source_start : int
@@ -8928,24 +8944,28 @@ class ElseBlock:
 
 
 def make_ElseBlock(
+    pre_comment : str,
     comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ElseBlock:
     return ElseBlock(
+        pre_comment,
         comment,
         body,
         source_start,
         source_end)
 
 def update_ElseBlock(source_ElseBlock : ElseBlock,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ElseBlock:
     return ElseBlock(
+        source_ElseBlock.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment, 
         source_ElseBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_ElseBlock.body if isinstance(body, SourceFlag) else body, 
         source_ElseBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
@@ -8956,6 +8976,7 @@ def update_ElseBlock(source_ElseBlock : ElseBlock,
 # type and constructor FinallyBlock
 @dataclass(frozen=True, eq=True)
 class FinallyBlock:
+    pre_comment : str
     comment : str
     body : statements | None
     source_start : int
@@ -8963,24 +8984,28 @@ class FinallyBlock:
 
 
 def make_FinallyBlock(
+    pre_comment : str,
     comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> FinallyBlock:
     return FinallyBlock(
+        pre_comment,
         comment,
         body,
         source_start,
         source_end)
 
 def update_FinallyBlock(source_FinallyBlock : FinallyBlock,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> FinallyBlock:
     return FinallyBlock(
+        source_FinallyBlock.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment, 
         source_FinallyBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_FinallyBlock.body if isinstance(body, SourceFlag) else body, 
         source_FinallyBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 

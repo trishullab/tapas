@@ -769,6 +769,7 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsExceptHandler",
             [
+                Vocab("comment", "comment"),
                 Nonterm("head", "ExceptHandler", InLine()),
                 Nonterm("tail", "sequence_ExceptHandler", NewLine())
             ]
@@ -777,6 +778,7 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleExceptHandler",
             [
+                Vocab("comment", "comment"),
                 Nonterm("content", "ExceptHandler", InLine())
             ]
         ),
@@ -1831,6 +1833,8 @@ singles_schema : list[Rule] = [
     Rule(
         "ElifBlock",
         [
+
+            Vocab("pre_comment", "comment"),
             Terminal("elif "),
             Nonterm("test", "expr", InLine()),
             Terminal(":"),
@@ -1842,6 +1846,7 @@ singles_schema : list[Rule] = [
     Rule(
         "ElseBlock",
         [
+            Vocab("pre_comment", "comment"),
             Terminal("else:"),
             Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine()),
@@ -1851,6 +1856,8 @@ singles_schema : list[Rule] = [
     Rule(
         "FinallyBlock",
         [
+
+            Vocab("pre_comment", "comment"),
             Terminal("finally:"),
             Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())

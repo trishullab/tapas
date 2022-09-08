@@ -467,16 +467,25 @@ def to_sequence_var(ids : list[tuple[str, int, int]]) -> sequence_name:
 
     return result
 
-def to_sequence_ExceptHandler(es : list[ExceptHandler]) -> sequence_ExceptHandler:
-    assert es 
+def to_sequence_ExceptHandler(sections: list[list[GenericNode]]) -> sequence_ExceptHandler:
 
-    result = SingleExceptHandler(es[-1],
-        es[-1].source_start,
-        es[-1].source_end,
+    assert sections 
+
+    base_section = sections[-1]
+    comment = merge_comments(base_section[:-1]) 
+    eh = from_generic_tree_to_ExceptHandler(base_section[-1]) 
+    
+
+    result = SingleExceptHandler(comment, eh,
+        eh.source_start,
+        eh.source_end,
     )
-    for e in reversed(es[:-1]):
-        result = ConsExceptHandler(e, result,
-            e.source_start,
+
+    for section in reversed(sections[:-1]):
+        comment = merge_comments(section[:-1]) 
+        eh = from_generic_tree_to_ExceptHandler(section[-1]) 
+        result = ConsExceptHandler(comment, eh, result,
+            eh.source_start,
             result.source_end,
         )
 
@@ -2303,14 +2312,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         cond_node = children[1]
         assert children[2].syntax_part  == ":"
 
-        comment_nodes = [
-            child
-            for child in children[3:]
-            if child.syntax_part == "comment"
-        ]
+        comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[3:]))
         comment_text = merge_comments(comment_nodes)
         block_node = children[3 + len(comment_nodes)]
-
 
         def to_else_content(else_node : GenericNode) -> tuple[str, statements | None]:
             assert else_node.syntax_part == "else_clause"
@@ -2350,28 +2354,18 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         else_index = 3 + len(comment_nodes) + 1
 
-        (else_block, else_nodes) = (
+        end_indices = [
+            i + else_index + 1
+            for i, n in enumerate(children[else_index:])
+            if n.syntax_part != "comment"
+        ]
 
-            (ElseCond(
-                ElseBlock(*(to_else_content(children[-1])),
-                    children[-1].source_start,
-                    children[-1].source_end,
-                ),
-                node.source_start, node.source_end
-            ), children[else_index:-1])
-            if children[-1].syntax_part == "else_clause" else
+        start_indices = [else_index] + end_indices[:-1]
 
-            (NoCond(block_node.source_end, block_node.source_end), children[else_index:])
-        )
-
-        for n in reversed(else_nodes):
-            (e, comment_text, sts) = to_elif_content(n)
-            else_block = ElifCond(
-                ElifBlock(e, comment_text, sts, n.source_start, n.source_end), 
-                else_block,
-                node.source_start, node.source_end
-            )
-
+        sections = [
+            children[start:end]
+            for start, end in zip(start_indices, end_indices) 
+        ]
 
         cond = from_generic_tree_to_expr(cond_node)
         block = to_statements([
@@ -2379,6 +2373,40 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for stmt_node in block_node.children
             for stmt in from_generic_tree_to_stmts(stmt_node)
         ])
+
+
+        else_block = NoCond(block_node.source_end, block_node.source_end)
+
+        if sections:
+
+            if sections[-1][-1].syntax_part == "else_clause":
+                section = sections[-1]
+                comment = merge_comments(section[:-1])
+                else_block = ElseCond(
+                    ElseBlock(comment, *(to_else_content(children[-1])),
+                        sections[-1][-1].source_start,
+                        sections[-1][-1].source_end,
+                    ),
+                    node.source_start, node.source_end
+                )
+                    
+                sections = sections[:-1]
+
+            else:
+                else_block = NoCond(block_node.source_end, block_node.source_end)
+
+
+            for section in reversed(sections):
+                pre_comment = merge_comments(section[:-1])
+                n = section[-1]
+                (e, comment_text, sts) = to_elif_content(n)
+                else_block = ElifCond(
+                    ElifBlock(pre_comment, e, comment_text, sts, n.source_start, n.source_end), 
+                    else_block,
+                    node.source_start, node.source_end
+                )
+
+
         return [If(cond, comment_text, block, else_block, node.source_start, node.source_end)]
                 
 
@@ -2398,11 +2426,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[2].syntax_part == "in"
         iter_expr = from_generic_tree_to_expr(children[3])
         assert children[4].syntax_part == ":"
-        comment_nodes = [
-            child
-            for child in children[5:]
-            if child.syntax_part == "comment"
-        ]
+        comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[5:]))
         comment_text = merge_comments(comment_nodes)
         block_node = children[5 + len(comment_nodes)]
         body_stmts = to_statements([
@@ -2411,7 +2435,12 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for stmt in from_generic_tree_to_stmts(stmt_node) 
         ])
 
-        else_index = 5 + len(comment_nodes) + 1
+        remainder_index = 5 + len(comment_nodes) + 1
+
+        pre_else_comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[remainder_index:]))
+
+        else_index = remainder_index + len(pre_else_comment_nodes)
+
         else_node = (
             children[else_index]
             if (len(children) == else_index + 1) 
@@ -2432,10 +2461,12 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
         block_children = else_block_node.children if else_block_node else []
 
-
         if block_children:
 
+            pre_else_comment = merge_comments(pre_else_comment_nodes)
+
             else_block = ElseBlock(
+                pre_else_comment,
                 else_comment_text,
                 to_statements([
                     stmt
@@ -2487,7 +2518,14 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for stmt in from_generic_tree_to_stmts(stmt_node) 
         ])
 
-        else_index = 3 + len(comment_nodes) + 1
+
+
+        remainder_index = 3 + len(comment_nodes) + 1
+
+        pre_else_comment_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[remainder_index:]))
+
+        else_index = remainder_index + len(pre_else_comment_nodes)
+
         else_node = (
             children[else_index]
             if (len(children) == else_index + 1) 
@@ -2512,7 +2550,11 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
 
 
         if else_block_node:
+
+            pre_else_comment = merge_comments(pre_else_comment_nodes)
+
             else_stmts = ElseBlock(
+                pre_else_comment,
                 else_comment_text,
                 to_statements([
                     stmt
@@ -2549,137 +2591,124 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             for stmt in from_generic_tree_to_stmts(stmt_node) 
         ])
 
-        except_clause_nodes = [
-            n
-            for n in children
-            if n.syntax_part == "except_clause"
+
+        end_indices = [
+            i + block_index + 2 
+            for i, n in enumerate(children[block_index + 1:])
+            if n.syntax_part != "comment"
         ]
 
-        except_handlers = (
-            to_sequence_ExceptHandler([
-                from_generic_tree_to_ExceptHandler(ec_node)
-                for ec_node in except_clause_nodes
-            ])
-            if except_clause_nodes else
+        start_indices = [block_index + 1] + end_indices[:-1]
 
-            None
+        sections = [
+            children[start:end]
+            for start, end in zip(start_indices, end_indices) 
+        ]
+
+        except_sections = [
+            section
+            for section in sections
+            if any(n.syntax_part == "except_clause" for n in section)
+        ]
+
+        else_section = next((
+            section
+            for section in sections
+            if any(n.syntax_part == "else_clause" for n in section)
+        ), None)
+
+        finally_section = next((
+            section
+            for section in sections
+            if any(n.syntax_part == "finally_clause" for n in section)
+        ), None)
+
+        except_handlers = (
+            to_sequence_ExceptHandler(except_sections)
+            if except_sections else
+            None 
         )
 
-        else_clause_nodes = [
-            n
-            for n in children
-            if n.syntax_part == "else_clause"
-        ] 
+        else_block = None
+        if else_section:
+            pre_else_comment = merge_comments(else_section[:-1]) 
+            else_node = else_section[-1]
+            else_comment_text = merge_comments(else_node.children[2:-1])
 
-        def assert_else_clause(else_clause_node):
-            assert else_clause_node.children[0].syntax_part == "else"
-            assert else_clause_node.children[1].syntax_part == ":"
-            assert else_clause_node.children[-1].syntax_part == "block"
-
-        else_comment_text = merge_comments(else_clause_nodes[0].children[2:-1])
-
-        else_stmts = (
-            [] 
-            if len(else_clause_nodes) == 0 else
-            
-            [
+            else_stmts = [
                 stmt
-                for else_clause_node in [else_clause_nodes[0]]
-                for _ in [assert_else_clause(else_clause_node)]
-                for else_block_node in [else_clause_node.children[-1]]
+                for else_block_node in [else_node.children[-1]]
                 for stmt_node in else_block_node.children
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ]
-        )
 
-        finally_clause_nodes = [
-            n
-            for n in children
-            if n.syntax_part == "finally_clause"
-        ]
+            else_block = ElseBlock(pre_else_comment, else_comment_text, to_statements(else_stmts),
+                else_node.source_start,
+                else_node.source_end,
+            )
 
-        def assert_finally_clause(n):
-            assert n.children[0].syntax_part == "finally"
-            assert n.children[1].syntax_part == ":"
-            assert n.children[-1].syntax_part == "block"
 
-        finally_comment_text = merge_comments(else_clause_nodes[0].children[2:-1])
+        finally_block = None
+        if finally_section:
+            pre_finally_comment = merge_comments(finally_section[:-1])
+            finally_node = finally_section[-1]
+            finally_comment_text = merge_comments(finally_node.children[2:-1])
         
-        finally_stmts = (
-            [] 
-            if len(finally_clause_nodes) == 0 else
-
-            [
+            finally_stmts = [
                 stmt
-                for finally_clause_node in [finally_clause_nodes[0]] 
-                for _ in [assert_finally_clause(finally_clause_node)]
-                for block_node in [finally_clause_node.children[-1]] 
+                for block_node in [finally_node.children[-1]] 
                 for stmt_node in block_node.children
                 for stmt in from_generic_tree_to_stmts(stmt_node)
             ]
-        )
+
+            finally_block = FinallyBlock(
+                pre_finally_comment,
+                finally_comment_text, 
+                to_statements(finally_stmts),
+                finally_node.source_start,
+                finally_node.source_end,
+            )
 
 
-        if except_handlers and else_stmts and finally_stmts:
-            else_clause_node = else_clause_nodes[0]
-            finally_clause_node = finally_clause_nodes[0]
+        if except_handlers and else_block and finally_block:
             return [
                 TryElseFin(
                     comment,
                     try_stmts, 
                     except_handlers, 
-                    ElseBlock(else_comment_text, to_statements(else_stmts),
-                        else_clause_node.source_start,
-                        else_clause_node.source_end,
-                    ), 
-                    FinallyBlock(finally_comment_text, to_statements(finally_stmts),
-                        finally_clause_node.source_start,
-                        finally_clause_node.source_end,
-                    ),
+                    else_block,
+                    finally_block,
                     node.source_start, node.source_end
                 )
             ]
 
-        elif except_handlers and else_stmts:
-            else_clause_node = else_clause_nodes[0]
+        elif except_handlers and else_block:
             return [
                 TryElse(
                     comment,
                     try_stmts, except_handlers, 
-                    ElseBlock(else_comment_text, to_statements(else_stmts),
-                        else_clause_node.source_start,
-                        else_clause_node.source_end,
-                    ),
+                    else_block,
                     node.source_start, node.source_end
                 )
             ]
 
-        elif except_handlers and finally_stmts:
-            finally_clause_node = finally_clause_nodes[0]
+        elif except_handlers and finally_block:
             return [
                 TryExceptFin(
                     comment,
-                    try_stmts, except_handlers, FinallyBlock(
-                        finally_comment_text, 
-                        to_statements(finally_stmts),
-                        finally_clause_node.source_start,
-                        finally_clause_node.source_end,
-                    ),
+                    try_stmts, 
+                    except_handlers, 
+                    finally_block,
                     node.source_start, node.source_end
                 )
             ]
 
-        elif finally_stmts:
-            finally_clause_node = finally_clause_nodes[0]
+        elif finally_block:
             return [
                 TryFin(
                     comment,
-                    try_stmts, FinallyBlock(
-                        finally_comment_text, 
-                        to_statements(finally_stmts),
-                        finally_clause_node.source_start,
-                        finally_clause_node.source_end,
-                    ),
+                    try_stmts, 
+                    finally_block,
                     node.source_start, node.source_end
                 )
             ]

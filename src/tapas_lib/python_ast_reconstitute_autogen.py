@@ -3201,18 +3201,23 @@ def to_sequence_ExceptHandler(xs : tuple[abstract_token, ...]) -> tuple[sequence
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 2
+            total_num_children = 3
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    ConsExceptHandler(children[0], children[1]),
+                    ConsExceptHandler(children[0], children[1], children[2]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
                 (child, remainder) = to_ExceptHandler(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -3230,18 +3235,23 @@ def to_sequence_ExceptHandler(xs : tuple[abstract_token, ...]) -> tuple[sequence
                 children = children + [child]
                 stack_result = None
 
-            total_num_children = 1
+            total_num_children = 2
 
             index = len(children)
             if index == total_num_children:
                 # the processing of the current rule has completed
                 # return the result to the parent in the stack 
                 stack_result = (
-                    SingleExceptHandler(children[0]),
+                    SingleExceptHandler(children[0], children[1]),
                     remainder
                 )
             
             elif index == 0: # index does *not* refer to an inductive child
+                (child, remainder) = to_str(remainder)
+                stack.append((x, children + [child], remainder))
+                
+
+            elif index == 1: # index does *not* refer to an inductive child
                 (child, remainder) = to_ExceptHandler(remainder)
                 stack.append((x, children + [child], remainder))
                 
@@ -7070,10 +7080,11 @@ def to_ElifBlock(xs : tuple[abstract_token, ...]) -> tuple[ElifBlock, tuple[abst
     assert x.options == "ElifBlock"
     assert x.selection == "ElifBlock"
 
+    (pre_comment, xs) = to_str(xs)
     (test, xs) = to_expr(xs)
     (comment, xs) = to_str(xs)
     (body, xs) = to_statements(xs)
-    return (ElifBlock(test, comment, body), xs)
+    return (ElifBlock(pre_comment, test, comment, body), xs)
     
 
 def to_ElseBlock(xs : tuple[abstract_token, ...]) -> tuple[ElseBlock, tuple[abstract_token, ...]]:
@@ -7083,9 +7094,10 @@ def to_ElseBlock(xs : tuple[abstract_token, ...]) -> tuple[ElseBlock, tuple[abst
     assert x.options == "ElseBlock"
     assert x.selection == "ElseBlock"
 
+    (pre_comment, xs) = to_str(xs)
     (comment, xs) = to_str(xs)
     (body, xs) = to_statements(xs)
-    return (ElseBlock(comment, body), xs)
+    return (ElseBlock(pre_comment, comment, body), xs)
     
 
 def to_FinallyBlock(xs : tuple[abstract_token, ...]) -> tuple[FinallyBlock, tuple[abstract_token, ...]]:
@@ -7095,9 +7107,10 @@ def to_FinallyBlock(xs : tuple[abstract_token, ...]) -> tuple[FinallyBlock, tupl
     assert x.options == "FinallyBlock"
     assert x.selection == "FinallyBlock"
 
+    (pre_comment, xs) = to_str(xs)
     (comment, xs) = to_str(xs)
     (body, xs) = to_statements(xs)
-    return (FinallyBlock(comment, body), xs)
+    return (FinallyBlock(pre_comment, comment, body), xs)
      
 
 

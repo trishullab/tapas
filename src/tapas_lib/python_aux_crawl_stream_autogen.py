@@ -6178,30 +6178,54 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 3
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            head_tree = children[0].tree
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
+                
+            head_tree = children[1].tree
             assert isinstance(head_tree, ExceptHandler)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
                 
-            tail_tree = children[1].tree
+            tail_tree = children[2].tree
             assert isinstance(tail_tree, sequence_ExceptHandler)
-            tail_aux = children[1].aux
+            tail_aux = children[2].aux
                 
-            return self.synthesize_for_sequence_ExceptHandler_ConsExceptHandler(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+            return self.synthesize_for_sequence_ExceptHandler_ConsExceptHandler(inher_aux, comment_tree, comment_aux, head_tree, head_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_sequence_ExceptHandler_ConsExceptHandler_head(
+            child_inher_aux = self.traverse_sequence_ExceptHandler_ConsExceptHandler_comment(
                 inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_sequence_ExceptHandler_ConsExceptHandler_head(
+                inher_aux,
+                comment_tree, 
+                comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
@@ -6210,18 +6234,23 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             return None
             
         
-        elif index == 1 : # index refers to an inductive child
+        elif index == 2 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("sequence_ExceptHandler", "ConsExceptHandler"), inher_aux, children))
 
             
-            head_tree = children[0].tree
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
+            head_tree = children[1].tree
             assert isinstance(head_tree, ExceptHandler)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
 
             # add on child node 
             child_inher_aux = self.traverse_sequence_ExceptHandler_ConsExceptHandler_tail(
                 inher_aux,
+                comment_tree, 
+                comment_aux,
                 head_tree, 
                 head_aux
             )
@@ -6238,26 +6267,50 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         
 
-        total_num_children = 1
+        total_num_children = 2
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, ExceptHandler)
-            content_aux = children[0].aux
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
                 
-            return self.synthesize_for_sequence_ExceptHandler_SingleExceptHandler(inher_aux, content_tree, content_aux)
+            content_tree = children[1].tree
+            assert isinstance(content_tree, ExceptHandler)
+            content_aux = children[1].aux
+                
+            return self.synthesize_for_sequence_ExceptHandler_SingleExceptHandler(inher_aux, comment_tree, comment_aux, content_tree, content_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_sequence_ExceptHandler_SingleExceptHandler_content(
+            child_inher_aux = self.traverse_sequence_ExceptHandler_SingleExceptHandler_comment(
                 inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("sequence_ExceptHandler", "SingleExceptHandler"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            comment_tree = children[0].tree
+            assert isinstance(comment_tree, str)
+            comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_sequence_ExceptHandler_SingleExceptHandler_content(
+                inher_aux,
+                comment_tree, 
+                comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_ExceptHandler(child_token, child_inher_aux)
@@ -11669,8 +11722,20 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         if token.selection != "ElifBlock": raise SyntaxError()
         
 
-        child_inher_aux = self.traverse_ElifBlock_test(
+        child_inher_aux = self.traverse_ElifBlock_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_ElifBlock_test(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_expr(child_token, child_inher_aux)
@@ -11681,6 +11746,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         child_inher_aux = self.traverse_ElifBlock_comment(
             inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
             test_tree, 
             test_aux
         )
@@ -11693,6 +11760,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         child_inher_aux = self.traverse_ElifBlock_body(
             inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
             test_tree, 
             test_aux,
             comment_tree, 
@@ -11706,15 +11775,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_ElifBlock(inher_aux, test_tree, test_aux, comment_tree, comment_aux, body_tree, body_aux)
+        return self.synthesize_for_ElifBlock(inher_aux, pre_comment_tree, pre_comment_aux, test_tree, test_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: ElseBlock"
     def inspect_ElseBlock(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
         if token.selection != "ElseBlock": raise SyntaxError()
         
 
-        child_inher_aux = self.traverse_ElseBlock_comment(
+        child_inher_aux = self.traverse_ElseBlock_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_ElseBlock_comment(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_str(child_token, child_inher_aux)
@@ -11725,6 +11806,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         child_inher_aux = self.traverse_ElseBlock_body(
             inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
             comment_tree, 
             comment_aux
         )
@@ -11736,15 +11819,27 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_ElseBlock(inher_aux, comment_tree, comment_aux, body_tree, body_aux)
+        return self.synthesize_for_ElseBlock(inher_aux, pre_comment_tree, pre_comment_aux, comment_tree, comment_aux, body_tree, body_aux)
     
     # inspect: FinallyBlock"
     def inspect_FinallyBlock(self, token : Grammar, inher_aux : InherAux) -> Result[SynthAux]:
         if token.selection != "FinallyBlock": raise SyntaxError()
         
 
-        child_inher_aux = self.traverse_FinallyBlock_comment(
+        child_inher_aux = self.traverse_FinallyBlock_pre_comment(
             inher_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+            
+
+        child_inher_aux = self.traverse_FinallyBlock_comment(
+            inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_str(child_token, child_inher_aux)
@@ -11755,6 +11850,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         child_inher_aux = self.traverse_FinallyBlock_body(
             inher_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
             comment_tree, 
             comment_aux
         )
@@ -11766,7 +11863,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             
 
 
-        return self.synthesize_for_FinallyBlock(inher_aux, comment_tree, comment_aux, body_tree, body_aux)
+        return self.synthesize_for_FinallyBlock(inher_aux, pre_comment_tree, pre_comment_aux, comment_tree, comment_aux, body_tree, body_aux)
      
 
     
@@ -13093,24 +13190,42 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'constraint') 
     
     # traverse sequence_ExceptHandler <-- ConsExceptHandler"
-    def traverse_sequence_ExceptHandler_ConsExceptHandler_head(self, 
+    def traverse_sequence_ExceptHandler_ConsExceptHandler_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse sequence_ExceptHandler <-- ConsExceptHandler"
+    def traverse_sequence_ExceptHandler_ConsExceptHandler_head(self, 
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'ExceptHandler') 
     
     # traverse sequence_ExceptHandler <-- ConsExceptHandler"
     def traverse_sequence_ExceptHandler_ConsExceptHandler_tail(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         head_tree : ExceptHandler, 
         head_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (comment_aux, head_aux,), 'sequence_ExceptHandler') 
+    
+    # traverse sequence_ExceptHandler <-- SingleExceptHandler"
+    def traverse_sequence_ExceptHandler_SingleExceptHandler_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse sequence_ExceptHandler <-- SingleExceptHandler"
     def traverse_sequence_ExceptHandler_SingleExceptHandler_content(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'ExceptHandler') 
+        return self.traverse_auxes(inher_aux, (comment_aux,), 'ExceptHandler') 
     
     # traverse conditions <-- ElifCond"
     def traverse_conditions_ElifCond_content(self, 
@@ -15052,56 +15167,88 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (name_aux, bs_aux, comment_aux,), 'statements') 
     
     # traverse ElifBlock
-    def traverse_ElifBlock_test(self,
+    def traverse_ElifBlock_pre_comment(self,
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'expr') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse ElifBlock
+    def traverse_ElifBlock_test(self,
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'expr') 
     
     # traverse ElifBlock
     def traverse_ElifBlock_comment(self,
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         test_tree : expr, 
         test_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux,), 'str') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, test_aux,), 'str') 
     
     # traverse ElifBlock
     def traverse_ElifBlock_body(self,
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         test_tree : expr, 
         test_aux : SynthAux,
         comment_tree : str, 
         comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (test_aux, comment_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, test_aux, comment_aux,), 'statements') 
     
     # traverse ElseBlock
-    def traverse_ElseBlock_comment(self,
+    def traverse_ElseBlock_pre_comment(self,
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse ElseBlock
+    def traverse_ElseBlock_comment(self,
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'str') 
     
     # traverse ElseBlock
     def traverse_ElseBlock_body(self,
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         comment_tree : str, 
         comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, comment_aux,), 'statements') 
     
     # traverse FinallyBlock
-    def traverse_FinallyBlock_comment(self,
+    def traverse_FinallyBlock_pre_comment(self,
         inher_aux : InherAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse FinallyBlock
+    def traverse_FinallyBlock_comment(self,
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'str') 
+    
+    # traverse FinallyBlock
     def traverse_FinallyBlock_body(self,
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         comment_tree : str, 
         comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (comment_aux,), 'statements') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, comment_aux,), 'statements') 
      
 
     
@@ -16105,25 +16252,29 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: sequence_ExceptHandler <-- ConsExceptHandler
     def synthesize_for_sequence_ExceptHandler_ConsExceptHandler(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         head_tree : ExceptHandler, 
         head_aux : SynthAux,
         tail_tree : sequence_ExceptHandler, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ConsExceptHandler(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_ConsExceptHandler(comment_tree, head_tree, tail_tree),
+            aux = self.synthesize_auxes((comment_aux, head_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_ExceptHandler <-- SingleExceptHandler
     def synthesize_for_sequence_ExceptHandler_SingleExceptHandler(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : ExceptHandler, 
         content_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SingleExceptHandler(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SingleExceptHandler(comment_tree, content_tree),
+            aux = self.synthesize_auxes((comment_aux, content_aux,)) 
         )
     
     # synthesize: conditions <-- ElifCond
@@ -17595,6 +17746,8 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: ElifBlock
     def synthesize_for_ElifBlock(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         test_tree : expr, 
         test_aux : SynthAux,
         comment_tree : str, 
@@ -17603,34 +17756,38 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ElifBlock(test_tree, comment_tree, body_tree),
-            aux = self.synthesize_auxes((test_aux, comment_aux, body_aux,)) 
+            tree = make_ElifBlock(pre_comment_tree, test_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, test_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: ElseBlock
     def synthesize_for_ElseBlock(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         comment_tree : str, 
         comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ElseBlock(comment_tree, body_tree),
-            aux = self.synthesize_auxes((comment_aux, body_aux,)) 
+            tree = make_ElseBlock(pre_comment_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, comment_aux, body_aux,)) 
         )
     
     # synthesize: FinallyBlock
     def synthesize_for_FinallyBlock(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         comment_tree : str, 
         comment_aux : SynthAux,
         body_tree : statements, 
         body_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_FinallyBlock(comment_tree, body_tree),
-            aux = self.synthesize_auxes((comment_aux, body_aux,)) 
+            tree = make_FinallyBlock(pre_comment_tree, comment_tree, body_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, comment_aux, body_aux,)) 
         )
      
 

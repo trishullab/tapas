@@ -105,6 +105,11 @@ def dump(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...
     while stack:
         format : Format = stack.pop()
         inst = next(inst_iter, None)
+        if not inst:
+            print("@@@@@@@@@@")
+            print('\n'.join(result_strs))
+            print("#########")
+            print(format)
         assert inst
 
 

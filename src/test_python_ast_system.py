@@ -490,10 +490,75 @@ def test_comment():
         ''',
 
         '''
+        if True:
+            pass
+        ''',
+
+        '''
         x, y = pair = 1, 2
         ''',
 
+        '''
+    if True: # comment after if
+        # another comment
+        x = 0 # comment 
+        # comment
+        x = x + 1 #hello
+    #hello
+    else: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+        ''',
+
+        '''
+    if True: # comment after if
+        # another comment
+        x = 0 # comment 
+        # comment
+        x = x + 1 #hello
+    #hello
+    elif True: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    #hello
+    else: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    #hello
+        ''',
+
+        '''
+    for x in []: #hello
+        pass #hello
+    #hello
+    else: #hello
+        pass #hello
+    #hello
+        ''',
+
+        '''
+    class A(Exception): pass
+    try: #hello
+        pass #hello
+    #hello
+    except A:
+        pass #hello
+    #hello
+    except Exception:
+        pass #hello
+    #hello
+    else:
+        pass #hello
+    #hello
+    finally: #hello
+        pass #hello
+        '''
+    
     ]
+
 
 
 
@@ -505,7 +570,6 @@ def test_comment():
         ######
         mod = pas.parse_from_generic_tree(gnode)
         seq = pas.serialize(mod)
-
         print("-- AST --")  
         print(pats.dump(seq))
 

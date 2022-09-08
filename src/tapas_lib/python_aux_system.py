@@ -5468,6 +5468,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: ElifBlock
     def synthesize_for_ElifBlock(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
         comment_tree : str, 
@@ -5476,7 +5478,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         return paa.Result[SynthAux](
-            tree = pas.make_ElifBlock(test_tree, comment_tree, body_tree), 
+            tree = pas.make_ElifBlock(pre_comment_tree, test_tree, comment_tree, body_tree), 
             aux = update_SynthAux(body_aux,
                 return_types = body_aux.return_types, 
                 yield_types = body_aux.yield_types, 

@@ -2639,6 +2639,14 @@ def from_sequence_ExceptHandler(
                 stack.append(o.tail)
 
                 stack.append(from_ExceptHandler(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_ExceptHandler',
@@ -2652,6 +2660,14 @@ def from_sequence_ExceptHandler(
             def handle_SingleExceptHandler(o : SingleExceptHandler): 
                 
                 stack.append(from_ExceptHandler(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_ExceptHandler',
@@ -5355,6 +5371,7 @@ def from_ElifBlock(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.pre_comment)]) +
         from_expr(o.test) +
         tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
@@ -5377,6 +5394,7 @@ def from_ElseBlock(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.pre_comment)]) +
         tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
@@ -5398,6 +5416,7 @@ def from_FinallyBlock(
             source_end = o.source_end
         )]) +
 
+        tuple([make_Vocab(options = 'comment', selection = o.pre_comment)]) +
         tuple([make_Vocab(options = 'comment', selection = o.comment)]) +
         from_statements(o.body)
 
