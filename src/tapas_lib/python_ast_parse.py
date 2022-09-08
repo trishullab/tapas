@@ -1257,11 +1257,21 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
             return Subscript(target, comment_a, comment_b, slice, comment_c, node.source_start, node.source_end)
 
         else:
-            comma_sep_nodes = children[bracket_index + 1:-1]
-            exprs = to_comma_exprs(comma_sep_nodes)
+            slice_nodes = children[bracket_index + 1:-1]
+            if any(n.syntax_part == "," for n in slice_nodes):
+                exprs = to_comma_exprs(slice_nodes)
 
-            slice = Tuple(exprs, children[1].source_start, children[-1].source_end)
-            return Subscript(target, comment_a, '', slice, '', node.source_start, node.source_end)
+                slice = Tuple(exprs, children[1].source_start, children[-1].source_end)
+                return Subscript(target, comment_a, '', slice, '', node.source_start, node.source_end)
+            else:
+                comment_b_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", slice_nodes))
+                slice_node = slice_nodes[len(comment_b_nodes)]
+                comment_c_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", slice_nodes[len(comment_b_nodes) + 1:]))
+                comment_b = merge_comments(comment_b_nodes)
+                slice = from_generic_tree_to_expr(slice_node)
+                comment_c = merge_comments(comment_c_nodes)
+                slice = from_generic_tree_to_expr(slice_node)
+                return Subscript(target, comment_a, comment_b, slice, comment_c, node.source_start, node.source_end)
 
 
     elif (node.syntax_part == "call"):
