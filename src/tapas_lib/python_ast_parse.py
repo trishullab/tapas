@@ -543,6 +543,7 @@ def to_sections(comma_sep_nodes : list[GenericNode]) -> list[list[GenericNode]]:
         section
         for start, end in zip(start_indices, end_indices) 
         for section in [comma_sep_nodes[start:end]]
+        if end > start
     ]
 
 
