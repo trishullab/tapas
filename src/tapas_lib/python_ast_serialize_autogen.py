@@ -1065,6 +1065,22 @@ def from_import_name(
                 )
         
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
 
                 stack.append(
                     tuple([make_Vocab(
@@ -2351,7 +2367,23 @@ def from_sequence_import_name(
                 stack.append(o.tail)
 
 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_import_name(o.head))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_import_name',
@@ -2364,7 +2396,23 @@ def from_sequence_import_name(
 
             def handle_SingleImportName(o : SingleImportName): 
                 
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.post_comment
+                    )])
+                )
+        
+
                 stack.append(from_import_name(o.content))
+
+                stack.append(
+                    tuple([make_Vocab(
+                        options = 'comment',
+                        selection = o.pre_comment
+                    )])
+                )
+        
                 stack.append(
                     tuple([make_Grammar(
                         options = 'sequence_import_name',

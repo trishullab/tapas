@@ -569,20 +569,61 @@ def test_comment():
     
         '''
         xs : tuple[()]
+        ''',
+
+        '''
+    from typing import (  # noqa Y027
+        IO,
+        Any
+    )
+        ''',
+
+        '''
+    from typing import (  # noqa Y027
+        #hello
+        IO as io #hello
+        , #hello
+        Any #hello
+    )
+        ''',
+
+        '''
+    from typing import (  # noqa Y027
+        IO #hello
+        as #hello
+        io #hello
+        , #hello
+        Any #hello
+        #hello
+    )
         '''
     ]
 
 
+    codes = [
+        '''
+    def foo(
+        x : int,
+        y : int,  # hello 
+    ) : pass 
+        ''',
+
+    ]
+
+
+
+
+
     for code in codes:
         gnode = pgs.parse(code)
-        # print("-- generic node --")  
-        # print(pgs.dump(gnode))
+        print("-- generic node --")  
+        print(pgs.dump(gnode))
 
         ######
         mod = pas.parse_from_generic_tree(gnode)
         seq = pas.serialize(mod)
-        # print("-- AST --")  
-        # print(pats.dump(seq))
+        print("-- AST --")  
+        print(pats.dump(seq))
 
         assert "HOLE" not in (pats.dump(seq)) 
 

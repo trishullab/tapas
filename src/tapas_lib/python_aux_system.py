@@ -1310,8 +1310,8 @@ def analyze_modules_once(
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            # raise ex
-            continue
+            raise ex
+            # continue
             # return package 
         finally:
             print("")
@@ -5230,11 +5230,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         alias_tree : str, 
         alias_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         return paa.Result[SynthAux](
-            tree = pas.make_ImportNameAlias(name_tree, alias_tree),
+            tree = pas.make_ImportNameAlias(name_tree, pre_comment_tree, post_comment_tree, alias_tree),
             aux = make_SynthAux(
                 import_names=pmap({alias_tree : name_tree})
             )

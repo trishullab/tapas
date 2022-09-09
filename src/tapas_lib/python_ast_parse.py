@@ -440,15 +440,21 @@ def to_statements(stmts : list[stmt | None]) -> statements | None:
     else:
         return None
 
-def to_sequence_import_name(ns : list[import_name | None]) -> sequence_import_name:
-    assert ns 
+def to_sequence_import_name(nodes : list[GenericNode]) -> sequence_import_name:
+    assert nodes
+    sections = to_sections(nodes)
+    assert sections 
+    pre, node, post = to_comment_triple(sections[-1])
+    n = from_generic_tree_to_import_name(node)
 
-    result = SingleImportName(ns[-1],
-            unguard_import_name(ns[-1]).source_start if ns[-1] else 0,
-            unguard_import_name(ns[-1]).source_end if ns[-1] else 0,
+    result = SingleImportName(pre, n, post,
+            unguard_import_name(n).source_start if n else 0,
+            unguard_import_name(n).source_end if n else 0,
     )
-    for n in reversed(ns[:-1]):
-        result = ConsImportName(n, result,
+    for section in reversed(sections[:-1]):
+        pre, node, post = to_comment_triple(section)
+        n = from_generic_tree_to_import_name(node)
+        result = ConsImportName(pre, n, post, result,
             unguard_import_name(n).source_start if n else 0,
             result.source_end
         )
@@ -548,12 +554,17 @@ def to_sections(comma_sep_nodes : list[GenericNode]) -> list[list[GenericNode]]:
 
     assert len(end_indices) == len(start_indices)
 
-    return [ 
+    sections = [ 
         section
         for start, end in zip(start_indices, end_indices) 
         for section in [comma_sep_nodes[start:end]]
         if end > start
     ]
+
+    if sections and all(n.syntax_part == "comment" for n in sections[-1]):
+        sections = sections[:-2] + [sections[-2] + sections[-1]]
+
+    return sections
 
 
 def to_comma_exprs(comma_sep_nodes : list[GenericNode]) -> comma_exprs | None:
@@ -755,11 +766,7 @@ def from_generic_tree(node : GenericNode) -> module:
                 children[3:]
             )
 
-            names = to_sequence_import_name([
-                from_generic_tree_to_import_name(n) 
-                for n in import_list 
-                if n.syntax_part != ","
-            ])
+            names = to_sequence_import_name(import_list)
 
             statements = [
                 stmt
@@ -798,7 +805,7 @@ def from_generic_tree_to_identifier(node : GenericNode) -> str:
        return "" 
 
 
-def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] = None) -> import_name | None:
+def from_generic_tree_to_import_name(node : GenericNode, pre_comment = '', post_comment = '', alias : Optional[str] = None) -> import_name | None:
     
     if (node.syntax_part == "dotted_name"):
         dotted_name = ".".join([
@@ -807,7 +814,7 @@ def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] =
             if child.syntax_part == "identifier"
         ])
         return (
-            ImportNameAlias(dotted_name, alias, node.source_start, node.source_end) 
+            ImportNameAlias(dotted_name, pre_comment, post_comment, alias, node.source_start, node.source_end) 
             if alias else 
             ImportNameOnly(dotted_name, node.source_start, node.source_end)
         )
@@ -815,7 +822,7 @@ def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] =
     elif (node.syntax_part == "identifier"):
         text = node.text
         return (
-            ImportNameAlias(text, alias, node.source_start, node.source_end) 
+            ImportNameAlias(text, alias, pre_comment, post_comment, node.source_start, node.source_end) 
             if alias else 
             ImportNameOnly(text, node.source_start, node.source_end)
         )
@@ -823,10 +830,18 @@ def from_generic_tree_to_import_name(node : GenericNode, alias : Optional[str] =
     elif (node.syntax_part == "aliased_import"):
         children = node.children
         name_node = children[0]
-        assert children[1].syntax_part == "as"
-        asname_node = children[2]
+
+        as_index = next(
+            i
+            for i, n in enumerate(children)
+            if n.syntax_part == "as"
+        )
+        pre_comment = merge_comments(children[1:as_index])
+        post_comment = merge_comments(children[as_index + 1:-1])
+
+        asname_node = children[-1]
         asname_text = asname_node.text
-        return from_generic_tree_to_import_name(name_node, asname_text)
+        return from_generic_tree_to_import_name(name_node, pre_comment, post_comment, asname_text)
     else:
         return node_error(node)
 
@@ -2006,11 +2021,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         children = node.children
         assert children[0].syntax_part == "import"
         return [Import(
-            to_sequence_import_name([
-                from_generic_tree_to_import_name(child)
-                for child in children[1:]
-                if child.syntax_part != ","
-            ]),
+            to_sequence_import_name(children[1:]),
             node.source_start, node.source_start
         )]
 
@@ -2048,11 +2059,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
                 children[3:]
             )
 
-            aliases = to_sequence_import_name([
-                from_generic_tree_to_import_name(n) 
-                for n in import_list
-                if n.syntax_part != ","
-            ])
+            aliases = to_sequence_import_name(import_list)
             return [ImportFrom(module, aliases, node.source_start, node.source_start)]
 
     elif (node.syntax_part == "future_import_statement"):
@@ -2068,11 +2075,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
             children[3:]
         )
 
-        names = to_sequence_import_name([
-            from_generic_tree_to_import_name(n) 
-            for n in import_list 
-            if n.syntax_part != ","
-        ])
+        names = to_sequence_import_name(import_list)
         return [ImportFrom(id, names, node.source_start, node.source_start)]
 
     elif (node.syntax_part == "assert_statement"):

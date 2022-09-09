@@ -305,7 +305,9 @@ choices_schema : dict[str, list[Rule]] = {
             "ImportNameAlias",
             [
                 Vocab("name", "identifier"),
+                Vocab("pre_comment", "comment"),
                 Terminal(" as "),
+                Vocab("post_comment", "comment"),
                 Vocab("alias", "identifier")
             ]
         ),
@@ -676,7 +678,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsImportName",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "import_name", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "sequence_import_name", InLine()),
             ]
@@ -685,7 +690,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleImportName",
             [
-                Nonterm("content", "import_name", InLine())
+
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "import_name", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 

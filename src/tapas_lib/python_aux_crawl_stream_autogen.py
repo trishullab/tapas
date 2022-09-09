@@ -3546,10 +3546,38 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         assert isinstance(name_tree, str)
         name_aux = synth.aux
         
-        child_inher_aux = self.traverse_import_name_ImportNameAlias_alias(
+        child_inher_aux = self.traverse_import_name_ImportNameAlias_pre_comment(
             inher_aux,
             name_tree, 
             name_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        pre_comment_tree = synth.tree
+        assert isinstance(pre_comment_tree, str)
+        pre_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_import_name_ImportNameAlias_post_comment(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            pre_comment_tree, 
+            pre_comment_aux
+        )
+        child_token = self.next(child_inher_aux)
+        synth = self.crawl_str(child_token, child_inher_aux)
+        post_comment_tree = synth.tree
+        assert isinstance(post_comment_tree, str)
+        post_comment_aux = synth.aux
+        
+        child_inher_aux = self.traverse_import_name_ImportNameAlias_alias(
+            inher_aux,
+            name_tree, 
+            name_aux,
+            pre_comment_tree, 
+            pre_comment_aux,
+            post_comment_tree, 
+            post_comment_aux
         )
         child_token = self.next(child_inher_aux)
         synth = self.crawl_str(child_token, child_inher_aux)
@@ -3558,7 +3586,7 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         alias_aux = synth.aux
         
 
-        return self.synthesize_for_import_name_ImportNameAlias(inher_aux, name_tree, name_aux, alias_tree, alias_aux)
+        return self.synthesize_for_import_name_ImportNameAlias(inher_aux, name_tree, name_aux, pre_comment_tree, pre_comment_aux, post_comment_tree, post_comment_aux, alias_tree, alias_aux)
     
     # inspect: import_name <-- ImportNameOnly"
     def inspect_import_name_ImportNameOnly(self, inher_aux : InherAux) -> Result[SynthAux]:
@@ -5721,30 +5749,58 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             children = children + (stack_result,)
         
 
-        total_num_children = 2
+        total_num_children = 4
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+                
+            head_tree = children[1].tree
             assert isinstance(head_tree, import_name)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
                 
-            tail_tree = children[1].tree
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            tail_tree = children[3].tree
             assert isinstance(tail_tree, sequence_import_name)
-            tail_aux = children[1].aux
+            tail_aux = children[3].aux
                 
-            return self.synthesize_for_sequence_import_name_ConsImportName(inher_aux, head_tree, head_aux, tail_tree, tail_aux)
+            return self.synthesize_for_sequence_import_name_ConsImportName(inher_aux, pre_comment_tree, pre_comment_aux, head_tree, head_aux, post_comment_tree, post_comment_aux, tail_tree, tail_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_sequence_import_name_ConsImportName_head(
+            child_inher_aux = self.traverse_sequence_import_name_ConsImportName_pre_comment(
                 inher_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_sequence_import_name_ConsImportName_head(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
             )
             child_token = self.next(child_inher_aux)
             child_synth = self.crawl_import_name(child_token, child_inher_aux)
@@ -5752,21 +5808,56 @@ class Server(ABC, Generic[InherAux, SynthAux]):
             stack.append((make_Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + (child_synth,)))
             return None
             
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
+            assert isinstance(head_tree, import_name)
+            head_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_sequence_import_name_ConsImportName_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                head_tree, 
+                head_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("sequence_import_name", "ConsImportName"), inher_aux, children + (child_synth,)))
+            return None
+            
         
-        elif index == 1 : # index refers to an inductive child
+        elif index == 3 : # index refers to an inductive child
             # put back current node
             stack.append((make_Grammar("sequence_import_name", "ConsImportName"), inher_aux, children))
 
             
-            head_tree = children[0].tree
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            head_tree = children[1].tree
             assert isinstance(head_tree, import_name)
-            head_aux = children[0].aux
+            head_aux = children[1].aux
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
 
             # add on child node 
             child_inher_aux = self.traverse_sequence_import_name_ConsImportName_tail(
                 inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
                 head_tree, 
-                head_aux
+                head_aux,
+                post_comment_tree, 
+                post_comment_aux
             )
             stack.append((self.next(child_inher_aux), child_inher_aux, ()))
             
@@ -5781,29 +5872,82 @@ class Server(ABC, Generic[InherAux, SynthAux]):
 
         
 
-        total_num_children = 1
+        total_num_children = 3
 
         index = len(children)
         if index == total_num_children:
             # the processing of the current rule has completed
             # return the analysis result to the previous item in the stack
             
-            content_tree = children[0].tree
-            assert isinstance(content_tree, import_name)
-            content_aux = children[0].aux
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
                 
-            return self.synthesize_for_sequence_import_name_SingleImportName(inher_aux, content_tree, content_aux)
+            content_tree = children[1].tree
+            assert isinstance(content_tree, import_name)
+            content_aux = children[1].aux
+                
+            post_comment_tree = children[2].tree
+            assert isinstance(post_comment_tree, str)
+            post_comment_aux = children[2].aux
+                
+            return self.synthesize_for_sequence_import_name_SingleImportName(inher_aux, pre_comment_tree, pre_comment_aux, content_tree, content_aux, post_comment_tree, post_comment_aux)
         
         elif index == 0: # index does *not* refer to an inductive child
 
             
 
 
-            child_inher_aux = self.traverse_sequence_import_name_SingleImportName_content(
+            child_inher_aux = self.traverse_sequence_import_name_SingleImportName_pre_comment(
                 inher_aux
             )
             child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 1: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+
+
+            child_inher_aux = self.traverse_sequence_import_name_SingleImportName_content(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux
+            )
+            child_token = self.next(child_inher_aux)
             child_synth = self.crawl_import_name(child_token, child_inher_aux)
+
+            stack.append((make_Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + (child_synth,)))
+            return None
+            
+
+        elif index == 2: # index does *not* refer to an inductive child
+
+            
+            pre_comment_tree = children[0].tree
+            assert isinstance(pre_comment_tree, str)
+            pre_comment_aux = children[0].aux
+            content_tree = children[1].tree
+            assert isinstance(content_tree, import_name)
+            content_aux = children[1].aux
+
+
+            child_inher_aux = self.traverse_sequence_import_name_SingleImportName_post_comment(
+                inher_aux,
+                pre_comment_tree, 
+                pre_comment_aux,
+                content_tree, 
+                content_aux
+            )
+            child_token = self.next(child_inher_aux)
+            child_synth = self.crawl_str(child_token, child_inher_aux)
 
             stack.append((make_Grammar("sequence_import_name", "SingleImportName"), inher_aux, children + (child_synth,)))
             return None
@@ -12510,12 +12654,34 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse import_name <-- ImportNameAlias"
-    def traverse_import_name_ImportNameAlias_alias(self, 
+    def traverse_import_name_ImportNameAlias_pre_comment(self, 
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux
     ) -> InherAux:
         return self.traverse_auxes(inher_aux, (name_aux,), 'str') 
+    
+    # traverse import_name <-- ImportNameAlias"
+    def traverse_import_name_ImportNameAlias_post_comment(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, pre_comment_aux,), 'str') 
+    
+    # traverse import_name <-- ImportNameAlias"
+    def traverse_import_name_ImportNameAlias_alias(self, 
+        inher_aux : InherAux,
+        name_tree : str, 
+        name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (name_aux, pre_comment_aux, post_comment_aux,), 'str') 
     
     # traverse import_name <-- ImportNameOnly"
     def traverse_import_name_ImportNameOnly_name(self, 
@@ -13090,24 +13256,64 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse sequence_import_name <-- ConsImportName"
-    def traverse_sequence_import_name_ConsImportName_head(self, 
+    def traverse_sequence_import_name_ConsImportName_pre_comment(self, 
         inher_aux : InherAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'import_name') 
+        return self.traverse_auxes(inher_aux, (), 'str') 
+    
+    # traverse sequence_import_name <-- ConsImportName"
+    def traverse_sequence_import_name_ConsImportName_head(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'import_name') 
+    
+    # traverse sequence_import_name <-- ConsImportName"
+    def traverse_sequence_import_name_ConsImportName_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        head_tree : import_name, 
+        head_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux,), 'str') 
     
     # traverse sequence_import_name <-- ConsImportName"
     def traverse_sequence_import_name_ConsImportName_tail(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : import_name, 
-        head_aux : SynthAux
+        head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (head_aux,), 'sequence_import_name') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, head_aux, post_comment_aux,), 'sequence_import_name') 
+    
+    # traverse sequence_import_name <-- SingleImportName"
+    def traverse_sequence_import_name_SingleImportName_pre_comment(self, 
+        inher_aux : InherAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (), 'str') 
     
     # traverse sequence_import_name <-- SingleImportName"
     def traverse_sequence_import_name_SingleImportName_content(self, 
-        inher_aux : InherAux
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux
     ) -> InherAux:
-        return self.traverse_auxes(inher_aux, (), 'import_name') 
+        return self.traverse_auxes(inher_aux, (pre_comment_aux,), 'import_name') 
+    
+    # traverse sequence_import_name <-- SingleImportName"
+    def traverse_sequence_import_name_SingleImportName_post_comment(self, 
+        inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        content_tree : import_name, 
+        content_aux : SynthAux
+    ) -> InherAux:
+        return self.traverse_auxes(inher_aux, (pre_comment_aux, content_aux,), 'str') 
     
     # traverse sequence_with_item <-- ConsWithItem"
     def traverse_sequence_with_item_ConsWithItem_head(self, 
@@ -15651,12 +15857,16 @@ class Server(ABC, Generic[InherAux, SynthAux]):
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         alias_tree : str, 
         alias_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ImportNameAlias(name_tree, alias_tree),
-            aux = self.synthesize_auxes((name_aux, alias_aux,)) 
+            tree = make_ImportNameAlias(name_tree, pre_comment_tree, post_comment_tree, alias_tree),
+            aux = self.synthesize_auxes((name_aux, pre_comment_aux, post_comment_aux, alias_aux,)) 
         )
     
     # synthesize: import_name <-- ImportNameOnly
@@ -16132,25 +16342,33 @@ class Server(ABC, Generic[InherAux, SynthAux]):
     # synthesize: sequence_import_name <-- ConsImportName
     def synthesize_for_sequence_import_name_ConsImportName(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : import_name, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : sequence_import_name, 
         tail_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_ConsImportName(head_tree, tail_tree),
-            aux = self.synthesize_auxes((head_aux, tail_aux,)) 
+            tree = make_ConsImportName(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, head_aux, post_comment_aux, tail_aux,)) 
         )
     
     # synthesize: sequence_import_name <-- SingleImportName
     def synthesize_for_sequence_import_name_SingleImportName(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : import_name, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux
     ) -> Result[SynthAux]:
         return Result[SynthAux](
-            tree = make_SingleImportName(content_tree),
-            aux = self.synthesize_auxes((content_aux,)) 
+            tree = make_SingleImportName(pre_comment_tree, content_tree, post_comment_tree),
+            aux = self.synthesize_auxes((pre_comment_aux, content_aux, post_comment_aux,)) 
         )
     
     # synthesize: sequence_with_item <-- ConsWithItem

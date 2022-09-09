@@ -1522,6 +1522,8 @@ class import_name(ABC):
 @dataclass(frozen=True, eq=True)
 class ImportNameAlias(import_name):
     name : str
+    pre_comment : str
+    post_comment : str
     alias : str
     source_start : int
     source_end : int
@@ -1531,12 +1533,16 @@ class ImportNameAlias(import_name):
 
 def make_ImportNameAlias(
     name : str, 
+    pre_comment : str, 
+    post_comment : str, 
     alias : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> import_name:
     return ImportNameAlias(
         name,
+        pre_comment,
+        post_comment,
         alias,
         source_start,
         source_end
@@ -1544,12 +1550,16 @@ def make_ImportNameAlias(
 
 def update_ImportNameAlias(source_ImportNameAlias : ImportNameAlias,
     name : Union[str, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     alias : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ImportNameAlias:
     return ImportNameAlias(
         source_ImportNameAlias.name if isinstance(name, SourceFlag) else name,
+        source_ImportNameAlias.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_ImportNameAlias.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ImportNameAlias.alias if isinstance(alias, SourceFlag) else alias,
         source_ImportNameAlias.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ImportNameAlias.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3499,7 +3509,9 @@ class sequence_import_name(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsImportName(sequence_import_name):
+    pre_comment : str
     head : import_name | None
+    post_comment : str
     tail : sequence_import_name | None
     source_start : int
     source_end : int
@@ -3508,26 +3520,34 @@ class ConsImportName(sequence_import_name):
         return handlers.case_ConsImportName(self)
 
 def make_ConsImportName(
+    pre_comment : str, 
     head : import_name | None, 
+    post_comment : str, 
     tail : sequence_import_name | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_import_name:
     return ConsImportName(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsImportName(source_ConsImportName : ConsImportName,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[import_name | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[sequence_import_name | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsImportName:
     return ConsImportName(
+        source_ConsImportName.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsImportName.head if isinstance(head, SourceFlag) else head,
+        source_ConsImportName.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsImportName.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsImportName.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsImportName.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3537,7 +3557,9 @@ def update_ConsImportName(source_ConsImportName : ConsImportName,
 
 @dataclass(frozen=True, eq=True)
 class SingleImportName(sequence_import_name):
+    pre_comment : str
     content : import_name | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -3545,23 +3567,31 @@ class SingleImportName(sequence_import_name):
         return handlers.case_SingleImportName(self)
 
 def make_SingleImportName(
+    pre_comment : str, 
     content : import_name | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_import_name:
     return SingleImportName(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleImportName(source_SingleImportName : SingleImportName,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[import_name | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleImportName:
     return SingleImportName(
+        source_SingleImportName.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleImportName.content if isinstance(content, SourceFlag) else content,
+        source_SingleImportName.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleImportName.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleImportName.source_end if isinstance(source_end, SourceFlag) else source_end
     )
