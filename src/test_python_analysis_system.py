@@ -760,4 +760,5 @@ def test_str_type_annotation():
 
 
 if __name__ == "__main__":
+    check("080_ok")
     pass

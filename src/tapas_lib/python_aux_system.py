@@ -2123,16 +2123,10 @@ class Server(paa.Server[InherAux, SynthAux]):
 
     # override parent class method
     def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type) -> InherAux:
-        if target_syntax_type in ['expr', 'stmt', 'statements']:
-            last_synth_aux = (
-                synth_auxes[-1]
-                if len(synth_auxes) > 0 else
-                None
-            )
-            if last_synth_aux:
-                return traverse_aux(inher_aux, last_synth_aux)
-            else:
-                return inher_aux
+        if target_syntax_type in ['expr', 'stmt', 'statements', 'str']:
+            for synth_aux in synth_auxes:
+                inher_aux = traverse_aux(inher_aux, synth_aux)
+            return inher_aux
         else:
             return inher_aux
 
@@ -2493,6 +2487,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             pos_kw_param_sigs = params_aux.pos_kw_param_sigs,
             return_type = body_aux.observed_types[0]
         )
+
         return paa.Result[SynthAux](
             tree = pas.make_Lambda(comment_a_tree, params_tree, comment_b_tree, comment_c_tree, body_tree),
             aux = update_SynthAux(self.synthesize_auxes((params_aux, body_aux)),
@@ -3677,8 +3672,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             body_aux.nested_usages
         )
 
+
         self.check(LookupDecCheck(), lambda:
-            # any unmathced usages should be matched with definitions instandard lib
+            # any unmatched usages should be matched with definitions in standard lib
             all(
                 not isinstance(dec.type, AnyType)
                 for sym in nested_usages
