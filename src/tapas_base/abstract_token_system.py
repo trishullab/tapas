@@ -197,7 +197,18 @@ def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_toke
             elif isinstance(item, rs.Vocab):
                 vocab_token = next(token_iter, None)
                 if isinstance(vocab_token, Vocab):
-                    stack.append((format, token, children + (vocab_token.selection,)))
+                    print(f"!@# vocab_token ~> {vocab_token}")
+                    if vocab_token.options == "comment" and vocab_token.selection:
+                        comments = vocab_token.selection.split("\n")
+                        comment = comments[0]
+
+                        comment = " " + ("\n" + ("    " * format.indent_width)).join([c for c in comments if c]) + "\n"
+
+                        print(f"!@# comment ~> {comment}")
+
+                        stack.append((format, token, children + (comment,)))
+                    else:
+                        stack.append((format, token, children + (vocab_token.selection,)))
                 else:
                     break
 

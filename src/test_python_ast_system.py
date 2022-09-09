@@ -613,6 +613,28 @@ def test_comment():
 
 
 
+    codes = [
+    #         '''
+    # x = (#first
+    #     1 #hello
+    #     #hello
+    #     + #hello
+    #     3 #last
+    # )
+    #     ''',
+
+            '''
+    def foo(#first
+        x : int, # foo 
+        # foo
+        # foo
+        y : int, # foo
+        # foo
+        # foo
+    ): pass
+        '''
+    ]
+
 
     for code in codes:
         gnode = pgs.parse(code)
@@ -626,6 +648,7 @@ def test_comment():
         ######
         # print("-- AST --")  
         # print(pats.dump(seq))
+        print(pats.concretize(seq))
 
         assert "HOLE" not in (pats.dump(seq)) 
 
