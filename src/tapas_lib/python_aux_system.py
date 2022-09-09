@@ -383,8 +383,14 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         )
     elif class_key == "typing.Union":
         assert type_arg
-        ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types, inher_aux)
-        return make_UnionType(type_choices=ts)
+
+        if isinstance(type_arg, TupleLitType):
+            ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types, inher_aux)
+            return make_UnionType(type_choices=ts)
+        else:
+            t = coerce_to_TypeType(type_arg, inher_aux).content
+            return make_UnionType(type_choices=(t,))
+
 
     elif class_key == "builtins.tuple":
         if (
@@ -399,7 +405,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
             return TupleLitType(item_types=item_types)
 
         elif type_arg:
-            item_types = coerce_to_TypeType(type_arg, inher_aux).content,
+            item_types = (coerce_to_TypeType(type_arg, inher_aux).content,)
             return TupleLitType(item_types=item_types)
 
         else:
@@ -1310,8 +1316,8 @@ def analyze_modules_once(
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            raise ex
-            # continue
+            # raise ex
+            continue
             # return package 
         finally:
             print("")

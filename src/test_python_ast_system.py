@@ -616,14 +616,16 @@ def test_comment():
 
     for code in codes:
         gnode = pgs.parse(code)
-        print("-- generic node --")  
-        print(pgs.dump(gnode))
+        #######
+        # print("-- generic node --")  
+        # print(pgs.dump(gnode))
 
         ######
         mod = pas.parse_from_generic_tree(gnode)
         seq = pas.serialize(mod)
-        print("-- AST --")  
-        print(pats.dump(seq))
+        ######
+        # print("-- AST --")  
+        # print(pats.dump(seq))
 
         assert "HOLE" not in (pats.dump(seq)) 
 
