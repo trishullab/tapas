@@ -118,6 +118,9 @@ def write_data(
         # update
         br = "\n"
         count_map = inc_key(count_map, 'total')
+        print(f"")
+        print(f"programs processed in file: {count_map.get('processed', 0)}/{count_map.get('total', 0)}")
+        print(f"")
 
     print(f"")
     print(f"programs processed in file: {count_map.get('processed', 0)}/{count_map.get('total', 0)}")
@@ -223,11 +226,11 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         # abstract_data_{dir_count}
 
         abstract_data_dirpath = project_path(f"tapas_res/{dirname}/{abstract_dir_name}")
-        write(abstract_data_dirpath, f'vocab.json', '')
+        # write(abstract_data_dirpath, f'vocab.json', '')
     
         # multi processor:
         stats_vocab_collection = []
-        cpu_count = int(min(multiprocessing.cpu_count()/2, 8))
+        cpu_count = int(min(multiprocessing.cpu_count() * 3/4, 8))
         with multiprocessing.Pool(cpu_count) as pool:
             stats_vocab_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
@@ -253,10 +256,10 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         print(f"DIR STATS: {stats}")
         write(abstract_data_dirpath, f'z_stats.json', json.dumps(stats))
 
-        write(abstract_data_dirpath, f'vocab.json', json.dumps(
-            {
-                k:list(v)
-                for k,v in vocab.items()
-            },
-            indent=4
-        ), append=True)
+        # write(abstract_data_dirpath, f'vocab.json', json.dumps(
+        #     {
+        #         k:list(v)
+        #         for k,v in vocab.items()
+        #     },
+        #     indent=4
+        # ), append=True)

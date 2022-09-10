@@ -587,58 +587,86 @@ def test_comment():
     )
         ''',
 
-    #     '''
-    # from typing import (  # noqa Y027
-    #     IO #hello
-    #     as #hello
-    #     io #hello
-    #     , #hello
-    #     Any #hello
-    #     #hello
-    # )
-    #     ''',
+        '''
+    from typing import (  # noqa Y027
+        IO #hello
+        as #hello
+        io #hello
+        , #hello
+        Any #hello
+        #hello
+    )
+        ''',
 
-    #     '''
-    # def foo(
-    #     x : int,
-    #     y : int,  # hello 
-    # ) : pass 
-    #     ''',
+        '''
+    def foo(
+        x : int,
+        y : int,  # hello 
+    ) : pass 
+        ''',
 
-    #         '''
-    # x = (#first
-    #     1 #hello
-    #     #hello
-    #     + #hello
-    #     3 #last
-    # )
-    #     ''',
+            '''
+    x = (#first
+        1 #hello
+        #hello
+        + #hello
+        3 #last
+    )
+        ''',
 
-    #     '''
-    # def foo(#first
-    #     x : int, # foo 
-    #     # foo
-    #     # foo
-    #     y : int, # foo
-    #     # foo
-    #     # foo
-    # ): pass
-    #     '''
+        '''
+    def foo(#first
+        x : int, # foo 
+        # foo
+        # foo
+        y : int, # foo
+        # foo
+        # foo
+    ): pass
+        ''',
+
+        '''
+def find_Product(arr,n): 
+    arr.sort() 
+    prod = 1
+    for i in range(0,n,1): 
+        if (arr[i - 1] != arr[i]): 
+            prod = prod * arr[i] 
+    return prod; 
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[:]
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[::]
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[0::]
+        ''',
+    ]
+
+    codes = [
     ]
 
 
     for code in codes:
         gnode = pgs.parse(code)
         #######
-        # print("-- generic node --")  
-        # print(pgs.dump(gnode))
+        print("-- generic node --")  
+        print(pgs.dump(gnode))
 
         ######
         mod = pas.parse_from_generic_tree(gnode)
         seq = pas.serialize(mod)
         ######
-        # print("-- AST --")  
-        # print(pats.dump(seq))
+        print("-- AST --")  
+        print(pats.dump(seq))
         print(pats.concretize(seq))
 
         assert "HOLE" not in (pats.dump(seq)) 

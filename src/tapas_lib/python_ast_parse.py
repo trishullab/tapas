@@ -1639,8 +1639,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         children = node.children
 
 
-        comment_a_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", children[1:]))
-        colon_a_index = len(comment_a_nodes) + 1
+        colon_a_index = next(
+            i 
+            for i, n in enumerate(children)
+            if n.syntax_part == ":"
+        )
 
         colon_b_index = next((
             i + colon_a_index + 1
@@ -1663,11 +1666,11 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
         )
 
 
-        left_node = children[0] if colon_a_index != 0 else None
+        left_node = children[0] if children[0].syntax_part != 'comment' and colon_a_index != 0 else None
         right_node = children[right_index] if right_index else None
         step_node = children[-1] if colon_b_index and colon_b_index != len(children) - 1 else None
 
-        comment_a = merge_comments(comment_a_nodes)
+        comment_a = merge_comments(children[1:colon_a_index] if left_node else children[:colon_a_index])
         comment_b = (
             merge_comments(children[colon_a_index + 1:right_index])
             if right_index else
@@ -2017,7 +2020,9 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         case_NoDec = lambda d : (d.source_start, d.source_end),
     ))
 
-    if (node.syntax_part == "import_statement"):
+    if (node.syntax_part == ";"):
+        return []
+    elif (node.syntax_part == "import_statement"):
         children = node.children
         assert children[0].syntax_part == "import"
         return [Import(
