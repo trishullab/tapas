@@ -105,11 +105,7 @@ def dump(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...
     while stack:
         format : Format = stack.pop()
         inst = next(inst_iter, None)
-        if not inst:
-            print("@@@@@@@@@@")
-            print('\n'.join(result_strs))
-            print("#########")
-            print(format)
+
         assert inst
 
 
@@ -197,14 +193,10 @@ def concretize(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_toke
             elif isinstance(item, rs.Vocab):
                 vocab_token = next(token_iter, None)
                 if isinstance(vocab_token, Vocab):
-                    print(f"!@# vocab_token ~> {vocab_token}")
                     if vocab_token.options == "comment" and vocab_token.selection:
                         comments = vocab_token.selection.split("\n")
-                        comment = comments[0]
 
-                        comment = " " + ("\n" + ("    " * format.indent_width)).join([c for c in comments if c]) + "\n"
-
-                        print(f"!@# comment ~> {comment}")
+                        comment = ('' if index == 0 else ' ') + ("\n" + ("    " * format.indent_width)).join([c for c in comments if c]) + "\n"
 
                         stack.append((format, token, children + (comment,)))
                     else:

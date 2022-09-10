@@ -3550,7 +3550,9 @@ def from_stmt(
 
             def handle_ImportFrom(o : ImportFrom): 
                 
+
                 stack.append(from_sequence_import_name(o.names))
+
 
 
                 stack.append(
@@ -3767,7 +3769,6 @@ def from_expr(
 
             def handle_BoolOp(o : BoolOp): 
                 
-
                 stack.append(o.right)
 
                 stack.append(
@@ -3791,7 +3792,6 @@ def from_expr(
 
 
                 stack.append(o.left)
-
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
@@ -3836,7 +3836,6 @@ def from_expr(
 
             def handle_BinOp(o : BinOp): 
                 
-
                 stack.append(o.right)
 
                 stack.append(
@@ -3860,7 +3859,6 @@ def from_expr(
 
 
                 stack.append(o.left)
-
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',
@@ -3873,7 +3871,6 @@ def from_expr(
 
             def handle_UnaryOp(o : UnaryOp): 
                 
-
                 stack.append(o.rand)
 
                 stack.append(
@@ -3886,7 +3883,6 @@ def from_expr(
 
 
                 stack.append(from_unary_rator(o.rator))
-
                 stack.append(
                     tuple([make_Grammar(
                         options = 'expr',

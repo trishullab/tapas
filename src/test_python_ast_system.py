@@ -587,33 +587,24 @@ def test_comment():
     )
         ''',
 
-        '''
-    from typing import (  # noqa Y027
-        IO #hello
-        as #hello
-        io #hello
-        , #hello
-        Any #hello
-        #hello
-    )
-        '''
-    ]
+    #     '''
+    # from typing import (  # noqa Y027
+    #     IO #hello
+    #     as #hello
+    #     io #hello
+    #     , #hello
+    #     Any #hello
+    #     #hello
+    # )
+    #     ''',
 
+    #     '''
+    # def foo(
+    #     x : int,
+    #     y : int,  # hello 
+    # ) : pass 
+    #     ''',
 
-    codes = [
-        '''
-    def foo(
-        x : int,
-        y : int,  # hello 
-    ) : pass 
-        ''',
-
-    ]
-
-
-
-
-    codes = [
     #         '''
     # x = (#first
     #     1 #hello
@@ -623,16 +614,16 @@ def test_comment():
     # )
     #     ''',
 
-            '''
-    def foo(#first
-        x : int, # foo 
-        # foo
-        # foo
-        y : int, # foo
-        # foo
-        # foo
-    ): pass
-        '''
+    #     '''
+    # def foo(#first
+    #     x : int, # foo 
+    #     # foo
+    #     # foo
+    #     y : int, # foo
+    #     # foo
+    #     # foo
+    # ): pass
+    #     '''
     ]
 
 

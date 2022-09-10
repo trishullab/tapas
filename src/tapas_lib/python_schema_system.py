@@ -1165,7 +1165,9 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("from "),
                 Vocab("module", "identifier"),
                 Terminal(" import "),
-                Nonterm("names", "sequence_import_name", InLine())
+                Terminal("("),
+                Nonterm("names", "sequence_import_name", InLine()),
+                Terminal(")"),
             ]
         ),
 
@@ -1240,7 +1242,6 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "BoolOp",
             [
-                Terminal("("),
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
                 Vocab("pre_comment", "comment"),
@@ -1248,7 +1249,6 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" "),
                 Vocab("post_comment", "comment"),
                 Nonterm("right", "expr", InLine()),
-                Terminal(")")
             ]
         ),
 
@@ -1266,27 +1266,23 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "BinOp",
             [
-                Terminal("("),
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
                 Vocab("pre_comment", "comment"),
                 Nonterm("rator", "bin_rator", InLine()),
                 Terminal(" "),
                 Vocab("post_comment", "comment"),
-                Nonterm("right", "expr", InLine()),
-                Terminal(")")
+                Nonterm("right", "expr", InLine())
             ]
         ),
 
         Rule(
             "UnaryOp",
             [
-                Terminal("("),
                 Nonterm("rator", "unary_rator", InLine()),
                 Terminal(" "),
                 Vocab("comment", "comment"),
                 Nonterm("rand", "expr", InLine()),
-                Terminal(")")
             ]
         ),
 
@@ -1572,7 +1568,7 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("("),
                 Nonterm("content", "comma_exprs", InLine()),
-                Terminal(")")
+                Terminal(",)")
             ]
         ),
 
@@ -1808,7 +1804,7 @@ singles_schema : list[Rule] = [
     Rule(
         "ExceptHandler",
         [
-            Terminal("except "),
+            Terminal("except"),
             Nonterm("arg", "except_arg", InLine()),
             Terminal(":"),
             Vocab("comment", "comment"),
