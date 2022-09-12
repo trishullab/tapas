@@ -237,7 +237,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
         # #single processor:
         # for n in chunk: 
         #     stats, vocab = generate_file(package, dirname, n, vocab, abstract_dir_name)
-        #     stats_collection.append((stats, vocab))
+        #     stats_vocab_collection.append((stats, vocab))
 
 
         stats = {} 
