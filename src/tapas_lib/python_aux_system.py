@@ -481,13 +481,13 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : int) -> bool:
 
     if sub_type == super_type:
         return True
 
     if isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
-        return types_match_subsumed(sub_type.content, super_type.content, inher_aux)
+        return types_match_subsumed(sub_type.content, super_type.content, inher_aux, fuel - 1)
 
     if isinstance(sub_type, TypeType) and not isinstance(super_type, TypeType):
         return False
@@ -501,21 +501,21 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
     if isinstance(sub_type, FunctionType):
         assert isinstance(super_type, FunctionType)
         param_subsumptions = [ 
-            subsumed(super_type.pos_param_types[i], t, inher_aux)
+            subsumed(super_type.pos_param_types[i], t, inher_aux, fuel - 1)
             for i, t in enumerate(sub_type.pos_param_types)
         ] + [ 
-            subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
+            subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux, fuel - 1)
             for i, s in enumerate(sub_type.pos_kw_param_sigs)
         ] + [
-            subsumed(super_type.bundle_pos_param_type, sub_type.bundle_pos_param_type, inher_aux)
+            subsumed(super_type.bundle_pos_param_type, sub_type.bundle_pos_param_type, inher_aux, fuel - 1)
         ] if sub_type.bundle_pos_param_type and super_type.bundle_pos_param_type else [] + [
-            subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux)
+            subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux, fuel - 1)
             for i, s in enumerate(sub_type.kw_param_sigs)
         ] + [
-            subsumed(super_type.bundle_kw_param_type, sub_type.bundle_kw_param_type, inher_aux)
+            subsumed(super_type.bundle_kw_param_type, sub_type.bundle_kw_param_type, inher_aux, fuel - 1)
         ] if sub_type.bundle_kw_param_type and super_type.bundle_kw_param_type else [] 
 
-        return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
+        return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux, fuel - 1)
         return_subsumption = True 
 
 
@@ -538,9 +538,9 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
 
             subsumptions = [
                 (
-                    subsumed(get_type_arg(super_type, i), get_type_arg(sub_type, i), inher_aux)
+                    subsumed(get_type_arg(super_type, i), get_type_arg(sub_type, i), inher_aux, fuel - 1)
                     if isinstance(tp.variant, ContraVariant) else
-                    subsumed(get_type_arg(sub_type, i), get_type_arg(super_type, i), inher_aux)
+                    subsumed(get_type_arg(sub_type, i), get_type_arg(super_type, i), inher_aux, fuel - 1)
                     # by default type_params should be treated as covariant
                     # if isinstance(tp.variant, CoVariant) else
                     # sub_type.type_args[i] == super_type.type_args[i]
@@ -559,22 +559,24 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
         
         m = min(len(sub_type_args), len(super_type_args))
         subsumptions = [
-            subsumed(sub_type_args[i], super_type_args[i], inher_aux)
+            subsumed(sub_type_args[i], super_type_args[i], inher_aux, fuel - 1)
             for i in range(m)
         ]
 
         return us.every(subsumptions, lambda x : x)
     
 
-def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, inher_aux : InherAux) -> bool:
+def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, inher_aux : InherAux, fuel : int) -> bool:
 
     sub_field_type = lookup_field_type(sub_type, field_name, inher_aux)
     if sub_field_type:
-        return subsumed(sub_field_type, field_type, inher_aux)
+        return subsumed(sub_field_type, field_type, inher_aux, fuel - 1)
     else:
         return False
 
-def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : int = 50) -> bool:
+    if fuel <= 0 : return False
+
     super_type = generalize_type(inher_aux, super_type)
 
     return (
@@ -590,7 +592,7 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
             isinstance(super_type, RecordType) and super_type.class_key == "builtins.object" or
 
-            types_match_subsumed(sub_type, super_type, inher_aux) or 
+            types_match_subsumed(sub_type, super_type, inher_aux, fuel - 1) or 
 
             (
                 # TODO: figure out more genearl way to handle int <: float
@@ -603,7 +605,7 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             ( 
                 isinstance(sub_type, TypeType) and
                 isinstance(super_type, TypeType) and
-                subsumed(sub_type.content, super_type.content, inher_aux)
+                subsumed(sub_type.content, super_type.content, inher_aux, fuel - 1)
             ) or 
 
             (isinstance(super_type, RecordType) and
@@ -611,26 +613,26 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             ) or
 
             (isinstance(sub_type, InterType) and 
-                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux))) or 
+                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or 
 
             (isinstance(super_type, InterType) and 
-                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux))) or
+                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
 
             (isinstance(super_type, UnionType) and 
-                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux))) or
+                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
 
             (isinstance(sub_type, UnionType) and 
-                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux))) or
+                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or
 
             (parent_type := get_parent_type(sub_type, inher_aux),
-                parent_type != None and subsumed(parent_type, super_type, inher_aux))[-1] or
+                parent_type != None and subsumed(parent_type, super_type, inher_aux, fuel - 1))[-1] or
 
             (
                 isinstance(super_type, RecordType) and
                 (
                     cr := infer_class_record(super_type, inher_aux),
                     cr and cr.protocol and us.every(cr.instance_fields.items(), lambda p : (
-                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux),
+                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux, fuel - 1),
                         fe
                     )[-1])
                 )[-1]

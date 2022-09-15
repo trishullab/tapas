@@ -458,7 +458,7 @@ def test_065_ok():
     )
 
 def test_goldilocks_object():
-    code_pre, aux_pre = analyze_test("goldilocks_object", 3)
+    code_pre, aux_pre = analyze_test("goldilocks_object", 4)
     # print(code_pre)
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
     xs_pre = aux_pre.local_env.get('xs')
@@ -466,7 +466,7 @@ def test_goldilocks_object():
     assert xs_pre 
     assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
 
-    code_post, aux_post = analyze_test("goldilocks_object", 4)
+    code_post, aux_post = analyze_test("goldilocks_object", 5)
     xs_post = aux_post.local_env.get('xs')
     # print(code_post)
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
