@@ -283,12 +283,14 @@ def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
 
-def lookup_static_path_in_package(path : str, package : PMap[str, ModulePackage]) -> Declaration:
+def lookup_static_path_in_package(path : str, package : PMap[str, ModulePackage]) -> Declaration | None:
     rpath = path.split(".")
-    mp = package[rpath[0]]
+    mp = package.get(rpath[0])
+    if not mp: return None
     for t1 in rpath[1:-1]:
-        mp = mp.package[t1]
-    result = mp.module[rpath[-1]]
+        mp = mp.package.get(t1)
+        if not mp: return None
+    result = mp.module.get(rpath[-1])
     return result
 
 
@@ -937,13 +939,9 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
             if inher_aux.local_env.get(name):
                 return inher_aux.local_env[name]
             elif "." in name:
-                # rpath = path.split(".")
-                # package = inher_aux.package
-                # mp = package[rpath[0]]
-                # for t1 in rpath[1:-1]:
-                #     mp = mp.package[t1]
-                # result = mp.module[rpath[-1]]
-                return lookup_static_path_in_package(path, inher_aux.package)
+                result = lookup_static_path_in_package(path, inher_aux.package)
+                if not result:
+                    return make_Declaration(updatable=None, initialized = True, type = AnyType())
             else:
                 return make_Declaration(updatable=None, initialized = True, type = AnyType())
         elif inher_aux.global_env.get(name): 
@@ -1335,8 +1333,8 @@ def analyze_modules_once(
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            raise ex
-            # continue
+            # raise ex
+            continue
             # return package 
         finally:
             print("")
@@ -1697,9 +1695,6 @@ def spawn_analysis(
                 for k, dec in synth.aux.decl_additions.items()
             })
 
-            # for k in module.keys():
-            #     if "DataFrame" in k:
-            #         import pdb ; pdb.set_trace()
 
             class_env : PMap[str, ClassRecord] = pmap({
                 k : cr 
@@ -5320,14 +5315,19 @@ class Server(paa.Server[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
+
+        if module_tree.startswith(".."):
+            prefix = ".".join(inher_aux.external_path.split(".")[:-1])
+            module_tree = prefix + module_tree[1:]
+
+        if module_tree.startswith("."):
+            module_tree = inher_aux.external_path + module_tree
+
+
         env_additions : PMap[str, Declaration] = pmap({
             alias : from_static_path_to_declaration(inher_aux, f'{module_tree}.{source_path}')
             for alias, source_path in names_aux.import_names.items()
         })
-        
-        if inher_aux.external_path == "pandas":
-            if module_tree == "pandas.core.api":
-                import pdb; pdb.set_trace()
 
 
         return paa.Result[SynthAux](

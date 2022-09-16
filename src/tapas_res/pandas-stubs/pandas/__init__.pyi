@@ -15,7 +15,7 @@ from ._config import (
     reset_option as reset_option,
     set_option as set_option,
 )
-from pandas.core.api import (
+from .core.api import (
     NA as NA,
     BooleanDtype as BooleanDtype,
     Categorical as Categorical,

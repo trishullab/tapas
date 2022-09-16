@@ -17,8 +17,7 @@ import pytest
 from tapas_lib.python_aux_construct_autogen import ModulePackage
 # package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
 package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/typeshed_cache', lambda: pals.analyze_typeshed())
-package = pals.analyze_pandas_stubs(package)
-# package = pals.with_cache('tapas_res/pandas_cache', lambda: pals.analyze_pandas_stubs(package))
+package = pals.with_cache('tapas_res/pandas_cache', lambda: pals.analyze_pandas_stubs(package))
 # package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
 
@@ -768,14 +767,26 @@ def test_pandas():
     # temp = {k: v for k, v in package.items() if 'DataFrame' in k}
     # import pdb; pdb.set_trace()
 # df = pd.DataFrame(data={'a' : [1,2,3,4], 'b' : [10,11,12,13]}, index=[0, 1, 2, 3])
+
     code = '''
-import pandas.core.api as pd
-df = pd.DataFrame
+import pandas as pd
+d = {'col1': [0, 1, 2, 3], 'col2': pd.Series([2, 3], index=[2, 3])}
+df = pd.DataFrame(data=d, index=[0, 1, 2, 3])
+dates = pd.date_range("20130101", periods=6)
+index=df.index
+res=df.to_numpy()
+df2=df.T
+df3=df[0:2]
+df4 = df.dtypes
 pass
     '''
+
+# df4=df.iloc[1]
+
+
     (inspect, kill) = spawn_inspect_code("main", code, checks = pset(), package = package)
     try:
-        code, aux = inspect(23)
+        code, aux = inspect(247)
         print(code)
         print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
 
