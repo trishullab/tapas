@@ -264,6 +264,8 @@ class param_annotation(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeParamAnno(param_annotation):
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -272,22 +274,30 @@ class SomeParamAnno(param_annotation):
         return handlers.case_SomeParamAnno(self)
 
 def make_SomeParamAnno(
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> param_annotation:
     return SomeParamAnno(
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
     )
 
 def update_SomeParamAnno(source_SomeParamAnno : SomeParamAnno,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SomeParamAnno:
     return SomeParamAnno(
+        source_SomeParamAnno.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_SomeParamAnno.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SomeParamAnno.content if isinstance(content, SourceFlag) else content,
         source_SomeParamAnno.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SomeParamAnno.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -358,6 +368,8 @@ class param_default(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SomeParamDefault(param_default):
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -366,22 +378,30 @@ class SomeParamDefault(param_default):
         return handlers.case_SomeParamDefault(self)
 
 def make_SomeParamDefault(
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> param_default:
     return SomeParamDefault(
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
     )
 
 def update_SomeParamDefault(source_SomeParamDefault : SomeParamDefault,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SomeParamDefault:
     return SomeParamDefault(
+        source_SomeParamDefault.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_SomeParamDefault.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SomeParamDefault.content if isinstance(content, SourceFlag) else content,
         source_SomeParamDefault.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SomeParamDefault.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -452,7 +472,9 @@ class parameters_d(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsKwParam(parameters_d):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_d | None
     source_start : int
     source_end : int
@@ -461,26 +483,34 @@ class ConsKwParam(parameters_d):
         return handlers.case_ConsKwParam(self)
 
 def make_ConsKwParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_d | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_d:
     return ConsKwParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_d | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsKwParam:
     return ConsKwParam(
+        source_ConsKwParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsKwParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsKwParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsKwParam.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsKwParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsKwParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -490,7 +520,9 @@ def update_ConsKwParam(source_ConsKwParam : ConsKwParam,
 
 @dataclass(frozen=True, eq=True)
 class SingleKwParam(parameters_d):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -498,23 +530,31 @@ class SingleKwParam(parameters_d):
         return handlers.case_SingleKwParam(self)
 
 def make_SingleKwParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_d:
     return SingleKwParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleKwParam:
     return SingleKwParam(
+        source_SingleKwParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleKwParam.content if isinstance(content, SourceFlag) else content,
+        source_SingleKwParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleKwParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleKwParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -523,8 +563,12 @@ def update_SingleKwParam(source_SingleKwParam : SingleKwParam,
 
 @dataclass(frozen=True, eq=True)
 class TransKwParam(parameters_d):
+    comment_a : str
     head : Param | None
+    comment_b : str
+    comment_c : str
     tail : Param | None
+    comment_d : str
     source_start : int
     source_end : int
 
@@ -532,27 +576,43 @@ class TransKwParam(parameters_d):
         return handlers.case_TransKwParam(self)
 
 def make_TransKwParam(
+    comment_a : str, 
     head : Param | None, 
+    comment_b : str, 
+    comment_c : str, 
     tail : Param | None, 
+    comment_d : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_d:
     return TransKwParam(
+        comment_a,
         head,
+        comment_b,
+        comment_c,
         tail,
+        comment_d,
         source_start,
         source_end
     )
 
 def update_TransKwParam(source_TransKwParam : TransKwParam,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TransKwParam:
     return TransKwParam(
+        source_TransKwParam.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_TransKwParam.head if isinstance(head, SourceFlag) else head,
+        source_TransKwParam.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_TransKwParam.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_TransKwParam.tail if isinstance(tail, SourceFlag) else tail,
+        source_TransKwParam.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_TransKwParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_TransKwParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -596,7 +656,9 @@ class parameters_c(ABC):
 
 @dataclass(frozen=True, eq=True)
 class SingleTupleBundleParam(parameters_c):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -604,23 +666,31 @@ class SingleTupleBundleParam(parameters_c):
         return handlers.case_SingleTupleBundleParam(self)
 
 def make_SingleTupleBundleParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return SingleTupleBundleParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleTupleBundleParam(source_SingleTupleBundleParam : SingleTupleBundleParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleTupleBundleParam:
     return SingleTupleBundleParam(
+        source_SingleTupleBundleParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleTupleBundleParam.content if isinstance(content, SourceFlag) else content,
+        source_SingleTupleBundleParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleTupleBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleTupleBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -629,7 +699,9 @@ def update_SingleTupleBundleParam(source_SingleTupleBundleParam : SingleTupleBun
 
 @dataclass(frozen=True, eq=True)
 class TransTupleBundleParam(parameters_c):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_d | None
     source_start : int
     source_end : int
@@ -638,26 +710,34 @@ class TransTupleBundleParam(parameters_c):
         return handlers.case_TransTupleBundleParam(self)
 
 def make_TransTupleBundleParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_d | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return TransTupleBundleParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_TransTupleBundleParam(source_TransTupleBundleParam : TransTupleBundleParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_d | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TransTupleBundleParam:
     return TransTupleBundleParam(
+        source_TransTupleBundleParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_TransTupleBundleParam.head if isinstance(head, SourceFlag) else head,
+        source_TransTupleBundleParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_TransTupleBundleParam.tail if isinstance(tail, SourceFlag) else tail,
         source_TransTupleBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_TransTupleBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -700,8 +780,12 @@ def update_ParamsD(source_ParamsD : ParamsD,
 
 @dataclass(frozen=True, eq=True)
 class DoubleBundleParam(parameters_c):
+    comment_a : str
     tuple_param : Param | None
+    comment_b : str
+    comment_c : str
     dict_param : Param | None
+    comment_d : str
     source_start : int
     source_end : int
 
@@ -709,27 +793,43 @@ class DoubleBundleParam(parameters_c):
         return handlers.case_DoubleBundleParam(self)
 
 def make_DoubleBundleParam(
+    comment_a : str, 
     tuple_param : Param | None, 
+    comment_b : str, 
+    comment_c : str, 
     dict_param : Param | None, 
+    comment_d : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return DoubleBundleParam(
+        comment_a,
         tuple_param,
+        comment_b,
+        comment_c,
         dict_param,
+        comment_d,
         source_start,
         source_end
     )
 
 def update_DoubleBundleParam(source_DoubleBundleParam : DoubleBundleParam,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     tuple_param : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     dict_param : Union[Param | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> DoubleBundleParam:
     return DoubleBundleParam(
+        source_DoubleBundleParam.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_DoubleBundleParam.tuple_param if isinstance(tuple_param, SourceFlag) else tuple_param,
+        source_DoubleBundleParam.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_DoubleBundleParam.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_DoubleBundleParam.dict_param if isinstance(dict_param, SourceFlag) else dict_param,
+        source_DoubleBundleParam.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_DoubleBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_DoubleBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -738,7 +838,9 @@ def update_DoubleBundleParam(source_DoubleBundleParam : DoubleBundleParam,
 
 @dataclass(frozen=True, eq=True)
 class DictionaryBundleParam(parameters_c):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -746,23 +848,31 @@ class DictionaryBundleParam(parameters_c):
         return handlers.case_DictionaryBundleParam(self)
 
 def make_DictionaryBundleParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_c:
     return DictionaryBundleParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_DictionaryBundleParam(source_DictionaryBundleParam : DictionaryBundleParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> DictionaryBundleParam:
     return DictionaryBundleParam(
+        source_DictionaryBundleParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_DictionaryBundleParam.content if isinstance(content, SourceFlag) else content,
+        source_DictionaryBundleParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_DictionaryBundleParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_DictionaryBundleParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -810,7 +920,9 @@ class parameters_b(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsPosKeyParam(parameters_b):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_b | None
     source_start : int
     source_end : int
@@ -819,26 +931,34 @@ class ConsPosKeyParam(parameters_b):
         return handlers.case_ConsPosKeyParam(self)
 
 def make_ConsPosKeyParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_b | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_b:
     return ConsPosKeyParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_b | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsPosKeyParam:
     return ConsPosKeyParam(
+        source_ConsPosKeyParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsPosKeyParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsPosKeyParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsPosKeyParam.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsPosKeyParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsPosKeyParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -848,7 +968,9 @@ def update_ConsPosKeyParam(source_ConsPosKeyParam : ConsPosKeyParam,
 
 @dataclass(frozen=True, eq=True)
 class SinglePosKeyParam(parameters_b):
+    pre_comment : str
     content : Param | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -856,23 +978,31 @@ class SinglePosKeyParam(parameters_b):
         return handlers.case_SinglePosKeyParam(self)
 
 def make_SinglePosKeyParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_b:
     return SinglePosKeyParam(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SinglePosKeyParam(source_SinglePosKeyParam : SinglePosKeyParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SinglePosKeyParam:
     return SinglePosKeyParam(
+        source_SinglePosKeyParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SinglePosKeyParam.content if isinstance(content, SourceFlag) else content,
+        source_SinglePosKeyParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SinglePosKeyParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SinglePosKeyParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -949,7 +1079,9 @@ class parameters_a(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsPosParam(parameters_a):
+    pre_comment : str
     head : Param | None
+    post_comment : str
     tail : parameters_a | None
     source_start : int
     source_end : int
@@ -958,26 +1090,34 @@ class ConsPosParam(parameters_a):
         return handlers.case_ConsPosParam(self)
 
 def make_ConsPosParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
     tail : parameters_a | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_a:
     return ConsPosParam(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_a | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsPosParam:
     return ConsPosParam(
+        source_ConsPosParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsPosParam.head if isinstance(head, SourceFlag) else head,
+        source_ConsPosParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsPosParam.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsPosParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsPosParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -987,7 +1127,11 @@ def update_ConsPosParam(source_ConsPosParam : ConsPosParam,
 
 @dataclass(frozen=True, eq=True)
 class SinglePosParam(parameters_a):
+    pre_comment : str
     content : Param | None
+    post_comment : str
+    pre_sep_comment : str
+    post_sep_comment : str
     source_start : int
     source_end : int
 
@@ -995,23 +1139,39 @@ class SinglePosParam(parameters_a):
         return handlers.case_SinglePosParam(self)
 
 def make_SinglePosParam(
+    pre_comment : str, 
     content : Param | None, 
+    post_comment : str, 
+    pre_sep_comment : str, 
+    post_sep_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_a:
     return SinglePosParam(
+        pre_comment,
         content,
+        post_comment,
+        pre_sep_comment,
+        post_sep_comment,
         source_start,
         source_end
     )
 
 def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
+    pre_sep_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_sep_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SinglePosParam:
     return SinglePosParam(
+        source_SinglePosParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SinglePosParam.content if isinstance(content, SourceFlag) else content,
+        source_SinglePosParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
+        source_SinglePosParam.pre_sep_comment if isinstance(pre_sep_comment, SourceFlag) else pre_sep_comment,
+        source_SinglePosParam.post_sep_comment if isinstance(post_sep_comment, SourceFlag) else post_sep_comment,
         source_SinglePosParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SinglePosParam.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -1020,7 +1180,11 @@ def update_SinglePosParam(source_SinglePosParam : SinglePosParam,
 
 @dataclass(frozen=True, eq=True)
 class TransPosParam(parameters_a):
+    pre_comment : str
     head : Param | None
+    post_comment : str
+    pre_sep_comment : str
+    post_sep_comment : str
     tail : parameters_b | None
     source_start : int
     source_end : int
@@ -1029,26 +1193,42 @@ class TransPosParam(parameters_a):
         return handlers.case_TransPosParam(self)
 
 def make_TransPosParam(
+    pre_comment : str, 
     head : Param | None, 
+    post_comment : str, 
+    pre_sep_comment : str, 
+    post_sep_comment : str, 
     tail : parameters_b | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> parameters_a:
     return TransPosParam(
+        pre_comment,
         head,
+        post_comment,
+        pre_sep_comment,
+        post_sep_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_TransPosParam(source_TransPosParam : TransPosParam,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[Param | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
+    pre_sep_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_sep_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[parameters_b | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TransPosParam:
     return TransPosParam(
+        source_TransPosParam.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_TransPosParam.head if isinstance(head, SourceFlag) else head,
+        source_TransPosParam.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
+        source_TransPosParam.pre_sep_comment if isinstance(pre_sep_comment, SourceFlag) else pre_sep_comment,
+        source_TransPosParam.post_sep_comment if isinstance(post_sep_comment, SourceFlag) else post_sep_comment,
         source_TransPosParam.tail if isinstance(tail, SourceFlag) else tail,
         source_TransPosParam.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_TransPosParam.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1223,6 +1403,8 @@ class keyword(ABC):
 @dataclass(frozen=True, eq=True)
 class NamedKeyword(keyword):
     name : str
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -1232,12 +1414,16 @@ class NamedKeyword(keyword):
 
 def make_NamedKeyword(
     name : str, 
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keyword:
     return NamedKeyword(
         name,
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
@@ -1245,12 +1431,16 @@ def make_NamedKeyword(
 
 def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
     name : Union[str, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> NamedKeyword:
     return NamedKeyword(
         source_NamedKeyword.name if isinstance(name, SourceFlag) else name,
+        source_NamedKeyword.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_NamedKeyword.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_NamedKeyword.content if isinstance(content, SourceFlag) else content,
         source_NamedKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_NamedKeyword.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1260,6 +1450,7 @@ def update_NamedKeyword(source_NamedKeyword : NamedKeyword,
 
 @dataclass(frozen=True, eq=True)
 class SplatKeyword(keyword):
+    comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -1268,22 +1459,26 @@ class SplatKeyword(keyword):
         return handlers.case_SplatKeyword(self)
 
 def make_SplatKeyword(
+    comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keyword:
     return SplatKeyword(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_SplatKeyword(source_SplatKeyword : SplatKeyword,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SplatKeyword:
     return SplatKeyword(
+        source_SplatKeyword.comment if isinstance(comment, SourceFlag) else comment,
         source_SplatKeyword.content if isinstance(content, SourceFlag) else content,
         source_SplatKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SplatKeyword.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1327,6 +1522,8 @@ class import_name(ABC):
 @dataclass(frozen=True, eq=True)
 class ImportNameAlias(import_name):
     name : str
+    pre_comment : str
+    post_comment : str
     alias : str
     source_start : int
     source_end : int
@@ -1336,12 +1533,16 @@ class ImportNameAlias(import_name):
 
 def make_ImportNameAlias(
     name : str, 
+    pre_comment : str, 
+    post_comment : str, 
     alias : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> import_name:
     return ImportNameAlias(
         name,
+        pre_comment,
+        post_comment,
         alias,
         source_start,
         source_end
@@ -1349,12 +1550,16 @@ def make_ImportNameAlias(
 
 def update_ImportNameAlias(source_ImportNameAlias : ImportNameAlias,
     name : Union[str, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     alias : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ImportNameAlias:
     return ImportNameAlias(
         source_ImportNameAlias.name if isinstance(name, SourceFlag) else name,
+        source_ImportNameAlias.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_ImportNameAlias.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ImportNameAlias.alias if isinstance(alias, SourceFlag) else alias,
         source_ImportNameAlias.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ImportNameAlias.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1567,6 +1772,7 @@ def update_SomeBases(source_SomeBases : SomeBases,
 
 @dataclass(frozen=True, eq=True)
 class NoBases(bases):
+    comment : str
     source_start : int
     source_end : int
 
@@ -1574,19 +1780,23 @@ class NoBases(bases):
         return handlers.case_NoBases(self)
 
 def make_NoBases(
+    comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> bases:
     return NoBases(
+        comment,
         source_start,
         source_end
     )
 
 def update_NoBases(source_NoBases : NoBases,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> NoBases:
     return NoBases(
+        source_NoBases.comment if isinstance(comment, SourceFlag) else comment,
         source_NoBases.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_NoBases.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -1628,7 +1838,9 @@ class bases_a(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsBase(bases_a):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : bases_a | None
     source_start : int
     source_end : int
@@ -1637,26 +1849,34 @@ class ConsBase(bases_a):
         return handlers.case_ConsBase(self)
 
 def make_ConsBase(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : bases_a | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> bases_a:
     return ConsBase(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsBase(source_ConsBase : ConsBase,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[bases_a | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsBase:
     return ConsBase(
+        source_ConsBase.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsBase.head if isinstance(head, SourceFlag) else head,
+        source_ConsBase.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsBase.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsBase.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsBase.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1666,7 +1886,9 @@ def update_ConsBase(source_ConsBase : ConsBase,
 
 @dataclass(frozen=True, eq=True)
 class SingleBase(bases_a):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -1674,23 +1896,31 @@ class SingleBase(bases_a):
         return handlers.case_SingleBase(self)
 
 def make_SingleBase(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> bases_a:
     return SingleBase(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleBase(source_SingleBase : SingleBase,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleBase:
     return SingleBase(
+        source_SingleBase.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleBase.content if isinstance(content, SourceFlag) else content,
+        source_SingleBase.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleBase.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleBase.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -1767,7 +1997,9 @@ class keywords(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsKeyword(keywords):
+    pre_comment : str
     head : keyword | None
+    post_comment : str
     tail : keywords | None
     source_start : int
     source_end : int
@@ -1776,26 +2008,34 @@ class ConsKeyword(keywords):
         return handlers.case_ConsKeyword(self)
 
 def make_ConsKeyword(
+    pre_comment : str, 
     head : keyword | None, 
+    post_comment : str, 
     tail : keywords | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keywords:
     return ConsKeyword(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[keyword | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[keywords | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsKeyword:
     return ConsKeyword(
+        source_ConsKeyword.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsKeyword.head if isinstance(head, SourceFlag) else head,
+        source_ConsKeyword.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsKeyword.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsKeyword.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -1805,7 +2045,9 @@ def update_ConsKeyword(source_ConsKeyword : ConsKeyword,
 
 @dataclass(frozen=True, eq=True)
 class SingleKeyword(keywords):
+    pre_comment : str
     content : keyword | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -1813,23 +2055,31 @@ class SingleKeyword(keywords):
         return handlers.case_SingleKeyword(self)
 
 def make_SingleKeyword(
+    pre_comment : str, 
     content : keyword | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> keywords:
     return SingleKeyword(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleKeyword(source_SingleKeyword : SingleKeyword,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[keyword | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleKeyword:
     return SingleKeyword(
+        source_SingleKeyword.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleKeyword.content if isinstance(content, SourceFlag) else content,
+        source_SingleKeyword.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleKeyword.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleKeyword.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -2069,7 +2319,9 @@ class comma_exprs(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsExpr(comma_exprs):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : comma_exprs | None
     source_start : int
     source_end : int
@@ -2078,26 +2330,34 @@ class ConsExpr(comma_exprs):
         return handlers.case_ConsExpr(self)
 
 def make_ConsExpr(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : comma_exprs | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> comma_exprs:
     return ConsExpr(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsExpr(source_ConsExpr : ConsExpr,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[comma_exprs | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsExpr:
     return ConsExpr(
+        source_ConsExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsExpr.head if isinstance(head, SourceFlag) else head,
+        source_ConsExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsExpr.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsExpr.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2107,7 +2367,9 @@ def update_ConsExpr(source_ConsExpr : ConsExpr,
 
 @dataclass(frozen=True, eq=True)
 class SingleExpr(comma_exprs):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2115,23 +2377,31 @@ class SingleExpr(comma_exprs):
         return handlers.case_SingleExpr(self)
 
 def make_SingleExpr(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> comma_exprs:
     return SingleExpr(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleExpr(source_SingleExpr : SingleExpr,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleExpr:
     return SingleExpr(
+        source_SingleExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleExpr.content if isinstance(content, SourceFlag) else content,
+        source_SingleExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleExpr.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -2265,6 +2535,110 @@ def unguard_target_exprs(o : target_exprs) -> target_exprs_union :
     ))
     
 
+# type decorator
+@dataclass(frozen=True, eq=True)
+class decorator(ABC):
+    # @abstractmethod
+    def match(self, handlers : DecoratorHandlers[T]) -> T:
+        raise Exception()
+
+
+# constructors for type decorator
+
+@dataclass(frozen=True, eq=True)
+class ExprDec(decorator):
+    content : expr | None
+    comment : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : DecoratorHandlers[T]) -> T:
+        return handlers.case_ExprDec(self)
+
+def make_ExprDec(
+    content : expr | None, 
+    comment : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> decorator:
+    return ExprDec(
+        content,
+        comment,
+        source_start,
+        source_end
+    )
+
+def update_ExprDec(source_ExprDec : ExprDec,
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> ExprDec:
+    return ExprDec(
+        source_ExprDec.content if isinstance(content, SourceFlag) else content,
+        source_ExprDec.comment if isinstance(comment, SourceFlag) else comment,
+        source_ExprDec.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_ExprDec.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class CmntDec(decorator):
+    content : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : DecoratorHandlers[T]) -> T:
+        return handlers.case_CmntDec(self)
+
+def make_CmntDec(
+    content : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> decorator:
+    return CmntDec(
+        content,
+        source_start,
+        source_end
+    )
+
+def update_CmntDec(source_CmntDec : CmntDec,
+    content : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> CmntDec:
+    return CmntDec(
+        source_CmntDec.content if isinstance(content, SourceFlag) else content,
+        source_CmntDec.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_CmntDec.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
+
+# case handlers for type decorator
+@dataclass(frozen=True, eq=True)
+class DecoratorHandlers(Generic[T]):
+    case_ExprDec : Callable[[ExprDec], T]
+    case_CmntDec : Callable[[CmntDec], T]
+
+
+# matching for type decorator
+def match_decorator(o : decorator, handlers : DecoratorHandlers[T]) -> T :
+    return o.match(handlers)
+
+
+decorator_union = Union[ExprDec, CmntDec]
+
+# unguarding for type decorator
+def unguard_decorator(o : decorator) -> decorator_union :
+    return match_decorator(o, DecoratorHandlers(
+        case_ExprDec = lambda x : x, 
+        case_CmntDec = lambda x : x
+
+    ))
+    
+
 # type decorators
 @dataclass(frozen=True, eq=True)
 class decorators(ABC):
@@ -2277,7 +2651,7 @@ class decorators(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsDec(decorators):
-    head : expr | None
+    head : decorator | None
     tail : decorators | None
     source_start : int
     source_end : int
@@ -2286,7 +2660,7 @@ class ConsDec(decorators):
         return handlers.case_ConsDec(self)
 
 def make_ConsDec(
-    head : expr | None, 
+    head : decorator | None, 
     tail : decorators | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -2299,7 +2673,7 @@ def make_ConsDec(
     )
 
 def update_ConsDec(source_ConsDec : ConsDec,
-    head : Union[expr | None, SourceFlag] = SourceFlag(),
+    head : Union[decorator | None, SourceFlag] = SourceFlag(),
     tail : Union[decorators | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -2376,7 +2750,9 @@ class constraint_filters(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsFilter(constraint_filters):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : constraint_filters | None
     source_start : int
     source_end : int
@@ -2385,26 +2761,34 @@ class ConsFilter(constraint_filters):
         return handlers.case_ConsFilter(self)
 
 def make_ConsFilter(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : constraint_filters | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint_filters:
     return ConsFilter(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsFilter(source_ConsFilter : ConsFilter,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[constraint_filters | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsFilter:
     return ConsFilter(
+        source_ConsFilter.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsFilter.head if isinstance(head, SourceFlag) else head,
+        source_ConsFilter.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsFilter.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsFilter.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsFilter.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2414,7 +2798,9 @@ def update_ConsFilter(source_ConsFilter : ConsFilter,
 
 @dataclass(frozen=True, eq=True)
 class SingleFilter(constraint_filters):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2422,23 +2808,31 @@ class SingleFilter(constraint_filters):
         return handlers.case_SingleFilter(self)
 
 def make_SingleFilter(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint_filters:
     return SingleFilter(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleFilter(source_SingleFilter : SingleFilter,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleFilter:
     return SingleFilter(
+        source_SingleFilter.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleFilter.content if isinstance(content, SourceFlag) else content,
+        source_SingleFilter.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleFilter.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleFilter.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -2614,7 +3008,9 @@ class arguments(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsArg(arguments):
+    pre_comment : str
     head : expr | None
+    post_comment : str
     tail : arguments | None
     source_start : int
     source_end : int
@@ -2623,26 +3019,34 @@ class ConsArg(arguments):
         return handlers.case_ConsArg(self)
 
 def make_ConsArg(
+    pre_comment : str, 
     head : expr | None, 
+    post_comment : str, 
     tail : arguments | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> arguments:
     return ConsArg(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsArg(source_ConsArg : ConsArg,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[arguments | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsArg:
     return ConsArg(
+        source_ConsArg.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsArg.head if isinstance(head, SourceFlag) else head,
+        source_ConsArg.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsArg.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsArg.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsArg.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2652,7 +3056,9 @@ def update_ConsArg(source_ConsArg : ConsArg,
 
 @dataclass(frozen=True, eq=True)
 class SingleArg(arguments):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2660,23 +3066,31 @@ class SingleArg(arguments):
         return handlers.case_SingleArg(self)
 
 def make_SingleArg(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> arguments:
     return SingleArg(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleArg(source_SingleArg : SingleArg,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleArg:
     return SingleArg(
+        source_SingleArg.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleArg.content if isinstance(content, SourceFlag) else content,
+        source_SingleArg.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleArg.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleArg.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -2754,6 +3168,8 @@ class dictionary_item(ABC):
 @dataclass(frozen=True, eq=True)
 class Field(dictionary_item):
     key : expr | None
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -2763,12 +3179,16 @@ class Field(dictionary_item):
 
 def make_Field(
     key : expr | None, 
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> dictionary_item:
     return Field(
         key,
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
@@ -2776,12 +3196,16 @@ def make_Field(
 
 def update_Field(source_Field : Field,
     key : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Field:
     return Field(
         source_Field.key if isinstance(key, SourceFlag) else key,
+        source_Field.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_Field.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_Field.content if isinstance(content, SourceFlag) else content,
         source_Field.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Field.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2857,7 +3281,9 @@ class dictionary_content(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsDictionaryItem(dictionary_content):
+    pre_comment : str
     head : dictionary_item | None
+    post_comment : str
     tail : dictionary_content | None
     source_start : int
     source_end : int
@@ -2866,26 +3292,34 @@ class ConsDictionaryItem(dictionary_content):
         return handlers.case_ConsDictionaryItem(self)
 
 def make_ConsDictionaryItem(
+    pre_comment : str, 
     head : dictionary_item | None, 
+    post_comment : str, 
     tail : dictionary_content | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> dictionary_content:
     return ConsDictionaryItem(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[dictionary_item | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[dictionary_content | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsDictionaryItem:
     return ConsDictionaryItem(
+        source_ConsDictionaryItem.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsDictionaryItem.head if isinstance(head, SourceFlag) else head,
+        source_ConsDictionaryItem.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsDictionaryItem.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsDictionaryItem.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsDictionaryItem.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -2895,7 +3329,9 @@ def update_ConsDictionaryItem(source_ConsDictionaryItem : ConsDictionaryItem,
 
 @dataclass(frozen=True, eq=True)
 class SingleDictionaryItem(dictionary_content):
+    pre_comment : str
     content : dictionary_item | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -2903,23 +3339,31 @@ class SingleDictionaryItem(dictionary_content):
         return handlers.case_SingleDictionaryItem(self)
 
 def make_SingleDictionaryItem(
+    pre_comment : str, 
     content : dictionary_item | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> dictionary_content:
     return SingleDictionaryItem(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleDictionaryItem(source_SingleDictionaryItem : SingleDictionaryItem,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[dictionary_item | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleDictionaryItem:
     return SingleDictionaryItem(
+        source_SingleDictionaryItem.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleDictionaryItem.content if isinstance(content, SourceFlag) else content,
+        source_SingleDictionaryItem.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleDictionaryItem.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleDictionaryItem.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -3065,7 +3509,9 @@ class sequence_import_name(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsImportName(sequence_import_name):
+    pre_comment : str
     head : import_name | None
+    post_comment : str
     tail : sequence_import_name | None
     source_start : int
     source_end : int
@@ -3074,26 +3520,34 @@ class ConsImportName(sequence_import_name):
         return handlers.case_ConsImportName(self)
 
 def make_ConsImportName(
+    pre_comment : str, 
     head : import_name | None, 
+    post_comment : str, 
     tail : sequence_import_name | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_import_name:
     return ConsImportName(
+        pre_comment,
         head,
+        post_comment,
         tail,
         source_start,
         source_end
     )
 
 def update_ConsImportName(source_ConsImportName : ConsImportName,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[import_name | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     tail : Union[sequence_import_name | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsImportName:
     return ConsImportName(
+        source_ConsImportName.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ConsImportName.head if isinstance(head, SourceFlag) else head,
+        source_ConsImportName.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ConsImportName.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsImportName.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ConsImportName.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3103,7 +3557,9 @@ def update_ConsImportName(source_ConsImportName : ConsImportName,
 
 @dataclass(frozen=True, eq=True)
 class SingleImportName(sequence_import_name):
+    pre_comment : str
     content : import_name | None
+    post_comment : str
     source_start : int
     source_end : int
 
@@ -3111,23 +3567,31 @@ class SingleImportName(sequence_import_name):
         return handlers.case_SingleImportName(self)
 
 def make_SingleImportName(
+    pre_comment : str, 
     content : import_name | None, 
+    post_comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_import_name:
     return SingleImportName(
+        pre_comment,
         content,
+        post_comment,
         source_start,
         source_end
     )
 
 def update_SingleImportName(source_SingleImportName : SingleImportName,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[import_name | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleImportName:
     return SingleImportName(
+        source_SingleImportName.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SingleImportName.content if isinstance(content, SourceFlag) else content,
+        source_SingleImportName.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SingleImportName.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleImportName.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -3585,6 +4049,7 @@ class sequence_ExceptHandler(ABC):
 
 @dataclass(frozen=True, eq=True)
 class ConsExceptHandler(sequence_ExceptHandler):
+    comment : str
     head : ExceptHandler | None
     tail : sequence_ExceptHandler | None
     source_start : int
@@ -3594,12 +4059,14 @@ class ConsExceptHandler(sequence_ExceptHandler):
         return handlers.case_ConsExceptHandler(self)
 
 def make_ConsExceptHandler(
+    comment : str, 
     head : ExceptHandler | None, 
     tail : sequence_ExceptHandler | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_ExceptHandler:
     return ConsExceptHandler(
+        comment,
         head,
         tail,
         source_start,
@@ -3607,12 +4074,14 @@ def make_ConsExceptHandler(
     )
 
 def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     head : Union[ExceptHandler | None, SourceFlag] = SourceFlag(),
     tail : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ConsExceptHandler:
     return ConsExceptHandler(
+        source_ConsExceptHandler.comment if isinstance(comment, SourceFlag) else comment,
         source_ConsExceptHandler.head if isinstance(head, SourceFlag) else head,
         source_ConsExceptHandler.tail if isinstance(tail, SourceFlag) else tail,
         source_ConsExceptHandler.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -3623,6 +4092,7 @@ def update_ConsExceptHandler(source_ConsExceptHandler : ConsExceptHandler,
 
 @dataclass(frozen=True, eq=True)
 class SingleExceptHandler(sequence_ExceptHandler):
+    comment : str
     content : ExceptHandler | None
     source_start : int
     source_end : int
@@ -3631,22 +4101,26 @@ class SingleExceptHandler(sequence_ExceptHandler):
         return handlers.case_SingleExceptHandler(self)
 
 def make_SingleExceptHandler(
+    comment : str, 
     content : ExceptHandler | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> sequence_ExceptHandler:
     return SingleExceptHandler(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_SingleExceptHandler(source_SingleExceptHandler : SingleExceptHandler,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[ExceptHandler | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SingleExceptHandler:
     return SingleExceptHandler(
+        source_SingleExceptHandler.comment if isinstance(comment, SourceFlag) else comment,
         source_SingleExceptHandler.content if isinstance(content, SourceFlag) else content,
         source_SingleExceptHandler.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SingleExceptHandler.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3826,6 +4300,7 @@ class FunctionDef(function_def):
     name : str
     params : parameters | None
     ret_anno : return_annotation | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -3837,6 +4312,7 @@ def make_FunctionDef(
     name : str, 
     params : parameters | None, 
     ret_anno : return_annotation | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -3845,6 +4321,7 @@ def make_FunctionDef(
         name,
         params,
         ret_anno,
+        comment,
         body,
         source_start,
         source_end
@@ -3854,6 +4331,7 @@ def update_FunctionDef(source_FunctionDef : FunctionDef,
     name : Union[str, SourceFlag] = SourceFlag(),
     params : Union[parameters | None, SourceFlag] = SourceFlag(),
     ret_anno : Union[return_annotation | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -3862,6 +4340,7 @@ def update_FunctionDef(source_FunctionDef : FunctionDef,
         source_FunctionDef.name if isinstance(name, SourceFlag) else name,
         source_FunctionDef.params if isinstance(params, SourceFlag) else params,
         source_FunctionDef.ret_anno if isinstance(ret_anno, SourceFlag) else ret_anno,
+        source_FunctionDef.comment if isinstance(comment, SourceFlag) else comment,
         source_FunctionDef.body if isinstance(body, SourceFlag) else body,
         source_FunctionDef.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_FunctionDef.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3874,6 +4353,7 @@ class AsyncFunctionDef(function_def):
     name : str
     params : parameters | None
     ret_anno : return_annotation | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -3885,6 +4365,7 @@ def make_AsyncFunctionDef(
     name : str, 
     params : parameters | None, 
     ret_anno : return_annotation | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -3893,6 +4374,7 @@ def make_AsyncFunctionDef(
         name,
         params,
         ret_anno,
+        comment,
         body,
         source_start,
         source_end
@@ -3902,6 +4384,7 @@ def update_AsyncFunctionDef(source_AsyncFunctionDef : AsyncFunctionDef,
     name : Union[str, SourceFlag] = SourceFlag(),
     params : Union[parameters | None, SourceFlag] = SourceFlag(),
     ret_anno : Union[return_annotation | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -3910,6 +4393,7 @@ def update_AsyncFunctionDef(source_AsyncFunctionDef : AsyncFunctionDef,
         source_AsyncFunctionDef.name if isinstance(name, SourceFlag) else name,
         source_AsyncFunctionDef.params if isinstance(params, SourceFlag) else params,
         source_AsyncFunctionDef.ret_anno if isinstance(ret_anno, SourceFlag) else ret_anno,
+        source_AsyncFunctionDef.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncFunctionDef.body if isinstance(body, SourceFlag) else body,
         source_AsyncFunctionDef.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncFunctionDef.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -3949,6 +4433,39 @@ class stmt(ABC):
 
 
 # constructors for type stmt
+
+@dataclass(frozen=True, eq=True)
+class Comment(stmt):
+    content : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : StmtHandlers[T]) -> T:
+        return handlers.case_Comment(self)
+
+def make_Comment(
+    content : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> stmt:
+    return Comment(
+        content,
+        source_start,
+        source_end
+    )
+
+def update_Comment(source_Comment : Comment,
+    content : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> Comment:
+    return Comment(
+        source_Comment.content if isinstance(content, SourceFlag) else content,
+        source_Comment.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_Comment.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
 
 @dataclass(frozen=True, eq=True)
 class DecFunctionDef(stmt):
@@ -4286,6 +4803,7 @@ def update_AnnoDeclar(source_AnnoDeclar : AnnoDeclar,
 class For(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4296,6 +4814,7 @@ class For(stmt):
 def make_For(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -4303,6 +4822,7 @@ def make_For(
     return For(
         target,
         iter,
+        comment,
         body,
         source_start,
         source_end
@@ -4311,6 +4831,7 @@ def make_For(
 def update_For(source_For : For,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -4318,6 +4839,7 @@ def update_For(source_For : For,
     return For(
         source_For.target if isinstance(target, SourceFlag) else target,
         source_For.iter if isinstance(iter, SourceFlag) else iter,
+        source_For.comment if isinstance(comment, SourceFlag) else comment,
         source_For.body if isinstance(body, SourceFlag) else body,
         source_For.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_For.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4329,6 +4851,7 @@ def update_For(source_For : For,
 class ForElse(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     orelse : ElseBlock | None
     source_start : int
@@ -4340,6 +4863,7 @@ class ForElse(stmt):
 def make_ForElse(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : ElseBlock | None, 
     source_start : int = 0, 
@@ -4348,6 +4872,7 @@ def make_ForElse(
     return ForElse(
         target,
         iter,
+        comment,
         body,
         orelse,
         source_start,
@@ -4357,6 +4882,7 @@ def make_ForElse(
 def update_ForElse(source_ForElse : ForElse,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4365,6 +4891,7 @@ def update_ForElse(source_ForElse : ForElse,
     return ForElse(
         source_ForElse.target if isinstance(target, SourceFlag) else target,
         source_ForElse.iter if isinstance(iter, SourceFlag) else iter,
+        source_ForElse.comment if isinstance(comment, SourceFlag) else comment,
         source_ForElse.body if isinstance(body, SourceFlag) else body,
         source_ForElse.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_ForElse.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4377,6 +4904,7 @@ def update_ForElse(source_ForElse : ForElse,
 class AsyncFor(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4387,6 +4915,7 @@ class AsyncFor(stmt):
 def make_AsyncFor(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
@@ -4394,6 +4923,7 @@ def make_AsyncFor(
     return AsyncFor(
         target,
         iter,
+        comment,
         body,
         source_start,
         source_end
@@ -4402,6 +4932,7 @@ def make_AsyncFor(
 def update_AsyncFor(source_AsyncFor : AsyncFor,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -4409,6 +4940,7 @@ def update_AsyncFor(source_AsyncFor : AsyncFor,
     return AsyncFor(
         source_AsyncFor.target if isinstance(target, SourceFlag) else target,
         source_AsyncFor.iter if isinstance(iter, SourceFlag) else iter,
+        source_AsyncFor.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncFor.body if isinstance(body, SourceFlag) else body,
         source_AsyncFor.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncFor.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4420,6 +4952,7 @@ def update_AsyncFor(source_AsyncFor : AsyncFor,
 class AsyncForElse(stmt):
     target : expr | None
     iter : expr | None
+    comment : str
     body : statements | None
     orelse : ElseBlock | None
     source_start : int
@@ -4431,6 +4964,7 @@ class AsyncForElse(stmt):
 def make_AsyncForElse(
     target : expr | None, 
     iter : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : ElseBlock | None, 
     source_start : int = 0, 
@@ -4439,6 +4973,7 @@ def make_AsyncForElse(
     return AsyncForElse(
         target,
         iter,
+        comment,
         body,
         orelse,
         source_start,
@@ -4448,6 +4983,7 @@ def make_AsyncForElse(
 def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
     iter : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4456,6 +4992,7 @@ def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
     return AsyncForElse(
         source_AsyncForElse.target if isinstance(target, SourceFlag) else target,
         source_AsyncForElse.iter if isinstance(iter, SourceFlag) else iter,
+        source_AsyncForElse.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncForElse.body if isinstance(body, SourceFlag) else body,
         source_AsyncForElse.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_AsyncForElse.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4467,6 +5004,7 @@ def update_AsyncForElse(source_AsyncForElse : AsyncForElse,
 @dataclass(frozen=True, eq=True)
 class While(stmt):
     test : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4476,12 +5014,14 @@ class While(stmt):
 
 def make_While(
     test : expr | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return While(
         test,
+        comment,
         body,
         source_start,
         source_end
@@ -4489,12 +5029,14 @@ def make_While(
 
 def update_While(source_While : While,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> While:
     return While(
         source_While.test if isinstance(test, SourceFlag) else test,
+        source_While.comment if isinstance(comment, SourceFlag) else comment,
         source_While.body if isinstance(body, SourceFlag) else body,
         source_While.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_While.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4505,6 +5047,7 @@ def update_While(source_While : While,
 @dataclass(frozen=True, eq=True)
 class WhileElse(stmt):
     test : expr | None
+    comment : str
     body : statements | None
     orelse : ElseBlock | None
     source_start : int
@@ -4515,6 +5058,7 @@ class WhileElse(stmt):
 
 def make_WhileElse(
     test : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : ElseBlock | None, 
     source_start : int = 0, 
@@ -4522,6 +5066,7 @@ def make_WhileElse(
 ) -> stmt:
     return WhileElse(
         test,
+        comment,
         body,
         orelse,
         source_start,
@@ -4530,6 +5075,7 @@ def make_WhileElse(
 
 def update_WhileElse(source_WhileElse : WhileElse,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4537,6 +5083,7 @@ def update_WhileElse(source_WhileElse : WhileElse,
 ) -> WhileElse:
     return WhileElse(
         source_WhileElse.test if isinstance(test, SourceFlag) else test,
+        source_WhileElse.comment if isinstance(comment, SourceFlag) else comment,
         source_WhileElse.body if isinstance(body, SourceFlag) else body,
         source_WhileElse.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_WhileElse.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4548,6 +5095,7 @@ def update_WhileElse(source_WhileElse : WhileElse,
 @dataclass(frozen=True, eq=True)
 class If(stmt):
     test : expr | None
+    comment : str
     body : statements | None
     orelse : conditions | None
     source_start : int
@@ -4558,6 +5106,7 @@ class If(stmt):
 
 def make_If(
     test : expr | None, 
+    comment : str, 
     body : statements | None, 
     orelse : conditions | None, 
     source_start : int = 0, 
@@ -4565,6 +5114,7 @@ def make_If(
 ) -> stmt:
     return If(
         test,
+        comment,
         body,
         orelse,
         source_start,
@@ -4573,6 +5123,7 @@ def make_If(
 
 def update_If(source_If : If,
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     orelse : Union[conditions | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
@@ -4580,6 +5131,7 @@ def update_If(source_If : If,
 ) -> If:
     return If(
         source_If.test if isinstance(test, SourceFlag) else test,
+        source_If.comment if isinstance(comment, SourceFlag) else comment,
         source_If.body if isinstance(body, SourceFlag) else body,
         source_If.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_If.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4591,6 +5143,7 @@ def update_If(source_If : If,
 @dataclass(frozen=True, eq=True)
 class With(stmt):
     items : sequence_with_item | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4600,12 +5153,14 @@ class With(stmt):
 
 def make_With(
     items : sequence_with_item | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return With(
         items,
+        comment,
         body,
         source_start,
         source_end
@@ -4613,12 +5168,14 @@ def make_With(
 
 def update_With(source_With : With,
     items : Union[sequence_with_item | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> With:
     return With(
         source_With.items if isinstance(items, SourceFlag) else items,
+        source_With.comment if isinstance(comment, SourceFlag) else comment,
         source_With.body if isinstance(body, SourceFlag) else body,
         source_With.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_With.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4629,6 +5186,7 @@ def update_With(source_With : With,
 @dataclass(frozen=True, eq=True)
 class AsyncWith(stmt):
     items : sequence_with_item | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -4638,12 +5196,14 @@ class AsyncWith(stmt):
 
 def make_AsyncWith(
     items : sequence_with_item | None, 
+    comment : str, 
     body : statements | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return AsyncWith(
         items,
+        comment,
         body,
         source_start,
         source_end
@@ -4651,12 +5211,14 @@ def make_AsyncWith(
 
 def update_AsyncWith(source_AsyncWith : AsyncWith,
     items : Union[sequence_with_item | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> AsyncWith:
     return AsyncWith(
         source_AsyncWith.items if isinstance(items, SourceFlag) else items,
+        source_AsyncWith.comment if isinstance(comment, SourceFlag) else comment,
         source_AsyncWith.body if isinstance(body, SourceFlag) else body,
         source_AsyncWith.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncWith.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -4765,6 +5327,7 @@ def update_RaiseFrom(source_RaiseFrom : RaiseFrom,
 
 @dataclass(frozen=True, eq=True)
 class Try(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     source_start : int
@@ -4774,12 +5337,14 @@ class Try(stmt):
         return handlers.case_Try(self)
 
 def make_Try(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return Try(
+        comment,
         body,
         handlers,
         source_start,
@@ -4787,12 +5352,14 @@ def make_Try(
     )
 
 def update_Try(source_Try : Try,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Try:
     return Try(
+        source_Try.comment if isinstance(comment, SourceFlag) else comment,
         source_Try.body if isinstance(body, SourceFlag) else body,
         source_Try.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_Try.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4803,6 +5370,7 @@ def update_Try(source_Try : Try,
 
 @dataclass(frozen=True, eq=True)
 class TryElse(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     orelse : ElseBlock | None
@@ -4813,6 +5381,7 @@ class TryElse(stmt):
         return handlers.case_TryElse(self)
 
 def make_TryElse(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     orelse : ElseBlock | None, 
@@ -4820,6 +5389,7 @@ def make_TryElse(
     source_end : int = 0
 ) -> stmt:
     return TryElse(
+        comment,
         body,
         handlers,
         orelse,
@@ -4828,6 +5398,7 @@ def make_TryElse(
     )
 
 def update_TryElse(source_TryElse : TryElse,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
@@ -4835,6 +5406,7 @@ def update_TryElse(source_TryElse : TryElse,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryElse:
     return TryElse(
+        source_TryElse.comment if isinstance(comment, SourceFlag) else comment,
         source_TryElse.body if isinstance(body, SourceFlag) else body,
         source_TryElse.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_TryElse.orelse if isinstance(orelse, SourceFlag) else orelse,
@@ -4846,6 +5418,7 @@ def update_TryElse(source_TryElse : TryElse,
 
 @dataclass(frozen=True, eq=True)
 class TryExceptFin(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     fin : FinallyBlock | None
@@ -4856,6 +5429,7 @@ class TryExceptFin(stmt):
         return handlers.case_TryExceptFin(self)
 
 def make_TryExceptFin(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     fin : FinallyBlock | None, 
@@ -4863,6 +5437,7 @@ def make_TryExceptFin(
     source_end : int = 0
 ) -> stmt:
     return TryExceptFin(
+        comment,
         body,
         handlers,
         fin,
@@ -4871,6 +5446,7 @@ def make_TryExceptFin(
     )
 
 def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag(),
@@ -4878,6 +5454,7 @@ def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryExceptFin:
     return TryExceptFin(
+        source_TryExceptFin.comment if isinstance(comment, SourceFlag) else comment,
         source_TryExceptFin.body if isinstance(body, SourceFlag) else body,
         source_TryExceptFin.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_TryExceptFin.fin if isinstance(fin, SourceFlag) else fin,
@@ -4889,6 +5466,7 @@ def update_TryExceptFin(source_TryExceptFin : TryExceptFin,
 
 @dataclass(frozen=True, eq=True)
 class TryFin(stmt):
+    comment : str
     body : statements | None
     fin : FinallyBlock | None
     source_start : int
@@ -4898,12 +5476,14 @@ class TryFin(stmt):
         return handlers.case_TryFin(self)
 
 def make_TryFin(
+    comment : str, 
     body : statements | None, 
     fin : FinallyBlock | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> stmt:
     return TryFin(
+        comment,
         body,
         fin,
         source_start,
@@ -4911,12 +5491,14 @@ def make_TryFin(
     )
 
 def update_TryFin(source_TryFin : TryFin,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     fin : Union[FinallyBlock | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryFin:
     return TryFin(
+        source_TryFin.comment if isinstance(comment, SourceFlag) else comment,
         source_TryFin.body if isinstance(body, SourceFlag) else body,
         source_TryFin.fin if isinstance(fin, SourceFlag) else fin,
         source_TryFin.source_start if isinstance(source_start, SourceFlag) else source_start,
@@ -4927,6 +5509,7 @@ def update_TryFin(source_TryFin : TryFin,
 
 @dataclass(frozen=True, eq=True)
 class TryElseFin(stmt):
+    comment : str
     body : statements | None
     handlers : sequence_ExceptHandler | None
     orelse : ElseBlock | None
@@ -4938,6 +5521,7 @@ class TryElseFin(stmt):
         return handlers.case_TryElseFin(self)
 
 def make_TryElseFin(
+    comment : str, 
     body : statements | None, 
     handlers : sequence_ExceptHandler | None, 
     orelse : ElseBlock | None, 
@@ -4946,6 +5530,7 @@ def make_TryElseFin(
     source_end : int = 0
 ) -> stmt:
     return TryElseFin(
+        comment,
         body,
         handlers,
         orelse,
@@ -4955,6 +5540,7 @@ def make_TryElseFin(
     )
 
 def update_TryElseFin(source_TryElseFin : TryElseFin,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     handlers : Union[sequence_ExceptHandler | None, SourceFlag] = SourceFlag(),
     orelse : Union[ElseBlock | None, SourceFlag] = SourceFlag(),
@@ -4963,6 +5549,7 @@ def update_TryElseFin(source_TryElseFin : TryElseFin,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> TryElseFin:
     return TryElseFin(
+        source_TryElseFin.comment if isinstance(comment, SourceFlag) else comment,
         source_TryElseFin.body if isinstance(body, SourceFlag) else body,
         source_TryElseFin.handlers if isinstance(handlers, SourceFlag) else handlers,
         source_TryElseFin.orelse if isinstance(orelse, SourceFlag) else orelse,
@@ -5334,6 +5921,7 @@ def update_Continue(source_Continue : Continue,
 # case handlers for type stmt
 @dataclass(frozen=True, eq=True)
 class StmtHandlers(Generic[T]):
+    case_Comment : Callable[[Comment], T]
     case_DecFunctionDef : Callable[[DecFunctionDef], T]
     case_DecClassDef : Callable[[DecClassDef], T]
     case_ReturnSomething : Callable[[ReturnSomething], T]
@@ -5378,11 +5966,12 @@ def match_stmt(o : stmt, handlers : StmtHandlers[T]) -> T :
     return o.match(handlers)
 
 
-stmt_union = Union[DecFunctionDef, DecClassDef, ReturnSomething, Return, Delete, Assign, AugAssign, AnnoAssign, AnnoDeclar, For, ForElse, AsyncFor, AsyncForElse, While, WhileElse, If, With, AsyncWith, Raise, RaiseExc, RaiseFrom, Try, TryElse, TryExceptFin, TryFin, TryElseFin, Assert, AssertMsg, Import, ImportFrom, ImportWildCard, Global, Nonlocal, Expr, Pass, Break, Continue]
+stmt_union = Union[Comment, DecFunctionDef, DecClassDef, ReturnSomething, Return, Delete, Assign, AugAssign, AnnoAssign, AnnoDeclar, For, ForElse, AsyncFor, AsyncForElse, While, WhileElse, If, With, AsyncWith, Raise, RaiseExc, RaiseFrom, Try, TryElse, TryExceptFin, TryFin, TryElseFin, Assert, AssertMsg, Import, ImportFrom, ImportWildCard, Global, Nonlocal, Expr, Pass, Break, Continue]
 
 # unguarding for type stmt
 def unguard_stmt(o : stmt) -> stmt_union :
     return match_stmt(o, StmtHandlers(
+        case_Comment = lambda x : x, 
         case_DecFunctionDef = lambda x : x, 
         case_DecClassDef = lambda x : x, 
         case_ReturnSomething = lambda x : x, 
@@ -5435,9 +6024,54 @@ class expr(ABC):
 # constructors for type expr
 
 @dataclass(frozen=True, eq=True)
+class ParenExpr(expr):
+    pre_comment : str
+    content : expr | None
+    post_comment : str
+    source_start : int
+    source_end : int
+
+    def match(self, handlers : ExprHandlers[T]) -> T:
+        return handlers.case_ParenExpr(self)
+
+def make_ParenExpr(
+    pre_comment : str, 
+    content : expr | None, 
+    post_comment : str, 
+    source_start : int = 0, 
+    source_end : int = 0
+) -> expr:
+    return ParenExpr(
+        pre_comment,
+        content,
+        post_comment,
+        source_start,
+        source_end
+    )
+
+def update_ParenExpr(source_ParenExpr : ParenExpr,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
+    source_start : Union[int, SourceFlag] = SourceFlag(),
+    source_end : Union[int, SourceFlag] = SourceFlag()
+) -> ParenExpr:
+    return ParenExpr(
+        source_ParenExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_ParenExpr.content if isinstance(content, SourceFlag) else content,
+        source_ParenExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
+        source_ParenExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
+        source_ParenExpr.source_end if isinstance(source_end, SourceFlag) else source_end
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
 class BoolOp(expr):
     left : expr | None
+    pre_comment : str
     op : bool_rator | None
+    post_comment : str
     right : expr | None
     source_start : int
     source_end : int
@@ -5447,14 +6081,18 @@ class BoolOp(expr):
 
 def make_BoolOp(
     left : expr | None, 
+    pre_comment : str, 
     op : bool_rator | None, 
+    post_comment : str, 
     right : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return BoolOp(
         left,
+        pre_comment,
         op,
+        post_comment,
         right,
         source_start,
         source_end
@@ -5462,14 +6100,18 @@ def make_BoolOp(
 
 def update_BoolOp(source_BoolOp : BoolOp,
     left : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     op : Union[bool_rator | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     right : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> BoolOp:
     return BoolOp(
         source_BoolOp.left if isinstance(left, SourceFlag) else left,
+        source_BoolOp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_BoolOp.op if isinstance(op, SourceFlag) else op,
+        source_BoolOp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_BoolOp.right if isinstance(right, SourceFlag) else right,
         source_BoolOp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_BoolOp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5480,6 +6122,8 @@ def update_BoolOp(source_BoolOp : BoolOp,
 @dataclass(frozen=True, eq=True)
 class AssignExpr(expr):
     target : expr | None
+    pre_comment : str
+    post_comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -5489,12 +6133,16 @@ class AssignExpr(expr):
 
 def make_AssignExpr(
     target : expr | None, 
+    pre_comment : str, 
+    post_comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return AssignExpr(
         target,
+        pre_comment,
+        post_comment,
         content,
         source_start,
         source_end
@@ -5502,12 +6150,16 @@ def make_AssignExpr(
 
 def update_AssignExpr(source_AssignExpr : AssignExpr,
     target : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> AssignExpr:
     return AssignExpr(
         source_AssignExpr.target if isinstance(target, SourceFlag) else target,
+        source_AssignExpr.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_AssignExpr.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_AssignExpr.content if isinstance(content, SourceFlag) else content,
         source_AssignExpr.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AssignExpr.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5518,7 +6170,9 @@ def update_AssignExpr(source_AssignExpr : AssignExpr,
 @dataclass(frozen=True, eq=True)
 class BinOp(expr):
     left : expr | None
+    pre_comment : str
     rator : bin_rator | None
+    post_comment : str
     right : expr | None
     source_start : int
     source_end : int
@@ -5528,14 +6182,18 @@ class BinOp(expr):
 
 def make_BinOp(
     left : expr | None, 
+    pre_comment : str, 
     rator : bin_rator | None, 
+    post_comment : str, 
     right : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return BinOp(
         left,
+        pre_comment,
         rator,
+        post_comment,
         right,
         source_start,
         source_end
@@ -5543,14 +6201,18 @@ def make_BinOp(
 
 def update_BinOp(source_BinOp : BinOp,
     left : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     rator : Union[bin_rator | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     right : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> BinOp:
     return BinOp(
         source_BinOp.left if isinstance(left, SourceFlag) else left,
+        source_BinOp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_BinOp.rator if isinstance(rator, SourceFlag) else rator,
+        source_BinOp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_BinOp.right if isinstance(right, SourceFlag) else right,
         source_BinOp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_BinOp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5561,6 +6223,7 @@ def update_BinOp(source_BinOp : BinOp,
 @dataclass(frozen=True, eq=True)
 class UnaryOp(expr):
     rator : unary_rator | None
+    comment : str
     rand : expr | None
     source_start : int
     source_end : int
@@ -5570,12 +6233,14 @@ class UnaryOp(expr):
 
 def make_UnaryOp(
     rator : unary_rator | None, 
+    comment : str, 
     rand : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return UnaryOp(
         rator,
+        comment,
         rand,
         source_start,
         source_end
@@ -5583,12 +6248,14 @@ def make_UnaryOp(
 
 def update_UnaryOp(source_UnaryOp : UnaryOp,
     rator : Union[unary_rator | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     rand : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> UnaryOp:
     return UnaryOp(
         source_UnaryOp.rator if isinstance(rator, SourceFlag) else rator,
+        source_UnaryOp.comment if isinstance(comment, SourceFlag) else comment,
         source_UnaryOp.rand if isinstance(rand, SourceFlag) else rand,
         source_UnaryOp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_UnaryOp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5598,7 +6265,10 @@ def update_UnaryOp(source_UnaryOp : UnaryOp,
 
 @dataclass(frozen=True, eq=True)
 class Lambda(expr):
+    comment_a : str
     params : parameters | None
+    comment_b : str
+    comment_c : str
     body : expr | None
     source_start : int
     source_end : int
@@ -5607,26 +6277,38 @@ class Lambda(expr):
         return handlers.case_Lambda(self)
 
 def make_Lambda(
+    comment_a : str, 
     params : parameters | None, 
+    comment_b : str, 
+    comment_c : str, 
     body : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Lambda(
+        comment_a,
         params,
+        comment_b,
+        comment_c,
         body,
         source_start,
         source_end
     )
 
 def update_Lambda(source_Lambda : Lambda,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     params : Union[parameters | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     body : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Lambda:
     return Lambda(
+        source_Lambda.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_Lambda.params if isinstance(params, SourceFlag) else params,
+        source_Lambda.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_Lambda.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_Lambda.body if isinstance(body, SourceFlag) else body,
         source_Lambda.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Lambda.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5637,7 +6319,11 @@ def update_Lambda(source_Lambda : Lambda,
 @dataclass(frozen=True, eq=True)
 class IfExp(expr):
     body : expr | None
+    comment_a : str
+    comment_b : str
     test : expr | None
+    comment_c : str
+    comment_d : str
     orelse : expr | None
     source_start : int
     source_end : int
@@ -5647,14 +6333,22 @@ class IfExp(expr):
 
 def make_IfExp(
     body : expr | None, 
+    comment_a : str, 
+    comment_b : str, 
     test : expr | None, 
+    comment_c : str, 
+    comment_d : str, 
     orelse : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return IfExp(
         body,
+        comment_a,
+        comment_b,
         test,
+        comment_c,
+        comment_d,
         orelse,
         source_start,
         source_end
@@ -5662,14 +6356,22 @@ def make_IfExp(
 
 def update_IfExp(source_IfExp : IfExp,
     body : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     orelse : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> IfExp:
     return IfExp(
         source_IfExp.body if isinstance(body, SourceFlag) else body,
+        source_IfExp.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_IfExp.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_IfExp.test if isinstance(test, SourceFlag) else test,
+        source_IfExp.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
+        source_IfExp.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_IfExp.orelse if isinstance(orelse, SourceFlag) else orelse,
         source_IfExp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_IfExp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5773,7 +6475,9 @@ def update_Set(source_Set : Set,
 
 @dataclass(frozen=True, eq=True)
 class ListComp(expr):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -5782,26 +6486,34 @@ class ListComp(expr):
         return handlers.case_ListComp(self)
 
 def make_ListComp(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return ListComp(
+        pre_comment,
         content,
+        post_comment,
         constraints,
         source_start,
         source_end
     )
 
 def update_ListComp(source_ListComp : ListComp,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ListComp:
     return ListComp(
+        source_ListComp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_ListComp.content if isinstance(content, SourceFlag) else content,
+        source_ListComp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_ListComp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_ListComp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_ListComp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5811,7 +6523,9 @@ def update_ListComp(source_ListComp : ListComp,
 
 @dataclass(frozen=True, eq=True)
 class SetComp(expr):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -5820,26 +6534,34 @@ class SetComp(expr):
         return handlers.case_SetComp(self)
 
 def make_SetComp(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return SetComp(
+        pre_comment,
         content,
+        post_comment,
         constraints,
         source_start,
         source_end
     )
 
 def update_SetComp(source_SetComp : SetComp,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> SetComp:
     return SetComp(
+        source_SetComp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_SetComp.content if isinstance(content, SourceFlag) else content,
+        source_SetComp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_SetComp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_SetComp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_SetComp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5849,8 +6571,12 @@ def update_SetComp(source_SetComp : SetComp,
 
 @dataclass(frozen=True, eq=True)
 class DictionaryComp(expr):
+    comment_a : str
     key : expr | None
+    comment_b : str
+    comment_c : str
     content : expr | None
+    comment_d : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -5859,30 +6585,46 @@ class DictionaryComp(expr):
         return handlers.case_DictionaryComp(self)
 
 def make_DictionaryComp(
+    comment_a : str, 
     key : expr | None, 
+    comment_b : str, 
+    comment_c : str, 
     content : expr | None, 
+    comment_d : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return DictionaryComp(
+        comment_a,
         key,
+        comment_b,
+        comment_c,
         content,
+        comment_d,
         constraints,
         source_start,
         source_end
     )
 
 def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     key : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> DictionaryComp:
     return DictionaryComp(
+        source_DictionaryComp.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_DictionaryComp.key if isinstance(key, SourceFlag) else key,
+        source_DictionaryComp.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_DictionaryComp.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_DictionaryComp.content if isinstance(content, SourceFlag) else content,
+        source_DictionaryComp.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_DictionaryComp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_DictionaryComp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_DictionaryComp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5892,7 +6634,9 @@ def update_DictionaryComp(source_DictionaryComp : DictionaryComp,
 
 @dataclass(frozen=True, eq=True)
 class GeneratorExp(expr):
+    pre_comment : str
     content : expr | None
+    post_comment : str
     constraints : comprehension_constraints | None
     source_start : int
     source_end : int
@@ -5901,26 +6645,34 @@ class GeneratorExp(expr):
         return handlers.case_GeneratorExp(self)
 
 def make_GeneratorExp(
+    pre_comment : str, 
     content : expr | None, 
+    post_comment : str, 
     constraints : comprehension_constraints | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return GeneratorExp(
+        pre_comment,
         content,
+        post_comment,
         constraints,
         source_start,
         source_end
     )
 
 def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     constraints : Union[comprehension_constraints | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> GeneratorExp:
     return GeneratorExp(
+        source_GeneratorExp.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
         source_GeneratorExp.content if isinstance(content, SourceFlag) else content,
+        source_GeneratorExp.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_GeneratorExp.constraints if isinstance(constraints, SourceFlag) else constraints,
         source_GeneratorExp.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_GeneratorExp.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5930,6 +6682,7 @@ def update_GeneratorExp(source_GeneratorExp : GeneratorExp,
 
 @dataclass(frozen=True, eq=True)
 class Await(expr):
+    comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -5938,22 +6691,26 @@ class Await(expr):
         return handlers.case_Await(self)
 
 def make_Await(
+    comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Await(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_Await(source_Await : Await,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Await:
     return Await(
+        source_Await.comment if isinstance(comment, SourceFlag) else comment,
         source_Await.content if isinstance(content, SourceFlag) else content,
         source_Await.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Await.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -5991,6 +6748,7 @@ def update_YieldNothing(source_YieldNothing : YieldNothing,
 
 @dataclass(frozen=True, eq=True)
 class Yield(expr):
+    comment : str
     content : expr | None
     source_start : int
     source_end : int
@@ -5999,22 +6757,26 @@ class Yield(expr):
         return handlers.case_Yield(self)
 
 def make_Yield(
+    comment : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Yield(
+        comment,
         content,
         source_start,
         source_end
     )
 
 def update_Yield(source_Yield : Yield,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Yield:
     return Yield(
+        source_Yield.comment if isinstance(comment, SourceFlag) else comment,
         source_Yield.content if isinstance(content, SourceFlag) else content,
         source_Yield.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Yield.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6024,6 +6786,8 @@ def update_Yield(source_Yield : Yield,
 
 @dataclass(frozen=True, eq=True)
 class YieldFrom(expr):
+    comment_a : str
+    comment_b : str
     content : expr | None
     source_start : int
     source_end : int
@@ -6032,22 +6796,30 @@ class YieldFrom(expr):
         return handlers.case_YieldFrom(self)
 
 def make_YieldFrom(
+    comment_a : str, 
+    comment_b : str, 
     content : expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return YieldFrom(
+        comment_a,
+        comment_b,
         content,
         source_start,
         source_end
     )
 
 def update_YieldFrom(source_YieldFrom : YieldFrom,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     content : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> YieldFrom:
     return YieldFrom(
+        source_YieldFrom.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_YieldFrom.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_YieldFrom.content if isinstance(content, SourceFlag) else content,
         source_YieldFrom.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_YieldFrom.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6096,6 +6868,7 @@ def update_Compare(source_Compare : Compare,
 @dataclass(frozen=True, eq=True)
 class Call(expr):
     func : expr | None
+    comment : str
     source_start : int
     source_end : int
 
@@ -6104,22 +6877,26 @@ class Call(expr):
 
 def make_Call(
     func : expr | None, 
+    comment : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Call(
         func,
+        comment,
         source_start,
         source_end
     )
 
 def update_Call(source_Call : Call,
     func : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Call:
     return Call(
         source_Call.func if isinstance(func, SourceFlag) else func,
+        source_Call.comment if isinstance(comment, SourceFlag) else comment,
         source_Call.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Call.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -6129,6 +6906,7 @@ def update_Call(source_Call : Call,
 @dataclass(frozen=True, eq=True)
 class CallArgs(expr):
     func : expr | None
+    comment : str
     args : arguments | None
     source_start : int
     source_end : int
@@ -6138,12 +6916,14 @@ class CallArgs(expr):
 
 def make_CallArgs(
     func : expr | None, 
+    comment : str, 
     args : arguments | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return CallArgs(
         func,
+        comment,
         args,
         source_start,
         source_end
@@ -6151,12 +6931,14 @@ def make_CallArgs(
 
 def update_CallArgs(source_CallArgs : CallArgs,
     func : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     args : Union[arguments | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> CallArgs:
     return CallArgs(
         source_CallArgs.func if isinstance(func, SourceFlag) else func,
+        source_CallArgs.comment if isinstance(comment, SourceFlag) else comment,
         source_CallArgs.args if isinstance(args, SourceFlag) else args,
         source_CallArgs.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_CallArgs.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6378,6 +7160,8 @@ def update_Ellip(source_Ellip : Ellip,
 @dataclass(frozen=True, eq=True)
 class Attribute(expr):
     content : expr | None
+    pre_comment : str
+    post_comment : str
     name : str
     source_start : int
     source_end : int
@@ -6387,12 +7171,16 @@ class Attribute(expr):
 
 def make_Attribute(
     content : expr | None, 
+    pre_comment : str, 
+    post_comment : str, 
     name : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Attribute(
         content,
+        pre_comment,
+        post_comment,
         name,
         source_start,
         source_end
@@ -6400,12 +7188,16 @@ def make_Attribute(
 
 def update_Attribute(source_Attribute : Attribute,
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    post_comment : Union[str, SourceFlag] = SourceFlag(),
     name : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Attribute:
     return Attribute(
         source_Attribute.content if isinstance(content, SourceFlag) else content,
+        source_Attribute.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment,
+        source_Attribute.post_comment if isinstance(post_comment, SourceFlag) else post_comment,
         source_Attribute.name if isinstance(name, SourceFlag) else name,
         source_Attribute.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Attribute.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6416,7 +7208,10 @@ def update_Attribute(source_Attribute : Attribute,
 @dataclass(frozen=True, eq=True)
 class Subscript(expr):
     content : expr | None
+    comment_a : str
+    comment_b : str
     slice : expr | None
+    comment_c : str
     source_start : int
     source_end : int
 
@@ -6425,26 +7220,38 @@ class Subscript(expr):
 
 def make_Subscript(
     content : expr | None, 
+    comment_a : str, 
+    comment_b : str, 
     slice : expr | None, 
+    comment_c : str, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Subscript(
         content,
+        comment_a,
+        comment_b,
         slice,
+        comment_c,
         source_start,
         source_end
     )
 
 def update_Subscript(source_Subscript : Subscript,
     content : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     slice : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Subscript:
     return Subscript(
         source_Subscript.content if isinstance(content, SourceFlag) else content,
+        source_Subscript.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_Subscript.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_Subscript.slice if isinstance(slice, SourceFlag) else slice,
+        source_Subscript.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_Subscript.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Subscript.source_end if isinstance(source_end, SourceFlag) else source_end
     )
@@ -6642,7 +7449,11 @@ def update_EmptyTuple(source_EmptyTuple : EmptyTuple,
 @dataclass(frozen=True, eq=True)
 class Slice(expr):
     lower : option_expr | None
+    comment_a : str
+    comment_b : str
     upper : option_expr | None
+    comment_c : str
+    comment_d : str
     step : option_expr | None
     source_start : int
     source_end : int
@@ -6652,14 +7463,22 @@ class Slice(expr):
 
 def make_Slice(
     lower : option_expr | None, 
+    comment_a : str, 
+    comment_b : str, 
     upper : option_expr | None, 
+    comment_c : str, 
+    comment_d : str, 
     step : option_expr | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> expr:
     return Slice(
         lower,
+        comment_a,
+        comment_b,
         upper,
+        comment_c,
+        comment_d,
         step,
         source_start,
         source_end
@@ -6667,14 +7486,22 @@ def make_Slice(
 
 def update_Slice(source_Slice : Slice,
     lower : Union[option_expr | None, SourceFlag] = SourceFlag(),
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
     upper : Union[option_expr | None, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     step : Union[option_expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Slice:
     return Slice(
         source_Slice.lower if isinstance(lower, SourceFlag) else lower,
+        source_Slice.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
+        source_Slice.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
         source_Slice.upper if isinstance(upper, SourceFlag) else upper,
+        source_Slice.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
+        source_Slice.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_Slice.step if isinstance(step, SourceFlag) else step,
         source_Slice.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Slice.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -6685,6 +7512,7 @@ def update_Slice(source_Slice : Slice,
 # case handlers for type expr
 @dataclass(frozen=True, eq=True)
 class ExprHandlers(Generic[T]):
+    case_ParenExpr : Callable[[ParenExpr], T]
     case_BoolOp : Callable[[BoolOp], T]
     case_AssignExpr : Callable[[AssignExpr], T]
     case_BinOp : Callable[[BinOp], T]
@@ -6728,11 +7556,12 @@ def match_expr(o : expr, handlers : ExprHandlers[T]) -> T :
     return o.match(handlers)
 
 
-expr_union = Union[BoolOp, AssignExpr, BinOp, UnaryOp, Lambda, IfExp, Dictionary, EmptyDictionary, Set, ListComp, SetComp, DictionaryComp, GeneratorExp, Await, YieldNothing, Yield, YieldFrom, Compare, Call, CallArgs, Integer, Float, ConcatString, True_, False_, None_, Ellip, Attribute, Subscript, Starred, Name, List, EmptyList, Tuple, EmptyTuple, Slice]
+expr_union = Union[ParenExpr, BoolOp, AssignExpr, BinOp, UnaryOp, Lambda, IfExp, Dictionary, EmptyDictionary, Set, ListComp, SetComp, DictionaryComp, GeneratorExp, Await, YieldNothing, Yield, YieldFrom, Compare, Call, CallArgs, Integer, Float, ConcatString, True_, False_, None_, Ellip, Attribute, Subscript, Starred, Name, List, EmptyList, Tuple, EmptyTuple, Slice]
 
 # unguarding for type expr
 def unguard_expr(o : expr) -> expr_union :
     return match_expr(o, ExprHandlers(
+        case_ParenExpr = lambda x : x, 
         case_BoolOp = lambda x : x, 
         case_AssignExpr = lambda x : x, 
         case_BinOp = lambda x : x, 
@@ -7771,8 +8600,12 @@ class constraint(ABC):
 
 @dataclass(frozen=True, eq=True)
 class AsyncConstraint(constraint):
+    comment_a : str
     target : expr | None
+    comment_b : str
+    comment_c : str
     search_space : expr | None
+    comment_d : str
     filts : constraint_filters | None
     source_start : int
     source_end : int
@@ -7781,30 +8614,46 @@ class AsyncConstraint(constraint):
         return handlers.case_AsyncConstraint(self)
 
 def make_AsyncConstraint(
+    comment_a : str, 
     target : expr | None, 
+    comment_b : str, 
+    comment_c : str, 
     search_space : expr | None, 
+    comment_d : str, 
     filts : constraint_filters | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint:
     return AsyncConstraint(
+        comment_a,
         target,
+        comment_b,
+        comment_c,
         search_space,
+        comment_d,
         filts,
         source_start,
         source_end
     )
 
 def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     target : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     search_space : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     filts : Union[constraint_filters | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> AsyncConstraint:
     return AsyncConstraint(
+        source_AsyncConstraint.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_AsyncConstraint.target if isinstance(target, SourceFlag) else target,
+        source_AsyncConstraint.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_AsyncConstraint.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_AsyncConstraint.search_space if isinstance(search_space, SourceFlag) else search_space,
+        source_AsyncConstraint.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_AsyncConstraint.filts if isinstance(filts, SourceFlag) else filts,
         source_AsyncConstraint.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_AsyncConstraint.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -7814,8 +8663,12 @@ def update_AsyncConstraint(source_AsyncConstraint : AsyncConstraint,
 
 @dataclass(frozen=True, eq=True)
 class Constraint(constraint):
+    comment_a : str
     target : expr | None
+    comment_b : str
+    comment_c : str
     search_space : expr | None
+    comment_d : str
     filts : constraint_filters | None
     source_start : int
     source_end : int
@@ -7824,30 +8677,46 @@ class Constraint(constraint):
         return handlers.case_Constraint(self)
 
 def make_Constraint(
+    comment_a : str, 
     target : expr | None, 
+    comment_b : str, 
+    comment_c : str, 
     search_space : expr | None, 
+    comment_d : str, 
     filts : constraint_filters | None, 
     source_start : int = 0, 
     source_end : int = 0
 ) -> constraint:
     return Constraint(
+        comment_a,
         target,
+        comment_b,
+        comment_c,
         search_space,
+        comment_d,
         filts,
         source_start,
         source_end
     )
 
 def update_Constraint(source_Constraint : Constraint,
+    comment_a : Union[str, SourceFlag] = SourceFlag(),
     target : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_b : Union[str, SourceFlag] = SourceFlag(),
+    comment_c : Union[str, SourceFlag] = SourceFlag(),
     search_space : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment_d : Union[str, SourceFlag] = SourceFlag(),
     filts : Union[constraint_filters | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Constraint:
     return Constraint(
+        source_Constraint.comment_a if isinstance(comment_a, SourceFlag) else comment_a,
         source_Constraint.target if isinstance(target, SourceFlag) else target,
+        source_Constraint.comment_b if isinstance(comment_b, SourceFlag) else comment_b,
+        source_Constraint.comment_c if isinstance(comment_c, SourceFlag) else comment_c,
         source_Constraint.search_space if isinstance(search_space, SourceFlag) else search_space,
+        source_Constraint.comment_d if isinstance(comment_d, SourceFlag) else comment_d,
         source_Constraint.filts if isinstance(filts, SourceFlag) else filts,
         source_Constraint.source_start if isinstance(source_start, SourceFlag) else source_start,
         source_Constraint.source_end if isinstance(source_end, SourceFlag) else source_end
@@ -7882,6 +8751,7 @@ def unguard_constraint(o : constraint) -> constraint_union :
 # type and constructor CompareRight
 @dataclass(frozen=True, eq=True)
 class CompareRight:
+    comment : str
     rator : cmp_rator | None
     rand : expr | None
     source_start : int
@@ -7889,24 +8759,28 @@ class CompareRight:
 
 
 def make_CompareRight(
+    comment : str,
     rator : cmp_rator | None,
     rand : expr | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> CompareRight:
     return CompareRight(
+        comment,
         rator,
         rand,
         source_start,
         source_end)
 
 def update_CompareRight(source_CompareRight : CompareRight,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     rator : Union[cmp_rator | None, SourceFlag] = SourceFlag(),
     rand : Union[expr | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> CompareRight:
     return CompareRight(
+        source_CompareRight.comment if isinstance(comment, SourceFlag) else comment, 
         source_CompareRight.rator if isinstance(rator, SourceFlag) else rator, 
         source_CompareRight.rand if isinstance(rand, SourceFlag) else rand, 
         source_CompareRight.source_start if isinstance(source_start, SourceFlag) else source_start, 
@@ -7918,6 +8792,7 @@ def update_CompareRight(source_CompareRight : CompareRight,
 @dataclass(frozen=True, eq=True)
 class ExceptHandler:
     arg : except_arg | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -7925,24 +8800,28 @@ class ExceptHandler:
 
 def make_ExceptHandler(
     arg : except_arg | None,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ExceptHandler:
     return ExceptHandler(
         arg,
+        comment,
         body,
         source_start,
         source_end)
 
 def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
     arg : Union[except_arg | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ExceptHandler:
     return ExceptHandler(
         source_ExceptHandler.arg if isinstance(arg, SourceFlag) else arg, 
+        source_ExceptHandler.comment if isinstance(comment, SourceFlag) else comment, 
         source_ExceptHandler.body if isinstance(body, SourceFlag) else body, 
         source_ExceptHandler.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ExceptHandler.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -7952,6 +8831,7 @@ def update_ExceptHandler(source_ExceptHandler : ExceptHandler,
 # type and constructor Param
 @dataclass(frozen=True, eq=True)
 class Param:
+    comment : str
     name : str
     anno : param_annotation | None
     default : param_default | None
@@ -7960,6 +8840,7 @@ class Param:
 
 
 def make_Param(
+    comment : str,
     name : str,
     anno : param_annotation | None,
     default : param_default | None,
@@ -7967,6 +8848,7 @@ def make_Param(
     source_end : int = 0
 ) -> Param:
     return Param(
+        comment,
         name,
         anno,
         default,
@@ -7974,6 +8856,7 @@ def make_Param(
         source_end)
 
 def update_Param(source_Param : Param,
+    comment : Union[str, SourceFlag] = SourceFlag(),
     name : Union[str, SourceFlag] = SourceFlag(),
     anno : Union[param_annotation | None, SourceFlag] = SourceFlag(),
     default : Union[param_default | None, SourceFlag] = SourceFlag(),
@@ -7981,6 +8864,7 @@ def update_Param(source_Param : Param,
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> Param:
     return Param(
+        source_Param.comment if isinstance(comment, SourceFlag) else comment, 
         source_Param.name if isinstance(name, SourceFlag) else name, 
         source_Param.anno if isinstance(anno, SourceFlag) else anno, 
         source_Param.default if isinstance(default, SourceFlag) else default, 
@@ -7994,6 +8878,7 @@ def update_Param(source_Param : Param,
 class ClassDef:
     name : str
     bs : bases | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
@@ -8002,6 +8887,7 @@ class ClassDef:
 def make_ClassDef(
     name : str,
     bs : bases | None,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
@@ -8009,6 +8895,7 @@ def make_ClassDef(
     return ClassDef(
         name,
         bs,
+        comment,
         body,
         source_start,
         source_end)
@@ -8016,6 +8903,7 @@ def make_ClassDef(
 def update_ClassDef(source_ClassDef : ClassDef,
     name : Union[str, SourceFlag] = SourceFlag(),
     bs : Union[bases | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
@@ -8023,6 +8911,7 @@ def update_ClassDef(source_ClassDef : ClassDef,
     return ClassDef(
         source_ClassDef.name if isinstance(name, SourceFlag) else name, 
         source_ClassDef.bs if isinstance(bs, SourceFlag) else bs, 
+        source_ClassDef.comment if isinstance(comment, SourceFlag) else comment, 
         source_ClassDef.body if isinstance(body, SourceFlag) else body, 
         source_ClassDef.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ClassDef.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8032,32 +8921,42 @@ def update_ClassDef(source_ClassDef : ClassDef,
 # type and constructor ElifBlock
 @dataclass(frozen=True, eq=True)
 class ElifBlock:
+    pre_comment : str
     test : expr | None
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
 
 
 def make_ElifBlock(
+    pre_comment : str,
     test : expr | None,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ElifBlock:
     return ElifBlock(
+        pre_comment,
         test,
+        comment,
         body,
         source_start,
         source_end)
 
 def update_ElifBlock(source_ElifBlock : ElifBlock,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
     test : Union[expr | None, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ElifBlock:
     return ElifBlock(
+        source_ElifBlock.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment, 
         source_ElifBlock.test if isinstance(test, SourceFlag) else test, 
+        source_ElifBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_ElifBlock.body if isinstance(body, SourceFlag) else body, 
         source_ElifBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ElifBlock.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8067,27 +8966,37 @@ def update_ElifBlock(source_ElifBlock : ElifBlock,
 # type and constructor ElseBlock
 @dataclass(frozen=True, eq=True)
 class ElseBlock:
+    pre_comment : str
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
 
 
 def make_ElseBlock(
+    pre_comment : str,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> ElseBlock:
     return ElseBlock(
+        pre_comment,
+        comment,
         body,
         source_start,
         source_end)
 
 def update_ElseBlock(source_ElseBlock : ElseBlock,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> ElseBlock:
     return ElseBlock(
+        source_ElseBlock.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment, 
+        source_ElseBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_ElseBlock.body if isinstance(body, SourceFlag) else body, 
         source_ElseBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_ElseBlock.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8097,27 +9006,37 @@ def update_ElseBlock(source_ElseBlock : ElseBlock,
 # type and constructor FinallyBlock
 @dataclass(frozen=True, eq=True)
 class FinallyBlock:
+    pre_comment : str
+    comment : str
     body : statements | None
     source_start : int
     source_end : int
 
 
 def make_FinallyBlock(
+    pre_comment : str,
+    comment : str,
     body : statements | None,
     source_start : int = 0,
     source_end : int = 0
 ) -> FinallyBlock:
     return FinallyBlock(
+        pre_comment,
+        comment,
         body,
         source_start,
         source_end)
 
 def update_FinallyBlock(source_FinallyBlock : FinallyBlock,
+    pre_comment : Union[str, SourceFlag] = SourceFlag(),
+    comment : Union[str, SourceFlag] = SourceFlag(),
     body : Union[statements | None, SourceFlag] = SourceFlag(),
     source_start : Union[int, SourceFlag] = SourceFlag(),
     source_end : Union[int, SourceFlag] = SourceFlag()
 ) -> FinallyBlock:
     return FinallyBlock(
+        source_FinallyBlock.pre_comment if isinstance(pre_comment, SourceFlag) else pre_comment, 
+        source_FinallyBlock.comment if isinstance(comment, SourceFlag) else comment, 
         source_FinallyBlock.body if isinstance(body, SourceFlag) else body, 
         source_FinallyBlock.source_start if isinstance(source_start, SourceFlag) else source_start, 
         source_FinallyBlock.source_end if isinstance(source_end, SourceFlag) else source_end)
@@ -8180,6 +9099,8 @@ ast = Union[
     SingleExpr,
     ConsTargetExpr,
     SingleTargetExpr,
+    ExprDec,
+    CmntDec,
     ConsDec,
     NoDec,
     ConsFilter,
@@ -8213,6 +9134,7 @@ ast = Union[
     NoCond,
     FunctionDef,
     AsyncFunctionDef,
+    Comment,
     DecFunctionDef,
     DecClassDef,
     ReturnSomething,
@@ -8250,6 +9172,7 @@ ast = Union[
     Pass,
     Break,
     Continue,
+    ParenExpr,
     BoolOp,
     AssignExpr,
     BinOp,
@@ -8336,6 +9259,7 @@ ast = Union[
     option_expr,
     comma_exprs,
     target_exprs,
+    decorator,
     decorators,
     constraint_filters,
     sequence_string,

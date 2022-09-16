@@ -64,7 +64,613 @@ def test_source_pointer_increasing():
         last_index = i
 
 
+def test_comment():
 
+    codes = [
+        '''
+    def foo():
+        return (
+            #hello
+            1 
+            #hello
+            )
+        ''',
+
+        '''
+    x = (#first
+        1 #hello
+        #hello
+        + #hello
+        3 #last
+    )
+        ''',
+
+        '''
+    (#hello A
+        1 #hello B
+        , #hello C
+        2 #hello D
+        #hello E 
+    ) #hello F
+        ''',
+
+        '''
+    (not # hello A
+        True # hello B
+        # hello C
+    )
+        ''',
+
+        '''
+    def foo( #foo
+    x #foo
+    : int):
+        return x
+
+    foo( # hello A
+        x #foo
+        = #foo
+        1 #hello B
+        #hello C
+    )
+        ''',
+
+        '''
+    def foo( #foo
+    x #foo
+    : int):
+        return x
+
+    xs = {'x' : 1}
+    foo( #hello
+        ** #hello
+        xs #hello
+    )
+        ''',
+
+        '''
+    def foo(x : int):
+        return x
+
+    foo( # hello A
+        1 #hello B
+        #hello C
+    )
+        ''',
+
+
+        '''
+    (# hello A
+        0 #hello B
+    if # hello C
+    True # hello D
+    else  # hello E
+        1 #hello F
+        #hello G 
+    )
+        ''',
+
+        '''
+    try: #hello
+        pass #llo
+    except Exception:
+        pass #hello
+    else:
+        pass #hello
+        ''',
+
+        '''
+    try: #hello
+        pass #llo
+    except Exception: #hello
+        pass #hello
+    else: #hello
+        pass #hello
+    finally: #hello
+        pass #hello
+        ''',
+
+        '''
+    x = 0
+    if True: # comment after if
+        # another comment
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    elif False: # comment after elif
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    else: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+        ''',
+
+        '''
+    def foo(x):
+        return x
+    @foo #hello
+    # between decorators 
+    @foo #bye
+    class A: # this is a class header comment 
+        pass
+        ''',
+
+        '''
+    def foo(x : int): # this is a function header comment 
+        # whole line comment 0 
+        y = x + 1 # comment after stmt
+        z = y + 1 
+        # whole line comment 1 
+        ''',
+
+        '''
+    { #hello
+        'x' #hello
+        : #hello 
+        1 #hello
+        , #hello
+        'y' #hello
+        : #hello 
+        1 #hello
+    } #hello
+        ''',
+
+        '''
+    (True  #hello
+    or #hello
+    False #hello
+    )
+        ''',
+
+        '''
+    (x #hello
+    := #hello 
+    1)
+        ''',
+
+
+        '''
+    (lambda #hello
+    x #foo
+    : #hello
+    1)
+        ''',
+
+        '''
+    [ #hello
+        x # hello
+        for # hello
+        x #hello
+        in #hello
+        [1,2,3] #hello
+        if #hello 
+        1 == 1 #hello
+        if #hello 
+        True #hello
+    ]
+        ''',
+
+        '''
+    { #hello
+        1 #hello
+        : #hello
+        x #hello
+        for # hello
+        x #hello
+        in #hello
+        [1,2,3] #hello
+        if #hello 
+        1 == 1 #hello
+        if #hello 
+        True #hello
+    }
+        ''',
+
+        '''
+    async def foo():
+        return 1
+    async def boo():
+        x = (await #comment
+        foo())
+        ''',
+
+        '''
+    def foo():
+        (yield #x 
+        from #x
+        [2,3,4] #x
+        )
+        (yield #x
+        1 #x
+        )
+        ''',
+
+        '''
+    def foo():
+        (yield #hello
+        )
+        ''',
+
+
+        '''
+    (1 #x
+    < #x
+    2 < #x
+    3 # x
+    )
+    (1 not #hello
+    in #hello
+    [2,3]
+    )
+        ''',
+
+        '''
+    def foo(x = 1):
+        return
+
+    (foo #x
+    ())
+
+    (foo #x
+    (1))
+    '''
+
+    '''
+    class A:
+        x = 1
+    (A # hello
+    . #hello
+    x #hello
+    ) 
+        ''',
+
+        '''
+    (
+        x[1,2]
+    )
+        ''',
+
+        '''
+    x = [1,2,3,4]
+    (
+        x #hello
+        [ #hello
+        0 # hello
+        : #hello
+        1 #hello
+        : #hello
+        2 #hello
+        ]
+    )
+        ''',
+
+        '''
+    class A: pass
+    class B(
+        #hello
+    ): pass
+    class C( #hello
+        A #hello
+        , #hello
+        B #hello
+    ) : pass
+        ''',
+
+        '''
+    def foo(
+        #hello
+        * #hello
+        xs #hello
+        : #hello
+        int #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(
+        #hello
+        ** #hello
+        xs #hello
+        : #hello
+        int #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(
+        #hello
+        x #hello
+        : #hello
+        int #hello
+        = #hello
+        1 #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(
+        #hello
+        x #hello
+        = #hello
+        1 #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(
+        #hello
+        x #hello
+        : #hello
+        int #hello
+    ):
+        return
+        ''',
+
+        '''
+    def foo(x, y, # uno
+    ** # mid
+    xs # dos
+    , z):
+        return
+        ''',
+
+        '''
+    def foo(x, y, # uno
+    * # dos
+    xs # tre
+    , z):
+        return
+        ''',
+
+        '''
+    def foo(x, y, # uno
+    * # dos
+    , z):
+        return
+        ''',
+
+        '''
+    def foo(x, y, *, z):
+        return
+        ''',
+
+        '''
+    def foo( #hello
+        p #hello 
+        : #hello
+        float#hello
+        , #hello
+        /#hello
+        , #hello
+        a #hello
+        = #hello
+        2#hello
+        , #hello
+        *#hello
+        xs #hello
+        : #hello
+        int#hello
+        , #hello
+        y#hello
+         : #hello
+         int#hello
+         , #hello
+         z #hello
+         : #hello
+         int#hello
+        ):
+        return
+        ''',
+
+        '''
+    (1,)
+        '''
+
+        '''
+    y : int 
+    x = y
+    y = 1
+    z = y
+        ''',
+
+
+        '''
+    from __future__ import annotations
+    from typing import Sequence, Union
+    def double(input_: int | Sequence[int]) -> int | list[int]:
+        if isinstance(input_, Sequence):
+            return [i * 2 for i in input_]
+        return input_ * 2
+        ''',
+
+        '''
+        if True:
+            pass
+        ''',
+
+        '''
+        x, y = pair = 1, 2
+        ''',
+
+        '''
+    if True: # comment after if
+        # another comment
+        x = 0 # comment 
+        # comment
+        x = x + 1 #hello
+    #hello
+    else: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+        ''',
+
+        '''
+    if True: # comment after if
+        # another comment
+        x = 0 # comment 
+        # comment
+        x = x + 1 #hello
+    #hello
+    elif True: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    #hello
+    else: # comment after else
+        x = 0 # comment 
+        # comment
+        x = x + 1
+    #hello
+        ''',
+
+        '''
+    for x in []: #hello
+        pass #hello
+    #hello
+    else: #hello
+        pass #hello
+    #hello
+        ''',
+
+        '''
+    class A(Exception): pass
+    try: #hello
+        pass #hello
+    #hello
+    except A:
+        pass #hello
+    #hello
+    except Exception:
+        pass #hello
+    #hello
+    else:
+        pass #hello
+    #hello
+    finally: #hello
+        pass #hello
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[1]
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[1:]
+        ''',
+    
+        '''
+        xs : tuple[()]
+        ''',
+
+        '''
+    from typing import (  # noqa Y027
+        IO,
+        Any
+    )
+        ''',
+
+        '''
+    from typing import (  # noqa Y027
+        #hello
+        IO as io #hello
+        , #hello
+        Any #hello
+    )
+        ''',
+
+        '''
+    from typing import (  # noqa Y027
+        IO #hello
+        as #hello
+        io #hello
+        , #hello
+        Any #hello
+        #hello
+    )
+        ''',
+
+        '''
+    def foo(
+        x : int,
+        y : int,  # hello 
+    ) : pass 
+        ''',
+
+            '''
+    x = (#first
+        1 #hello
+        #hello
+        + #hello
+        3 #last
+    )
+        ''',
+
+        '''
+    def foo(#first
+        x : int, # foo 
+        # foo
+        # foo
+        y : int, # foo
+        # foo
+        # foo
+    ): pass
+        ''',
+
+        '''
+def find_Product(arr,n): 
+    arr.sort() 
+    prod = 1
+    for i in range(0,n,1): 
+        if (arr[i - 1] != arr[i]): 
+            prod = prod * arr[i] 
+    return prod; 
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[:]
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[::]
+        ''',
+
+        '''
+        xs = [1,2,3]
+        xs[0::]
+        ''',
+    ]
+
+    codes = [
+    ]
+
+
+    for code in codes:
+        gnode = pgs.parse(code)
+        #######
+        print("-- generic node --")  
+        print(pgs.dump(gnode))
+
+        ######
+        mod = pas.parse_from_generic_tree(gnode)
+        seq = pas.serialize(mod)
+        ######
+        print("-- AST --")  
+        print(pats.dump(seq))
+        print(pats.concretize(seq))
+
+        assert "HOLE" not in (pats.dump(seq)) 
 
 if __name__ == "__main__":
+    test_comment()
     pass

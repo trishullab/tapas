@@ -13,7 +13,6 @@ from tapas_base import util_system as us
 
 import json
 import pytest
-
 package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
 # package = pals.analyze_numpy_stubs(package)
 
@@ -71,6 +70,11 @@ def analyze_test(module_name : str, line_limit: int = -1, package = package) -> 
 
 def check(module_name : str, checks = pals.all_checks) -> None:
     (inspect, kill) = spawn_inspect(module_name, checks)
+    inspect(-1)
+    kill()
+
+def check_code(module_name : str, code : str, checks = pals.all_checks, package = package) -> None:
+    (inspect, kill) = spawn_inspect_code(module_name, code, checks, package)
     inspect(-1)
     kill()
 
@@ -454,7 +458,7 @@ def test_065_ok():
     )
 
 def test_goldilocks_object():
-    code_pre, aux_pre = analyze_test("goldilocks_object", 2)
+    code_pre, aux_pre = analyze_test("goldilocks_object", 4)
     # print(code_pre)
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
     xs_pre = aux_pre.local_env.get('xs')
@@ -462,7 +466,7 @@ def test_goldilocks_object():
     assert xs_pre 
     assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
 
-    code_post, aux_post = analyze_test("goldilocks_object", 3)
+    code_post, aux_post = analyze_test("goldilocks_object", 5)
     xs_post = aux_post.local_env.get('xs')
     # print(code_post)
     # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
@@ -591,13 +595,13 @@ def test_084_ok():
 def test_params_dont_traverse():
     (inspect, kill) = spawn_inspect("params_dont_traverse")
     try:
-        for param_sep in 9, 14, 24, 31, 40, 47, 53:
+        for param_sep in 20, 35, 50, 65, 77, 87:
             code, aux = inspect(param_sep)
             assert not aux.local_env
             # print(code)
             # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
 
-        code, aux = inspect(54)
+        code, aux = inspect(89)
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
         for sym in 'x', 'y', 'zs', 'a', 'b', 'cs':
@@ -617,7 +621,7 @@ def test_converges():
 def test_import_alias():
     (inspect, kill) = spawn_inspect("import_alias")
     try:
-        code, aux = inspect(20)
+        code, aux = inspect(30)
         dumps = aux.local_env.get("dumps")
         assert dumps
         assert isinstance(dumps.type, pals.FunctionType)
@@ -630,7 +634,7 @@ def test_import_alias():
 def test_import_from_alias():
     (inspect, kill) = spawn_inspect("import_from_alias")
     try:
-        code, aux = inspect(10)
+        code, aux = inspect(20)
         d = aux.local_env.get("d")
         assert d 
         assert isinstance(d.type, pals.FunctionType)
@@ -737,7 +741,7 @@ def test_expression_list_splat_ok():
 def test_str_type_annotation():
     (inspect, kill) = spawn_inspect("str_type_annotation")
     try:
-        code, aux = inspect(16)
+        code, aux = inspect(20)
         x = aux.local_env.get("x")
         assert x
         t = x.type

@@ -383,8 +383,14 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
         )
     elif class_key == "typing.Union":
         assert type_arg
-        ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types, inher_aux)
-        return make_UnionType(type_choices=ts)
+
+        if isinstance(type_arg, TupleLitType):
+            ts = from_anno_seq_to_instance_types(coerce_to_TupleLitType(type_arg).item_types, inher_aux)
+            return make_UnionType(type_choices=ts)
+        else:
+            t = coerce_to_TypeType(type_arg, inher_aux).content
+            return make_UnionType(type_choices=(t,))
+
 
     elif class_key == "builtins.tuple":
         if (
@@ -399,7 +405,7 @@ def from_class_key_to_type(inher_aux : InherAux, class_key : str, type_arg : Opt
             return TupleLitType(item_types=item_types)
 
         elif type_arg:
-            item_types = coerce_to_TypeType(type_arg, inher_aux).content,
+            item_types = (coerce_to_TypeType(type_arg, inher_aux).content,)
             return TupleLitType(item_types=item_types)
 
         else:
@@ -475,13 +481,13 @@ def coerce_to_VarType(t : type) -> VarType:
     return t
 
 
-def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : int) -> bool:
 
     if sub_type == super_type:
         return True
 
     if isinstance(sub_type, TypeType) and isinstance(super_type, TypeType):
-        return types_match_subsumed(sub_type.content, super_type.content, inher_aux)
+        return types_match_subsumed(sub_type.content, super_type.content, inher_aux, fuel - 1)
 
     if isinstance(sub_type, TypeType) and not isinstance(super_type, TypeType):
         return False
@@ -495,21 +501,21 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
     if isinstance(sub_type, FunctionType):
         assert isinstance(super_type, FunctionType)
         param_subsumptions = [ 
-            subsumed(super_type.pos_param_types[i], t, inher_aux)
+            subsumed(super_type.pos_param_types[i], t, inher_aux, fuel - 1)
             for i, t in enumerate(sub_type.pos_param_types)
         ] + [ 
-            subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux)
+            subsumed(super_type.pos_kw_param_sigs[i].type, s.type, inher_aux, fuel - 1)
             for i, s in enumerate(sub_type.pos_kw_param_sigs)
         ] + [
-            subsumed(super_type.bundle_pos_param_type, sub_type.bundle_pos_param_type, inher_aux)
+            subsumed(super_type.bundle_pos_param_type, sub_type.bundle_pos_param_type, inher_aux, fuel - 1)
         ] if sub_type.bundle_pos_param_type and super_type.bundle_pos_param_type else [] + [
-            subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux)
+            subsumed(super_type.kw_param_sigs[i].type, s.type, inher_aux, fuel - 1)
             for i, s in enumerate(sub_type.kw_param_sigs)
         ] + [
-            subsumed(super_type.bundle_kw_param_type, sub_type.bundle_kw_param_type, inher_aux)
+            subsumed(super_type.bundle_kw_param_type, sub_type.bundle_kw_param_type, inher_aux, fuel - 1)
         ] if sub_type.bundle_kw_param_type and super_type.bundle_kw_param_type else [] 
 
-        return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux)
+        return_subsumption = subsumed(sub_type.return_type, super_type.return_type, inher_aux, fuel - 1)
         return_subsumption = True 
 
 
@@ -532,9 +538,9 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
 
             subsumptions = [
                 (
-                    subsumed(get_type_arg(super_type, i), get_type_arg(sub_type, i), inher_aux)
+                    subsumed(get_type_arg(super_type, i), get_type_arg(sub_type, i), inher_aux, fuel - 1)
                     if isinstance(tp.variant, ContraVariant) else
-                    subsumed(get_type_arg(sub_type, i), get_type_arg(super_type, i), inher_aux)
+                    subsumed(get_type_arg(sub_type, i), get_type_arg(super_type, i), inher_aux, fuel - 1)
                     # by default type_params should be treated as covariant
                     # if isinstance(tp.variant, CoVariant) else
                     # sub_type.type_args[i] == super_type.type_args[i]
@@ -553,22 +559,24 @@ def types_match_subsumed(sub_type : type, super_type : type, inher_aux : InherAu
         
         m = min(len(sub_type_args), len(super_type_args))
         subsumptions = [
-            subsumed(sub_type_args[i], super_type_args[i], inher_aux)
+            subsumed(sub_type_args[i], super_type_args[i], inher_aux, fuel - 1)
             for i in range(m)
         ]
 
         return us.every(subsumptions, lambda x : x)
     
 
-def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, inher_aux : InherAux) -> bool:
+def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, inher_aux : InherAux, fuel : int) -> bool:
 
     sub_field_type = lookup_field_type(sub_type, field_name, inher_aux)
     if sub_field_type:
-        return subsumed(sub_field_type, field_type, inher_aux)
+        return subsumed(sub_field_type, field_type, inher_aux, fuel - 1)
     else:
         return False
 
-def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
+def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : int = 50) -> bool:
+    if fuel <= 0 : return False
+
     super_type = generalize_type(inher_aux, super_type)
 
     return (
@@ -584,7 +592,7 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
 
             isinstance(super_type, RecordType) and super_type.class_key == "builtins.object" or
 
-            types_match_subsumed(sub_type, super_type, inher_aux) or 
+            types_match_subsumed(sub_type, super_type, inher_aux, fuel - 1) or 
 
             (
                 # TODO: figure out more genearl way to handle int <: float
@@ -597,7 +605,7 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             ( 
                 isinstance(sub_type, TypeType) and
                 isinstance(super_type, TypeType) and
-                subsumed(sub_type.content, super_type.content, inher_aux)
+                subsumed(sub_type.content, super_type.content, inher_aux, fuel - 1)
             ) or 
 
             (isinstance(super_type, RecordType) and
@@ -605,26 +613,26 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux) -> bool:
             ) or
 
             (isinstance(sub_type, InterType) and 
-                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux))) or 
+                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or 
 
             (isinstance(super_type, InterType) and 
-                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux))) or
+                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
 
             (isinstance(super_type, UnionType) and 
-                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux))) or
+                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
 
             (isinstance(sub_type, UnionType) and 
-                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux))) or
+                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or
 
             (parent_type := get_parent_type(sub_type, inher_aux),
-                parent_type != None and subsumed(parent_type, super_type, inher_aux))[-1] or
+                parent_type != None and subsumed(parent_type, super_type, inher_aux, fuel - 1))[-1] or
 
             (
                 isinstance(super_type, RecordType) and
                 (
                     cr := infer_class_record(super_type, inher_aux),
                     cr and cr.protocol and us.every(cr.instance_fields.items(), lambda p : (
-                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux),
+                        fe := field_exists_subsumed(sub_type, p[0], p[1], inher_aux, fuel - 1),
                         fe
                     )[-1])
                 )[-1]
@@ -2073,6 +2081,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         usage_additions : PMap[str, Usage], 
         nested_usages : PMap[str, tuple[Usage, ...]]
     ):
+        # potential future declarations
+        # past declarations are subsumed filtered out via backref 
+        # e.g. no need to include parameters (which are always past declarations)
 
         for symbol, dec in decls.items(): 
             symbol_usages = nested_usages.get(symbol) or () 
@@ -2114,16 +2125,10 @@ class Server(paa.Server[InherAux, SynthAux]):
 
     # override parent class method
     def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type) -> InherAux:
-        if target_syntax_type in ['expr', 'stmt', 'statements']:
-            last_synth_aux = (
-                synth_auxes[-1]
-                if len(synth_auxes) > 0 else
-                None
-            )
-            if last_synth_aux:
-                return traverse_aux(inher_aux, last_synth_aux)
-            else:
-                return inher_aux
+        if target_syntax_type in ['expr', 'stmt', 'statements', 'str']:
+            for synth_aux in synth_auxes:
+                inher_aux = traverse_aux(inher_aux, synth_aux)
+            return inher_aux
         else:
             return inher_aux
 
@@ -2230,8 +2235,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         left_tree : pas.expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         rator_tree : pas.bool_rator, 
         rator_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         right_tree : pas.expr, 
         right_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2272,7 +2281,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
-            tree = pas.make_BoolOp(left_tree, rator_tree, right_tree),
+            tree = pas.make_BoolOp(left_tree, pre_comment_tree, rator_tree, post_comment_tree, right_tree),
             aux = update_SynthAux(self.synthesize_auxes((left_aux, rator_aux, right_aux)),
                 observed_types = (expr_type,)
             )
@@ -2284,6 +2293,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         target_tree : pas.expr, 
         target_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2312,7 +2325,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         unified_env, unified_anchor_env = self.unify(target_tree, content_type, inher_aux)
 
         return paa.Result[SynthAux](
-            tree = pas.make_AssignExpr(target_tree, content_tree),
+            tree = pas.make_AssignExpr(target_tree, pre_comment_tree, post_comment_tree, content_tree),
             aux = update_SynthAux(content_aux,
                 decl_additions = (
                     content_aux.decl_additions +
@@ -2342,8 +2355,12 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         left_tree : pas.expr, 
         left_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         rator_tree : pas.bin_rator, 
         rator_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         right_tree : pas.expr, 
         right_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2396,7 +2413,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     expr_type = chosen_method_type.return_type
 
         return paa.Result[SynthAux](
-            tree = pas.make_BinOp(left_tree, rator_tree, right_tree),
+            tree = pas.make_BinOp(left_tree, pre_comment_tree, rator_tree, post_comment_tree, right_tree),
             aux = update_SynthAux(self.synthesize_auxes((left_aux, right_aux)),
                 observed_types = (expr_type,)
             )
@@ -2408,6 +2425,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         rator_tree : pas.unary_rator, 
         rator_aux : SynthAux,
+        comment_tree, 
+        comment_aux,
         rand_tree : pas.expr, 
         rand_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2444,17 +2463,24 @@ class Server(paa.Server[InherAux, SynthAux]):
             return_type = AnyType() 
 
         return paa.Result[SynthAux](
-            tree = pas.make_UnaryOp(rator_tree, rand_tree),
+            tree = pas.make_UnaryOp(rator_tree, comment_tree, rand_tree),
             aux = update_SynthAux(rand_aux, 
                 observed_types = (return_type,)
             )
         )
 
+
     # synthesize: expr <-- Lambda
     def synthesize_for_expr_Lambda(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         params_tree : pas.parameters, 
         params_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         body_tree : pas.expr, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2463,8 +2489,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             pos_kw_param_sigs = params_aux.pos_kw_param_sigs,
             return_type = body_aux.observed_types[0]
         )
+
         return paa.Result[SynthAux](
-            tree = pas.make_Lambda(params_tree, body_tree),
+            tree = pas.make_Lambda(comment_a_tree, params_tree, comment_b_tree, comment_c_tree, body_tree),
             aux = update_SynthAux(self.synthesize_auxes((params_aux, body_aux)),
                 observed_types = (inferred_type,)
             )  
@@ -2475,8 +2502,16 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         body_tree : pas.expr, 
         body_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         orelse_tree : pas.expr, 
         orelse_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2485,7 +2520,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(orelse_aux.observed_types) == 1
         orelse_type = orelse_aux.observed_types[0]
         return paa.Result[SynthAux](
-            tree = pas.make_IfExp(body_tree, test_tree, orelse_tree),
+            tree = pas.make_IfExp(
+                body_tree, comment_a_tree, comment_b_tree, 
+                test_tree, comment_c_tree, comment_d_tree, orelse_tree),
             aux = update_SynthAux(test_aux,
                 observed_types=(unionize_types(body_type, orelse_type),)
             )
@@ -2497,6 +2534,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         key_tree : pas.expr, 
         key_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2505,7 +2546,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
         return paa.Result[SynthAux](
-            tree = pas.make_Field(key_tree, content_tree),
+            tree = pas.make_Field(key_tree, pre_comment_tree, post_comment_tree, content_tree),
             aux = update_SynthAux(self.synthesize_auxes((key_aux, content_aux)),
                 observed_types = (key_type, content_type)
             ) 
@@ -2577,10 +2618,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: constraint <-- AsyncConstraint
     def synthesize_for_constraint_AsyncConstraint(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : pas.expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : pas.expr, 
         search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         filts_tree : pas.constraint_filters, 
         filts_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2589,7 +2638,14 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncConstraint(target_tree, search_space_tree, filts_tree),
+            tree = pas.make_AsyncConstraint(
+                comment_a_tree, 
+                target_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                search_space_tree, 
+                comment_d_tree, 
+                filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
                 decl_additions = pmap({
                     k : make_Declaration(updatable=None, initialized=True, type=t)
@@ -2601,10 +2657,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: constraint <-- Constraint
     def synthesize_for_constraint_Constraint(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         target_tree : pas.expr, 
         target_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         search_space_tree : pas.expr, 
         search_space_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         filts_tree : pas.constraint_filters, 
         filts_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2612,7 +2676,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         search_space_type = search_space_aux.observed_types[0]
         item_env = self.unify_iteration(inher_aux, target_tree, search_space_type)
         return paa.Result[SynthAux](
-            tree = pas.make_Constraint(target_tree, search_space_tree, filts_tree),
+            tree = pas.make_Constraint(
+                comment_a_tree, 
+                target_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                search_space_tree, 
+                comment_d_tree, 
+                filts_tree),
             aux = update_SynthAux(self.synthesize_auxes((target_aux, search_space_aux, filts_aux)),
                 decl_additions = pmap({
                     k : make_Declaration(updatable=None, initialized=True, type=t)
@@ -2620,13 +2691,17 @@ class Server(paa.Server[InherAux, SynthAux]):
                 })
             )
         )
-     
-    
+
+
     # synthesize: expr <-- ListComp
     def synthesize_for_expr_ListComp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2636,7 +2711,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_ListComp(content_tree, constraints_tree),
+            tree = pas.make_ListComp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "builtins.list",
@@ -2648,8 +2723,12 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- SetComp
     def synthesize_for_expr_SetComp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2660,7 +2739,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_SetComp(content_tree, constraints_tree),
+            tree = pas.make_SetComp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "builtins.set",
@@ -2672,10 +2751,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- DictionaryComp
     def synthesize_for_expr_DictionaryComp(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         key_tree : pas.expr, 
         key_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2690,7 +2777,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_DictionaryComp(key_tree, content_tree, constraints_tree),
+            tree = pas.make_DictionaryComp(
+                comment_a_tree, 
+                key_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                content_tree, 
+                comment_d_tree, 
+                constraints_tree
+            ),
             aux = update_SynthAux(self.synthesize_auxes((key_aux, content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "builtins.dict",
@@ -2702,8 +2797,12 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- GeneratorExp
     def synthesize_for_expr_GeneratorExp(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         constraints_tree : pas.comprehension_constraints, 
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2713,7 +2812,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_GeneratorExp(content_tree, constraints_tree),
+            tree = pas.make_GeneratorExp(pre_comment_tree, content_tree, post_comment_tree, constraints_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, constraints_aux)),
                 observed_types = (make_RecordType(
                     class_key = "typing.Generator",
@@ -2726,6 +2825,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- Await
     def synthesize_for_expr_Await(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2734,7 +2835,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         # async functions return instances of Coroutine <: Awaitable
         # inferred_type = T
         return paa.Result[SynthAux](
-            tree = pas.make_Await(content_tree),
+            tree = pas.make_Await(comment_tree, content_tree),
             aux = self.synthesize_auxes((content_aux,)) 
         )
     
@@ -2755,6 +2856,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- Yield
     def synthesize_for_expr_Yield(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2762,7 +2865,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         expr_type = content_aux.observed_types[0]
         return paa.Result[SynthAux](
-            tree = pas.make_Yield(content_tree),
+            tree = pas.make_Yield(comment_tree, content_tree),
             aux = update_SynthAux(content_aux,
                 yield_types = (expr_type,)
             )
@@ -2771,6 +2874,10 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: expr <-- YieldFrom
     def synthesize_for_expr_YieldFrom(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2781,7 +2888,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         self.check(IterateTypeCheck(), lambda: item_type != None)
 
         return paa.Result[SynthAux](
-            tree = pas.make_YieldFrom(content_tree),
+            tree = pas.make_YieldFrom(comment_a_tree, comment_b_tree, content_tree),
             aux = update_SynthAux(content_aux,
                 yield_types = (item_type or AnyType(),)
             )
@@ -2790,6 +2897,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: CompareRight
     def synthesize_for_CompareRight(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         rator_tree : pas.cmp_rator, 
         rator_aux : SynthAux,
         rand_tree : pas.expr, 
@@ -2797,7 +2906,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         cmp_name = pas.from_cmp_rator_to_method_name(rator_tree)
         return paa.Result[SynthAux](
-            tree = pas.make_CompareRight(rator_tree, rand_tree),
+            tree = pas.make_CompareRight(comment_tree, rator_tree, rand_tree),
             aux = update_SynthAux(self.synthesize_auxes((rator_aux, rand_aux)), 
                 cmp_names = (cmp_name,)
             )
@@ -2858,7 +2967,9 @@ class Server(paa.Server[InherAux, SynthAux]):
     def synthesize_for_expr_Call(self, 
         inher_aux : InherAux,
         func_tree : pas.expr, 
-        func_aux : SynthAux
+        func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
         assert len(func_aux.observed_types) == 1
@@ -2902,7 +3013,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     })
 
         return paa.Result[SynthAux](
-            tree = pas.make_Call(func_tree),
+            tree = pas.make_Call(func_tree, comment_tree),
             aux = update_SynthAux(func_aux,
                 observed_types = (inferred_type,)
             )
@@ -2913,6 +3024,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2921,7 +3036,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         content_type = content_aux.observed_types[0]
 
         return paa.Result[SynthAux](
-            tree = pas.make_NamedKeyword(name_tree, content_tree),
+            tree = pas.make_NamedKeyword(name_tree, pre_comment_tree, post_comment_tree, content_tree),
             aux = make_SynthAux(
                 kw_types = pmap({name_tree : content_type})
             ) 
@@ -2930,6 +3045,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: keyword <-- SplatKeyword
     def synthesize_for_keyword_SplatKeyword(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         content_tree : pas.expr, 
         content_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -2953,7 +3070,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             )
 
         return paa.Result[SynthAux](
-            tree = pas.make_SplatKeyword(content_tree),
+            tree = pas.make_SplatKeyword(comment_tree, content_tree),
             aux = make_SynthAux(
                 kw_types = kw_types
             ) 
@@ -2964,6 +3081,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         func_tree : pas.expr, 
         func_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         args_tree : pas.arguments, 
         args_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3098,7 +3217,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                     })
 
         return paa.Result[SynthAux](
-            tree = pas.make_CallArgs(func_tree, args_tree),
+            tree = pas.make_CallArgs(func_tree, comment_tree, args_tree),
             aux = update_SynthAux(synth_aux,
                 observed_types = (expr_type,),
                 decl_additions = decl_additions
@@ -3243,6 +3362,10 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         name_tree : str, 
         name_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3262,7 +3385,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_type = AnyType()
         
         return paa.Result[SynthAux](
-            tree = pas.make_Attribute(content_tree, name_tree),
+            tree = pas.make_Attribute(content_tree, pre_comment_tree, post_comment_tree, name_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, name_aux)),
                 observed_types = (expr_type,)
             )
@@ -3273,8 +3396,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         content_tree : pas.expr, 
         content_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         slice_tree : pas.expr, 
-        slice_aux : SynthAux
+        slice_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
 
         assert len(content_aux.observed_types) == 1
@@ -3341,7 +3470,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 expr_types = (AnyType(),)
 
         return paa.Result[SynthAux](
-            tree = pas.make_Subscript(content_tree, slice_tree),
+            tree = pas.make_Subscript(content_tree, comment_a_tree, comment_b_tree, slice_tree, comment_c_tree),
             aux = update_SynthAux(self.synthesize_auxes((content_aux, slice_aux)),
                 observed_types = expr_types, 
                 var_types = var_types, 
@@ -3354,14 +3483,22 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         lower_tree : pas.option_expr, 
         lower_aux : SynthAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
         upper_tree : pas.option_expr, 
         upper_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
         step_tree : pas.option_expr, 
         step_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
         return paa.Result[SynthAux](
-            tree = pas.make_Slice(lower_tree, upper_tree, step_tree),
+            tree = pas.make_Slice(lower_tree, comment_a_tree, comment_b_tree, upper_tree, comment_c_tree, comment_d_tree, step_tree),
             aux = update_SynthAux(self.synthesize_auxes((lower_aux, upper_aux, step_aux)),
                 observed_types = (make_RecordType("builtins.slice"),)
             )
@@ -3537,13 +3674,15 @@ class Server(paa.Server[InherAux, SynthAux]):
             body_aux.nested_usages
         )
 
-        self.check(LookupDecCheck(), lambda: (
-            (),
-            us.every(nested_usages, lambda sym : (
-                (dec := from_static_path_to_declaration(inher_aux, f"builtins.{sym}")),
+
+        self.check(LookupDecCheck(), lambda:
+            # any unmatched usages should be matched with definitions in standard lib
+            all(
                 not isinstance(dec.type, AnyType)
-            )[-1])
-        )[-1])
+                for sym in nested_usages
+                for dec in [from_static_path_to_declaration(inher_aux, f"builtins.{sym}")]
+            )
+        )
 
         return paa.Result[SynthAux](
             tree = pas.make_SimpleMod(body_tree),
@@ -3554,15 +3693,13 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: decorators <-- ConsDec
     def synthesize_for_decorators_ConsDec(self, 
         inher_aux : InherAux,
-        head_tree : pas.expr, 
+        head_tree : pas.decorator, 
         head_aux : SynthAux,
         tail_tree : pas.decorators, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
-        assert len(head_aux.observed_types) == 1
-        head_type = head_aux.observed_types[0]
         synth_aux = make_SynthAux(
-            observed_types = (head_type,) + tail_aux.observed_types
+            observed_types = head_aux.observed_types + tail_aux.observed_types
         )
         return paa.Result[SynthAux](
             tree = pas.make_ConsDec(head_tree, tail_tree),
@@ -3627,7 +3764,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         name_tree : str, 
         name_aux : SynthAux,
         bs_tree : pas.bases, 
-        bs_aux : SynthAux
+        bs_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         if not inher_aux.internal_path:
             return update_InherAux(inher_aux,
@@ -3651,6 +3790,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         name_aux : SynthAux,
         bs_tree : pas.bases, 
         bs_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -3791,7 +3932,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         instance_type = from_class_key_to_type(inher_aux, class_record.key, type_arg)
 
         return paa.Result[SynthAux](
-            tree = pas.make_ClassDef(name_tree, bs_tree, body_tree),
+            tree = pas.make_ClassDef(name_tree, bs_tree, comment_tree, body_tree),
             aux = update_SynthAux(body_aux,
                 decl_subtractions=s(),
                 decl_additions=pmap({
@@ -3915,7 +4056,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_tree : pas.parameters, 
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
-        ret_anno_aux : SynthAux
+        ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         assert len(params_aux.decl_subtractions) == 0
         inher_aux = traverse_function_body(inher_aux, name_tree, get_first_param(params_tree))
@@ -3939,7 +4082,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_tree : pas.parameters, 
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
-        ret_anno_aux : SynthAux
+        ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         assert len(params_aux.decl_subtractions) == 0
         inher_aux = traverse_function_body(inher_aux, name_tree, get_first_param(params_tree))
@@ -3957,6 +4102,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4010,9 +4157,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         ):
             type = OverloadType()
 
-
         return paa.Result[SynthAux](
-            tree = pas.make_FunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
+            tree = pas.make_FunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
             aux = make_SynthAux(
                 decl_subtractions = s(),
                 decl_additions = pmap({name_tree : make_Declaration(
@@ -4032,6 +4178,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         params_aux : SynthAux,
         ret_anno_tree : pas.return_annotation, 
         ret_anno_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4040,7 +4188,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         nested_usages = self.update_nested_usages(body_aux.decl_additions, body_aux.usage_additions, body_aux.nested_usages)
 
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, body_tree),
+            tree = pas.make_AsyncFunctionDef(name_tree, params_tree, ret_anno_tree, comment_tree, body_tree),
             aux = make_SynthAux(
                 decl_subtractions = s(),
                 decl_additions = pmap({name_tree : make_Declaration(
@@ -4055,6 +4203,8 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: Param 
     def synthesize_for_Param(self, 
         inher_aux : InherAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         name_tree : str, 
         name_aux : SynthAux,
         anno_tree : pas.param_annotation, 
@@ -4077,7 +4227,7 @@ class Server(paa.Server[InherAux, SynthAux]):
             )
 
         return paa.Result[SynthAux](
-            tree = pas.make_Param(name_tree, anno_tree, default_tree),
+            tree = pas.make_Param(comment_tree, name_tree, anno_tree, default_tree),
 
             aux = make_SynthAux(
                 decl_additions = pmap({name_tree : make_Declaration(
@@ -4098,14 +4248,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_d <-- ConsKwParam
     def synthesize_for_parameters_d_ConsKwParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_d, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_ConsKwParam(head_tree, tail_tree),
+            tree = pas.make_ConsKwParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 kw_param_sigs = (head_aux.param_sig,) + tail_aux.kw_param_sigs
             )
@@ -4114,13 +4268,17 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_d <-- SingleKwParam
     def synthesize_for_parameters_d_SingleKwParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
 
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SingleKwParam(content_tree),
+            tree = pas.make_SingleKwParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 kw_param_sigs = (content_aux.param_sig,)
             )
@@ -4129,15 +4287,30 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_d <-- TransKwParam
     def synthesize_for_parameters_d_TransKwParam(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         tail_tree : pas.Param, 
-        tail_aux : SynthAux
+        tail_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         assert tail_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_TransKwParam(head_tree, tail_tree),
+            tree = pas.make_TransKwParam(
+                comment_a_tree,
+                head_tree, 
+                comment_b_tree,
+                comment_c_tree,
+                tail_tree,
+                comment_d_tree,
+            ),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 kw_param_sigs = (head_aux.param_sig,) + tail_aux.kw_param_sigs,
                 bundle_kw_param_type = tail_aux.param_sig.type,
@@ -4166,15 +4339,30 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- DoubleBundleParam
     def synthesize_for_parameters_c_DoubleBundleParam(self, 
         inher_aux : InherAux,
+        comment_a_tree : str, 
+        comment_a_aux : SynthAux,
         tuple_param_tree : pas.Param, 
         tuple_param_aux : SynthAux,
+        comment_b_tree : str, 
+        comment_b_aux : SynthAux,
+        comment_c_tree : str, 
+        comment_c_aux : SynthAux,
         dict_param_tree : pas.Param, 
-        dict_param_aux : SynthAux
+        dict_param_aux : SynthAux,
+        comment_d_tree : str, 
+        comment_d_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert tuple_param_aux.param_sig
         assert dict_param_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_DoubleBundleParam(tuple_param_tree, dict_param_tree),
+            tree = pas.make_DoubleBundleParam(
+                comment_a_tree, 
+                tuple_param_tree, 
+                comment_b_tree, 
+                comment_c_tree, 
+                dict_param_tree,
+                comment_d_tree, 
+            ),
             aux = update_SynthAux(self.synthesize_auxes(tuple([tuple_param_aux, dict_param_aux])),
                 bundle_pos_param_type = tuple_param_aux.param_sig.type,
                 bundle_kw_param_type = dict_param_aux.param_sig.type,
@@ -4214,12 +4402,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- DictionaryBundleParam
     def synthesize_for_parameters_c_DictionaryBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_DictionaryBundleParam(content_tree),
+            tree = pas.make_DictionaryBundleParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 bundle_kw_param_type = content_aux.param_sig.type,
                 decl_additions=pmap({
@@ -4247,12 +4439,16 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- SingleTupleBundleParam
     def synthesize_for_parameters_c_SingleTupleBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SingleTupleBundleParam(content_tree),
+            tree = pas.make_SingleTupleBundleParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 bundle_pos_param_type = content_aux.param_sig.type,
                 decl_additions=pmap({
@@ -4272,14 +4468,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_c <-- TransTupleBundleParam
     def synthesize_for_parameters_c_TransTupleBundleParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_d, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_TransTupleBundleParam(head_tree, tail_tree),
+            tree = pas.make_TransTupleBundleParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 bundle_pos_param_type = head_aux.param_sig.type,
                 decl_additions=pmap({
@@ -4299,14 +4499,20 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_b <-- ConsPosKeyParam
     def synthesize_for_parameters_b_ConsPosKeyParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_b, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
+
+
         return paa.Result[SynthAux](
-            tree = pas.make_ConsPosKeyParam(head_tree, tail_tree),
+            tree = pas.make_ConsPosKeyParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 pos_kw_param_sigs = (head_aux.param_sig,) + tail_aux.pos_kw_param_sigs
             )
@@ -4315,12 +4521,17 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_b <-- SinglePosKeyParam
     def synthesize_for_parameters_b_SinglePosKeyParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
+
         return paa.Result[SynthAux](
-            tree = pas.make_SinglePosKeyParam(content_tree),
+            tree = pas.make_SinglePosKeyParam(pre_comment_tree, content_tree, post_comment_tree),
             aux = update_SynthAux(content_aux,
                 pos_kw_param_sigs = (content_aux.param_sig,)
             )
@@ -4329,14 +4540,18 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_a <-- ConsPosParam
     def synthesize_for_parameters_a_ConsPosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         tail_tree : pas.parameters_a, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_ConsPosParam(head_tree, tail_tree),
+            tree = pas.make_ConsPosParam(pre_comment_tree, head_tree, post_comment_tree, tail_tree),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 pos_param_types = tuple([head_aux.param_sig.type]) + tail_aux.pos_param_types
             )
@@ -4345,12 +4560,26 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_a <-- SinglePosParam
     def synthesize_for_parameters_a_SinglePosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         content_tree : pas.Param, 
-        content_aux : SynthAux
+        content_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux,
     ) -> paa.Result[SynthAux]:
         assert content_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_SinglePosParam(content_tree),
+            tree = pas.make_SinglePosParam(
+                pre_comment_tree, 
+                content_tree,
+                post_comment_tree, 
+                pre_sep_comment_tree, 
+                post_sep_comment_tree, 
+            ),
             aux = update_SynthAux(content_aux,
                 pos_param_types = tuple([content_aux.param_sig.type])
             )
@@ -4359,14 +4588,29 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: parameters_a <-- TransPosParam
     def synthesize_for_parameters_a_TransPosParam(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         head_tree : pas.Param, 
         head_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
+        pre_sep_comment_tree : str, 
+        pre_sep_comment_aux : SynthAux,
+        post_sep_comment_tree : str, 
+        post_sep_comment_aux : SynthAux,
         tail_tree : pas.parameters_b, 
         tail_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         assert head_aux.param_sig
         return paa.Result[SynthAux](
-            tree = pas.make_TransPosParam(head_tree, tail_tree),
+            tree = pas.make_TransPosParam(
+                pre_comment_tree, 
+                head_tree, 
+                post_comment_tree, 
+                pre_sep_comment_tree,
+                post_sep_comment_tree,
+                tail_tree
+            ),
             aux = update_SynthAux(self.synthesize_auxes(tuple([head_aux, tail_aux])),
                 pos_param_types = tuple([head_aux.param_sig.type]) + tail_aux.pos_param_types
             )
@@ -4772,7 +5016,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
@@ -4793,6 +5039,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4800,8 +5048,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         usage_additions = filter_usage_additions(body_aux.usage_additions, target_aux.usage_additions, body_aux.decl_additions)
 
         return paa.Result[SynthAux](
-            tree = pas.make_For(target_tree, iter_tree, body_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux])),
+            tree = pas.make_For(target_tree, iter_tree, comment_tree, body_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, comment_aux, body_aux])),
                 decl_subtractions = iter_aux.decl_subtractions, 
                 decl_additions = iter_aux.decl_additions,
                 usage_additions = usage_additions
@@ -4814,7 +5062,9 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
 
         assert len(iter_aux.observed_types) == 1
@@ -4835,6 +5085,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.ElseBlock, 
@@ -4852,8 +5104,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             to_change_decl(orelse_aux)
         )
         return paa.Result[SynthAux](
-            tree = pas.make_ForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
+            tree = pas.make_ForElse(target_tree, iter_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, comment_aux, body_aux, orelse_aux])),
                 decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions = iter_aux.decl_additions + change_decl.additions,
                 usage_additions = usage_additions
@@ -4868,14 +5120,18 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         return self.traverse_stmt_For_body(
             inher_aux,
             target_tree, 
             target_aux,
             iter_tree, 
-            iter_aux
+            iter_aux,
+            comment_tree,
+            comment_aux
         ) 
     
     # synthesize: stmt <-- AsyncFor
@@ -4885,6 +5141,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
@@ -4896,9 +5154,9 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         assert len(iter_aux.observed_types) == 1
         iter_type = iter_aux.observed_types[0]
-        new_synth_aux = self.synthesize_auxes(tuple([iter_aux, body_aux]))
+        new_synth_aux = self.synthesize_auxes((iter_aux, comment_aux, body_aux))
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncFor(target_tree, iter_tree, body_tree),
+            tree = pas.make_AsyncFor(target_tree, iter_tree, comment_tree, body_tree),
             aux = make_SynthAux(
                 decl_subtractions = new_synth_aux.decl_subtractions, 
                 decl_additions= (
@@ -4918,12 +5176,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_tree : pas.expr, 
         target_aux : SynthAux,
         iter_tree : pas.expr, 
-        iter_aux : SynthAux
+        iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux
     ) -> InherAux:
         return self.traverse_stmt_ForElse_body(
             inher_aux, 
             target_tree, target_aux, 
-            iter_tree, iter_aux
+            iter_tree, iter_aux,
+            comment_tree, comment_aux
         )
     
     # synthesize: stmt <-- AsyncForElse
@@ -4933,6 +5194,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         target_aux : SynthAux,
         iter_tree : pas.expr, 
         iter_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.ElseBlock, 
@@ -4952,8 +5215,8 @@ class Server(paa.Server[InherAux, SynthAux]):
             to_change_decl(orelse_aux)
         )
         return paa.Result[SynthAux](
-            tree = pas.make_AsyncForElse(target_tree, iter_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, body_aux, orelse_aux])),
+            tree = pas.make_AsyncForElse(target_tree, iter_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([target_aux, iter_aux, comment_aux, body_aux, orelse_aux])),
                 decl_subtractions = iter_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions= (
                     iter_aux.decl_additions + change_decl.additions +
@@ -4971,11 +5234,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         name_tree : str, 
         name_aux : SynthAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
+        post_comment_tree : str, 
+        post_comment_aux : SynthAux,
         alias_tree : str, 
         alias_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         return paa.Result[SynthAux](
-            tree = pas.make_ImportNameAlias(name_tree, alias_tree),
+            tree = pas.make_ImportNameAlias(name_tree, pre_comment_tree, post_comment_tree, alias_tree),
             aux = make_SynthAux(
                 import_names=pmap({alias_tree : name_tree})
             )
@@ -5081,6 +5348,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> InherAux:
@@ -5092,13 +5361,15 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
         return paa.Result[SynthAux](
-            tree = pas.make_While(test_tree, body_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux])),
+            tree = pas.make_While(test_tree, comment_tree, body_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, comment_aux, body_aux])),
                 decl_subtractions = test_aux.decl_subtractions,
                 decl_additions = test_aux.decl_additions,
             ) 
@@ -5109,6 +5380,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.ElseBlock, 
@@ -5120,8 +5393,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
         return paa.Result[SynthAux](
-            tree = pas.make_WhileElse(test_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])),
+            tree = pas.make_WhileElse(test_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes((test_aux, comment_aux, body_aux, orelse_aux)),
                 decl_subtractions = test_aux.decl_subtractions.update(change_decl.subtractions),
                 decl_additions = test_aux.decl_additions + change_decl.additions,
             ) 
@@ -5133,6 +5406,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> InherAux:
@@ -5143,6 +5418,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         inher_aux : InherAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux,
         orelse_tree : pas.conditions, 
@@ -5155,8 +5432,8 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
         return paa.Result[SynthAux](
-            tree = pas.make_If(test_tree, body_tree, orelse_tree),
-            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, body_aux, orelse_aux])),
+            tree = pas.make_If(test_tree, comment_tree, body_tree, orelse_tree),
+            aux = update_SynthAux(self.synthesize_auxes(tuple([test_aux, comment_aux, body_aux, orelse_aux])),
                 decl_subtractions = test_aux.decl_subtractions.update(change_decl.subtractions), 
                 decl_additions = test_aux.decl_additions + change_decl.additions,
                 return_types = body_aux.return_types + orelse_aux.return_types,
@@ -5199,13 +5476,17 @@ class Server(paa.Server[InherAux, SynthAux]):
     # synthesize: ElifBlock
     def synthesize_for_ElifBlock(self, 
         inher_aux : InherAux,
+        pre_comment_tree : str, 
+        pre_comment_aux : SynthAux,
         test_tree : pas.expr, 
         test_aux : SynthAux,
+        comment_tree : str, 
+        comment_aux : SynthAux,
         body_tree : pas.statements, 
         body_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         return paa.Result[SynthAux](
-            tree = pas.make_ElifBlock(test_tree, body_tree), 
+            tree = pas.make_ElifBlock(pre_comment_tree, test_tree, comment_tree, body_tree), 
             aux = update_SynthAux(body_aux,
                 return_types = body_aux.return_types, 
                 yield_types = body_aux.yield_types, 

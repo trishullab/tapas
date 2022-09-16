@@ -50,7 +50,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SomeParamAnno",
             [
+                Vocab("pre_comment", "comment"),
                 Terminal(" : "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine()),
             ]
         ),
@@ -65,7 +67,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SomeParamDefault",
             [
+                Vocab("pre_comment", "comment"),
                 Terminal(" = "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -80,7 +84,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsKwParam",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_d", InLine())
             ]
@@ -89,16 +96,24 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleKwParam",
             [
-                Nonterm("content", "Param", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
         Rule(
             "TransKwParam",
             [
+
+                Vocab("comment_a", "comment"),
                 Nonterm("head", "Param", InLine()),
-                Terminal(", **"),
-                Nonterm("tail", "Param", InLine())
+                Vocab("comment_b", "comment"),
+                Terminal(", "), 
+                Vocab("comment_c", "comment"),
+                Terminal("**"),
+                Nonterm("tail", "Param", InLine()),
+                Vocab("comment_d", "comment"),
             ]
         )
 
@@ -108,16 +123,21 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleTupleBundleParam",
             [
+                Vocab("pre_comment", "comment"),
                 Terminal("*"),
-                Nonterm("content", "Param", InLine())
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
         Rule(
             "TransTupleBundleParam",
             [
+
+                Vocab("pre_comment", "comment"),
                 Terminal("*"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_d", InLine())
             ]
@@ -134,18 +154,27 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "DoubleBundleParam",
             [
+
+                Vocab("comment_a", "comment"),
                 Terminal("*"),
                 Nonterm("tuple_param", "Param", InLine()),
+                Vocab("comment_b", "comment"),
+                Terminal(", "),
+                Vocab("comment_c", "comment"),
                 Terminal("**"),
-                Nonterm("dict_param", "Param", InLine())
+                Nonterm("dict_param", "Param", InLine()),
+                Vocab("comment_d", "comment"),
             ]
         ),
 
         Rule(
             "DictionaryBundleParam",
             [
+
+                Vocab("pre_comment", "comment"),
                 Terminal("**"),
-                Nonterm("content", "Param", InLine())
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         )
     ],
@@ -154,7 +183,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsPosKeyParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_b", InLine())
             ]
@@ -163,7 +194,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SinglePosKeyParam",
             [
-                Nonterm("content", "Param", InLine())
+
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "Param", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -180,7 +214,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsPosParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "parameters_a", InLine())
             ]
@@ -189,16 +225,28 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SinglePosParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "Param", InLine()),
-                Terminal(", /")
+                Vocab("post_comment", "comment"),
+                Terminal(", "),
+                Vocab("pre_sep_comment", "comment"),
+                Terminal("/"),
+                Vocab("post_sep_comment", "comment"),
+                Terminal(", "),
             ]
         ),
 
         Rule(
             "TransPosParam",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "Param", InLine()),
-                Terminal(", /, "),
+                Vocab("post_comment", "comment"),
+                Terminal(", "),
+                Vocab("pre_sep_comment", "comment"),
+                Terminal("/"),
+                Vocab("post_sep_comment", "comment"),
+                Terminal(", "),
                 Nonterm("tail", "parameters_b", InLine()),
             ]
         )
@@ -234,7 +282,9 @@ choices_schema : dict[str, list[Rule]] = {
             "NamedKeyword",
             [
                 Vocab("name", "identifier"),
+                Vocab("pre_comment", "comment"),
                 Terminal(" = "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -243,6 +293,7 @@ choices_schema : dict[str, list[Rule]] = {
             "SplatKeyword",
             [
                 Terminal("**"),
+                Vocab("comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -254,7 +305,9 @@ choices_schema : dict[str, list[Rule]] = {
             "ImportNameAlias",
             [
                 Vocab("name", "identifier"),
+                Vocab("pre_comment", "comment"),
                 Terminal(" as "),
+                Vocab("post_comment", "comment"),
                 Vocab("alias", "identifier")
             ]
         ),
@@ -301,7 +354,9 @@ choices_schema : dict[str, list[Rule]] = {
 
         Rule(
             "NoBases",
-            []
+            [
+                Vocab("comment", "comment"),
+            ]
         )
     ],
 
@@ -309,7 +364,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsBase",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "bases_a", InLine()),
             ]
@@ -318,7 +376,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleBase",
             [
-                Nonterm("content", "expr", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -335,7 +395,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsKeyword",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "keyword", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "keywords", InLine()),
             ]
@@ -344,7 +407,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleKeyword",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "keyword", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -388,7 +453,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsExpr",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "comma_exprs", InLine())
             ]
@@ -397,7 +465,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleExpr",
             [
-                Nonterm("content", "expr", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment")
             ]
         ),
 
@@ -422,12 +492,31 @@ choices_schema : dict[str, list[Rule]] = {
 
     ],
 
+    "decorator" : [
+        Rule(
+            "ExprDec",
+            [
+                Terminal("@"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("comment", "comment"),
+            ]
+        ),
+
+        Rule(
+            "CmntDec",
+            [
+                Vocab("content", "comment"),
+            ]
+        ),
+
+    ],
+
     "decorators" : [
         Rule(
             "ConsDec",
             [
                 Terminal("@"),
-                Nonterm("head", "expr", InLine()),
+                Nonterm("head", "decorator", InLine()),
                 Nonterm("tail", "decorators", InLine())
             ]
         ),
@@ -444,7 +533,9 @@ choices_schema : dict[str, list[Rule]] = {
             "ConsFilter",
             [
                 Terminal("if "),
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("tail", "constraint_filters", NewLine())
             ]
         ),
@@ -453,7 +544,9 @@ choices_schema : dict[str, list[Rule]] = {
             "SingleFilter",
             [
                 Terminal("if "),
-                Nonterm("content", "expr", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -487,7 +580,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsArg",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "expr", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "arguments", InLine()),
             ]
@@ -496,7 +592,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleArg",
             [
-                Nonterm("content", "expr", InLine())
+
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -515,7 +614,9 @@ choices_schema : dict[str, list[Rule]] = {
             "Field",
             [
                 Nonterm("key", "expr", InLine()),
+                Vocab("pre_comment", "comment"),
                 Terminal(" : "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -534,7 +635,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsDictionaryItem",
             [
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "dictionary_item", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "dictionary_content", NewLine())
             ]
@@ -543,7 +646,9 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleDictionaryItem",
             [
-                Nonterm("content", "dictionary_item", InLine())
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "dictionary_item", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -573,7 +678,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsImportName",
             [
+
+                Vocab("pre_comment", "comment"),
                 Nonterm("head", "import_name", InLine()),
+                Vocab("post_comment", "comment"),
                 Terminal(", "),
                 Nonterm("tail", "sequence_import_name", InLine()),
             ]
@@ -582,7 +690,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleImportName",
             [
-                Nonterm("content", "import_name", InLine())
+
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "import_name", InLine()),
+                Vocab("post_comment", "comment"),
             ]
         ),
 
@@ -626,7 +737,6 @@ choices_schema : dict[str, list[Rule]] = {
 
     ],
 
-
     "statements" : [
         Rule(
             "ConsStmt",
@@ -657,7 +767,7 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleConstraint",
             [
-                Nonterm("content", "constraint", InLine())
+                Nonterm("content", "constraint", InLine()),
             ]
         ),
 
@@ -667,6 +777,7 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "ConsExceptHandler",
             [
+                Vocab("comment", "comment"),
                 Nonterm("head", "ExceptHandler", InLine()),
                 Nonterm("tail", "sequence_ExceptHandler", NewLine())
             ]
@@ -675,6 +786,7 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "SingleExceptHandler",
             [
+                Vocab("comment", "comment"),
                 Nonterm("content", "ExceptHandler", InLine())
             ]
         ),
@@ -716,6 +828,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(")"),
                 Nonterm("ret_anno", "return_annotation", InLine()),
                 Terminal(":"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -730,6 +843,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(")"),
                 Nonterm("ret_anno", "return_annotation", InLine()),
                 Terminal(":"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -737,6 +851,14 @@ choices_schema : dict[str, list[Rule]] = {
 
 
     "stmt" : [
+
+        Rule(
+            "Comment",
+            [ 
+                Vocab("content", "comment"),
+            ]
+        ),
+
         Rule(
             "DecFunctionDef",
             [ 
@@ -825,6 +947,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -837,6 +960,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
             ]
@@ -850,6 +974,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -862,6 +987,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal(" in "),
                 Nonterm("iter", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
             ]
@@ -873,6 +999,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("while "),
                 Nonterm("test", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
             ]
         ),
@@ -883,6 +1010,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("while "),
                 Nonterm("test", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
             ]
@@ -894,6 +1022,7 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("if "),
                 Nonterm("test", "expr", InLine()),
                 Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("orelse", "conditions", InLine())
             ]
@@ -904,7 +1033,8 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("with "),
                 Nonterm("items", "sequence_with_item", InLine()),
-                Terminal(":"),
+                Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -914,7 +1044,8 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("async with "),
                 Nonterm("items", "sequence_with_item", InLine()),
-                Terminal(":"),
+                Terminal(": "),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine())
             ]
         ),
@@ -949,6 +1080,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Try",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
             ]
@@ -958,6 +1090,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryElse",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
                 Nonterm("orelse", "ElseBlock", NewLine())
@@ -968,6 +1101,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryExceptFin",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
                 Nonterm("fin", "FinallyBlock", NewLine())
@@ -978,6 +1112,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryFin",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("fin", "FinallyBlock", NewLine())
             ]
@@ -987,6 +1122,7 @@ choices_schema : dict[str, list[Rule]] = {
             "TryElseFin",
             [
                 Terminal("try:"),
+                Vocab("comment", "comment"),
                 Nonterm("body", "statements", IndentLine()),
                 Nonterm("handlers", "sequence_ExceptHandler", NewLine()),
                 Nonterm("orelse", "ElseBlock", NewLine()),
@@ -1029,7 +1165,9 @@ choices_schema : dict[str, list[Rule]] = {
                 Terminal("from "),
                 Vocab("module", "identifier"),
                 Terminal(" import "),
-                Nonterm("names", "sequence_import_name", InLine())
+                Terminal("("),
+                Nonterm("names", "sequence_import_name", InLine()),
+                Terminal(")"),
             ]
         ),
 
@@ -1091,15 +1229,26 @@ choices_schema : dict[str, list[Rule]] = {
     "expr" : [
 
         Rule(
-            "BoolOp",
+            "ParenExpr",
             [
                 Terminal("("),
+                Vocab("pre_comment", "comment"),
+                Nonterm("content", "expr", InLine()),
+                Vocab("post_comment", "comment"),
+                Terminal(")")
+            ]
+        ),
+
+        Rule(
+            "BoolOp",
+            [
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
+                Vocab("pre_comment", "comment"),
                 Nonterm("op", "bool_rator", InLine()),
                 Terminal(" "),
+                Vocab("post_comment", "comment"),
                 Nonterm("right", "expr", InLine()),
-                Terminal(")")
             ]
         ),
 
@@ -1107,7 +1256,9 @@ choices_schema : dict[str, list[Rule]] = {
             "AssignExpr",
             [
                 Nonterm("target", "expr", InLine()),
+                Vocab("pre_comment", "comment"),
                 Terminal(" := "),
+                Vocab("post_comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -1115,24 +1266,23 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "BinOp",
             [
-                Terminal("("),
                 Nonterm("left", "expr", InLine()),
                 Terminal(" "),
+                Vocab("pre_comment", "comment"),
                 Nonterm("rator", "bin_rator", InLine()),
                 Terminal(" "),
-                Nonterm("right", "expr", InLine()),
-                Terminal(")")
+                Vocab("post_comment", "comment"),
+                Nonterm("right", "expr", InLine())
             ]
         ),
 
         Rule(
             "UnaryOp",
             [
-                Terminal("("),
                 Nonterm("rator", "unary_rator", InLine()),
                 Terminal(" "),
+                Vocab("comment", "comment"),
                 Nonterm("rand", "expr", InLine()),
-                Terminal(")")
             ]
         ),
 
@@ -1140,8 +1290,11 @@ choices_schema : dict[str, list[Rule]] = {
             "Lambda",
             [
                 Terminal("lambda "),
+                Vocab("comment_a", "comment"),
                 Nonterm("params", "parameters", InLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" :"),
+                Vocab("comment_c", "comment"),
                 Nonterm("body", "expr", InLine())
             ]
         ),
@@ -1150,9 +1303,13 @@ choices_schema : dict[str, list[Rule]] = {
             "IfExp",
             [
                 Nonterm("body", "expr", InLine()),
+                Vocab("comment_a", "comment"),
                 Terminal("if "),
+                Vocab("comment_b", "comment"),
                 Nonterm("test", "expr", InLine()),
+                Vocab("comment_c", "comment"),
                 Terminal(" else"),
+                Vocab("comment_d", "comment"),
                 Nonterm("orelse", "expr", NewLine())
             ]
         ),
@@ -1186,7 +1343,9 @@ choices_schema : dict[str, list[Rule]] = {
             "ListComp",
             [
                 Terminal("["),
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "expr", IndentLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("]"),
             ]
@@ -1196,7 +1355,9 @@ choices_schema : dict[str, list[Rule]] = {
             "SetComp",
             [
                 Terminal("{"),
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "expr", IndentLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("}")
             ]
@@ -1206,9 +1367,13 @@ choices_schema : dict[str, list[Rule]] = {
             "DictionaryComp",
             [
                 Terminal("{"),
+                Vocab("comment_a", "comment"),
                 Nonterm("key", "expr", IndentLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" : "),
+                Vocab("comment_c", "comment"),
                 Nonterm("content", "expr", InLine()),
+                Vocab("comment_d", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal("}")
             ]
@@ -1218,7 +1383,9 @@ choices_schema : dict[str, list[Rule]] = {
             "GeneratorExp",
             [
                 Terminal("("),
+                Vocab("pre_comment", "comment"),
                 Nonterm("content", "expr", IndentLine()),
+                Vocab("post_comment", "comment"),
                 Nonterm("constraints", "comprehension_constraints", IndentLine()),
                 Terminal(")")
             ]
@@ -1228,6 +1395,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Await",
             [
                 Terminal("await "),
+                Vocab("comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -1243,6 +1411,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Yield",
             [
                 Terminal("yield "),
+                Vocab("comment", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -1250,7 +1419,10 @@ choices_schema : dict[str, list[Rule]] = {
         Rule(
             "YieldFrom",
             [
-                Terminal("yield from "),
+                Terminal("yield "),
+                Vocab("comment_a", "comment"),
+                Terminal("from "),
+                Vocab("comment_b", "comment"),
                 Nonterm("content", "expr", InLine())
             ]
         ),
@@ -1270,6 +1442,7 @@ choices_schema : dict[str, list[Rule]] = {
             "Call",
             [
                 Nonterm("func", "expr", InLine()),
+                Vocab("comment", "comment"),
                 Terminal("()")
             ]
         ),
@@ -1278,6 +1451,7 @@ choices_schema : dict[str, list[Rule]] = {
             "CallArgs",
             [
                 Nonterm("func", "expr", InLine()),
+                Vocab("comment", "comment"),
                 Terminal("("),
                 Nonterm("args", "arguments", InLine()),
                 Terminal(")")
@@ -1338,7 +1512,9 @@ choices_schema : dict[str, list[Rule]] = {
             "Attribute",
             [
                 Nonterm("content", "expr", InLine()),
+                Vocab("pre_comment", "comment"),
                 Terminal("."),
+                Vocab("post_comment", "comment"),
                 Vocab("name", "identifier")
             ]
         ),
@@ -1347,8 +1523,11 @@ choices_schema : dict[str, list[Rule]] = {
             "Subscript",
             [
                 Nonterm("content", "expr", InLine()),
+                Vocab("comment_a", "comment"),
                 Terminal("["),
+                Vocab("comment_b", "comment"),
                 Nonterm("slice", "expr", InLine()),
+                Vocab("comment_c", "comment"),
                 Terminal("]")
             ]
         ),
@@ -1389,7 +1568,7 @@ choices_schema : dict[str, list[Rule]] = {
             [
                 Terminal("("),
                 Nonterm("content", "comma_exprs", InLine()),
-                Terminal(")")
+                Terminal(",)")
             ]
         ),
 
@@ -1404,9 +1583,13 @@ choices_schema : dict[str, list[Rule]] = {
             "Slice",
             [
                 Nonterm("lower", "option_expr", InLine()),
+                Vocab("comment_a", "comment"),
                 Terminal(":"),
+                Vocab("comment_b", "comment"),
                 Nonterm("upper", "option_expr", InLine()),
+                Vocab("comment_c", "comment"),
                 Terminal(":"),
+                Vocab("comment_d", "comment"),
                 Nonterm("step", "option_expr", InLine())
             ]
         ),
@@ -1576,9 +1759,13 @@ choices_schema : dict[str, list[Rule]] = {
             "AsyncConstraint",
             [
                 Terminal("async for "),
+                Vocab("comment_a", "comment"),
                 Nonterm("target", "expr", InLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" in "),
+                Vocab("comment_c", "comment"),
                 Nonterm("search_space", "expr", InLine()),
+                Vocab("comment_d", "comment"),
                 Nonterm("filts", "constraint_filters", NewLine())
             ] 
         ),
@@ -1587,9 +1774,13 @@ choices_schema : dict[str, list[Rule]] = {
             "Constraint",
             [
                 Terminal("for "),
+                Vocab("comment_a", "comment"),
                 Nonterm("target", "expr", InLine()),
+                Vocab("comment_b", "comment"),
                 Terminal(" in "),
+                Vocab("comment_c", "comment"),
                 Nonterm("search_space", "expr", InLine()),
+                Vocab("comment_d", "comment"),
                 Nonterm("filts", "constraint_filters", NewLine())
             ] 
         ),
@@ -1603,6 +1794,7 @@ singles_schema : list[Rule] = [
     Rule(
         "CompareRight",
         [
+            Vocab("comment", "comment"),
             Nonterm("rator", "cmp_rator", InLine()),
             Terminal(" "),
             Nonterm("rand", "expr", InLine())
@@ -1612,9 +1804,10 @@ singles_schema : list[Rule] = [
     Rule(
         "ExceptHandler",
         [
-            Terminal("except "),
+            Terminal("except"),
             Nonterm("arg", "except_arg", InLine()),
             Terminal(":"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())
         ]
     ),
@@ -1622,6 +1815,7 @@ singles_schema : list[Rule] = [
     Rule(
         "Param",
         [
+            Vocab("comment", "comment"),
             Vocab("name", "identifier"),
             Nonterm("anno", "param_annotation", InLine()),
             Nonterm("default", "param_default", InLine())
@@ -1635,6 +1829,7 @@ singles_schema : list[Rule] = [
             Vocab("name", "identifier"),
             Nonterm("bs", "bases", InLine()),
             Terminal(":"), 
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())
         ]
     ),
@@ -1642,9 +1837,12 @@ singles_schema : list[Rule] = [
     Rule(
         "ElifBlock",
         [
+
+            Vocab("pre_comment", "comment"),
             Terminal("elif "),
             Nonterm("test", "expr", InLine()),
             Terminal(":"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine()),
         ]
     ),
@@ -1652,7 +1850,9 @@ singles_schema : list[Rule] = [
     Rule(
         "ElseBlock",
         [
+            Vocab("pre_comment", "comment"),
             Terminal("else:"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine()),
         ]
     ),
@@ -1660,7 +1860,10 @@ singles_schema : list[Rule] = [
     Rule(
         "FinallyBlock",
         [
+
+            Vocab("pre_comment", "comment"),
             Terminal("finally:"),
+            Vocab("comment", "comment"),
             Nonterm("body", "statements", IndentLine())
         ]
     )
