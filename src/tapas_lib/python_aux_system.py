@@ -283,6 +283,15 @@ def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
 
+def lookup_static_path_in_package(path : str, package : PMap[str, ModulePackage]) -> Declaration:
+    rpath = path.split(".")
+    mp = package[rpath[0]]
+    for t1 in rpath[1:-1]:
+        mp = mp.package[t1]
+    result = mp.module[rpath[-1]]
+    return result
+
+
 def lookup_path_type(path : str, inher_aux : InherAux) -> type:
     parts = path.split(".")
     assert len(parts) > 0
@@ -927,6 +936,14 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
         if not inher_aux.internal_path: 
             if inher_aux.local_env.get(name):
                 return inher_aux.local_env[name]
+            elif "." in name:
+                # rpath = path.split(".")
+                # package = inher_aux.package
+                # mp = package[rpath[0]]
+                # for t1 in rpath[1:-1]:
+                #     mp = mp.package[t1]
+                # result = mp.module[rpath[-1]]
+                return lookup_static_path_in_package(path, inher_aux.package)
             else:
                 return make_Declaration(updatable=None, initialized = True, type = AnyType())
         elif inher_aux.global_env.get(name): 
@@ -1318,8 +1335,8 @@ def analyze_modules_once(
                     package = insert_module_class_env_dotpath(package, module_path, m(), m())
                 success_count += 1
         except Exception as ex:
-            # raise ex
-            continue
+            raise ex
+            # continue
             # return package 
         finally:
             print("")
@@ -1363,7 +1380,7 @@ def analyze_modules_fixpoint(
 
     count = 1
     print(f"fixpoint iteration count: {count}")
-    while count < 2 and out_package_prim != in_package_prim:
+    while count < 3 and out_package_prim != in_package_prim:
         in_package = out_package
         in_package_prim = out_package_prim 
         out_package = analyze_modules_once(root_dir, module_paths, in_package) 
@@ -1399,6 +1416,12 @@ def analyze_typeshed() -> PMap[str, ModulePackage]:
 
 def analyze_numpy_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
     stdlib_dirpath = us.project_path("tapas_res/numpyshed")
+    stdlib_module_paths = collect_module_paths(stdlib_dirpath)
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
+    return package
+
+def analyze_pandas_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
+    stdlib_dirpath = us.project_path("tapas_res/pandas-stubs")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
     package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
     return package
@@ -1660,6 +1683,7 @@ def spawn_analysis(
 
     def run():
         try:
+            nonlocal module_name
             nonlocal inher_aux
             token = in_stream.get()
 
@@ -1672,6 +1696,10 @@ def spawn_analysis(
                 k : dec
                 for k, dec in synth.aux.decl_additions.items()
             })
+
+            # for k in module.keys():
+            #     if "DataFrame" in k:
+            #         import pdb ; pdb.set_trace()
 
             class_env : PMap[str, ClassRecord] = pmap({
                 k : cr 
@@ -5296,6 +5324,11 @@ class Server(paa.Server[InherAux, SynthAux]):
             alias : from_static_path_to_declaration(inher_aux, f'{module_tree}.{source_path}')
             for alias, source_path in names_aux.import_names.items()
         })
+        
+        if inher_aux.external_path == "pandas":
+            if module_tree == "pandas.core.api":
+                import pdb; pdb.set_trace()
+
 
         return paa.Result[SynthAux](
             tree = pas.make_ImportFrom(module_tree, names_tree),
