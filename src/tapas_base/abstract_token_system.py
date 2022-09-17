@@ -106,8 +106,8 @@ def dump(rule_map : dict[str, Rule], abstract_tokens : tuple[abstract_token, ...
         format : Format = stack.pop()
         inst = next(inst_iter, None)
 
-        assert inst
-
+        if not inst:
+            return '\n'.join(result_strs)
 
         def format_grammar_children(inst : Grammar):
             nonlocal stack
