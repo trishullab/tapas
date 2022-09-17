@@ -61,6 +61,58 @@ all_checks : PSet[semantic_check] = pset({
 })
 
 
+class InspectSymbolException(Exception): pass
+
+def spawn_inspect_code(module_name, code : str, package : PMap[str, ModulePackage], checks) -> tuple[Callable[[str], tuple[str, InherAux]], Callable[[], None]]:
+    gnode = pgs.parse(code)
+    # print(pgs.dump(gnode))
+    # raise Exception()
+
+    mod = pas.parse_from_generic_tree(gnode)
+    abstract_tokens = pas.serialize(mod)
+    # print(pas.dump(mod))
+    # raise Exception()
+
+    partial_tokens = [] 
+    client : Client = spawn_analysis(package, module_name, checks)
+    partial_code = ""
+    inher_aux : InherAux = client.init
+    max_len = len(abstract_tokens)
+
+    def kill():
+        class TestKill(Exception): pass
+        client.kill(TestKill())
+
+
+    def inspect_next_symbol(sym : str) -> tuple[str, InherAux]:
+        nonlocal partial_code
+        nonlocal inher_aux
+        i : int = len(partial_tokens) 
+        while i < max_len:
+            token = abstract_tokens[i]
+            inher_aux = client.next(token)
+            partial_tokens.append(token)
+            partial_code = pats.concretize(tuple(partial_tokens))
+            if inher_aux.local_env.get(sym):
+                # print('----')
+                # print((partial_code))
+                # print(pats.dump(tuple(partial_tokens)))
+                # print('----')
+                return (partial_code, inher_aux)
+            i += 1
+        
+        if not sym:
+            # print('----')
+            # print(pats.dump(tuple(partial_tokens)))
+            # print('----')
+            return (partial_code, inher_aux)
+        else:
+            raise InspectSymbolException()
+
+    return (inspect_next_symbol, kill)
+
+
+
 def get_first_param(params : pas.parameters) -> str:
     if isinstance(params, pas.ParamsA):
         params_a = params.content
@@ -2147,10 +2199,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
     # override parent class method
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type) -> InherAux:
-        if target_syntax_type in ['expr', 'stmt', 'statements', 'str']:
-            for synth_aux in synth_auxes:
-                inher_aux = traverse_aux(inher_aux, synth_aux)
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[tuple[str, SynthAux], ...], parent_syntax_type, target_syntax_type) -> InherAux:
+        if (
+            target_syntax_type in ['expr', 'stmt', 'statements', 'str'] and
+            True
+        ):
+            for source_syntax_type, synth_aux in synth_auxes:
+                if source_syntax_type != "Param":
+                    inher_aux = traverse_aux(inher_aux, synth_aux)
             return inher_aux
         else:
             return inher_aux
