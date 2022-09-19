@@ -1,7 +1,7 @@
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
 
-from typing import Callable
+from typing import Callable, final
 from tapas_base.abstract_token_construct_autogen import unguard_abstract_token
 
 from tapas_lib import generic_tree_system, python_aux_system as pals
@@ -13,13 +13,42 @@ from tapas_base import util_system as us
 
 import json
 import pytest
-package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
+
+from tapas_lib.python_aux_construct_autogen import ModulePackage
+# package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
+package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/typeshed_cache', lambda: pals.analyze_typeshed())
+package = pals.with_cache('tapas_res/pandas_cache', lambda: pals.analyze_pandas_stubs(package))
+# package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
+
+
+def check(module_name : str, checks = pals.all_checks) -> None:
+    (inspect, kill) = spawn_inspect(module_name, checks)
+    try:
+        inspect('')
+    finally:
+        kill()
+
+def check_code(module_name : str, code : str, checks = pals.all_checks) -> None:
+    (inspect, kill) = spawn_inspect_code(module_name, code, checks)
+    try:
+        inspect('')
+    finally:
+        kill()
 
 def load_source(name : str) -> str:
     path = us.project_path(f"tapas_res/python/{name}.py")
     with open(path, 'r') as f:
         return f.read()
+
+
+def spawn_inspect(module_name : str, checks = pals.all_checks, package = package) -> tuple[Callable[[str], tuple[str, pals.InherAux]], Callable[[], None]]:
+    code = load_source(module_name) 
+    return spawn_inspect_code(module_name, code, checks)
+
+
+def spawn_inspect_code(module_name, code : str, checks = pals.all_checks) -> tuple[Callable[[str], tuple[str, pals.InherAux]], Callable[[], None]]:
+    return pals.spawn_inspect_code(module_name, code, package, checks)
 
 def translate(module_name : str):
     code = load_source(module_name) 
@@ -40,84 +69,6 @@ def translate(module_name : str):
     abstract_string = pats.dump(abstract_tokens) 
     print(abstract_string)
     print(f"***************************************")
-
-def analyze_test(module_name : str, line_limit: int = -1, package = package) -> tuple[str, pals.InherAux]:
-
-    code = load_source(module_name) 
-    gnode = pgs.parse(code)
-    mod = pas.parse_from_generic_tree(gnode)
-    abstract_tokens = pas.serialize(mod)
-
-    partial_tokens = [] 
-    client : pals.Client = pals.spawn_analysis(package, module_name)
-
-    partial_code = ""
-    inher_aux : pals.InherAux = client.init
-    for token in abstract_tokens:
-        inher_aux = client.next(token)
-        partial_tokens.append(token)
-        partial_code = pats.concretize(tuple(partial_tokens))
-        # partial_code
-        # ats.to_string(token)
-        # json.dumps(pals.from_inher_aux_to_primitive(inher_aux), sort_keys=False, indent=4)
-        if line_limit > -1:
-            line_count = len(partial_code.split('\n'))
-            if line_count >= line_limit:
-                class TestKill(Exception): pass
-                client.kill(TestKill())
-                return (partial_code, inher_aux)
-    return (partial_code, inher_aux)
-
-def check(module_name : str, checks = pals.all_checks) -> None:
-    (inspect, kill) = spawn_inspect(module_name, checks)
-    inspect(-1)
-    kill()
-
-def check_code(module_name : str, code : str, checks = pals.all_checks, package = package) -> None:
-    (inspect, kill) = spawn_inspect_code(module_name, code, checks, package)
-    inspect(-1)
-    kill()
-
-def spawn_inspect(module_name : str, checks = pals.all_checks, package = package) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
-    code = load_source(module_name) 
-    return spawn_inspect_code(module_name, code, checks, package)
-
-def spawn_inspect_code(module_name, code : str, checks = pals.all_checks, package = package) -> tuple[Callable[[int], tuple[str, pals.InherAux]], Callable[[], None]]:
-    gnode = pgs.parse(code)
-    # print(pgs.dump(gnode))
-    # raise Exception()
-
-    mod = pas.parse_from_generic_tree(gnode)
-    abstract_tokens = pas.serialize(mod)
-    # print(pas.dump(mod))
-    # raise Exception()
-
-    partial_tokens = [] 
-    client : pals.Client = pals.spawn_analysis(package, module_name, checks)
-    partial_code = ""
-    inher_aux : pals.InherAux = client.init
-    max_len = len(abstract_tokens)
-
-    def kill():
-        class TestKill(Exception): pass
-        client.kill(TestKill())
-
-
-    def inspect(l : int) -> tuple[str, pals.InherAux]:
-        nonlocal partial_code
-        nonlocal inher_aux
-        l = l if l >= 0 else max_len
-        i : int = len(partial_tokens) 
-        while i < min(l, max_len):
-            token = abstract_tokens[i]
-            inher_aux = client.next(token)
-            partial_tokens.append(token)
-            partial_code = pats.concretize(tuple(partial_tokens))
-            i += 1
-
-        return (partial_code, inher_aux)
-
-    return (inspect, kill)
 
 def test_000_0_ok():
     check("000_0_ok")
@@ -331,14 +282,18 @@ def test_054_ok():
     check("054_ok")
 
 def test_055_error():
-    code, aux = analyze_test("055_error", 9)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    t = aux.local_env.get('type')
-    assert t
-    assert isinstance(t.type, pals.IntLitType)
-    with pytest.raises(pals.ApplyRatorTypeCheck):
-        analyze_test("055_error", 10)
+    inspect, kill = spawn_inspect("055_error")
+    try:
+        code, aux = inspect('type') 
+        t = aux.local_env['type']
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(t.type, pals.IntLitType)
+
+        with pytest.raises(pals.ApplyRatorTypeCheck):
+            inspect('')
+    finally:
+        kill()
 
 def test_055_1_ok():
     check("055_1_ok")
@@ -347,23 +302,45 @@ def test_055_2_ok():
     check("055_2_ok")
 
 def test_056_error():
-    code, aux = analyze_test("056_error", 8)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    f = aux.local_env.get('f')
-    assert f 
-    assert isinstance(f.type, pals.IntLitType)
-    with pytest.raises(pals.ApplyRatorTypeCheck):
-        check("056_error")
+    inspect, kill = spawn_inspect("056_error")
+    try:
+        code, aux = inspect('f')
+        f = aux.local_env['f']
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(f.type, pals.IntLitType)
+
+        with pytest.raises(pals.ApplyRatorTypeCheck):
+            inspect('')
+    finally:
+        kill()
 
 def test_057_error():
-    code, aux = analyze_test("057_error", 9)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    i = aux.local_env.get('i')
-    assert i == None 
-    with pytest.raises(pals.LookupDecCheck):
-        check("057_error")
+    code = '''
+def remove_Occ(s, ch):
+  for i in range(len(s)):
+    if s[i] == ch:
+      s = (s[0:i:] + s[(i + 1)::])
+      ch += 1
+
+  _break = ''
+
+  if ch == 2:
+    s = s(ch)
+  if ch[(i + len(ch))] == s:
+    len(ch)
+    '''
+    inspect, kill = spawn_inspect_code("main", code)
+    try:
+        code, aux = inspect('_break')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        i = aux.local_env.get('i')
+        assert i == None 
+        with pytest.raises(pals.LookupDecCheck):
+            inspect('')
+    finally:
+        kill()
 
 def test_057_1_error():
     with pytest.raises(pals.LookupDecCheck):
@@ -374,51 +351,60 @@ def test_057_2_error():
         check("057_2_error")
 
 def test_058_ok():
-    code, aux = analyze_test("058_ok", 5)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    x = aux.local_env.get('x')
-    assert x
-    x_type = x.type
-    assert isinstance(x_type, pals.DictLitType)
-    assert len(x_type.pair_types) == 2
+    inspect, kill = spawn_inspect("058_ok")
+    try:
+        code, aux = inspect('x')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        x = aux.local_env['x']
+        x_type = x.type
+        assert isinstance(x_type, pals.DictLitType)
+        assert len(x_type.pair_types) == 2
 
-    entry_one = x_type.pair_types[0]
-    entry_one_kt = entry_one[0] 
-    entry_one_vt = entry_one[1] 
-    assert entry_one_kt == pals.StrLitType("'hi'")
-    assert entry_one_vt == pals.IntLitType('1')
+        entry_one = x_type.pair_types[0]
+        entry_one_kt = entry_one[0] 
+        entry_one_vt = entry_one[1] 
+        assert entry_one_kt == pals.StrLitType("'hi'")
+        assert entry_one_vt == pals.IntLitType('1')
 
-    entry_two = x_type.pair_types[1]
-    entry_two_kt = entry_two[0] 
-    entry_two_vt = entry_two[1] 
-    assert entry_two_kt == pals.IntLitType('2')
-    assert entry_two_vt == pals.StrLitType("'bye'")
+        entry_two = x_type.pair_types[1]
+        entry_two_kt = entry_two[0] 
+        entry_two_vt = entry_two[1] 
+        assert entry_two_kt == pals.IntLitType('2')
+        assert entry_two_vt == pals.StrLitType("'bye'")
+    finally:
+        kill()
 
 def test_059_ok():
     check("059_ok")
 
 def test_060_ok():
-    code, aux = analyze_test("060_ok", 4)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    foo = aux.local_env.get('foo')
-    assert foo
-    foo_type = foo.type
-    assert isinstance(foo_type, pals.FunctionType)
-    foo_return_type = foo_type.return_type
-    assert isinstance(foo_return_type, pals.RecordType)
-    assert foo_return_type.class_key == "builtins.int"
+    inspect, kill = spawn_inspect("060_ok")
+    try:
+        code, aux = inspect('foo')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        foo = aux.local_env['foo']
+        foo_type = foo.type
+        assert isinstance(foo_type, pals.FunctionType)
+        foo_return_type = foo_type.return_type
+        assert isinstance(foo_return_type, pals.RecordType)
+        assert foo_return_type.class_key == "builtins.int"
+    finally:
+        kill()
 
 def test_061_ok():
-    code, aux = analyze_test("061_ok", 2)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    final_str = aux.local_env.get('final_str')
-    assert final_str 
-    final_str_type = final_str.type
-    assert isinstance(final_str_type, pals.RecordType)
-    assert final_str_type.class_key == "builtins.str"
+    inspect, kill = spawn_inspect("061_ok")
+    try:
+        code, aux = inspect('final_str')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        final_str = aux.local_env['final_str']
+        final_str_type = final_str.type
+        assert isinstance(final_str_type, pals.RecordType)
+        assert final_str_type.class_key == "builtins.str"
+    finally:
+        kill()
 
 def test_062_ok():
     check("062_ok")
@@ -431,70 +417,93 @@ def test_064_ok():
     check("064_ok")
 
 def test_065_ok():
-    code_pre, aux_pre = analyze_test("065_ok", 2)
-    # print(code_pre)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
-    xs_pre = aux_pre.local_env.get('xs')
-    il = pals.IntLitType
-    assert xs_pre 
-    assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
+    code = '''
+xs = [1,2,3]
+xs.append(4)
+_break = ''
+pass
+    '''
 
-    code_post, aux_post = analyze_test("065_ok", 3)
-    # print(code_post)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
-    xs_post = aux_post.local_env.get('xs')
-    il = pals.IntLitType
-    assert xs_post 
-    xs_post_type = xs_post.type
-    assert isinstance(xs_post_type, pals.RecordType) and xs_post_type.class_key == "builtins.list"
-    assert len(xs_post_type.type_args) == 1
-    assert len(xs_post_type.type_args) == 1
-    xs_post_content_type = xs_post_type.type_args[0]
-    assert isinstance(xs_post_content_type, pals.UnionType)
-    xs_post_type_choices = xs_post_content_type.type_choices
-    assert len(xs_post_type_choices) == 2
-    assert us.exists(xs_post_type_choices, lambda choice :
-        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
-    )
+    inspect, kill = spawn_inspect_code('main', code)
+    try:
+        code_pre, aux_pre = inspect("xs")
+        # print(code_pre)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
+        xs_pre = aux_pre.local_env['xs']
+        il = pals.IntLitType
+        assert xs_pre 
+        assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
+
+        code_post, aux_post = inspect("_break")
+        # print(code_post)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
+        xs_post = aux_post.local_env['xs']
+        il = pals.IntLitType
+        xs_post_type = xs_post.type
+        assert isinstance(xs_post_type, pals.RecordType) and xs_post_type.class_key == "builtins.list"
+        assert len(xs_post_type.type_args) == 1
+        assert len(xs_post_type.type_args) == 1
+        xs_post_content_type = xs_post_type.type_args[0]
+        assert isinstance(xs_post_content_type, pals.UnionType)
+        xs_post_type_choices = xs_post_content_type.type_choices
+        assert len(xs_post_type_choices) == 2
+        assert us.exists(xs_post_type_choices, lambda choice :
+            isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+        )
+    finally:
+        kill()
 
 def test_goldilocks_object():
-    code_pre, aux_pre = analyze_test("goldilocks_object", 4)
-    # print(code_pre)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
-    xs_pre = aux_pre.local_env.get('xs')
-    il = pals.IntLitType
-    assert xs_pre 
-    assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
+    code = '''
+#pyright is too strict here: this should be allowed since there's no annotation
+xs = [1,2,3]
+xs.append("hi")
+_break = ''
+pass
+    '''
+    inspect, kill = spawn_inspect_code("main", code)
+    try:
+        code_pre, aux_pre = inspect('xs')
+        # print(code_pre)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux_pre.local_env), indent=4))
+        xs_pre = aux_pre.local_env['xs']
+        il = pals.IntLitType
+        assert xs_pre.type == pals.ListLitType(item_types=(il('1'),il('2'),il('3')))
 
-    code_post, aux_post = analyze_test("goldilocks_object", 5)
-    xs_post = aux_post.local_env.get('xs')
-    # print(code_post)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
-    assert xs_post 
-    xs_post_type = xs_post.type
-    assert isinstance(xs_post_type, pals.RecordType) and xs_post_type.class_key == "builtins.list"
-    assert len(xs_post_type.type_args) == 1
-    xs_post_content_type = xs_post_type.type_args[0]
-    assert isinstance(xs_post_content_type, pals.UnionType)
-    xs_post_type_choices = xs_post_content_type.type_choices
-    assert len(xs_post_type_choices) == 3
-    assert us.exists(xs_post_type_choices, lambda choice :
-        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
-    )
-    assert us.exists(xs_post_type_choices, lambda choice :
-        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.str"
-    )
+        code_post, aux_post = inspect('_break')
+        xs_post = aux_post.local_env['xs']
+        # print(code_post)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux_post.local_env), indent=4))
+        assert xs_post 
+        xs_post_type = xs_post.type
+        assert isinstance(xs_post_type, pals.RecordType) and xs_post_type.class_key == "builtins.list"
+        assert len(xs_post_type.type_args) == 1
+        xs_post_content_type = xs_post_type.type_args[0]
+        assert isinstance(xs_post_content_type, pals.UnionType)
+        xs_post_type_choices = xs_post_content_type.type_choices
+        assert len(xs_post_type_choices) == 3
+        assert us.exists(xs_post_type_choices, lambda choice :
+            isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+        )
+        assert us.exists(xs_post_type_choices, lambda choice :
+            isinstance(choice, pals.RecordType) and choice.class_key == "builtins.str"
+        )
+
+    finally:
+        kill()
 
 def test_067_ok():
-    code, aux = analyze_test("067_ok", 4)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    assert 'x' in aux.local_env
-    code, aux = analyze_test("067_ok", 7)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    assert 'x' not in aux.local_env
-    assert 'self' in aux.local_env
+    inspect, kill = spawn_inspect("067_ok")
+    try:
+        code, aux = inspect('x')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        code, aux = inspect('self')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert 'x' not in aux.local_env
+    finally:
+        kill()
 
 def test_068_error():
     with pytest.raises(pals.ApplyArgTypeCheck):
@@ -504,22 +513,25 @@ def test_069_ok():
     check("069_ok")
 
 def test_070_0_ok():
-    code, aux = analyze_test("070_0_ok",2)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    x = aux.local_env.get("x")
-    assert x
-    x_type = x.type
-    assert isinstance(x_type, pals.RecordType)
-    assert x_type.class_key == "builtins.list"
-    x_type_args = x_type.type_args
-    assert len(x_type_args) == 1 
-    x_content_type = x_type_args[0]
-    assert isinstance(x_content_type, pals.UnionType)
-    x_content_choices = x_content_type.type_choices
-    assert us.exists(x_content_choices, lambda choice :
-        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
-    )
+    inspect, kill = spawn_inspect("070_0_ok")
+    try:
+        code, aux = inspect('x')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        x = aux.local_env['x']
+        x_type = x.type
+        assert isinstance(x_type, pals.RecordType)
+        assert x_type.class_key == "builtins.list"
+        x_type_args = x_type.type_args
+        assert len(x_type_args) == 1 
+        x_content_type = x_type_args[0]
+        assert isinstance(x_content_type, pals.UnionType)
+        x_content_choices = x_content_type.type_choices
+        assert us.exists(x_content_choices, lambda choice :
+            isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+        )
+    finally:
+        kill()
 
 def test_070_1_ok():
     check("070_1_ok")
@@ -528,32 +540,47 @@ def test_070_2_ok():
     check("070_2_ok")
 
 def test_070_3_ok():
-    code, aux = analyze_test("070_3_ok", 9)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    a = aux.local_env.get("a")
-    assert a
-    a_type = a.type 
-    assert isinstance(a_type, pals.RecordType)
-    assert len(a_type.type_args) == 1
-    a_type_content = a_type.type_args[0]
-    assert isinstance(a_type_content, pals.UnionType)
-    xs_post_type_choices = a_type_content.type_choices
-    assert len(xs_post_type_choices) == 2
-    assert us.exists(xs_post_type_choices, lambda choice :
-        isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
-    )
-    assert us.exists(xs_post_type_choices, lambda choice :
-        isinstance(choice, pals.VarType)
-    )
+    inspect, kill = spawn_inspect("070_3_ok")
+    try:
+        code, aux = inspect('a')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        a = aux.local_env['a']
+        a_type = a.type 
+        assert isinstance(a_type, pals.RecordType)
+        assert len(a_type.type_args) == 1
+        a_type_content = a_type.type_args[0]
+        assert isinstance(a_type_content, pals.UnionType)
+        xs_post_type_choices = a_type_content.type_choices
+        assert len(xs_post_type_choices) == 2
+        assert us.exists(xs_post_type_choices, lambda choice :
+            isinstance(choice, pals.RecordType) and choice.class_key == "builtins.int"
+        )
+        assert us.exists(xs_post_type_choices, lambda choice :
+            isinstance(choice, pals.VarType)
+        )
+    finally:
+        kill()
 
 def test_070_4_ok():
-    code, aux = analyze_test("070_4_ok", 7)
-    print(code)
-    print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    x = aux.local_env.get("x")
-    assert x
-    assert x.type == pals.make_RecordType(class_key="builtins.int")
+    code = '''
+from typing import TypeVar, Generic
+X = TypeVar("X")
+def foo(x : X) -> X:
+    return x
+y = foo(1)
+pass
+
+    '''
+    inspect, kill = spawn_inspect_code("main", code)
+    try:
+        code, aux = inspect('y')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        x = aux.local_env['y']
+        assert x.type == pals.make_RecordType(class_key="builtins.int")
+    finally:
+        kill()
 
 def test_070_ok():
     check("070_ok")
@@ -571,15 +598,21 @@ def test_080_ok():
     check("080_ok")
 
 def test_081_ok():
-    code, aux = analyze_test("081_ok", 4)
-    # print(code)
-    # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-    x = aux.local_env.get("x")
-    assert x and x.type == pals.IntLitType('1')
-    y = aux.local_env.get("y")
-    assert y and y.type == pals.IntLitType('2')
-    z = aux.local_env.get("z")
-    assert z and z.type == pals.make_RecordType(class_key="builtins.int")
+    inspect, kill = spawn_inspect("081_ok")
+    try:
+        code, aux = inspect('x')
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        x = aux.local_env['x']
+        assert x.type == pals.IntLitType('1')
+        code, aux = inspect('y')
+        y = aux.local_env['y']
+        assert y.type == pals.IntLitType('2')
+        code, aux = inspect('z')
+        z = aux.local_env['z']
+        assert z.type == pals.make_RecordType(class_key="builtins.int")
+    finally:
+        kill()
 
 def test_082_ok():
     # test for convergence in subsumption with combined inheritance and protocols in Generator <: Iterator
@@ -593,15 +626,15 @@ def test_084_ok():
     check("084_ok")
 
 def test_params_dont_traverse():
-    (inspect, kill) = spawn_inspect("params_dont_traverse")
+    code = '''
+def foo(x = 0, y : int = 1, *zs : int, a : int = 4, b = 5, **cs : int):
+    _break = ''
+    pass
+    return
+    '''
+    (inspect, kill) = spawn_inspect_code('main', code)
     try:
-        for param_sep in 20, 35, 50, 65, 77, 87:
-            code, aux = inspect(param_sep)
-            assert not aux.local_env
-            # print(code)
-            # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-
-        code, aux = inspect(89)
+        code, aux = inspect('x')
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
         for sym in 'x', 'y', 'zs', 'a', 'b', 'cs':
@@ -612,7 +645,7 @@ def test_params_dont_traverse():
 def test_converges():
     (inspect, kill) = spawn_inspect("converges", pset())
     try:
-        code, aux = inspect(-1)
+        code, aux = inspect('')
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
     finally:
@@ -621,26 +654,25 @@ def test_converges():
 def test_import_alias():
     (inspect, kill) = spawn_inspect("import_alias")
     try:
-        code, aux = inspect(30)
-        dumps = aux.local_env.get("dumps")
-        assert dumps
+        code, aux = inspect('dumps')
+        dumps = aux.local_env['dumps']
         assert isinstance(dumps.type, pals.FunctionType)
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-        inspect(-1)
+        inspect('')
     finally:
         kill()
 
 def test_import_from_alias():
     (inspect, kill) = spawn_inspect("import_from_alias")
     try:
-        code, aux = inspect(20)
-        d = aux.local_env.get("d")
+        code, aux = inspect('d')
+        d = aux.local_env['d']
         assert d 
         assert isinstance(d.type, pals.FunctionType)
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-        inspect(-1)
+        inspect('')
     finally:
         kill()
 
@@ -681,25 +713,48 @@ def test_params_8_ok():
 
 
 def test_class_field_ok():
-    (inspect, kill) = spawn_inspect("class_field_ok")
+    code = '''
+from typing import Type
+class A():
+    a = 1
+    b = a + 1
+    def uno(self):
+        with open("") as self.f:
+            pass
+        self.x = 1
+        self.z : int = 2
+        pass
+
+    @classmethod
+    def dos(cls):
+        (cls.y, i) = pair = 1, 2
+        cls.w : int = 2
+        return (i, pair)
+
+    _break = ''
+
+
+ai = A().a
+bi = A().b
+
+a = A.a
+b = A.b
+
+f = A().f
+x = A().x
+z = A().z
+
+yi = A().y
+wi = A().w
+
+y = A.y
+w = A.w
+pass
+    '''
+
+    (inspect, kill) = spawn_inspect_code('main', code)
     try:
-        code, aux = inspect(20)
-        # print(code)
-        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-
-        code, aux = inspect(30)
-        # print(code)
-        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-
-        code, aux = inspect(40)
-        # print(code)
-        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-
-        code, aux = inspect(45)
-        # print(code)
-        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-
-        inspect(-1)
+        inspect('')
     finally:
         kill()
 
@@ -741,8 +796,8 @@ def test_expression_list_splat_ok():
 def test_str_type_annotation():
     (inspect, kill) = spawn_inspect("str_type_annotation")
     try:
-        code, aux = inspect(20)
-        x = aux.local_env.get("x")
+        code, aux = inspect('x')
+        x = aux.local_env['x']
         assert x
         t = x.type
         assert isinstance(t, pals.TupleLitType)
@@ -754,10 +809,38 @@ def test_str_type_annotation():
         assert str_type.class_key == "builtins.str"
         # print(code)
         # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-        inspect(-1)
+        inspect('')
     finally:
         kill()
 
+def test_pandas():
+# import pdb; pdb.set_trace()
+    code = '''
+import pandas as pd
+d = {'col1': [0, 1, 2, 3], 'col2': pd.Series([2, 3], index=[2, 3])}
+df = pd.DataFrame(data=d, index=[0, 1, 2, 3])
+dates = pd.date_range("20130101", periods=6)
+index=df.index
+res=df.to_numpy()
+df2=df.T
+df3=df[0:2]
+df4 = df.dtypes
+pass
+    '''
+
+# df4=df.iloc[1]
+
+
+    (inspect, kill) = spawn_inspect_code("main", code, checks = pset())
+    try:
+        code, aux = inspect('df4')
+        print(code)
+        print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+
+        inspect('')
+    finally:
+        kill()
 
 if __name__ == "__main__":
     pass

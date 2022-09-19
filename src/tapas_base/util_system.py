@@ -24,6 +24,7 @@ def linearize_dict(d : dict) -> list:
         for item in [k] + (
             linearize_dict(v) if isinstance(v, dict) else
             linearize_list(v) if isinstance(v, list) else
+            linearize_tuple(v) if isinstance(v, tuple) else
             [v]
         )
     ] +  ['}']
@@ -35,9 +36,22 @@ def linearize_list(xs : list) -> list:
         for item in (
             linearize_dict(x) if isinstance(x, dict) else
             linearize_list(x) if isinstance(x, list) else
+            linearize_tuple(x) if isinstance(x, tuple) else
             [x]
         )
     ] + [']']
+
+def linearize_tuple(xs : tuple) -> list: 
+    return ['('] + [
+        item
+        for x in xs
+        for item in (
+            linearize_dict(x) if isinstance(x, dict) else
+            linearize_list(x) if isinstance(x, list) else
+            linearize_tuple(x) if isinstance(x, tuple) else
+            [x]
+        )
+    ] + [')']
 
 
 

@@ -61,6 +61,58 @@ all_checks : PSet[semantic_check] = pset({
 })
 
 
+class InspectSymbolException(Exception): pass
+
+def spawn_inspect_code(module_name, code : str, package : PMap[str, ModulePackage], checks) -> tuple[Callable[[str], tuple[str, InherAux]], Callable[[], None]]:
+    gnode = pgs.parse(code)
+    # print(pgs.dump(gnode))
+    # raise Exception()
+
+    mod = pas.parse_from_generic_tree(gnode)
+    abstract_tokens = pas.serialize(mod)
+    # print(pas.dump(mod))
+    # raise Exception()
+
+    partial_tokens = [] 
+    client : Client = spawn_analysis(package, module_name, checks)
+    partial_code = ""
+    inher_aux : InherAux = client.init
+    max_len = len(abstract_tokens)
+
+    def kill():
+        class TestKill(Exception): pass
+        client.kill(TestKill())
+
+
+    def inspect_next_symbol(sym : str) -> tuple[str, InherAux]:
+        nonlocal partial_code
+        nonlocal inher_aux
+        i : int = len(partial_tokens) 
+        while i < max_len:
+            token = abstract_tokens[i]
+            inher_aux = client.next(token)
+            partial_tokens.append(token)
+            partial_code = pats.concretize(tuple(partial_tokens))
+            if inher_aux.local_env.get(sym):
+                # print('----')
+                # print((partial_code))
+                # print(pats.dump(tuple(partial_tokens)))
+                # print('----')
+                return (partial_code, inher_aux)
+            i += 1
+        
+        if not sym:
+            # print('----')
+            # print(pats.dump(tuple(partial_tokens)))
+            # print('----')
+            return (partial_code, inher_aux)
+        else:
+            raise InspectSymbolException()
+
+    return (inspect_next_symbol, kill)
+
+
+
 def get_first_param(params : pas.parameters) -> str:
     if isinstance(params, pas.ParamsA):
         params_a = params.content
@@ -282,6 +334,17 @@ def get_class_key(t : type) -> str:
 def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
+
+def lookup_static_path_in_package(path : str, package : PMap[str, ModulePackage]) -> Declaration | None:
+    rpath = path.split(".")
+    mp = package.get(rpath[0])
+    if not mp: return None
+    for t1 in rpath[1:-1]:
+        mp = mp.package.get(t1)
+        if not mp: return None
+    result = mp.module.get(rpath[-1])
+    return result
+
 
 def lookup_path_type(path : str, inher_aux : InherAux) -> type:
     parts = path.split(".")
@@ -927,6 +990,10 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
         if not inher_aux.internal_path: 
             if inher_aux.local_env.get(name):
                 return inher_aux.local_env[name]
+            elif "." in name:
+                result = lookup_static_path_in_package(path, inher_aux.package)
+                if not result:
+                    return make_Declaration(updatable=None, initialized = True, type = AnyType())
             else:
                 return make_Declaration(updatable=None, initialized = True, type = AnyType())
         elif inher_aux.global_env.get(name): 
@@ -1363,7 +1430,7 @@ def analyze_modules_fixpoint(
 
     count = 1
     print(f"fixpoint iteration count: {count}")
-    while count < 2 and out_package_prim != in_package_prim:
+    while count < 3 and out_package_prim != in_package_prim:
         in_package = out_package
         in_package_prim = out_package_prim 
         out_package = analyze_modules_once(root_dir, module_paths, in_package) 
@@ -1399,6 +1466,12 @@ def analyze_typeshed() -> PMap[str, ModulePackage]:
 
 def analyze_numpy_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
     stdlib_dirpath = us.project_path("tapas_res/numpyshed")
+    stdlib_module_paths = collect_module_paths(stdlib_dirpath)
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
+    return package
+
+def analyze_pandas_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
+    stdlib_dirpath = us.project_path("tapas_res/pandas-stubs")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
     package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
     return package
@@ -1660,6 +1733,7 @@ def spawn_analysis(
 
     def run():
         try:
+            nonlocal module_name
             nonlocal inher_aux
             token = in_stream.get()
 
@@ -1672,6 +1746,7 @@ def spawn_analysis(
                 k : dec
                 for k, dec in synth.aux.decl_additions.items()
             })
+
 
             class_env : PMap[str, ClassRecord] = pmap({
                 k : cr 
@@ -2124,10 +2199,14 @@ class Server(paa.Server[InherAux, SynthAux]):
         )
 
     # override parent class method
-    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[SynthAux, ...], target_syntax_type) -> InherAux:
-        if target_syntax_type in ['expr', 'stmt', 'statements', 'str']:
-            for synth_aux in synth_auxes:
-                inher_aux = traverse_aux(inher_aux, synth_aux)
+    def traverse_auxes(self, inher_aux : InherAux, synth_auxes : tuple[tuple[str, SynthAux], ...], parent_syntax_type, target_syntax_type) -> InherAux:
+        if (
+            target_syntax_type in ['expr', 'stmt', 'statements', 'str'] and
+            True
+        ):
+            for source_syntax_type, synth_aux in synth_auxes:
+                if source_syntax_type != "Param":
+                    inher_aux = traverse_aux(inher_aux, synth_aux)
             return inher_aux
         else:
             return inher_aux
@@ -5292,10 +5371,20 @@ class Server(paa.Server[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
+
+        if module_tree.startswith(".."):
+            prefix = ".".join(inher_aux.external_path.split(".")[:-1])
+            module_tree = prefix + module_tree[1:]
+
+        if module_tree.startswith("."):
+            module_tree = inher_aux.external_path + module_tree
+
+
         env_additions : PMap[str, Declaration] = pmap({
             alias : from_static_path_to_declaration(inher_aux, f'{module_tree}.{source_path}')
             for alias, source_path in names_aux.import_names.items()
         })
+
 
         return paa.Result[SynthAux](
             tree = pas.make_ImportFrom(module_tree, names_tree),
