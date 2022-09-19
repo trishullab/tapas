@@ -4,11 +4,11 @@ from tapas_lib import python_data_system
 if __name__ == "__main__":
 
     package = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
-    # python_data_system.generate_dir(package, 'mbpp')
+    python_data_system.generate_dir(package, 'mbpp')
 
     # python_data_system.generate_dir(package, 'apps')
     # python_data_system.generate_dir(package, 'py150_train')
     # python_data_system.generate_dir(package, 'py150_test')
     # python_data_system.generate_dir(package, 'py150_validation')
 
-    python_data_system.generate_dir(package, 'cubert')
+    # python_data_system.generate_dir(package, 'cubert')
