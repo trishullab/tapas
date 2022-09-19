@@ -1420,6 +1420,7 @@ def analyze_modules_fixpoint(
     root_dir : str, 
     module_paths : Sequence[str], 
     package : PMap[str, ModulePackage],
+    max_iter : int = 10 
 ) -> PMap[str, ModulePackage]:
 
     print(f"fixpoint iteration count: {0}")
@@ -1430,7 +1431,7 @@ def analyze_modules_fixpoint(
 
     count = 1
     print(f"fixpoint iteration count: {count}")
-    while count < 3 and out_package_prim != in_package_prim:
+    while count < max_iter and out_package_prim != in_package_prim:
         in_package = out_package
         in_package_prim = out_package_prim 
         out_package = analyze_modules_once(root_dir, module_paths, in_package) 
@@ -1452,28 +1453,28 @@ def analyze_typeshed_cache(cache_loadable : bool = True):
     return with_cache('tapas_res/typeshed_object', analyze_typeshed, cache_loadable)
 
 
-def analyze_typeshed() -> PMap[str, ModulePackage]:
+def analyze_typeshed(max_iter : int = 2) -> PMap[str, ModulePackage]:
     stdlib_dirpath = us.project_path("tapas_res/typeshed/stdlib")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
 
     package : PMap[str, ModulePackage] = m()
-    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package, max_iter) 
 
     # other_libs_dirpath = us.project_path(f"../typeshed/stubs")
     # other_module_paths = collect_module_paths(other_libs_dirpath)
     # package = analyze_modules_fixpoint(other_libs_dirpath, other_module_paths, package, limit) 
     return package 
 
-def analyze_numpy_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
+def analyze_numpy_stubs(package : PMap[str, ModulePackage], max_iter : int = 5) -> PMap[str, ModulePackage]: 
     stdlib_dirpath = us.project_path("tapas_res/numpyshed")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
-    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package, max_iter) 
     return package
 
-def analyze_pandas_stubs(package : PMap[str, ModulePackage]) -> PMap[str, ModulePackage]: 
+def analyze_pandas_stubs(package : PMap[str, ModulePackage], max_iter : int = 6) -> PMap[str, ModulePackage]: 
     stdlib_dirpath = us.project_path("tapas_res/pandas-stubs")
     stdlib_module_paths = collect_module_paths(stdlib_dirpath)
-    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package) 
+    package = analyze_modules_fixpoint(stdlib_dirpath, stdlib_module_paths, package, max_iter) 
     return package
 
 def analyze_stubs() -> PMap[str, ModulePackage]:
@@ -5372,12 +5373,20 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
 
 
-        if module_tree.startswith(".."):
-            prefix = ".".join(inher_aux.external_path.split(".")[:-1])
-            module_tree = prefix + module_tree[1:]
+        dot_num = next((
+            i
+            for i, c in enumerate(module_tree)
+            if c != "."
+        ), len(module_tree))
 
-        if module_tree.startswith("."):
-            module_tree = inher_aux.external_path + module_tree
+        external_levels = inher_aux.external_path.split(".")
+        assert len(external_levels) >= dot_num
+
+        if dot_num > 0:
+            back_track = dot_num - 1
+            end = len(external_levels) - back_track
+            prefix = ".".join(external_levels[:end])
+            module_tree = prefix + "." + module_tree[dot_num:]
 
 
         env_additions : PMap[str, Declaration] = pmap({
