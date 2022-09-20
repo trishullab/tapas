@@ -335,16 +335,6 @@ def coerce_to_type(t) -> type:
     assert isinstance(t, type)
     return t
 
-def lookup_static_path_in_package(path : str, package : PMap[str, ModulePackage]) -> Declaration | None:
-    rpath = path.split(".")
-    mp = package.get(rpath[0])
-    if not mp: return None
-    for t1 in rpath[1:-1]:
-        mp = mp.package.get(t1)
-        if not mp: return None
-    result = mp.module.get(rpath[-1])
-    return result
-
 
 def lookup_path_type(path : str, inher_aux : InherAux) -> type:
     parts = path.split(".")
@@ -990,16 +980,8 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
         if not inher_aux.internal_path: 
             if inher_aux.local_env.get(name):
                 return inher_aux.local_env[name]
-            elif "." in name:
-                result = lookup_static_path_in_package(path, inher_aux.package)
-                if not result:
-                    return make_Declaration(updatable=None, initialized = True, type = AnyType())
-            else:
-                return make_Declaration(updatable=None, initialized = True, type = AnyType())
         elif inher_aux.global_env.get(name): 
             return inher_aux.global_env[name]
-        else:
-            return make_Declaration(updatable=None, initialized = True, type = AnyType())
 
 
     sep = "."
