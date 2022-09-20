@@ -15,8 +15,8 @@ import json
 import pytest
 
 from tapas_lib.python_aux_construct_autogen import ModulePackage
-package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/typeshed_cache', lambda: pals.analyze_typeshed())
-package = pals.with_cache('tapas_res/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
+package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed())
+package = pals.with_cache('tapas_res/cache/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
 # package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
 
@@ -841,6 +841,54 @@ pass
     finally:
         kill()
 
+
+def test_attribute_1():
+
+    code = '''
+        a = True
+        b = a[-1]
+        c = b.shape()
+        _break = ''
+        pass
+    '''
+
+    (inspect, kill) = spawn_inspect_code("main", code)
+
+    with pytest.raises(pals.LookupTypeCheck):
+        try:
+            code, aux = inspect('_break')
+            print(code)
+            print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+
+            inspect('')
+        finally:
+            kill()
+
+def test_attribute_2():
+
+    code = '''
+        x = (- 0.75)
+        y = x.apply()
+        _break = ''
+        pass
+    '''
+
+    (inspect, kill) = spawn_inspect_code("main", code)
+
+    with pytest.raises(pals.LookupTypeCheck):
+        try:
+            code, aux = inspect('_break')
+            print(code)
+            print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+
+            inspect('')
+        finally:
+            kill()
+
+
 if __name__ == "__main__":
-    test_pandas()
     pass
+
+

@@ -652,6 +652,19 @@ def find_Product(arr,n):
     ]
 
     codes = [
+        '''
+class Timestamp(datetime):
+    min: ClassVar[Timestamp]
+    max: ClassVar[Timestamp]
+
+    resolution: ClassVar[Timedelta]
+    value: int  # np.int64
+    def __new__(
+        tzinfo: _tzinfo | None = ...,
+        *,
+        fold: int | None = ...,
+    ) -> _DatetimeT: ...
+        '''
     ]
 
 

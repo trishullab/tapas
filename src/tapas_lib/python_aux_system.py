@@ -795,8 +795,10 @@ def lookup_static_field_type(class_record : ClassRecord, field_name : str, inher
 
             
 def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> type | None:
+    if isinstance(anchor_type, AnyType):
+        return AnyType()
 
-    if isinstance(anchor_type, ModuleType):
+    elif isinstance(anchor_type, ModuleType):
         assert anchor_type.key
         path = f"{anchor_type.key}.{field_name}" 
         dec = from_static_path_to_declaration(inher_aux, path)
@@ -813,8 +815,10 @@ def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux
         class_record = infer_class_record(anchor_type, inher_aux)
 
         if class_record:
+
             fields = class_record.instance_fields
             result = fields.get(field_name)
+
             if result:
                 return result 
             else:
@@ -3439,10 +3443,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             expr_type = AnyType()
         else:
             expr_type = lookup_field_type(content_type, name_tree, inher_aux)
-
-            # self.check(LookupTypeCheck(), lambda: 
-            #     expr_type != None
-            # )
+            self.check(LookupTypeCheck(), lambda: 
+                expr_type != None
+            )
             if not expr_type:
                 expr_type = AnyType()
         
@@ -3505,6 +3508,9 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         else:
             method_type = lookup_field_type(content_type, "__getitem__", inher_aux)
+            self.check(LookupTypeCheck(), lambda: 
+                method_type != None
+            )
             if isinstance(method_type, FunctionType): 
 
                 precise_method_type, subst_map = check_application_args(
@@ -3528,6 +3534,7 @@ class Server(paa.Server[InherAux, SynthAux]):
                 self.check(ApplyArgTypeCheck(), lambda: chosen_method_type != None)
                 if chosen_method_type:
                     expr_types = (chosen_method_type.return_type,)
+
             else:
                 expr_types = (AnyType(),)
 
