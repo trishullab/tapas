@@ -15,8 +15,8 @@ import json
 import pytest
 
 from tapas_lib.python_aux_construct_autogen import ModulePackage
-package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/typeshed_cache', lambda: pals.analyze_typeshed())
-package = pals.with_cache('tapas_res/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
+package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed())
+package = pals.with_cache('tapas_res/cache/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
 # package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
 
