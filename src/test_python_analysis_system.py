@@ -887,6 +887,61 @@ def test_attribute_2():
         finally:
             kill()
 
+def test_union_typing_1():
+    code = '''
+    from typing import Union
+    x : Union[int, str] = "hello"
+    y : Union[str, int] = x 
+    _break = ''
+    pass
+    '''
+
+    (inspect, kill) = spawn_inspect_code('main', code)
+    try:
+        code, aux = inspect('x')
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(aux.local_env['x'].type, pals.UnionType)
+        code, aux = inspect('y')
+        assert isinstance(aux.local_env['y'].type, pals.UnionType)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+    finally:
+        kill()
+
+def test_union_typing_2():
+    code = '''
+    from typing import Union
+    x : Union[int, str] = "hello"
+    y : Union[str] = x 
+    _break = ''
+    pass
+    '''
+    with pytest.raises(pals.AssignTypeCheck):
+        check_code('main', code)
+
+def test_union_typing_3():
+    code = '''
+    from typing import Union
+    x : int | str = "hello"
+    y : str | int = x 
+    _break = ''
+    pass
+    '''
+
+    (inspect, kill) = spawn_inspect_code('main', code)
+    try:
+        code, aux = inspect('x')
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(aux.local_env['x'].type, pals.UnionType)
+        code, aux = inspect('y')
+        assert isinstance(aux.local_env['y'].type, pals.UnionType)
+        # print(code)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+
+    finally:
+        kill()
+
 
 if __name__ == "__main__":
     pass
