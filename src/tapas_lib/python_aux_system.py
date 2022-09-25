@@ -665,17 +665,20 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : in
                 super_type.class_key == "builtins.slice"
             ) or
 
-            (isinstance(sub_type, InterType) and 
-                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or 
 
-            (isinstance(super_type, InterType) and 
-                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
+            (isinstance(sub_type, InterType) and 
+                any(subsumed(tc, super_type, inher_aux, fuel - 1) for tc in sub_type.type_components)) or 
 
             (isinstance(super_type, UnionType) and 
-                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
+                any(subsumed(sub_type, tc, inher_aux, fuel - 1) for tc in super_type.type_choices)) or
 
+            # break down super type of intersection into conjunctions before sub type into disjunctions 
+            (isinstance(super_type, InterType) and 
+                all(subsumed(sub_type, tc, inher_aux, fuel - 1) for tc in super_type.type_components)) or
+
+            # break down sub type of union into conjunctions before super type into disjunctions 
             (isinstance(sub_type, UnionType) and 
-                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or
+                all(subsumed(tc, super_type, inher_aux, fuel - 1) for tc in sub_type.type_choices)) or
 
             (parent_type := get_parent_type(sub_type, inher_aux),
                 parent_type != None and subsumed(parent_type, super_type, inher_aux, fuel - 1))[-1] or

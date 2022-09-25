@@ -887,8 +887,25 @@ def test_attribute_2():
         finally:
             kill()
 
+def test_union_typing():
+    code = '''
+    x : int | str = "hello"
+    y : str | int = x 
+    _break = ''
+    pass
+    '''
+    # check_code('main', code)
+    (inspect, kill) = spawn_inspect_code('main', code)
+    try:
+        code, aux = inspect('x')
+        print(code)
+        print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    finally:
+        kill()
+
 
 if __name__ == "__main__":
+    test_union_typing()
     pass
 
 
