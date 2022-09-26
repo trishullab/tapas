@@ -3,11 +3,7 @@ from tapas_lib import python_data_system
 
 if __name__ == "__main__":
 
-<<<<<<< HEAD
-    package = pals.with_cache('tapas_res/stub_cache', pals.analyze_typeshed)
-=======
     package = pals.with_cache('tapas_res/cache/stub_cache', pals.analyze_typeshed)
->>>>>>> main
     # python_data_system.generate_dir(package, 'mbpp')
 
     # python_data_system.generate_dir(package, 'apps')
