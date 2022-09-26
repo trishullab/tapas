@@ -665,17 +665,20 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : in
                 super_type.class_key == "builtins.slice"
             ) or
 
-            (isinstance(sub_type, InterType) and 
-                us.exists(sub_type.type_components, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or 
-
+            # break down super type of intersection into conjunctions before sub type into disjunctions 
             (isinstance(super_type, InterType) and 
-                us.every(super_type.type_components, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
+                all(subsumed(sub_type, tc, inher_aux, fuel - 1) for tc in super_type.type_components)) or
+
+            # break down sub type of union into conjunctions before super type into disjunctions 
+            (isinstance(sub_type, UnionType) and 
+                all(subsumed(tc, super_type, inher_aux, fuel - 1) for tc in sub_type.type_choices)) or
+
+            (isinstance(sub_type, InterType) and 
+                any(subsumed(tc, super_type, inher_aux, fuel - 1) for tc in sub_type.type_components)) or 
 
             (isinstance(super_type, UnionType) and 
-                us.exists(super_type.type_choices, lambda tc : subsumed(sub_type, tc, inher_aux, fuel - 1))) or
+                any(subsumed(sub_type, tc, inher_aux, fuel - 1) for tc in super_type.type_choices)) or
 
-            (isinstance(sub_type, UnionType) and 
-                us.every(sub_type.type_choices, lambda tc : subsumed(tc, super_type, inher_aux, fuel - 1))) or
 
             (parent_type := get_parent_type(sub_type, inher_aux),
                 parent_type != None and subsumed(parent_type, super_type, inher_aux, fuel - 1))[-1] or
@@ -4916,6 +4919,16 @@ class Server(paa.Server[InherAux, SynthAux]):
                 symbol == "Generic"
             ):
                 t = TypeType(sig_type.class_key, GenericType())
+                decl_additions = pmap({
+                    symbol : make_Declaration(updatable=None, initialized=True, type=t)
+                })
+            elif (
+                inher_aux.external_path == "typing" and
+                isinstance(sig_type, RecordType) and
+                sig_type.class_key == "typing._SpecialForm" and
+                symbol == "Union"
+            ):
+                t = TypeType(sig_type.class_key, UnionType(()))
                 decl_additions = pmap({
                     symbol : make_Declaration(updatable=None, initialized=True, type=t)
                 })
