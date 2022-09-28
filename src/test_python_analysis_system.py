@@ -943,6 +943,86 @@ def test_union_typing_3():
         kill()
 
 
+
+def test_shadowed_package_1():
+    leaf_package = pals.analyze_code(package, "top.leaf", '''
+def foo(x : int): str = ...
+    ''', checks=pset())
+
+    (inspect, kill) = pals.spawn_inspect_code('top', '''
+from top import leaf as leaf 
+x = leaf.foo
+pass
+    ''', leaf_package, pset())
+    try:
+        code, aux = inspect('x')
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(aux.local_env['x'].type, pals.FunctionType)
+
+    finally:
+        kill()
+
+def test_shadowed_package_2():
+    leaf_package = pals.analyze_code(package, "top.leaf", '''
+def foo(x : int): str = ...
+    ''', checks=pset())
+
+    top_package = pals.analyze_code(leaf_package, "top", '''
+from top import leaf as leaf 
+    ''', checks=pset())
+
+    (inspect, kill) = pals.spawn_inspect_code('main', '''
+from top import leaf
+x = leaf.foo
+pass
+    ''', top_package, pset())
+    try:
+        code, aux = inspect('x')
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(aux.local_env['x'].type, pals.FunctionType)
+
+    finally:
+        kill()
+
+def test_shadowed_package_3():
+    leaf_package = pals.analyze_code(package, "top.leaf", '''
+def foo(x : int): str = ...
+    ''', checks=pset())
+
+    (inspect, kill) = pals.spawn_inspect_code('top', '''
+from top import leaf as leaf
+x = leaf.foo
+pass
+    ''', leaf_package, pset())
+    try:
+        code, aux = inspect('x')
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(aux.local_env['x'].type, pals.FunctionType)
+        assert isinstance(aux.local_env['leaf'].type, pals.ModuleType)
+
+    finally:
+        kill()
+
+def test_relative_package():
+    leaf_package = pals.analyze_code(package, "top.leaf", '''
+def foo(x : int): str = ...
+    ''', checks=pset())
+
+    (inspect, kill) = pals.spawn_inspect_code('top', '''
+from . import leaf as leaf
+x = leaf.foo
+pass
+    ''', leaf_package, pset())
+    try:
+        code, aux = inspect('x')
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+        assert isinstance(aux.local_env['x'].type, pals.FunctionType)
+        assert isinstance(aux.local_env['leaf'].type, pals.ModuleType)
+
+    finally:
+        kill()
+
+
 if __name__ == "__main__":
     pass
 
