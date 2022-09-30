@@ -1099,7 +1099,7 @@ def check_application_args(
     inher_aux : InherAux 
 ) -> tuple[FunctionType | None, PMap[str, type]]:
 
-    subst_map : PMap[str, type] = pmap() # VarType |-> arg_type
+    subst_map : PMap[str, type] = pmap({}) # VarType |-> arg_type
 
     pos_overflow = len(pos_arg_types) - len(function_type.pos_param_types)
     if pos_overflow < 0:
@@ -2134,8 +2134,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 if chosen_func_type:
                     return chosen_func_type, subst_map
             else:
-                return chosen_func_type, pmap()
-        return chosen_func_type, pmap()
+                return chosen_func_type, pmap({})
+        return chosen_func_type, pmap({})
 
  
 
@@ -3126,7 +3126,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
-        kw_types = pmap()
+        kw_types = pmap({})
         if isinstance(content_type, DictLitType):
             for kt, vt in content_type.pair_types:
                 if isinstance(kt, StrLitType):
