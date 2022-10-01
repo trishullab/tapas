@@ -1025,7 +1025,7 @@ def check_application_args(
     inher_aux : InherAux 
 ) -> tuple[FunctionType | None, PMap[str, type]]:
 
-    subst_map : PMap[str, type] = pmap() # VarType |-> arg_type
+    subst_map : PMap[str, type] = pmap({}) # VarType |-> arg_type
 
     pos_overflow = len(pos_arg_types) - len(function_type.pos_param_types)
     if pos_overflow < 0:
@@ -1636,6 +1636,7 @@ def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_
 
     return result
 
+class AnalysisComplete(Exception): pass
 
 def spawn_analysis(
     package : PMap[str, ModulePackage], 
@@ -1693,6 +1694,8 @@ def spawn_analysis(
                 package = insert_module_class_env_dotpath(inher_aux.package, inher_aux.external_path, module, class_env)
             )
             out_stream.put(final_inher_aux)
+            out_stream.put(AnalysisComplete())
+
         except Exception as ex:
             out_stream.put(ex)
 
@@ -1936,8 +1939,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 if chosen_func_type:
                     return chosen_func_type, subst_map
             else:
-                return chosen_func_type, pmap()
-        return chosen_func_type, pmap()
+                return chosen_func_type, pmap({})
+        return chosen_func_type, pmap({})
 
  
 
@@ -2796,7 +2799,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
-        kw_types = pmap()
+        kw_types = pmap({})
         if isinstance(content_type, DictLitType):
             for kt, vt in content_type.pair_types:
                 if isinstance(kt, StrLitType):

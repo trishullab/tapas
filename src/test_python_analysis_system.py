@@ -634,5 +634,28 @@ def test_converges():
         kill()
 
 
+def test_hanging():
+    
+    triples = [['P', 'grammar', 'module', 'SimpleMod'], ['P', 'grammar', 'statements', 'ConsStmt'], ['P', 'grammar', 'stmt', 'Assign'], ['P', 'grammar', 'target_exprs', 'SingleTargetExpr'], ['P', 'grammar', 'expr', 'Name'], ['P', 'vocab', 'identifier', 'balance_str'], ['P', 'grammar', 'expr', 'ConcatString'], ['P', 'grammar', 'sequence_string', 'SingleStr'], ['P', 'vocab', 'string', '"1500.34"'], ['P', 'grammar', 'statements', 'ConsStmt'], ['P', 'grammar', 'stmt', 'Assign'], ['P', 'grammar', 'target_exprs', 'SingleTargetExpr'], ['P', 'grammar', 'expr', 'Name'], ['P', 'vocab', 'identifier', 'balance_float'], ['P', 'grammar', 'expr', 'CallArgs'], ['P', 'grammar', 'expr', 'Name'], ['P', 'vocab', 'identifier', 'float'], ['P', 'grammar', 'arguments', 'SingleArg'], ['P', 'grammar', 'expr', 'Name'], ['P', 'vocab', 'identifier', 'balance_str'], ['P', 'grammar', 'statements', 'SingleStmt'], ['P', 'grammar', 'stmt', 'Expr'], ['P', 'grammar', 'expr', 'CallArgs'], ['P', 'grammar', 'expr', 'Name'], ['P', 'vocab', 'identifier', 'print'], ['P', 'grammar', 'arguments', 'SingleArg'], ['P', 'grammar', 'expr', 'BinOp'], ['P', 'grammar', 'expr', 'ConcatString'], ['P', 'grammar', 'sequence_string', 'SingleStr'], ['P', 'vocab', 'string', '"%.2f"'], ['P', 'grammar', 'bin_rator', 'Mod'], ['P', 'grammar', 'expr', 'Name'], ['P', 'vocab', 'identifier', 'balance_str'], ['P', 'grammar', 'conditions', 'NoCond']]
+
+    abstract_tokens = [
+        ats.from_primitive(t)
+        for t in triples
+    ]
+
+    partial_tokens = [] 
+    client : pals.Client = pals.spawn_analysis(package, 'main', pset())
+    partial_code = ""
+    inher_aux : pals.InherAux = client.init
+
+    for i, token in enumerate(abstract_tokens):
+        partial_tokens.append(token)
+        partial_code = pats.concretize(tuple(partial_tokens))
+        if i < len(abstract_tokens) - 1:
+            inher_aux = client.next(token)
+        else:
+            with pytest.raises(pals.AnalysisComplete):
+                inher_aux = client.next(token)
+
 if __name__ == "__main__":
     pass
