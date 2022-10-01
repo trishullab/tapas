@@ -1023,6 +1023,27 @@ pass
         kill()
 
 
+def test_analysis_complete():
+    abstract_tokens = pas.serialize(pas.parse('''
+x = 1
+y = 2
+pass
+    ''')) + (ats.from_primitive(['P', 'grammar', 'conditions', 'NoCond']),)
+
+    partial_tokens = [] 
+    client : pals.Client = pals.spawn_analysis(package, 'main', pset())
+    partial_code = ""
+    inher_aux : pals.InherAux = client.init
+
+    for i, token in enumerate(abstract_tokens):
+        partial_tokens.append(token)
+        partial_code = pats.concretize(tuple(partial_tokens))
+        if i < len(abstract_tokens) - 1:
+            inher_aux = client.next(token)
+        else:
+            with pytest.raises(pals.AnalysisComplete):
+                inher_aux = client.next(token)
+
 if __name__ == "__main__":
     pass
 

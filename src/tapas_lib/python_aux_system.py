@@ -1697,6 +1697,7 @@ def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_
 
     return result
 
+class AnalysisComplete(Exception): pass
 
 def spawn_analysis(
     package : PMap[str, ModulePackage], 
@@ -1756,6 +1757,8 @@ def spawn_analysis(
                 package = insert_module_class_env_dotpath(inher_aux.package, inher_aux.external_path, module, class_env)
             )
             out_stream.put(final_inher_aux)
+            out_stream.put(AnalysisComplete())
+
         except Exception as ex:
             out_stream.put(ex)
 
