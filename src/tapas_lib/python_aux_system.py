@@ -984,12 +984,14 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
 
     elif path.startswith(inher_aux.external_path + "."):
         name = path[len(inher_aux.external_path + "."):]
-        if not inher_aux.internal_path: 
-            if inher_aux.local_env.get(name):
-                return inher_aux.local_env[name]
-        elif inher_aux.global_env.get(name): 
-            return inher_aux.global_env[name]
+        internal_decl = (
+            inher_aux.local_env.get(name)
+            if not inher_aux.internal_path else
+            inher_aux.global_env.get(name)
+        )
 
+        if internal_decl and not isinstance(internal_decl.type, AnyType):
+            return internal_decl
 
     sep = "."
     levels = path.split(sep)
@@ -1005,10 +1007,12 @@ def from_static_path_to_declaration(inher_aux : InherAux, path : str) -> Declara
             package = mod_pack.package
             if i + 2 == l and module.get(levels[i + 1]):
                 module_level = levels[i + 1]
-                return module[module_level]
+                decl = module[module_level]
+                if not isinstance(decl.type, AnyType):
+                    return decl
         else:
             return make_Declaration(updatable = None, initialized = True, type = AnyType())
-    
+
     return make_Declaration(
         updatable = None, initialized = True,
         type = ModuleType(key = path)
@@ -1095,7 +1099,7 @@ def check_application_args(
     inher_aux : InherAux 
 ) -> tuple[FunctionType | None, PMap[str, type]]:
 
-    subst_map : PMap[str, type] = pmap() # VarType |-> arg_type
+    subst_map : PMap[str, type] = pmap({}) # VarType |-> arg_type
 
     pos_overflow = len(pos_arg_types) - len(function_type.pos_param_types)
     if pos_overflow < 0:
@@ -1693,6 +1697,7 @@ def from_package_get_ModulePackage(package : PMap[str, ModulePackage], external_
 
     return result
 
+class AnalysisComplete(Exception): pass
 
 def spawn_analysis(
     package : PMap[str, ModulePackage], 
@@ -1752,6 +1757,8 @@ def spawn_analysis(
                 package = insert_module_class_env_dotpath(inher_aux.package, inher_aux.external_path, module, class_env)
             )
             out_stream.put(final_inher_aux)
+            out_stream.put(AnalysisComplete())
+
         except Exception as ex:
             out_stream.put(ex)
 
@@ -2130,8 +2137,8 @@ class Server(paa.Server[InherAux, SynthAux]):
                 if chosen_func_type:
                     return chosen_func_type, subst_map
             else:
-                return chosen_func_type, pmap()
-        return chosen_func_type, pmap()
+                return chosen_func_type, pmap({})
+        return chosen_func_type, pmap({})
 
  
 
@@ -3122,7 +3129,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
 
-        kw_types = pmap()
+        kw_types = pmap({})
         if isinstance(content_type, DictLitType):
             for kt, vt in content_type.pair_types:
                 if isinstance(kt, StrLitType):
@@ -5374,7 +5381,6 @@ class Server(paa.Server[InherAux, SynthAux]):
         names_aux : SynthAux
     ) -> paa.Result[SynthAux]:
 
-
         dot_num = next((
             i
             for i, c in enumerate(module_tree)
@@ -5388,7 +5394,9 @@ class Server(paa.Server[InherAux, SynthAux]):
             back_track = dot_num - 1
             end = len(external_levels) - back_track
             prefix = ".".join(external_levels[:end])
-            module_tree = prefix + "." + module_tree[dot_num:]
+
+            suffix = module_tree[dot_num:]
+            module_tree = prefix + ("." + suffix if suffix else '') 
 
 
         env_additions : PMap[str, Declaration] = pmap({
