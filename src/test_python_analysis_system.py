@@ -1,3 +1,4 @@
+from xml.dom import INVALID_CHARACTER_ERR
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
 
@@ -1043,6 +1044,36 @@ pass
         else:
             with pytest.raises(pals.AnalysisComplete):
                 inher_aux = client.next(token)
+
+def test_fresh_type_var():
+    code = '''
+LOYALBOOKS_GENRE = list()
+LOYALBOOKS_GENRE.append(["Adventure", "Adventure"])
+LOYALBOOKS_GENRE.append(["Advice", "Advice"])
+LOYALBOOKS_GENRE.append(["Art", "Art"])
+LOYALBOOKS_GENRE.append(["Ancient Texts", "Ancient_Texts"])
+LOYALBOOKS_GENRE.append(["Animals", "Animals"])
+LOYALBOOKS_GENRE.append(["Biography", "Biography"])
+LOYALBOOKS_GENRE.append(["Children", "Children"])
+LOYALBOOKS_GENRE.append(["Classics (antiquity)", "Classics_antiquity"])
+LOYALBOOKS_GENRE.append(["Comedy", "Comedy"])
+_break = ""
+pass
+    '''
+
+    (inspect, kill) = pals.spawn_inspect_code('main', code, package, pset())
+    try:
+        code, aux = inspect('_break')
+        lb_type = aux.local_env['LOYALBOOKS_GENRE'].type 
+        assert isinstance(lb_type, pals.RecordType)
+        assert lb_type.class_key == "builtins.list" 
+        assert len(lb_type.type_args) == 1
+        targ = lb_type.type_args[0]
+        assert isinstance(targ, pals.UnionType)
+        assert len(targ.type_choices) == 2
+
+    finally:
+        kill()
 
 if __name__ == "__main__":
     pass

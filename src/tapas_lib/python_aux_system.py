@@ -648,7 +648,7 @@ def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : in
             types_match_subsumed(sub_type, super_type, inher_aux, fuel - 1) or 
 
             (
-                # TODO: figure out more genearl way to handle int <: float
+                # TODO: figure out more general way to handle int <: float
                 isinstance(super_type, RecordType) and
                 super_type.class_key == "builtins.float" and
                 isinstance(sub_type, RecordType) and
@@ -1044,6 +1044,8 @@ def infer_subst_map(
 ) -> PMap[str, type]:
 
     # TODO: fill out the rest of substitution cases
+    # TODO: this should be merged with subsumed
+    # -- into a single constraint solving/unification procedure
 
     def flatten_maps(maps : Sequence[PMap]):
         result = m()
@@ -1090,6 +1092,20 @@ def infer_subst_map(
         case_FloatLitType = lambda vt : subst_map,
         case_StrLitType = lambda vt : subst_map,
     ))
+
+
+import random
+import string
+def make_gen_fresh_var() -> Callable[[], str]:
+    count = 0
+    rando = (''.join(random.choices(string.ascii_lowercase, k=3)))
+    def gen_fresh_var() -> str:
+        nonlocal count
+        count += 1
+        return f"Alpha_T_{rando}_{count}"
+    return gen_fresh_var
+
+gen_fresh_var = make_gen_fresh_var()
 
 
 def check_application_args(
@@ -1229,8 +1245,9 @@ def check_application_args(
         )
     ]
 
+    # union with fresh variable
     unionized_subst_map = pmap({
-        k:unionize_types(t, make_VarType(k))
+        k:unionize_types(t, make_VarType(gen_fresh_var()))
         for k, t in subst_map.items()
     })
 
@@ -2809,7 +2826,7 @@ class Server(paa.Server[InherAux, SynthAux]):
         constraints_aux : SynthAux
     ) -> paa.Result[SynthAux]:
         # analysis needs to pass information from right to left, so must reanalyze left element
-        # TODO: replace this second pass with propogating expectations from left to right
+        # TODO: replace this second pass with propagating expectations from left to right
         # content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
         assert len(content_aux.observed_types) == 1
         content_type = content_aux.observed_types[0]
@@ -2844,7 +2861,7 @@ class Server(paa.Server[InherAux, SynthAux]):
     ) -> paa.Result[SynthAux]:
         # analysis needs to pass information from right to left, so must reanalyze left element
 
-        # TODO: replace this second pass with propogating expectations from left to right
+        # TODO: replace this second pass with propagating expectations from left to right
         # key_aux = analyze_expr(key_tree, traverse_aux(inher_aux, constraints_aux))
         # content_aux = analyze_expr(content_tree, traverse_aux(inher_aux, constraints_aux))
         assert len(key_aux.observed_types) == 1
