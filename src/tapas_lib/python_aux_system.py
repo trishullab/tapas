@@ -627,7 +627,7 @@ def field_exists_subsumed(sub_type : type, field_name : str, field_type : type, 
     else:
         return False
 
-def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : int = 50) -> bool:
+def subsumed(sub_type : type, super_type : type, inher_aux : InherAux, fuel : int = 20) -> bool:
     if fuel <= 0 : return False
 
     super_type = generalize_type(inher_aux, super_type)
