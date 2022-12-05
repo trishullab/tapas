@@ -150,7 +150,6 @@ choices = {
         Constructor("OverloadType", [], [ ]),
 
         Constructor("TypeType", [], [
-            Field("class_key", "str", ""),
             Field("content", "type", ""),
         ]),
 
@@ -178,6 +177,7 @@ choices = {
 
         # universal type if it contains params 
         Constructor("FunctionType", [], [
+            Field("static_key", "str", "''"),
             # args for these may only be associated with param by position 
             Field("pos_param_types", "tuple[type, ...]", "()"),
 
@@ -221,6 +221,11 @@ choices = {
 
         Constructor("VariedTupleType", [], [
             Field("item_type", "type", "AnyType()"),
+        ]),
+
+        Constructor("NamedTupleType", [], [
+            Field("name", "str", "''"),
+            Field("fields", "tuple[str, ...]", "()"),
         ]),
             
         Constructor("ListLitType", [], [

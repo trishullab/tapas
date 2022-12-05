@@ -280,27 +280,22 @@ def update_OverloadType(source_OverloadType : OverloadType
 
 @dataclass(frozen=True, eq=True)
 class TypeType(type):
-    class_key : str
     content : type
 
     def match(self, handlers : TypeHandlers[T]) -> T:
         return handlers.case_TypeType(self)
 
 def make_TypeType(
-    class_key : str, 
     content : type
 ) -> type:
     return TypeType(
-        class_key,
         content
     )
 
 def update_TypeType(source_TypeType : TypeType,
-    class_key : Union[str, SourceFlag] = SourceFlag(),
     content : Union[type, SourceFlag] = SourceFlag()
 ) -> TypeType:
     return TypeType(
-        source_TypeType.class_key if isinstance(class_key, SourceFlag) else class_key,
         source_TypeType.content if isinstance(content, SourceFlag) else content
     )
 
@@ -440,6 +435,7 @@ def update_ModuleType(source_ModuleType : ModuleType,
 
 @dataclass(frozen=True, eq=True)
 class FunctionType(type):
+    static_key : str
     pos_param_types : tuple[type, ...]
     pos_kw_param_sigs : tuple[ParamSig, ...]
     bundle_pos_param_type : Optional[type]
@@ -451,6 +447,7 @@ class FunctionType(type):
         return handlers.case_FunctionType(self)
 
 def make_FunctionType(
+    static_key : str = '', 
     pos_param_types : tuple[type, ...] = (), 
     pos_kw_param_sigs : tuple[ParamSig, ...] = (), 
     bundle_pos_param_type : Optional[type] = None, 
@@ -459,6 +456,7 @@ def make_FunctionType(
     return_type : type = AnyType()
 ) -> type:
     return FunctionType(
+        static_key,
         pos_param_types,
         pos_kw_param_sigs,
         bundle_pos_param_type,
@@ -468,6 +466,7 @@ def make_FunctionType(
     )
 
 def update_FunctionType(source_FunctionType : FunctionType,
+    static_key : Union[str, SourceFlag] = SourceFlag(),
     pos_param_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
     pos_kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
     bundle_pos_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
@@ -476,6 +475,7 @@ def update_FunctionType(source_FunctionType : FunctionType,
     return_type : Union[type, SourceFlag] = SourceFlag()
 ) -> FunctionType:
     return FunctionType(
+        source_FunctionType.static_key if isinstance(static_key, SourceFlag) else static_key,
         source_FunctionType.pos_param_types if isinstance(pos_param_types, SourceFlag) else pos_param_types,
         source_FunctionType.pos_kw_param_sigs if isinstance(pos_kw_param_sigs, SourceFlag) else pos_kw_param_sigs,
         source_FunctionType.bundle_pos_param_type if isinstance(bundle_pos_param_type, SourceFlag) else bundle_pos_param_type,
@@ -607,6 +607,34 @@ def update_VariedTupleType(source_VariedTupleType : VariedTupleType,
 ) -> VariedTupleType:
     return VariedTupleType(
         source_VariedTupleType.item_type if isinstance(item_type, SourceFlag) else item_type
+    )
+
+        
+
+@dataclass(frozen=True, eq=True)
+class NamedTupleType(type):
+    name : str
+    fields : tuple[str, ...]
+
+    def match(self, handlers : TypeHandlers[T]) -> T:
+        return handlers.case_NamedTupleType(self)
+
+def make_NamedTupleType(
+    name : str = '', 
+    fields : tuple[str, ...] = ()
+) -> type:
+    return NamedTupleType(
+        name,
+        fields
+    )
+
+def update_NamedTupleType(source_NamedTupleType : NamedTupleType,
+    name : Union[str, SourceFlag] = SourceFlag(),
+    fields : Union[tuple[str, ...], SourceFlag] = SourceFlag()
+) -> NamedTupleType:
+    return NamedTupleType(
+        source_NamedTupleType.name if isinstance(name, SourceFlag) else name,
+        source_NamedTupleType.fields if isinstance(fields, SourceFlag) else fields
     )
 
         
@@ -783,6 +811,7 @@ class TypeHandlers(Generic[T]):
     case_RecordType : Callable[[RecordType], T]
     case_TupleLitType : Callable[[TupleLitType], T]
     case_VariedTupleType : Callable[[VariedTupleType], T]
+    case_NamedTupleType : Callable[[NamedTupleType], T]
     case_ListLitType : Callable[[ListLitType], T]
     case_DictLitType : Callable[[DictLitType], T]
     case_TrueType : Callable[[TrueType], T]
@@ -797,7 +826,7 @@ def match_type(o : type, handlers : TypeHandlers[T]) -> T :
     return o.match(handlers)
 
 
-type_union = Union[ProtocolType, GenericType, OverloadType, TypeType, VarType, EllipType, AnyType, ObjectType, NoneType, ModuleType, FunctionType, UnionType, InterType, RecordType, TupleLitType, VariedTupleType, ListLitType, DictLitType, TrueType, FalseType, IntLitType, FloatLitType, StrLitType]
+type_union = Union[ProtocolType, GenericType, OverloadType, TypeType, VarType, EllipType, AnyType, ObjectType, NoneType, ModuleType, FunctionType, UnionType, InterType, RecordType, TupleLitType, VariedTupleType, NamedTupleType, ListLitType, DictLitType, TrueType, FalseType, IntLitType, FloatLitType, StrLitType]
 
 # unguarding for type type
 def unguard_type(o : type) -> type_union :
@@ -818,6 +847,7 @@ def unguard_type(o : type) -> type_union :
         case_RecordType = lambda x : x, 
         case_TupleLitType = lambda x : x, 
         case_VariedTupleType = lambda x : x, 
+        case_NamedTupleType = lambda x : x, 
         case_ListLitType = lambda x : x, 
         case_DictLitType = lambda x : x, 
         case_TrueType = lambda x : x, 

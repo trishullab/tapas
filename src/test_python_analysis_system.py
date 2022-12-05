@@ -1,8 +1,7 @@
-from xml.dom import INVALID_CHARACTER_ERR
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
 
-from typing import Callable, final
+from typing import Callable
 from tapas_base.abstract_token_construct_autogen import unguard_abstract_token
 
 from tapas_lib import generic_tree_system, python_aux_system as pals
@@ -16,8 +15,8 @@ import json
 import pytest
 
 from tapas_lib.python_aux_construct_autogen import ModulePackage
-package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed())
-package = pals.with_cache('tapas_res/cache/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
+package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed(), False)
+# package = pals.with_cache('tapas_res/cache/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
 # package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
 
@@ -1075,7 +1074,90 @@ pass
     finally:
         kill()
 
+
+def test_typetype_1():
+    code = '''
+A = type
+B = type[int]
+pass
+    '''
+
+    # (inspect, kill) = pals.spawn_inspect_code('main', code, package, set())
+    (inspect, kill) = pals.spawn_inspect_code('main', code, package, pals.all_checks)
+    try:
+        code, aux = inspect('C')
+        A = aux.local_env['A'].type
+        assert isinstance(A, pals.TypeType)
+        assert isinstance(A.content, pals.RecordType)
+        assert A.content.class_key == "builtins.type"
+        B = aux.local_env['B'].type
+        assert isinstance(B, pals.TypeType)
+        assert isinstance(B.content, pals.TypeType)
+        B_int = B.content.content
+        assert isinstance(B_int, pals.RecordType)
+        assert B_int.class_key == "builtins.int"
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    finally:
+        kill()
+
+def test_typetype_2():
+    code = '''
+Z = type({"x" : 1})
+pass
+    '''
+    # (inspect, kill) = pals.spawn_inspect_code('main', code, package, set())
+    (inspect, kill) = pals.spawn_inspect_code('main', code, package, pals.all_checks)
+    try:
+        code, aux = inspect('Z')
+        Z = aux.local_env['Z'].type
+        assert isinstance(Z, pals.TypeType)
+        assert isinstance(Z.content, pals.DictLitType)
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    finally:
+        kill()
+
+def test_tuple():
+    code = '''
+X = tuple[int, ...]
+x = X((1,2))
+pass
+    '''
+    # (inspect, kill) = pals.spawn_inspect_code('main', code, package, set())
+    (inspect, kill) = pals.spawn_inspect_code('main', code, package, pals.all_checks)
+    try:
+        code, aux = inspect('x')
+        x = aux.local_env['x'].type
+        assert isinstance(x, pals.VariedTupleType)
+        x_item = x.item_type
+        assert isinstance(x_item, pals.RecordType)
+        assert x_item.class_key == "builtins.int"
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    finally:
+        kill()
+
+def test_namedtuple():
+    code = '''
+import sys
+import heapq
+from collections import (namedtuple)
+Pair = namedtuple('Pair', ['left', 'right'])
+pair = Pair(1, 2)
+pass
+    '''
+
+    # (inspect, kill) = pals.spawn_inspect_code('main', code, package, set())
+    (inspect, kill) = pals.spawn_inspect_code('main', code, package, pals.all_checks)
+    try:
+        code, aux = inspect('pair')
+        pair = aux.local_env['pair'].type
+        assert isinstance(pair, pals.NamedTupleType)
+        assert pair.name == "Pair"
+        assert pair.fields[0] == "left"
+        assert pair.fields[1] == "right"
+        # print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+    finally:
+        kill()
+
+
 if __name__ == "__main__":
     pass
-
-
