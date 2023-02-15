@@ -125,10 +125,6 @@ def write_data(
         print(f"programs processed in file: {count_map.get('processed', 0)}/{count_map.get('total', 0)}")
         print(f"")
 
-    print(f"")
-    print(f"programs processed in file: {count_map.get('processed', 0)}/{count_map.get('total', 0)}")
-    print(f"")
-
     return count_map
 
 
