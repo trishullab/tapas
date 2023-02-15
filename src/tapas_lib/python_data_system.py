@@ -95,7 +95,7 @@ def add_semantic_data(abstract_tokens : Sequence[abstract_token],  package : PMa
 def write_data(
     abstract_data_dirpath : str, 
     file_name : str, 
-    data : Iterable
+    data : Iterable,
 ) -> PMap[str, int]:
 
     count_map : PMap[str, int] = m() 
@@ -112,8 +112,11 @@ def write_data(
             count_map = inc_key(count_map, 'processed')
 
         except Exception as ex:
+            content = br + json.dumps([])
+            write(abstract_data_dirpath, file_name, content, append=True)
             count_map = inc_key(count_map, error_to_string(ex))
             count_map = inc_key(count_map, 'total_error')
+
 
         # update
         br = "\n"

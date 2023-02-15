@@ -1565,24 +1565,24 @@ def from_class_env_to_primitive(env : PMap[str, ClassRecord]) -> dict:
         symbol : [p.key, 
             [from_type_to_primitive(t) for t in p.type_params],
             [from_type_to_primitive(t) for t in p.super_types],
-            [[k, from_type_to_primitive(t)] for k, t in p.static_fields.items()],
-            [[k, from_type_to_primitive(t)] for k, t in p.instance_fields.items()]
+            [[k, from_type_to_primitive(t)] for k, t in sorted(p.static_fields.items())],
+            [[k, from_type_to_primitive(t)] for k, t in sorted(p.instance_fields.items())]
         ]
 
-        for symbol, p in env.items()
+        for symbol, p in sorted(env.items())
     }
 
 
 def from_env_to_primitive(env : PMap[str, Declaration]) -> dict:
     return {
         symbol : [p.initialized, from_type_to_primitive(p.type)]
-        for symbol, p in env.items()
+        for symbol, p in sorted(env.items())
     }
 
 def from_env_to_primitive_verbose(env : PMap[str, Declaration]) -> dict:
     return {
         symbol : [f'initialized={p.initialized}', f'updatable={p.updatable}', from_type_to_primitive(p.type)]
-        for symbol, p in env.items()
+        for symbol, p in sorted(env.items())
     }
 
 def traverse_function_body(inher_aux : InherAux, path_extension : str, anchor_symbol : str) -> InherAux:
