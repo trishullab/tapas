@@ -1,0 +1,93 @@
+{
+  "builder_name": "apps_code",
+  "citation": "@article{hendrycksapps2021,\n  title={Measuring Coding Challenge Competence With APPS},\n  author={Dan Hendrycks and Steven Basart and Saurav Kadavath and Mantas Mazeika and Akul Arora and Ethan Guo and Collin Burns and Samir Puranik and Horace He and Dawn Song and Jacob Steinhardt},\n  journal={NeurIPS},\n  year={2021}\n}\n",
+  "config_name": "all",
+  "dataset_size": 1329350372,
+  "description": "APPS is a benchmark for Python code generation, it includes 10,000 problems, which range from having simple oneline solutions to being substantial algorithmic challenges, for more details please refer to this paper: https://arxiv.org/pdf/2105.09938.pdf.\n",
+  "download_checksums": {
+    "train.jsonl": {
+      "num_bytes": 107101272,
+      "checksum": "45e82ef22ed8e7c0c04d881a21b923e9dd233157896b0b8d5b3493e887499cae"
+    },
+    "test.jsonl": {
+      "num_bytes": 1292436853,
+      "checksum": "5b003a65ac40feb47dd5eaec267a767a6fc435bdcfa68ff715fe869f948e760c"
+    }
+  },
+  "download_size": 1399538125,
+  "features": {
+    "problem_id": {
+      "dtype": "int64",
+      "id": null,
+      "_type": "Value"
+    },
+    "question": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "solutions": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "input_output": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "difficulty": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "url": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "starter_code": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    },
+    "good_solution_line_count": {
+      "dtype": "int64",
+      "id": null,
+      "_type": "Value"
+    },
+    "good_solution": {
+      "dtype": "string",
+      "id": null,
+      "_type": "Value"
+    }
+  },
+  "homepage": "https://github.com/hendrycks/apps",
+  "license": "MIT License",
+  "post_processed": null,
+  "post_processing_size": null,
+  "size_in_bytes": 2728888497,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 103144035,
+      "num_examples": 5000,
+      "dataset_name": "apps_code"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 1226206337,
+      "num_examples": 5000,
+      "dataset_name": "apps_code"
+    }
+  },
+  "supervised_keys": null,
+  "task_templates": null,
+  "version": {
+    "version_str": "0.0.0",
+    "description": null,
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

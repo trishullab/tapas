@@ -706,3 +706,14 @@ class Boo: pass
 #     Goo = 4 
 # else:
 #     class Goo: pass
+
+xs = map(lambda x : lambda:x, [1,2,3])
+
+xs = [
+    lambda:x
+    for x in [1,2,3] 
+]
+
+y = [x() for x in xs]
+
+print(y)
