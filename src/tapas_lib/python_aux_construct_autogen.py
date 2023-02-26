@@ -22,6 +22,7 @@ class SourceFlag:
 
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
+from tapas_base.util_system import InsertOrderMap, iom 
 from tapas_base.abstract_token_construct_autogen import abstract_token 
 from tapas_lib.python_ast_construct_autogen import ast 
     
@@ -866,8 +867,8 @@ class ClassRecord:
     key : str
     type_params : tuple[VarType, ...]
     super_types : tuple[TypeType, ...]
-    static_fields : PMap[str, type]
-    instance_fields : PMap[str, type]
+    static_fields : InsertOrderMap[str, type]
+    instance_fields : InsertOrderMap[str, type]
     protocol : bool
 
 
@@ -875,8 +876,8 @@ def make_ClassRecord(
     key : str,
     type_params : tuple[VarType, ...],
     super_types : tuple[TypeType, ...],
-    static_fields : PMap[str, type],
-    instance_fields : PMap[str, type],
+    static_fields : InsertOrderMap[str, type],
+    instance_fields : InsertOrderMap[str, type],
     protocol : bool = False
 ) -> ClassRecord:
     return ClassRecord(
@@ -891,8 +892,8 @@ def update_ClassRecord(source_ClassRecord : ClassRecord,
     key : Union[str, SourceFlag] = SourceFlag(),
     type_params : Union[tuple[VarType, ...], SourceFlag] = SourceFlag(),
     super_types : Union[tuple[TypeType, ...], SourceFlag] = SourceFlag(),
-    static_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
-    instance_fields : Union[PMap[str, type], SourceFlag] = SourceFlag(),
+    static_fields : Union[InsertOrderMap[str, type], SourceFlag] = SourceFlag(),
+    instance_fields : Union[InsertOrderMap[str, type], SourceFlag] = SourceFlag(),
     protocol : Union[bool, SourceFlag] = SourceFlag()
 ) -> ClassRecord:
     return ClassRecord(
@@ -908,15 +909,15 @@ def update_ClassRecord(source_ClassRecord : ClassRecord,
 # type and constructor ModulePackage
 @dataclass(frozen=True, eq=True)
 class ModulePackage:
-    module : PMap[str, Declaration]
-    class_env : PMap[str, ClassRecord]
-    package : PMap[str, ModulePackage]
+    module : InsertOrderMap[str, Declaration]
+    class_env : InsertOrderMap[str, ClassRecord]
+    package : InsertOrderMap[str, ModulePackage]
 
 
 def make_ModulePackage(
-    module : PMap[str, Declaration] = m(),
-    class_env : PMap[str, ClassRecord] = m(),
-    package : PMap[str, ModulePackage] = m()
+    module : InsertOrderMap[str, Declaration] = iom(),
+    class_env : InsertOrderMap[str, ClassRecord] = iom(),
+    package : InsertOrderMap[str, ModulePackage] = iom()
 ) -> ModulePackage:
     return ModulePackage(
         module,
@@ -924,9 +925,9 @@ def make_ModulePackage(
         package)
 
 def update_ModulePackage(source_ModulePackage : ModulePackage,
-    module : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
-    class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
-    package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag()
+    module : Union[InsertOrderMap[str, Declaration], SourceFlag] = SourceFlag(),
+    class_env : Union[InsertOrderMap[str, ClassRecord], SourceFlag] = SourceFlag(),
+    package : Union[InsertOrderMap[str, ModulePackage], SourceFlag] = SourceFlag()
 ) -> ModulePackage:
     return ModulePackage(
         source_ModulePackage.module if isinstance(module, SourceFlag) else module, 
@@ -984,36 +985,36 @@ def update_VarLen(source_VarLen : VarLen
 # type and constructor InherAux
 @dataclass(frozen=True, eq=True)
 class InherAux:
-    package : PMap[str, ModulePackage]
+    package : InsertOrderMap[str, ModulePackage]
     external_path : str
     internal_path : str
     method_kind : Optional[method_kind]
     in_class : bool
-    global_env : PMap[str, Declaration]
-    nonlocal_env : PMap[str, Declaration]
-    local_env : PMap[str, Declaration]
+    global_env : InsertOrderMap[str, Declaration]
+    nonlocal_env : InsertOrderMap[str, Declaration]
+    local_env : InsertOrderMap[str, Declaration]
     declared_globals : PSet[str]
     declared_nonlocals : PSet[str]
     usage_env : PMap[str, Usage]
     observed_types : tuple[type, ...]
-    class_env : PMap[str, ClassRecord]
+    class_env : InsertOrderMap[str, ClassRecord]
     anchor_symbol : str
 
 
 def make_InherAux(
-    package : PMap[str, ModulePackage] = m(),
+    package : InsertOrderMap[str, ModulePackage] = iom(),
     external_path : str = '',
     internal_path : str = '',
     method_kind : Optional[method_kind] = None,
     in_class : bool = False,
-    global_env : PMap[str, Declaration] = m(),
-    nonlocal_env : PMap[str, Declaration] = m(),
-    local_env : PMap[str, Declaration] = m(),
+    global_env : InsertOrderMap[str, Declaration] = iom(),
+    nonlocal_env : InsertOrderMap[str, Declaration] = iom(),
+    local_env : InsertOrderMap[str, Declaration] = iom(),
     declared_globals : PSet[str] = s(),
     declared_nonlocals : PSet[str] = s(),
     usage_env : PMap[str, Usage] = m(),
     observed_types : tuple[type, ...] = (),
-    class_env : PMap[str, ClassRecord] = m(),
+    class_env : InsertOrderMap[str, ClassRecord] = iom(),
     anchor_symbol : str = ''
 ) -> InherAux:
     return InherAux(
@@ -1033,19 +1034,19 @@ def make_InherAux(
         anchor_symbol)
 
 def update_InherAux(source_InherAux : InherAux,
-    package : Union[PMap[str, ModulePackage], SourceFlag] = SourceFlag(),
+    package : Union[InsertOrderMap[str, ModulePackage], SourceFlag] = SourceFlag(),
     external_path : Union[str, SourceFlag] = SourceFlag(),
     internal_path : Union[str, SourceFlag] = SourceFlag(),
     method_kind : Union[Optional[method_kind], SourceFlag] = SourceFlag(),
     in_class : Union[bool, SourceFlag] = SourceFlag(),
-    global_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
-    nonlocal_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
-    local_env : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
+    global_env : Union[InsertOrderMap[str, Declaration], SourceFlag] = SourceFlag(),
+    nonlocal_env : Union[InsertOrderMap[str, Declaration], SourceFlag] = SourceFlag(),
+    local_env : Union[InsertOrderMap[str, Declaration], SourceFlag] = SourceFlag(),
     declared_globals : Union[PSet[str], SourceFlag] = SourceFlag(),
     declared_nonlocals : Union[PSet[str], SourceFlag] = SourceFlag(),
     usage_env : Union[PMap[str, Usage], SourceFlag] = SourceFlag(),
     observed_types : Union[tuple[type, ...], SourceFlag] = SourceFlag(),
-    class_env : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
+    class_env : Union[InsertOrderMap[str, ClassRecord], SourceFlag] = SourceFlag(),
     anchor_symbol : Union[str, SourceFlag] = SourceFlag()
 ) -> InherAux:
     return InherAux(
@@ -1069,11 +1070,11 @@ def update_InherAux(source_InherAux : InherAux,
 # type and constructor SynthAux
 @dataclass(frozen=True, eq=True)
 class SynthAux:
-    static_field_additions : PMap[str, type]
-    instance_field_additions : PMap[str, type]
-    class_additions : PMap[str, ClassRecord]
+    static_field_additions : InsertOrderMap[str, type]
+    instance_field_additions : InsertOrderMap[str, type]
+    class_additions : InsertOrderMap[str, ClassRecord]
     decl_subtractions : PSet[str]
-    decl_additions : PMap[str, Declaration]
+    decl_additions : InsertOrderMap[str, Declaration]
     declared_globals : PSet[str]
     declared_nonlocals : PSet[str]
     usage_additions : PMap[str, Usage]
@@ -1091,15 +1092,15 @@ class SynthAux:
     bundle_pos_param_type : Optional[type]
     kw_param_sigs : tuple[ParamSig, ...]
     bundle_kw_param_type : Optional[type]
-    import_names : PMap[str, str]
+    import_names : InsertOrderMap[str, str]
 
 
 def make_SynthAux(
-    static_field_additions : PMap[str, type] = m(),
-    instance_field_additions : PMap[str, type] = m(),
-    class_additions : PMap[str, ClassRecord] = m(),
+    static_field_additions : InsertOrderMap[str, type] = iom(),
+    instance_field_additions : InsertOrderMap[str, type] = iom(),
+    class_additions : InsertOrderMap[str, ClassRecord] = iom(),
     decl_subtractions : PSet[str] = s(),
-    decl_additions : PMap[str, Declaration] = m(),
+    decl_additions : InsertOrderMap[str, Declaration] = iom(),
     declared_globals : PSet[str] = s(),
     declared_nonlocals : PSet[str] = s(),
     usage_additions : PMap[str, Usage] = m(),
@@ -1117,7 +1118,7 @@ def make_SynthAux(
     bundle_pos_param_type : Optional[type] = None,
     kw_param_sigs : tuple[ParamSig, ...] = (),
     bundle_kw_param_type : Optional[type] = None,
-    import_names : PMap[str, str] = m()
+    import_names : InsertOrderMap[str, str] = iom()
 ) -> SynthAux:
     return SynthAux(
         static_field_additions,
@@ -1145,11 +1146,11 @@ def make_SynthAux(
         import_names)
 
 def update_SynthAux(source_SynthAux : SynthAux,
-    static_field_additions : Union[PMap[str, type], SourceFlag] = SourceFlag(),
-    instance_field_additions : Union[PMap[str, type], SourceFlag] = SourceFlag(),
-    class_additions : Union[PMap[str, ClassRecord], SourceFlag] = SourceFlag(),
+    static_field_additions : Union[InsertOrderMap[str, type], SourceFlag] = SourceFlag(),
+    instance_field_additions : Union[InsertOrderMap[str, type], SourceFlag] = SourceFlag(),
+    class_additions : Union[InsertOrderMap[str, ClassRecord], SourceFlag] = SourceFlag(),
     decl_subtractions : Union[PSet[str], SourceFlag] = SourceFlag(),
-    decl_additions : Union[PMap[str, Declaration], SourceFlag] = SourceFlag(),
+    decl_additions : Union[InsertOrderMap[str, Declaration], SourceFlag] = SourceFlag(),
     declared_globals : Union[PSet[str], SourceFlag] = SourceFlag(),
     declared_nonlocals : Union[PSet[str], SourceFlag] = SourceFlag(),
     usage_additions : Union[PMap[str, Usage], SourceFlag] = SourceFlag(),
@@ -1167,7 +1168,7 @@ def update_SynthAux(source_SynthAux : SynthAux,
     bundle_pos_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
     kw_param_sigs : Union[tuple[ParamSig, ...], SourceFlag] = SourceFlag(),
     bundle_kw_param_type : Union[Optional[type], SourceFlag] = SourceFlag(),
-    import_names : Union[PMap[str, str], SourceFlag] = SourceFlag()
+    import_names : Union[InsertOrderMap[str, str], SourceFlag] = SourceFlag()
 ) -> SynthAux:
     return SynthAux(
         source_SynthAux.static_field_additions if isinstance(static_field_additions, SourceFlag) else static_field_additions, 

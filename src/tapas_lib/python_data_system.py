@@ -23,6 +23,7 @@ from tapas_base.util_system import write, project_path
 from tapas_base import abstract_token_system as ats
 from tapas_base.abstract_token_system import Vocab
 from tapas_lib import python_aux_system as pals 
+from tapas_base.util_system import InsertOrderMap, iom
 from typing import Any, Union
 import multiprocessing
 
@@ -68,7 +69,7 @@ def inc_key(map : PMap[str, int], error_key) -> PMap[str, int]:
     else:
         return map + pmap({error_key : 1}) 
 
-def add_semantic_data(abstract_tokens : Sequence[abstract_token],  package : PMap[str, pals.ModulePackage]):
+def add_semantic_data(abstract_tokens : Sequence[abstract_token],  package : InsertOrderMap[str, pals.ModulePackage]):
 
     client : pals.Client = pals.spawn_analysis(package, "main",
         checks=pset()
@@ -129,7 +130,7 @@ def write_data(
 
 
 def generate_file(
-    package : PMap[str, pals.ModulePackage], 
+    package : InsertOrderMap[str, pals.ModulePackage], 
     dirname : str, 
     name : str, 
     vocab : dict, 

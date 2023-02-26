@@ -14,17 +14,17 @@ singles = [
         Field("key", "str", ""),
         Field("type_params", "tuple[VarType, ...]", ""),
         Field("super_types", "tuple[TypeType, ...]", ""),
-        Field("static_fields", "PMap[str, type]", ""),
-        Field("instance_fields", "PMap[str, type]", ""),
+        Field("static_fields", "InsertOrderMap[str, type]", ""),
+        Field("instance_fields", "InsertOrderMap[str, type]", ""),
         Field("protocol", "bool", "False")
     ]),
 
     Constructor("ModulePackage", [], [
         # TODO: update module to contain declaration instead of merely the type. 
         # Need to know if constant/initialized.
-        Field("module", "PMap[str, Declaration]", "m()"),
-        Field("class_env", "PMap[str, ClassRecord]", "m()"),
-        Field("package", "PMap[str, ModulePackage]", "m()"),
+        Field("module", "InsertOrderMap[str, Declaration]", "iom()"),
+        Field("class_env", "InsertOrderMap[str, ClassRecord]", "iom()"),
+        Field("package", "InsertOrderMap[str, ModulePackage]", "iom()"),
     ]),
 
     Constructor("ParamSig", [], [
@@ -36,21 +36,21 @@ singles = [
     Constructor("VarLen", [], []),
 
     Constructor("InherAux", [], [
-        Field("package", "PMap[str, ModulePackage]", "m()"),
+        Field("package", "InsertOrderMap[str, ModulePackage]", "iom()"),
         Field("external_path", "str", "''"),
         Field("internal_path", "str", "''"),
         Field("method_kind", "Optional[method_kind]", "None"),
         Field("in_class", "bool", "False"),
 
-        Field("global_env", "PMap[str, Declaration]", "m()"),
-        Field("nonlocal_env", "PMap[str, Declaration]", "m()"),
-        Field("local_env", "PMap[str, Declaration]", "m()"),
+        Field("global_env", "InsertOrderMap[str, Declaration]", "iom()"),
+        Field("nonlocal_env", "InsertOrderMap[str, Declaration]", "iom()"),
+        Field("local_env", "InsertOrderMap[str, Declaration]", "iom()"),
         Field("declared_globals", "PSet[str]", "s()"),
         Field("declared_nonlocals", "PSet[str]", "s()"),
 
         Field("usage_env", "PMap[str, Usage]", "m()"),
         Field("observed_types", "tuple[type, ...]", "()"),
-        Field("class_env", "PMap[str, ClassRecord]", "m()"), # internal_path |-> ClassRecord
+        Field("class_env", "InsertOrderMap[str, ClassRecord]", "iom()"), # internal_path |-> ClassRecord
 
         Field("anchor_symbol", "str", "''")
 
@@ -60,13 +60,13 @@ singles = [
     Constructor("SynthAux", [], [
 
 
-        Field("static_field_additions", "PMap[str, type]", "m()"),
-        Field("instance_field_additions", "PMap[str, type]", "m()"),
+        Field("static_field_additions", "InsertOrderMap[str, type]", "iom()"),
+        Field("instance_field_additions", "InsertOrderMap[str, type]", "iom()"),
 
-        Field("class_additions", "PMap[str, ClassRecord]", "m()"),
+        Field("class_additions", "InsertOrderMap[str, ClassRecord]", "iom()"),
 
         Field("decl_subtractions", "PSet[str]", "s()"),
-        Field("decl_additions", "PMap[str, Declaration]", "m()"),
+        Field("decl_additions", "InsertOrderMap[str, Declaration]", "iom()"),
         Field("declared_globals", "PSet[str]", "s()"),
         Field("declared_nonlocals", "PSet[str]", "s()"),
 
@@ -96,7 +96,7 @@ singles = [
         Field("bundle_kw_param_type", "Optional[type]", "None"),
 
         # import names { alias : module source }
-        Field("import_names", "PMap[str, str]", "m()")
+        Field("import_names", "InsertOrderMap[str, str]", "iom()")
 
     ]),
 
@@ -276,6 +276,7 @@ def generate_content():
     return construct_def.generate_content(f"""
 from pyrsistent.typing import PMap, PSet
 from pyrsistent import pmap, m, pset, s
+from tapas_base.util_system import InsertOrderMap, iom 
 from tapas_base.abstract_token_construct_autogen import abstract_token 
 from tapas_lib.python_ast_construct_autogen import ast 
     """, singles, choices) + construct_def.generate_choices_type_base(choices_type_base)

@@ -3,18 +3,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, TypeVar, Any, Generic, Union, Optional, Iterable
 from collections.abc import Callable
+from collections import Sequence
 
 from abc import ABC, abstractmethod
 import json
 
 from pyrsistent import PMap, PSet, pset
 
+from pyrsistent import pmap, m, pset, s, PMap, PSet
+
 import pickle
 
 T = TypeVar('T')
-
 X = TypeVar('X')
-
+K = TypeVar('K')
+V = TypeVar('V')
 
 
 def linearize_dict(d : dict) -> list: 
@@ -54,7 +57,63 @@ def linearize_tuple(xs : tuple) -> list:
     ] + [')']
 
 
+class InsertOrderMap(Generic[K,V]):
+    _d : PMap[K,V]
+    _keys : tuple[K, ...]
 
+    def __init__(self, d : PMap[K, V] = pmap({}), keys : tuple[K, ...] = ()):
+        self._d = d 
+        self._keys = keys 
+
+    def __iter__(self):
+        for k in self._keys: yield k
+
+    def __eq__(self : InsertOrderMap[K,V], other : InsertOrderMap[K,V]) -> bool:
+        return self._d == other._d and self._keys == other._keys
+
+    def get(self, k : K):
+        return self._d.get(k)
+        
+    def __getitem__(self, k : K):
+        return self._d[k]
+
+    def __add__(self : InsertOrderMap[K,V], other : InsertOrderMap[K,V]) -> InsertOrderMap:
+        d = self._d + other._d
+        keys = self._keys + other._keys
+        return InsertOrderMap(d, keys)
+
+    # def __iadd__(self, other):
+    #     return self + other
+
+    def __contains__(self : InsertOrderMap[K,V], k : K):
+        return k in self._d
+
+    def remove(self : InsertOrderMap[K,V], k : K):
+        d = self._d.remove(k) 
+        keys = tuple(k1 for k1 in self._keys if k1 != k)
+        return InsertOrderMap(d, keys)
+
+    def items(self : InsertOrderMap[K,V]):
+        for k in self._keys:
+            yield (k, self._d[k]) 
+
+    def keys(self):
+        return self._keys
+
+    def values(self):
+        for k in self._keys:
+            yield self._d[k]
+    
+    def __len__(self):
+        return len(self._keys)
+
+
+# def iom(d : PMap[K, V] = pmap({}), l : tuple[K, ...] = ()) -> InsertOrderMap:
+def iom(*pair_list : tuple[K, V]) -> InsertOrderMap[K, V]:
+    result = InsertOrderMap[K, V]() 
+    for (k, v) in pair_list:
+        result += InsertOrderMap(pmap({k : v}), (k,))
+    return result
 
 class Ref(Generic[T]): 
     def __init__(self, item : T):

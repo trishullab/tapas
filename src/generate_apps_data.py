@@ -15,6 +15,7 @@ from tapas_lib import generic_tree_system
 from tapas_lib import python_ast_system 
 
 from tapas_base import abstract_token_system as ats
+from tapas_base.util_system import InsertOrderMap, iom
 
 
 def merge_count_map(a_map : PMap[str, int], b_map : PMap[str, int]) -> PMap[str, int]:
@@ -40,7 +41,7 @@ if __name__ == "__main__":
 
     abstract_data_dirpath = project_path(f"tapas_res/apps")
 
-    def write_split(ds : Dataset, name, package : PMap[str, pals.ModulePackage]):
+    def write_split(ds : Dataset, name, package : InsertOrderMap[str, pals.ModulePackage]):
         count_map = m()
         for problem in ds:
             assert isinstance(problem, dict)

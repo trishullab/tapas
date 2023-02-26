@@ -10,12 +10,13 @@ from tapas_lib import python_generic_tree_system as pgs
 from tapas_lib import python_abstract_token_system as pats
 from tapas_base import abstract_token_system as ats
 from tapas_base import util_system as us
+from tapas_base.util_system import InsertOrderMap, iom
 
 import json
 import pytest
 
 from tapas_lib.python_aux_construct_autogen import ModulePackage
-package : PMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed(), False)
+package : InsertOrderMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed(), False)
 # package = pals.with_cache('tapas_res/cache/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
 # package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
