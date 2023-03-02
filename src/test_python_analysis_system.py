@@ -17,6 +17,7 @@ import pytest
 
 from tapas_lib.python_aux_construct_autogen import ModulePackage
 package : InsertOrderMap[str, pals.ModulePackage] = pals.with_cache('tapas_res/cache/typeshed_cache', lambda: pals.analyze_typeshed(), False)
+# package : InsertOrderMap[str, pals.ModulePackage] = iom()
 # package = pals.with_cache('tapas_res/cache/pandas_cache', lambda: pals.analyze_pandas_stubs(package, 3))
 # package = pals.analyze_pandas_stubs(pals.analyze_typeshed())
 # package = pals.analyze_numpy_stubs(package)
@@ -1162,3 +1163,25 @@ pass
 
 if __name__ == "__main__":
     pass
+
+# checking dictionary order
+#     (inspect, kill) = pals.spawn_inspect_code('main', '''
+# def foo():
+#     a = 1
+#     b = 2 
+#     c = 3
+#     b = 4
+#     _p1 = ""
+#     a = 3
+#     _p2 = ""
+#     _p3 = ""
+#     pass
+#     ''', iom(), pset())
+#     try:
+#         code, aux = inspect('_p2')
+#         print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
+#         # assert isinstance(aux.local_env['x'].type, pals.FunctionType)
+#         # assert isinstance(aux.local_env['leaf'].type, pals.ModuleType)
+
+#     finally:
+#         kill()

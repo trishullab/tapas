@@ -428,7 +428,7 @@ from dataclasses import dataclass
 
 # oogabooga()
 
-from pyrsistent import m, pmap, v
+from pyrsistent import pmap, v
 from typing import Coroutine, Iterator
 from pyrsistent.typing import PMap 
 
@@ -707,13 +707,29 @@ class Boo: pass
 # else:
 #     class Goo: pass
 
-xs = map(lambda x : lambda:x, [1,2,3])
+# xs = map(lambda x : lambda:x, [1,2,3])
 
-xs = [
-    lambda:x
-    for x in [1,2,3] 
-]
+# xs = [
+#     lambda:x
+#     for x in [1,2,3] 
+# ]
 
-y = [x() for x in xs]
+# y = [x() for x in xs]
 
-print(y)
+# print(y)
+
+from tapas_base.util_system import InsertOrderMap, iom
+
+m : InsertOrderMap[str, int] = iom(('x', 7))
+m += iom(('b', 4))
+m += iom(('y', 6))
+m += iom(('b', 5))
+m += iom(('x', 1))
+
+import json
+print('------------')
+print(json.dumps({
+k : v
+for k, v in m.items()
+}))
+print('------------')

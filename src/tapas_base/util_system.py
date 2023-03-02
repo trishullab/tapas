@@ -79,7 +79,10 @@ class InsertOrderMap(Generic[K,V]):
 
     def __add__(self : InsertOrderMap[K,V], other : InsertOrderMap[K,V]) -> InsertOrderMap:
         d = self._d + other._d
-        keys = self._keys + other._keys
+        keys = tuple(k
+            for k in self.keys()
+            if k not in other
+        ) + other.keys()
         return InsertOrderMap(d, keys)
 
     # def __iadd__(self, other):
