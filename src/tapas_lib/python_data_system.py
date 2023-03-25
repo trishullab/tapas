@@ -225,12 +225,12 @@ def generate_dir(package : InsertOrderMap[str, pals.ModulePackage], dirname : st
         ) 
         # abstract_data_{dir_count}
 
-        abstract_data_dirpath = project_path(f"tapas_res/{dirname}/{abstract_dir_name}")
+        abstract_data_dirpath = project_path(f"tapas_res/{dirname}/abstract_data/{abstract_dir_name}")
         # write(abstract_data_dirpath, f'vocab.json', '')
     
         # multi processor:
         stats_vocab_collection = []
-        cpu_count = int(min(multiprocessing.cpu_count() * 3/4, 12))
+        cpu_count = int(min(multiprocessing.cpu_count() * 2/4, 12))
         with multiprocessing.get_context('spawn').Pool(cpu_count) as pool:
             stats_vocab_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
