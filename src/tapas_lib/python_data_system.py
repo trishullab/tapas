@@ -147,7 +147,7 @@ def generate_file(
 
     abstract_data_base = name.split(".")[0]  
 
-    abstract_data_dirpath = project_path(f"tapas_res/{dirname}/{abstract_dir_name}")
+    abstract_data_dirpath = project_path(f"tapas_res/{dirname}/abstract_data/{abstract_dir_name}")
     write(abstract_data_dirpath, f'{abstract_data_base}.jsonl', '')
 
     from datetime import datetime
