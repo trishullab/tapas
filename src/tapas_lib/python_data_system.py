@@ -206,7 +206,7 @@ def generate_file_tuple(tup) -> tuple[dict[str, Any], dict]:
     stats, vocab = generate_file(tup[0], tup[1], tup[2], tup[3], tup[4])
     return stats, vocab
 
-def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix = ""):
+def generate_dir(package : InsertOrderMap[str, pals.ModulePackage], dirname : str, suffix = ""):
     concrete_data_dirpath = project_path(f"tapas_res/{dirname}/{concrete_dir_name}")
     vocab : dict[str, set[str]] = {}
 
@@ -230,7 +230,7 @@ def generate_dir(package : PMap[str, pals.ModulePackage], dirname : str, suffix 
     
         # multi processor:
         stats_vocab_collection = []
-        cpu_count = int(min(multiprocessing.cpu_count() * 3/4, 8))
+        cpu_count = int(min(multiprocessing.cpu_count() * 3/4, 12))
         with multiprocessing.get_context('spawn').Pool(cpu_count) as pool:
             stats_vocab_collection = pool.map(generate_file_tuple, [(package, dirname, n, vocab, abstract_dir_name) for n in chunk])
 
