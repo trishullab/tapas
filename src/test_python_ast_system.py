@@ -726,6 +726,27 @@ def identity(numRows, numCols, val=1, rowStart=0):
 # [ [ (val if i == j else 0) for j in range(numCols) ] for i in range(rowStart, numRows) ]
 
 
+def test_while_loop_comment():
+    code = """
+while canImprove(tableau):
+    #comment
+    pass
+    """
+
+    gnode = pgs.parse(code)
+    #######
+    print("-- generic node --")  
+    print(pgs.dump(gnode))
+
+    ######
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
+    ######
+    print("-- AST --")  
+    print(pats.dump(seq))
+    print(pats.concretize(seq))
+
+
 if __name__ == "__main__":
-    test_expression_control_flow()
+    test_while_loop_comment()
     pass

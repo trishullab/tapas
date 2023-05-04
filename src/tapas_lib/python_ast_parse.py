@@ -2524,7 +2524,7 @@ def from_generic_tree_to_stmts(node : GenericNode, decorators : decorators | Non
         assert children[2].syntax_part == ":"
         comment_nodes = [
             child
-            for child in children[5:]
+            for child in children[3:]
             if child.syntax_part == "comment"
         ]
         comment_text = merge_comments(comment_nodes)
