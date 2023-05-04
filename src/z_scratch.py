@@ -735,3 +735,6 @@ for k, v in m.items()
 print('------------')
 
 # df = pd.DataFrame({ "A": [1,2,3], "B": [4,5,6] })
+
+
+# print([ i * 2 for i in [1,2,3,4,5,6,7,8,9,10,12] if i % 2 == 0 if i % 3 == 0])

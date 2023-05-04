@@ -684,6 +684,48 @@ class Timestamp(datetime):
 
         assert "HOLE" not in (pats.dump(seq)) 
 
+def test_expression_control_flow():
+    code = '''
+def diction(numRows, numCols, val=1, rowStart=0):
+   return { "hello" : (val if i == j else 0) 
+        for j in range(numCols)]
+               for i in range(rowStart, numRows)}
+
+def gen(numRows, numCols, val=1, rowStart=0):
+   return foo([(val if i == j else 0) 
+        for j in range(numCols)]
+               for i in range(rowStart, numRows))
+
+def commented(numRows, numCols, val=1, rowStart=0):
+   return [[(val if i == j else 0) for #hello
+   j in range(numCols)]
+               for i in range(rowStart, numRows)]
+
+def identity(numRows, numCols, val=1, rowStart=0):
+   return [[(val if i == j else 0) for j in range(numCols)
+    if j % 2 == 0
+    if i % 2 == 0
+    ]
+               for i in range(rowStart, numRows)]
+    '''
+
+    gnode = pgs.parse(code)
+    #######
+    print("-- generic node --")  
+    print(pgs.dump(gnode))
+
+    ######
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
+    ######
+    print("-- AST --")  
+    print(pats.dump(seq))
+    print(pats.concretize(seq))
+
+    assert "HOLE" not in (pats.dump(seq)) 
+# [ [ (val if i == j else 0) for j in range(numCols) ] for i in range(rowStart, numRows) ]
+
+
 if __name__ == "__main__":
-    test_comment()
+    test_expression_control_flow()
     pass
