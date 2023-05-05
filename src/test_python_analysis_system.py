@@ -1160,28 +1160,25 @@ pass
     finally:
         kill()
 
+def test_unify_iteration_tuples():
+    code = ('''
+def foo(x : int): 
+    return x
+
+for (x, y) in [(1,1),(2,2),(3,3)]:
+    foo(y)
+    ''')
+    check_code("main", code, pals.all_checks.remove(pals.LookupDecCheck()))
+
+def test_unify_iteration_lists():
+    code = ('''
+def foo(x : int): 
+    return x
+
+for [x, y] in [[1,1],[2,2],[3,3]]:
+    foo(y)
+    ''')
+    check_code("main", code, pals.all_checks.remove(pals.LookupDecCheck()))
 
 if __name__ == "__main__":
     pass
-
-# checking dictionary order
-#     (inspect, kill) = pals.spawn_inspect_code('main', '''
-# def foo():
-#     a = 1
-#     b = 2 
-#     c = 3
-#     b = 4
-#     _p1 = ""
-#     a = 3
-#     _p2 = ""
-#     _p3 = ""
-#     pass
-#     ''', iom(), pset())
-#     try:
-#         code, aux = inspect('_p2')
-#         print(json.dumps(pals.from_env_to_primitive_verbose(aux.local_env), indent=4))
-#         # assert isinstance(aux.local_env['x'].type, pals.FunctionType)
-#         # assert isinstance(aux.local_env['leaf'].type, pals.ModuleType)
-
-#     finally:
-#         kill()

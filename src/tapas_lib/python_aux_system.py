@@ -2036,6 +2036,20 @@ class Server(paa.Server[InherAux, SynthAux]):
 
 
 
+    def unionize_envs(self, envs : list[InsertOrderMap[str, type]]) -> InsertOrderMap[str, type]:
+        env_result : InsertOrderMap[str, type] = iom()
+
+        for env in envs: 
+            for k, new_type in env.items():
+                old_type =  env_result.get(k)
+                if old_type:
+                    env_result += iom((k, unionize_types(old_type, new_type)))
+                else:
+                    env_result += iom((k,  new_type))
+            
+
+        return env_result 
+
     def unify(
         self,
         pattern : pas.expr, type : type, 
@@ -2055,21 +2069,25 @@ class Server(paa.Server[InherAux, SynthAux]):
 
         if isinstance(pattern, pas.Name):
             return (iom((pattern.content, type)), iom())
-        elif isinstance(pattern, pas.List):
-            type_env : InsertOrderMap[str, type] = iom()
-            anchor_env : InsertOrderMap[str, type] = iom()
-            assert pattern.content
-            for p in generate_items(pattern.content):
-                item_type = self.get_iterable_item_type(type, inher_aux)
-                if item_type:
-                    new_type_env, new_anchor_env = self.unify(p, item_type, inher_aux)
-                    type_env += new_type_env
-                    anchor_env += new_anchor_env
-                else:
-                    self.check(UnifyTypeCheck(), lambda:True)
+        ######################## 
+        ## OLD CODE commented out: ##
+        # elif isinstance(pattern, pas.List):
+        #     type_env : InsertOrderMap[str, type] = iom()
+        #     anchor_env : InsertOrderMap[str, type] = iom()
+        #     assert pattern.content
+        #     for p in generate_items(pattern.content):
+        #         item_type = self.get_iterable_item_type(type, inher_aux)
+        #         if item_type:
+        #             new_type_env, new_anchor_env = self.unify(p, item_type, inher_aux)
+        #             type_env += new_type_env
+        #             anchor_env += new_anchor_env
+        #         else:
+        #             self.check(UnifyTypeCheck(), lambda:True)
 
-            return (type_env, anchor_env)
-        elif isinstance(pattern, pas.Tuple):
+        #     return (type_env, anchor_env)
+        # elif isinstance(pattern, pas.Tuple):
+        ########################
+        elif isinstance(pattern, pas.List) or isinstance(pattern, pas.Tuple):
             if isinstance(type, TupleLitType):
                 type_env : InsertOrderMap[str, type] = iom()
                 anchor_env : InsertOrderMap[str, type] = iom()
@@ -2080,6 +2098,15 @@ class Server(paa.Server[InherAux, SynthAux]):
                     anchor_env += new_anchor_env
 
                 return (type_env, anchor_env)
+            elif isinstance(type, UnionType):
+                type_envs : list[InsertOrderMap[str, type]] = []
+                anchor_envs : list[InsertOrderMap[str, type]] = []
+                assert pattern.content
+                for choice_type in type.type_choices:
+                    (type_env, anchor_env) = self.unify(pattern, choice_type, inher_aux)
+                    type_envs.append(type_env)
+                    anchor_envs.append(anchor_env)
+                return (self.unionize_envs(type_envs), self.unionize_envs(anchor_envs))
             else:
                 type_env : InsertOrderMap[str, type] = iom()
                 anchor_env : InsertOrderMap[str, type] = iom()
@@ -2109,17 +2136,18 @@ class Server(paa.Server[InherAux, SynthAux]):
 
 
     def unify_iteration(self, inher_aux : InherAux, pattern : pas.expr, iter_type : type) -> InsertOrderMap[str, type]:
-
         if isinstance(iter_type, AnyType):
             return self.unify(pattern, AnyType(), inher_aux)[0]
         else:
             item_type = self.get_iterable_item_type(iter_type, inher_aux)
+
             if item_type:
                 target_types = self.unify(pattern, item_type, inher_aux)[0]
                 for k, t in target_types.items():
                     dec = lookup_declaration(inher_aux, k)
                     if dec and not subsumed(t, dec.type, inher_aux):
                         self.check(UnifyTypeCheck(), lambda:True)
+
                 return target_types
             else:
                 self.check(IterateTypeCheck(), lambda:True)
