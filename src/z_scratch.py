@@ -739,6 +739,5 @@ print('------------')
 
 # print([ i * 2 for i in [1,2,3,4,5,6,7,8,9,10,12] if i % 2 == 0 if i % 3 == 0])
 
-
-for [x,y,z] in [[1,2], [3,4]]:
-    print(x)
+x = min([(1, "here"), (2, "thing"), (3, "hello")], key = lambda a :a[1])[0]
+print(x)

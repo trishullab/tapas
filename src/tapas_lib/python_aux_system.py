@@ -836,6 +836,9 @@ def lookup_static_field_type(class_record : ClassRecord, field_name : str, inher
 def lookup_field_type(anchor_type : type, field_name : str, inher_aux : InherAux) -> type | None:
     if isinstance(anchor_type, AnyType):
         return AnyType()
+    elif isinstance(anchor_type, VarType):
+        # TODO: figure out how to handle "_typeshed.SupportsRichComparisonT"
+        return AnyType()
 
     elif isinstance(anchor_type, ModuleType):
         assert anchor_type.key

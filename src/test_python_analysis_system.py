@@ -1180,5 +1180,12 @@ for [x, y] in [[1,1],[2,2],[3,3]]:
     ''')
     check_code("main", code, pals.all_checks.remove(pals.LookupDecCheck()))
 
+def test_lookup_vartype():
+    # TODO: figure out how to handle "_typeshed.SupportsRichComparisonT"
+    code = ('''
+min([(1, "here"), (2, "thing"), (3, "hello")], key = lambda a :a[1])[0]
+    ''')
+    check_code("main", code, pals.all_checks.remove(pals.LookupDecCheck()))
+
 if __name__ == "__main__":
     pass
