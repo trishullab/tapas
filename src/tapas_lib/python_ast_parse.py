@@ -1257,36 +1257,21 @@ def from_generic_tree_to_expr(node : GenericNode) -> expr | None:
 
         comment_a = merge_comments(comment_a_nodes)
 
-        slice_index = next(( 
-            i + bracket_index + 1 
-            for i, n in enumerate(children[bracket_index + 1:-1])
-            if n.syntax_part == "slice"
-        ), None) 
+        index_nodes = children[bracket_index + 1:-1]
+        if any(n.syntax_part == "," for n in index_nodes):
+            exprs = to_comma_exprs(index_nodes)
 
-
-        if slice_index:
-            slice_node = children[slice_index]
-            comment_b = merge_comments(children[bracket_index + 1:slice_index])
-            slice = from_generic_tree_to_expr(slice_node)
-            comment_c = merge_comments(children[slice_index + 1:-1])
-            return Subscript(target, comment_a, comment_b, slice, comment_c, node.source_start, node.source_end)
-
+            index = Tuple(exprs, children[1].source_start, children[-1].source_end)
+            return Subscript(target, comment_a, '', index, '', node.source_start, node.source_end)
         else:
-            slice_nodes = children[bracket_index + 1:-1]
-            if any(n.syntax_part == "," for n in slice_nodes):
-                exprs = to_comma_exprs(slice_nodes)
-
-                slice = Tuple(exprs, children[1].source_start, children[-1].source_end)
-                return Subscript(target, comment_a, '', slice, '', node.source_start, node.source_end)
-            else:
-                comment_b_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", slice_nodes))
-                slice_node = slice_nodes[len(comment_b_nodes)]
-                comment_c_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", slice_nodes[len(comment_b_nodes) + 1:]))
-                comment_b = merge_comments(comment_b_nodes)
-                slice = from_generic_tree_to_expr(slice_node)
-                comment_c = merge_comments(comment_c_nodes)
-                slice = from_generic_tree_to_expr(slice_node)
-                return Subscript(target, comment_a, comment_b, slice, comment_c, node.source_start, node.source_end)
+            comment_b_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", index_nodes))
+            index_node = index_nodes[len(comment_b_nodes)]
+            comment_c_nodes = list(itertools.takewhile(lambda n: n.syntax_part == "comment", index_nodes[len(comment_b_nodes) + 1:]))
+            comment_b = merge_comments(comment_b_nodes)
+            index = from_generic_tree_to_expr(index_node)
+            comment_c = merge_comments(comment_c_nodes)
+            index = from_generic_tree_to_expr(index_node)
+            return Subscript(target, comment_a, comment_b, index, comment_c, node.source_start, node.source_end)
 
 
     elif (node.syntax_part == "call"):

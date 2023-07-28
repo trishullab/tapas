@@ -746,7 +746,67 @@ while canImprove(tableau):
     print(pats.dump(seq))
     print(pats.concretize(seq))
 
+def test_subscript_slice():
+    code = """
+    stack[1:2:3]
+    """
+
+    gnode = pgs.parse(code)
+    #######
+    print("-- generic node --")  
+    print(pgs.dump(gnode))
+
+    ######
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
+    ######
+    print("-- AST --")  
+    print(pats.dump(seq))
+    print(pats.concretize(seq))
+
+def test_subscript_slice_comments():
+    code = """
+    stack[
+    #uno
+    1:#hello 
+    2
+    #world 
+    :3
+    #dos
+    ]
+    """
+
+    gnode = pgs.parse(code)
+    #######
+    print("-- generic node --")  
+    print(pgs.dump(gnode))
+
+    ######
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
+    ######
+    print("-- AST --")  
+    print(pats.dump(seq))
+    print(pats.concretize(seq))
+
+def test_subscript_multi_dim():
+    code = """
+    stack[:, 4]
+    """
+
+    gnode = pgs.parse(code)
+    #######
+    print("-- generic node --")  
+    print(pgs.dump(gnode))
+
+    ######
+    mod = pas.parse_from_generic_tree(gnode)
+    seq = pas.serialize(mod)
+    ######
+    print("-- AST --")  
+    print(pats.dump(seq))
+    print(pats.concretize(seq))
+
 
 if __name__ == "__main__":
-    test_while_loop_comment()
     pass
